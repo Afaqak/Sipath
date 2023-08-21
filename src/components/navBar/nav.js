@@ -71,7 +71,7 @@ export const Navbar = () => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              class="w-6 h-6"
+              className="w-6 h-6"
             >
               <path
                 strokeLinecap="round"
@@ -87,15 +87,9 @@ export const Navbar = () => {
           >
             {sessionStatus === 'authenticated' ? (
               <>
-                <Image
-                  alt="message icon"
-                  className=""
-                  src={'/svgs/message.svg'}
-                  width={20}
-                  height={20}
-                />
+                <Image alt="message icon" src={'/svgs/message.svg'} width={20} height={20} />
                 <Image alt="bell icon" src={'/svgs/Union.svg'} width={20} height={20} />
-                <Image alt="s icon" src={'/svgs/accountcircle.svg'} width={20} height={20} />
+                <Image alt="account icon" src={'/svgs/accountcircle.svg'} width={20} height={20} />
                 <button
                   onClick={() => signOut()}
                   className="bg-red px-4 py-1 bg-red-600 font-medium text-white"
@@ -130,7 +124,7 @@ export const Navbar = () => {
             onClick={() => router.push('/')}
             className="flex items-center gap-4 bg-black cursor-pointer rounded-r-full px-4"
           >
-            <Image className="" src="/logo.png" width={80} height={50} />
+            <Image src="/logo.png" alt="logo" width={80} height={50} />
           </div>
 
           <div onClick={toggleNav} className="z-[1100] self-center cursor-pointer mr-4">

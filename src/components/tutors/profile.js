@@ -40,7 +40,7 @@ export const Profile = ({ type }) => {
                   <span className="font-semibold text-[0.85rem]">24$/hr</span> Hourly rate
                 </li>
                 <div className="flex font-bold gap-2">
-                  4.7 <Image src={'/svgs/star.svg'} width={20} height={20} />
+                  4.7 <Image src={'/svgs/star.svg'} alt="star" width={20} height={20} />
                 </div>
               </ul>
             </div>

@@ -58,7 +58,8 @@ const Practice = () => {
             {' '}
             <Image
               className=" w-24 h-20 object-contain"
-              src={data.imagePath}
+              src={data?.imagePath}
+              alt={data?.imagePath}
               width={80}
               height={80}
             />

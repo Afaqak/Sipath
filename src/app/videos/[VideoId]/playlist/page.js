@@ -94,7 +94,7 @@ let NextVideo = ({ img }) => {
           <h1 className="font-semibold">Video title goes here</h1>
           <div>owner name </div>
           <h2 className="font-extrabold gap-1 flex items-center">
-            4.7 <Image src="/svgs/star.png" className="" width={24} height={24} />
+            4.7 <Image src="/svgs/star.png" alt="star" width={24} height={24} />
           </h2>
           <div className="font-semibold text-[#616161] text-[0.70rem] whitespace-nowrap">
             <span>24K Views</span> . <span>2 months</span>

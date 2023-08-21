@@ -166,7 +166,7 @@ const Page = ({ params }) => {
             Categories
           </span>{' '}
           {'>'}
-          <Image src={`/svgs/${params.item}.svg`} width={20} height={20} />{' '}
+          <Image src={`/svgs/${params?.item}.svg`} alt={'svg'} width={20} height={20} />{' '}
           <span className={`text-[${colors[params.item]}]`}>
             {params?.item[0].toUpperCase() + params?.item.slice(1)}
           </span>

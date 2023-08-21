@@ -32,6 +32,7 @@ export const Book = () => {
               className="rounded-full object-cover w-[2rem] h-[2rem]"
               width={30}
               height={40}
+              alt="demo-1"
             />
           </div>
           <Stars />
@@ -45,7 +46,7 @@ export const Book = () => {
         </div>
         <div>
           <button className="font-semibold w-full text-[#1C8827] justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-[#1C8827] py-1">
-            <Image width={20} height={20} src={'/svgs/bag.svg'} />
+            <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
             <span>Buy Book</span>
           </button>
         </div>

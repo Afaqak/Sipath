@@ -9,6 +9,7 @@ export const CommentInput = () => {
         className="rounded-full w-[2.5rem] mr-1 h-[2.5rem] object-cover"
         width={100}
         height={50}
+        alt="demo-4"
       />
 
       <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">
@@ -32,6 +33,7 @@ export const CommentInput = () => {
             className="md:w-6 w-5 h-5 md:h-6 cursor-pointer"
             width={25}
             height={25}
+            alt="function"
           />
         </div>
         <input

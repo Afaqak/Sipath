@@ -62,6 +62,7 @@ const CategoriesPage = () => {
               src={data.imagePath}
               width={80}
               height={80}
+              alt={data.imagePath}
             />
             <h1 className="text-xl font-semibold mt-4 text-black">{data.title}</h1>
           </Link>
