@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.mySwiper {
+  overflow: visible !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+.carousel-slide {
+  width: max-content !important;
+}
+
+.react-calendar__navigation {
+  display: flex;
+}
+.react-calendar__navigation__label {
+  font-weight: bold;
+}
+
+.react-calendar__navigation__arrow {
+  flex-grow: 0.333;
+}
+.react-calendar__month-view__weekdays {
+  text-align: center;
+}
+
+.without_ampm::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+input[type='time']::-webkit-clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  margin: -10px;
+}
+
+.tutor-img {
+  clip-path: circle();
+}
+.live-message::-webkit-scrollbar {
+  display: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+*.react-time-picker__inputGroup__input,
+.react-time-picker__inputGroup {
+  @apply bg-gray-50  text-[#CDCBCB] !important;
+}
+
+video {
+  object-fit: cover;
+}
+
+.fc-timegrid-slot-label {
+  font-size: 12px;
+}
+
+.fc-col-header-cell-cushion {
+  display: flex;
+  flex-direction: column;
+}
+
+.fc {
+  background-color: white !important;
+  padding: 1rem;
+}
+
+.expert-slide {
+  margin-right: 20px;
+}
+
+.fc-day-header {
+  color: #333;
+}
+.fc-time-grid .fc-slats td {
+  height: 3.5em;
+}
+
+.fc-day-header .fc-day-number {
+  color: #555;
+}
+
+.fc-event-title {
+  color: #333;
+}
+
+.fc-event {
+  font-size: 12px;
+  color: white;
+  min-width: fit-content;
+  font-weight: 500;
+  font-style: normal;
+  border: 2px solid;
+}
+
+.fc-scroller ::-webkit-scrollbar-thumb {
+  width: 2px; /* Adjust the width as needed */
+}
+.fc-today {
+  background-color: transparent !important;
+}
+.fc-day-today {
+  background-color: inherit !important;
+}
+.resize-handle {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.resize-handle.start {
+  top: 0;
+  background-color: #3788d8;
+}
+
+.resize-handle.end {
+  bottom: 0;
+  background-color: #3788d8;
+}
+.last-slide {
+  margin-right: 20px;
+}
+
+.expert-slide {
+  margin-right: 20px;
+}
+
+.fc-toolbar-chunk {
+  display: flex !important;
+}
+
+.hide-horizontal-line .fc-divider {
+  display: none;
+}
+.fc .fc-timegrid-axis-cushion {
+  display: none !important;
+}
+.fc-theme-standard .fc-scrollgrid {
+  border: none;
+}
+.fc-timegrid-divider {
+  display: none;
+}
+.fc-scrollgrid-sync-table {
+  display: none;
+}
+
+.fc-col-header-cell-cushion span {
+  @apply text-[0.74rem] font-semibold;
+}
+
+.fc th {
+  border-style: none !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: none;
+}
+
+.fc-timegrid-slot .fc-timegrid-slot-lane {
+  display: none;
+}
+.fc-timegrid-slot-minor {
+  border: none;
+  opacity: 0;
+}
