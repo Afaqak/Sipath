@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import TimePicker from 'rc-time-picker';
+// import TimePicker from 'rc-time-picker';
 import Image from 'next/image';
 export const AvailableDays = () => {
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -44,17 +44,17 @@ export const AvailableDays = () => {
             {schedule[day].map((slot, slotIndex) => (
               <div key={slotIndex} className="flex mb-2 ">
                 <div className="w-24 mr-2">
-                  <TimePicker
+                  {/* <TimePicker
                     showSecond={false}
                     onChange={(time) => handleTimeChange(time, day, 'from', slotIndex)}
-                  />
+                  /> */}
                 </div>
                 <div className="w-24 mr-2">
-                  <TimePicker
+                  {/* <TimePicker
                     className=""
                     showSecond={false}
                     onChange={(time) => handleTimeChange(time, day, 'until', slotIndex)}
-                  />
+                  /> */}
                 </div>
               </div>
             ))}

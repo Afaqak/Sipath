@@ -25,7 +25,7 @@ export const Donate = ({ setDonate }) => {
           </div>
         </div>
         <button className="font-semibold w-full text-[#1C8827] justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-[#1C8827] py-1">
-          <Image width={20} height={20} src={'/svgs/coins.svg'} />
+          <Image width={20} height={20} alt="coins" src={'/svgs/coins.svg'} />
           <span>Donate</span>
         </button>
         <button onClick={() => setDonate(false)} className="font-semibold">

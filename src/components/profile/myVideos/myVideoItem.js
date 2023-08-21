@@ -18,7 +18,8 @@ export const MyVideoItem = ({ video }) => (
         />
       </svg>
       <Image
-        src={video.thumbnail}
+        src={video?.thumbnail}
+        alt={video?.thumbnail}
         width={300}
         height={200}
         className="rounded-md object-cover w-full h-40"
@@ -30,6 +31,7 @@ export const MyVideoItem = ({ video }) => (
         className="rounded-full mt-1 w-8 h-8 object-cover"
         width={32}
         height={32}
+        alt="demo"
       />
       <div>
         <h1 className="text-lg font-semibold mb-[0.20rem] line-clamp-2">{video.title}</h1>

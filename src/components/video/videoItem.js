@@ -41,6 +41,7 @@ export const VideoItem = ({ video }) => (
       </svg>
       <Image
         src={video.thumbnail}
+        alt={video.thumbnail}
         width={300}
         height={200}
         className="rounded-md object-cover w-full h-40"
@@ -49,6 +50,7 @@ export const VideoItem = ({ video }) => (
     <div className="mt-3 flex gap-2 items">
       <Image
         src="/demo-1.jpg"
+        alt="demo-1"
         className="rounded-full mt-1 w-8 h-8 object-cover"
         width={32}
         height={32}

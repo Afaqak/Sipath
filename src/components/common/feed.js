@@ -12,6 +12,7 @@ export const Feed = ({ avatar, sender, title, showComments, setShowComments }) =
               src="/svgs/playarrow.svg"
               width={40}
               height={40}
+              alt="playarrow"
             />
             <Image
               className="rounded-md object-cover w-[40rem] h-[12rem]"
@@ -28,6 +29,7 @@ export const Feed = ({ avatar, sender, title, showComments, setShowComments }) =
             className="rounded-full w-8 h-8 object-cover"
             width={32}
             height={32}
+            alt="demo"
           />
           <div>
             <h2 className="font-semibold text-lg mb-[0.20rem] line-clamp-2">{title}</h2>

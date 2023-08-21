@@ -18,7 +18,7 @@ export const Video = ({ videos, title, load }) => {
               <button className="bg-gray-100 px-4 py-2 rounded-md text-black font-semibold">
                 Load More
               </button>
-              <Image src="/svgs/expand_more.svg" width={15} height={15} />
+              <Image src="/svgs/expand_more.svg" alt="expand_more" width={15} height={15} />
             </div>
           )}
         </div>

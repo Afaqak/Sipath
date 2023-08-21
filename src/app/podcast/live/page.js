@@ -19,7 +19,7 @@ const LivePremium = () => {
               type="text"
             />
             <button>
-              <Image src={'/svgs/send.svg'} width={30} height={30} />
+              <Image src={'/svgs/send.svg'} alt="send" width={30} height={30} />
             </button>
           </div>
         </div>

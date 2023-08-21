@@ -30,7 +30,7 @@ export const ExpertsComponent = ({ title, data }) => {
                         <h2 className="font-extrabold text-sm gap-1 flex items-center">
                           4.7{' '}
                           <span>
-                            <Image src="/svgs/star.png" width={20} height={20} />
+                            <Image src="/svgs/star.png" alt="star" width={20} height={20} />
                           </span>
                         </h2>
                       </div>

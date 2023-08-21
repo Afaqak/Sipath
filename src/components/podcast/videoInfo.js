@@ -9,6 +9,7 @@ const ProfileInfo = () => {
         className="tutor-img w-[2.4rem] object-cover"
         width={100}
         height={50}
+        alt="demo-4"
       />
       <div className="flex flex-col">
         <span>Account Name</span>
@@ -22,7 +23,7 @@ const Ratings = () => {
   return (
     <div className="flex gap-1 items-center flex-col text-sm">
       <h2 className="flex items-center font-bold">
-        4.7 <Image src="/svgs/star.png" width={24} height={24} />
+        4.7 <Image src="/svgs/star.png" alt="star" width={24} height={24} />
       </h2>
     </div>
   );
@@ -89,7 +90,9 @@ export const VideoInfo = () => {
               text="Share"
             />
             <ActionButton
-              icon={<Image src={'/svgs/playlist_add.svg'} width={25} height={25} />}
+              icon={
+                <Image alt="platlist_add" src={'/svgs/playlist_add.svg'} width={25} height={25} />
+              }
               text="Save"
             />
             <ActionButton
