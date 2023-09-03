@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { ContentContainer, Video, ArchivedPodcast, upcomingPodcast } from '@/components';
+import { ContentContainer, Video, ArchivedPodcast, UpcomingPodcast } from '@/components';
 
 const newUploads = [
   {

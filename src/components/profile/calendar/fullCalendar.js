@@ -3,27 +3,61 @@ import React, { useState, useRef, useEffect, use } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import moment from 'moment';
-import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
+import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { AvailableDays, CalendarComponent } from '@/components';
+import Image from 'next/image';
 
 export const EventsCalendar = () => {
   const calendarRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState({});
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [titleDate, setTitleDate] = useState(null);
   const [viewType, setViewType] = useState('timeGridWeek');
-  console.log(calendarRef);
-
+  const [organizedEventsByDay, setOrganizedEventsByDay] = useState({});
+  const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
   const handleDateClick = (arg) => {
     const selectedStartTime = arg.date;
     setSelectedDate(selectedStartTime);
     setIsModalOpen(true);
   };
 
+  const handleOrganizeEventsByDay = (events) => {
+    const organizedEvents = {};
+
+    const today = moment().startOf('day');
+    const tomorrow = moment().startOf('day').add(1, 'days');
+
+    events.forEach((event) => {
+      const startDay = moment(event.start).startOf('day');
+
+      let dayLabel = '';
+      if (startDay.isSame(today, 'day')) {
+        dayLabel = 'Today';
+      } else if (startDay.isSame(tomorrow, 'day')) {
+        dayLabel = 'Tomorrow';
+      } else {
+        dayLabel = startDay.format('dddd-DD');
+      }
+
+      if (!organizedEvents[dayLabel]) {
+        organizedEvents[dayLabel] = [];
+      }
+
+      organizedEvents[dayLabel].push(event);
+    });
+
+    return organizedEvents;
+  };
+
+  useEffect(() => {
+    setOrganizedEventsByDay(handleOrganizeEventsByDay(calendarEvents));
+  }, [calendarEvents]);
+
   const handleConfirm = (eventText, eventBackgroundColor, eventBorderColor, textColor) => {
-    console.log(eventBackgroundColor, eventBorderColor);
     const newEvent = {
+      id: Math.floor(Math.random() * 100000000),
       title: eventText,
       start: selectedDate,
       end: selectedDate,
@@ -31,43 +65,37 @@ export const EventsCalendar = () => {
       borderColor: eventBorderColor,
       textColor: textColor,
     };
-    console.log(calendarEvents, 'ce');
+
     setCalendarEvents([...calendarEvents, newEvent]);
     setIsModalOpen(false);
   };
 
   const handleChangeView = (event) => {
-    console.log(event);
     setViewType(event);
     calendarRef.current.getApi().changeView(event);
   };
 
   const renderEventContent = (eventInfo) => {
     return (
-      <span
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
+      <>
         {eventInfo.event.title}
-      </span>
+        <span>
+          <div className="">{moment(eventInfo.event.start).format('hh:mm')}</div>
+        </span>
+      </>
     );
   };
 
-  console.log(calendarEvents);
-
   const handleAvailabilityClick = () => {
     console.log('Availability button clicked');
+    setIsAvailabilityOpen(!isAvailabilityOpen);
   };
 
-  const getCurrentDate = () => {
-    const currentDate = new Date();
-    const options = { year: 'numeric', month: 'long', day: '2-digit' };
-    const formattedDate = new Intl.DateTimeFormat(navigator.language, options).format(currentDate);
-    return formattedDate;
-  };
+  useEffect(() => {
+    const fullCalendarApi = calendarRef.current.getApi();
+
+    setTitleDate(moment(fullCalendarApi.getDate()).format('DD-MM MMMM YYYY'));
+  }, []);
 
   const viewOptions = {
     timeGridWeek: 'Week',
@@ -75,15 +103,42 @@ export const EventsCalendar = () => {
     dayGridMonth: 'Month',
   };
 
+  const handleDateChange = (date) => {
+    setTitleDate(moment(date).format('DD-MM MMMM YYYY'));
+
+    calendarRef.current.getApi().gotoDate(moment(date).toDate());
+  };
+
+  const handleEventDrop = (eventDrop) => {
+    const updatedEvent = {
+      ...eventDrop.event.toPlainObject(),
+      start: eventDrop.event.start,
+      end: eventDrop.event.start,
+    };
+
+    const updatedEvents = calendarEvents.map((event) => {
+      console.log(event.id, updatedEvent.id, parseInt(event.id) === parseInt(updatedEvent.id));
+      if (parseInt(event.id) === parseInt(updatedEvent.id)) {
+        return updatedEvent;
+      }
+      return event;
+    });
+
+    setCalendarEvents(updatedEvents);
+  };
+
   return (
     <div className="mt-8 flex shadow-md">
       <div>
-        <CalendarComponent styleCal={`rounded-tl-md`} />
+        <CalendarComponent handleDateChange={handleDateChange} styleCal={`rounded-tl-md`} />
+        <div className="bg-white px-4 py-4">
+          <EventList organizedEvents={organizedEventsByDay} />
+        </div>
       </div>
       <div className="w-full border-l border">
         <div className="flex justify-between items-center bg-white pt-4 px-4">
           <div className="flex gap-4 items-center">
-            <span className=" text-2xl font-semibold">{getCurrentDate()}</span>
+            <span className=" text-2xl font-semibold">{titleDate}</span>
             <select
               value={viewType}
               className="border-[#1850BC] text-[#1850BC] focus:outline-none border-2 text-sm rounded-md py-1 px-2"
@@ -108,11 +163,18 @@ export const EventsCalendar = () => {
           headerToolbar={false}
           editable={true}
           ref={calendarRef}
+          eventDrop={handleEventDrop}
           plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
           dayHeaderContent={(args) => {
             const dayName = args.text.substr(0, 3);
+            const dayNumber = args.date.getDate();
 
-            return <span> {dayName}</span>;
+            return (
+              <div className="flex flex-col">
+                <span>{dayName}</span>
+                <span className="text-sm font-medium">{dayNumber}</span>
+              </div>
+            );
           }}
           initialView={viewType}
           dateClick={handleDateClick}
@@ -127,6 +189,28 @@ export const EventsCalendar = () => {
           selectedDate={selectedDate}
         />
       </div>
+      {isAvailabilityOpen && (
+        <div className="bg-gray-100 h-full w-full fixed top-0 left-0 flex items-center z-[1000] justify-center">
+          <div
+            className="p-4 bg-white shadow-md rounded-md w-[60%]
+          "
+          >
+            <h2 className="text-[#616161] font-thin uppercase">Availability</h2>
+            <AvailableDays />
+            <div className="flex gap-2 justify-end mt-2">
+              <button
+                onClick={() => setIsAvailabilityOpen(false)}
+                className="px-4 py-[0.18rem] border-2 font-medium border-black flex gap-2 items-center text-black rounded-md shadow-md"
+              >
+                <Image src={'/svgs/cancel_black.svg'} alt="cancel" width={18} height={18} /> Cancel
+              </button>
+              <button className="px-4 py-[0.18rem] border-2 border-[#1850BC] font-medium flex gap-2 items-center text-[#1850BC] rounded-md shadow-md ">
+                <Image src={'/svgs/confirm_blue.svg'} alt="cancel" width={18} height={18} /> Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -137,8 +221,6 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
   const [selectedBackground, setSelectedBackground] = useState('#4DA9FF99');
   const [selectedBorder, setSelectedBorder] = useState('#FFFFFF');
   const [selectedTextColor, setSelectedTextColor] = useState('#000000');
-
-  console.log(selectedBackground, selectedBorder);
 
   const handleConfirm = () => {
     if (eventText) {
@@ -272,6 +354,38 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
           </button>
         </div>
       </div>
+    </div>
+  );
+};
+
+const EventList = ({ organizedEvents }) => {
+  for (const dayLabel in organizedEvents) {
+    organizedEvents[dayLabel].sort((a, b) => moment(a.start).diff(b.start));
+  }
+  return (
+    <div>
+      {Object.keys(organizedEvents).map((dayLabel) => (
+        <div key={dayLabel} className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">{dayLabel}</h2>
+          {organizedEvents[dayLabel].map((event) => (
+            <div
+              key={event.id}
+              className="flex text-[0.70rem] font-semibold justify-between items-center mb-2"
+            >
+              <div className="flex items-center capitalize">
+                <div
+                  className="w-4 h-4 mr-2 rounded-full"
+                  style={{ backgroundColor: event.backgroundColor }}
+                ></div>
+                <span style={{ color: event.backgroundColor }} className="font-bold">
+                  {event.title}
+                </span>
+              </div>
+              <div className="">{moment(event.start).format('hh:mm')}</div>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 };

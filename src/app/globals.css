@@ -94,12 +94,20 @@ video {
 }
 
 .fc-event {
-  font-size: 12px;
+  font-size: 8px;
+
   color: white;
-  min-width: fit-content;
+
   font-weight: 500;
   font-style: normal;
   border: 2px solid;
+  padding: 0 2px;
+}
+.fc-event-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .fc-scroller ::-webkit-scrollbar-thumb {
@@ -173,4 +181,29 @@ video {
 .fc-timegrid-slot-minor {
   border: none;
   opacity: 0;
+}
+
+.custom-time-picker .rc-time-picker-input {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  outline: none;
+  box-shadow: inset 1px 4px 10px rgba(0, 0, 0, 0.1);
+
+  text-align: center;
+}
+
+.rc-time-picker-clear {
+  display: none;
+}
+
+.rc-time-picker-panel-select::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.rc-time-picker-input,
+.rc-time-picker-panel-input,
+.rc-time-picker-panel-select {
+  padding: 5px 0px;
 }
