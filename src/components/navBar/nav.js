@@ -59,7 +59,9 @@ export const Navbar = () => {
             <Image alt="logo" className="" src="/logo.png" width={80} height={50} />
           </div>
           <ul className="flex items-center gap-10 ml-4 font-semibold">
-            <Link href="/videos">Videos</Link>
+            <Link className="hover:text-[#1850BC]" href="/videos">
+              Videos
+            </Link>
             <Link href="/premium">Premium</Link>
             <Link href="/podcast">Podcast</Link>
             <Link href="/experts">Experts</Link>
@@ -101,7 +103,7 @@ export const Navbar = () => {
               <>
                 <Link
                   className="py-[0.18rem] font-medium px-4 xl:px-6 border-[3px] rounded-md border-blue-500 text-blue-500"
-                  href="/login"
+                  href="/sign-in"
                 >
                   Sign in
                 </Link>

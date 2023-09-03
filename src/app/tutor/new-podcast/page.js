@@ -11,7 +11,6 @@ import 'rc-time-picker/assets/index.css';
 import React, { useState } from 'react';
 
 const NewPodcast = () => {
-  console.log('tested');
   const [scheduleType, setScheduleType] = useState('');
   const [podcastType, setPodcastType] = useState('free');
 
