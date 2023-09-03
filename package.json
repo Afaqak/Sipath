@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "autoprefixer": "10.4.14",
     "axios": "^1.5.0",
+    "debug": "^4.3.4",
     "framer-motion": "^10.12.18",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
