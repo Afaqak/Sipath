@@ -167,7 +167,7 @@ const ScheduleType = ({ setScheduleType, scheduleType }) => {
 };
 
 const TimeSlot = () => {
-  const [time, setTime] = useState(null); // Default time, change to null
+  const [time, setTime] = useState(null);
 
   const handleTimeChange = (newTime) => {
     setTime(newTime);
