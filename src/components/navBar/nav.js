@@ -31,6 +31,9 @@ export const Navbar = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  const isActiveLink = (href) => {
+    return pathname === href ? 'text-[#1850BC]' : '';
+  };
 
   useEffect(() => {
     setNav(false);
@@ -59,14 +62,27 @@ export const Navbar = () => {
             <Image alt="logo" className="" src="/logo.png" width={80} height={50} />
           </div>
           <ul className="flex items-center gap-10 ml-4 font-semibold">
-            <Link className="hover:text-[#1850BC]" href="/videos">
+            <Link className={`hover:text-[#1850BC] ${isActiveLink('/videos')}`} href="/videos">
               Videos
             </Link>
-            <Link href="/premium">Premium</Link>
-            <Link href="/podcast">Podcast</Link>
-            <Link href="/experts">Experts</Link>
-            <Link href="/categories">Categories</Link>
-            <Link href="/practice">Practice</Link>
+            <Link className={`hover:text-[#1850BC] ${isActiveLink('/premium')}`} href="/premium">
+              Premium
+            </Link>
+            <Link className={`hover:text-[#1850BC] ${isActiveLink('/podcast')}`} href="/podcast">
+              Podcast
+            </Link>
+            <Link className={`hover:text-[#1850BC] ${isActiveLink('/experts')}`} href="/experts">
+              Experts
+            </Link>
+            <Link
+              className={`hover:text-[#1850BC] ${isActiveLink('/categories')}`}
+              href="/categories"
+            >
+              Categories
+            </Link>
+            <Link className={`hover:text-[#1850BC] ${isActiveLink('/practice')}`} href="/practice">
+              Practice
+            </Link>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
