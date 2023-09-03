@@ -5,10 +5,6 @@ import './globals.css';
 import { store } from '@/store/store';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-export const metadata = {
-  title: 'Sipath',
-  description: 'Tutoring Application',
-};
 
 export default function RootLayout({ children }) {
   return (
