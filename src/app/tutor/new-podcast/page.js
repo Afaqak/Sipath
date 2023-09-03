@@ -1,14 +1,18 @@
 'use client';
-import { CalendarComponent, FileInput, SubjectDropdown, VideoUploadType } from '@/components';
+import {
+  CalendarComponent,
+  FileInput,
+  TranslationToggleButton,
+  SubjectDropdown,
+  VideoUploadType,
+} from '@/components';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import React, { useState } from 'react';
 
 const NewPodcast = () => {
-  const [scheduleType, setScheduleType] = useState('Go Live');
+  const [scheduleType, setScheduleType] = useState('');
   const [podcastType, setPodcastType] = useState('free');
-
-  // Function to handle radio button change
 
   return (
     <div className="relative mx-auto flex gap-4 justify-center  flex-col px-4 my-16">
@@ -19,7 +23,7 @@ const NewPodcast = () => {
         </div>
 
         <div className="md:w-fit w-full">
-          <ScheduleType setScheduleType={setScheduleType} />
+          <ScheduleType scheduleType={scheduleType} setScheduleType={setScheduleType} />
           <VideoSchedule scheduleType={scheduleType} setScheduleType={setScheduleType} />
           <div className="flex justify-end">
             <button
@@ -138,12 +142,12 @@ const VideoSchedule = ({ scheduleType, setScheduleType }) => {
   );
 };
 
-const ScheduleType = ({ setScheduleType }) => {
-  const setUpload = (e) => {
-    if (e.target.checked) {
-      setScheduleType('Schedule');
-    } else {
+const ScheduleType = ({ setScheduleType, scheduleType }) => {
+  const handleUpload = (isTranslated) => {
+    if (isTranslated) {
       setScheduleType('Go Live');
+    } else {
+      setScheduleType('Schedule');
     }
   };
 
@@ -151,10 +155,11 @@ const ScheduleType = ({ setScheduleType }) => {
     <div className="flex items-center gap-4 mb-4">
       <p>GO LIVE</p>
       <div className="flex gap-2 items-center">
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" onChange={setUpload} value="" class="sr-only peer" />
-          <div class="w-11 h-5 bg-white rounded-full peer  peer-focus:ring-4 shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] peer-focus:ring-[#FB3C22] peer-checked:after:translate-x-full  after:content-[''] after:absolute after:top-0.8 after:left-[2px] after:bg-[#FB3C22] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600"></div>
-        </label>
+        <TranslationToggleButton
+          color={'#FB3C22'}
+          image={'/svgs/calendar_white.svg'}
+          onClick={handleUpload}
+        />
       </div>
       <span>SCHEDULE</span>
     </div>

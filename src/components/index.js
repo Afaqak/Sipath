@@ -60,3 +60,4 @@ export { PlaylistSection } from './playlist/playlistSection';
 export { CashOutPopup } from './popups/cashOutPopup';
 export { AddCardPopup } from './popups/addCardPopup';
 export { AvailableDays } from './common/Availability';
+export { TranslationToggleButton } from './common/translateRadioButton';

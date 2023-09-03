@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { Modal, AvailableDays } from '@/components';
 import Image from 'next/image';
 
-import 'rc-time-picker/assets/index.css';
-
 const OnBoardingExpert = () => {
   const [expertise, setExpertise] = useState([]);
   const [modelOpen, setModalOpen] = useState(false);
@@ -15,7 +13,7 @@ const OnBoardingExpert = () => {
 
   return (
     <div className="h-[90vh] items-center justify-center flex">
-      <div className="p-7 h-[70vh] rounded-lg shadow-lg bg-white w-[70%] flex flex-col gap-2">
+      <div className="p-7 min-h-[70vh] rounded-lg shadow-lg bg-white w-[70%] flex flex-col gap-2">
         <h1 className="font-semibold text-lg">Complete Your Profile!</h1>
         <div>
           <div className="flex gap-2 ">
@@ -24,13 +22,13 @@ const OnBoardingExpert = () => {
               <input
                 placeholder="Enter Amount"
                 type="text"
-                className="shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
+                className="shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] rounded-md px-2 py-1 placeholder:text-sm border-none focus:outline-none"
                 name="email"
               />
             </div>
             <div className="flex flex-col">
               <div className="flex gap-1">
-                <label className="t text-[#616161] font-thin">EXPERTISE</label>
+                <label className="text-[#616161] font-thin">EXPERTISE</label>
                 <Image
                   onClick={() => setModalOpen(true)}
                   src={'/svgs/add_box.svg'}
@@ -59,8 +57,8 @@ const OnBoardingExpert = () => {
               </div>
             </div>
           </div>
-          <div>
-            <h2>Availability</h2>
+          <div className="mt-2 ">
+            <h2 className="text-[#616161] font-thin">Availability</h2>
             <AvailableDays />
           </div>
         </div>

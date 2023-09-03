@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
+import moment from 'moment';
 
-export const CalendarComponent = ({ styleCal }) => {
+export const CalendarComponent = ({ styleCal, handleDateChange }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -68,9 +69,11 @@ export const CalendarComponent = ({ styleCal }) => {
     );
   };
 
-  const handleDateClick = (day) => {
+  const handleDateClick = (day, idx) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    setSelectedDate(date);
+
+    setSelectedDate(idx);
+    handleDateChange(date);
   };
 
   const padStartWithZero = (number) => {
@@ -111,7 +114,7 @@ export const CalendarComponent = ({ styleCal }) => {
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-7 cursor-pointer">
+      <div className="grid grid-cols-7 gap-2 cursor-pointer">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((dayName) => (
           <div
             key={dayName}
@@ -123,12 +126,16 @@ export const CalendarComponent = ({ styleCal }) => {
         {days.map((day, idx) => (
           <div
             key={idx}
-            className={`py-1 ${
-              day ? (isCurrentDate(day) ? 'bg-[#1850BC] text-white tutor-img' : 'bg-white') : ''
-            } text-[0.65rem] text-center font-medium border-gray-200
-      
-            }`}
-            onClick={() => handleDateClick(day)}
+            className={`py-1 ease-in-out ${
+              day
+                ? isCurrentDate(day)
+                  ? 'bg-[#1850BC] text-white'
+                  : selectedDate === idx
+                  ? 'ring'
+                  : ''
+                : ''
+            } text-[0.65rem] text-center font-medium border-gray-200 hover:ring rounded-full transition-all duration-300`}
+            onClick={() => handleDateClick(day, idx)}
           >
             {padStartWithZero(day)}
           </div>

@@ -36,7 +36,7 @@ export const BookAppointment = ({ setAppointment }) => {
           />
           <div className="flex flex-col items-center= mt-2">
             <button className="py-1 mt-2 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
-              <Image src={'/svgs/calendar.svg'} alt="calendar" width={20} height={20} />
+              <Image src={'/svgs/Calendar.svg'} alt="calendar" width={20} height={20} />
               <span className="md:block hidden">Book Appointment</span>
             </button>
             <button

@@ -1,9 +1,11 @@
 'use client';
 import React, { useState } from 'react';
-// import TimePicker from 'rc-time-picker';
+import TimePicker from 'rc-time-picker';
+import 'rc-time-picker/assets/index.css';
+import moment from 'moment';
 import Image from 'next/image';
 export const AvailableDays = () => {
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   const initialSchedule = {};
 
@@ -40,21 +42,35 @@ export const AvailableDays = () => {
       <div className="flex flex-col">
         {daysOfWeek.map((day) => (
           <div key={day} className="flex mr-4">
-            <div className="mb-2 mr-4 min-w-[10%]">{day}</div>
+            <div class="flex items-center mr-2 mb-4">
+              <input
+                id="default-checkbox"
+                type="checkbox"
+                value=""
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded "
+              />
+            </div>
+            <div className="mb-2 mr-3 text-sm w-[4%]">{day}</div>
             {schedule[day].map((slot, slotIndex) => (
-              <div key={slotIndex} className="flex mb-2 ">
-                <div className="w-24 mr-2">
-                  {/* <TimePicker
-                    showSecond={false}
+              <div key={slotIndex} className="flex text-sm mb-2 gap-3 mr-2">
+                <div className="w-16">
+                  {' '}
+                  <TimePicker
+                    className="w-full custom-time-picker"
+                    format="HH:mm"
+                    placeholder="From"
                     onChange={(time) => handleTimeChange(time, day, 'from', slotIndex)}
-                  /> */}
+                    value={slot.from ? moment(slot.from, 'HH:mm') : null}
+                  />
                 </div>
-                <div className="w-24 mr-2">
-                  {/* <TimePicker
-                    className=""
-                    showSecond={false}
+                <div className="w-16 text-sm">
+                  <TimePicker
+                    className="w-full custom-time-picker"
+                    format="HH:mm"
+                    placeholder="Until"
                     onChange={(time) => handleTimeChange(time, day, 'until', slotIndex)}
-                  /> */}
+                    value={slot.until ? moment(slot.until, 'HH:mm') : null}
+                  />
                 </div>
               </div>
             ))}
