@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import moment from 'moment';
 
 export const CalendarComponent = ({ styleCal, handleDateChange }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -26,8 +25,11 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
   };
 
   const getMonthName = (date) => {
-    const options = { month: 'long' };
-    return date.toLocaleDateString(navigator.language, options);
+    if (typeof window !== 'undefined') {
+      const options = { month: 'long' };
+      return date.toLocaleDateString(navigator.language, options);
+    }
+    return '';
   };
 
   const getYear = (date) => {

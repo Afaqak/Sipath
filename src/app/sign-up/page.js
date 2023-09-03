@@ -56,7 +56,7 @@ const SignUp = () => {
                 disabled={loading}
                 placeholder="Email Address"
                 type="text"
-                className="shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
+                className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
                 name="email"
               />
               <PasswordInput
@@ -71,9 +71,7 @@ const SignUp = () => {
                 register={register('confirmPassword', { required: true })}
                 placeholder="Confirm Password"
               />
-              <span className=" text-purple-500 border-purple-500 cursor-pointer border-b -mt-2 w-fit text-sm italic">
-                Forgot Password ?
-              </span>
+
               <button
                 disabled={loading}
                 type="submit"

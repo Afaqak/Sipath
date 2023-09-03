@@ -11,6 +11,7 @@ import 'rc-time-picker/assets/index.css';
 import React, { useState } from 'react';
 
 const NewPodcast = () => {
+  console.log('tested');
   const [scheduleType, setScheduleType] = useState('');
   const [podcastType, setPodcastType] = useState('free');
 
@@ -167,7 +168,7 @@ const ScheduleType = ({ setScheduleType, scheduleType }) => {
 };
 
 const TimeSlot = () => {
-  const [time, setTime] = useState(null); // Default time, change to null
+  const [time, setTime] = useState(null);
 
   const handleTimeChange = (newTime) => {
     setTime(newTime);
