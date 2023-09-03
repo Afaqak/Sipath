@@ -190,3 +190,18 @@ video {
   outline: none;
   box-shadow: inset 1px 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+.rc-time-picker-clear {
+  display: none;
+}
+
+.rc-time-picker-panel-select::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.rc-time-picker-input,
+.rc-time-picker-panel-input,
+.rc-time-picker-panel-select {
+  padding: 5px 0px;
+}
