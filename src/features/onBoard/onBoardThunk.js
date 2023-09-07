@@ -10,7 +10,7 @@ export const onBoardUser = createAsyncThunk(
     }
     const token = JSON.parse(localStorage.getItem('token'));
     try {
-      console.log('here');
+      console.log(token);
       const response = await axios.post('onboard/user', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

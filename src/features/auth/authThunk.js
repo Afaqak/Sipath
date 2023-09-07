@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/index';
-import { useRouter } from 'next/navigation';
-import { setUserData } from './authSlice';
+
 export const createUser = createAsyncThunk(
   'auth/createUser',
   async ({ user, onSuccess, onError }, { rejectWithValue }) => {
@@ -33,6 +32,29 @@ export const signInUser = createAsyncThunk(
       const response = await axios.post('/auth/login', user);
       console.log(response, 'here');
       localStorage.setItem('token', JSON.stringify(response.data.token));
+
+      if (onSuccess && typeof onSuccess === 'function') {
+        onSuccess();
+      }
+
+      return response.data;
+    } catch (err) {
+      if (onError && typeof onError === 'function') {
+        onError(err.response.data);
+      }
+
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const facebookAuth = createAsyncThunk(
+  'auth/facebook',
+  async ({ onSuccess, onError }, { rejectWithValue }) => {
+    try {
+      console.log('here');
+      const response = await axios.get('/auth/facebook');
+      console.log(response, 'here');
 
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();

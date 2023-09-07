@@ -9,8 +9,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { onBoardUser } from '@/features/onBoard/onBoardThunk';
 import { showSuccessToast } from '@/utils/toastUtility';
 import { useRouter } from 'next/navigation';
+import { Loader } from '@/components';
 
 export const OnBoardingProcess = () => {
+  const [loading,setLoading]=useState(false)
+  const [success,setSuccess]=useState(false)
   const router=useRouter()
   const dispatch=useDispatch()
   const fileRef=useRef()
@@ -37,6 +40,8 @@ export const OnBoardingProcess = () => {
     setModalOpen(false);
   };
   const onSubmit = (data) => {
+    setLoading(true)
+    console.log(data)
     const interests=[1,2,3,4]
     console.log(data,"body");
     const formData = new FormData();
@@ -53,12 +58,17 @@ export const OnBoardingProcess = () => {
   }
  
   function onSuccess(){
-   if(buttonType==="asUser"){
-    showSuccessToast(router,null,"Redirecting to home... 🏡","/")
-   }
-   else{
-    showSuccessToast(router,null,"Redirecting to on-boarding... 🚀","/on-boarding/expert");
-   }
+    setSuccess(true)
+    setTimeout(() => {
+      setLoading(false);
+      if(buttonType==="asUser"){
+        router.push("/")
+       }
+       else{
+        router.push("/on-boarding/expert")
+       }
+    }, 2000);
+  
   }
 
   dispatch(onBoardUser({formData,onSuccess}))
@@ -86,6 +96,11 @@ export const OnBoardingProcess = () => {
  
 
   return (
+    <>
+    {loading?<Loader 
+    message={!success?"Creating Your Profile":"Profile Created 🟢"}
+    subMessage={success && (buttonType==="asUser"?"Redirecting to home... 🏡":"Time to become an expert... 🚀")}
+    /> :(
     <div className="h-screen flex items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -153,7 +168,7 @@ export const OnBoardingProcess = () => {
                 placeholder="Bio"
               />
     
-    </div>
+              </div>
               <div className="mt-7">
                 <div className="flex gap-1 mb-2">
                   <label className="text-sm text-[#616161] font-thin">INTERESTS</label>
@@ -246,6 +261,8 @@ export const OnBoardingProcess = () => {
           modalType={'Interests'}
         />
     </div>
+    )}
+    </>
   );
 };
 
@@ -255,7 +272,7 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => (
     onClick={onClick}
   >
     {value ? (
-      <span className='mt-1'>value</span>
+      <span className=''>{value}</span>
     ) : (
       <label className="text-gray-400 uppercase text-sm">Select Birthdate</label>
     )}
@@ -275,4 +292,5 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => (
     </span>
     <input ref={ref} type="text" style={{ display: 'none' }} />
   </div>
+  
 ));
