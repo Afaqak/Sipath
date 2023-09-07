@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
+import axios from '../utils/index';
 const comments = [
   {
     id: 1,

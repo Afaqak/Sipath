@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createUser, signInUser } from './authThunk';
+import { createUser, signInUser, facebookAuth } from './authThunk';
 const initialState = {
   user: null,
   token: null,
@@ -41,6 +41,17 @@ const authSlice = createSlice({
         state.loading = 'idle';
       })
       .addCase(signInUser.rejected, (state) => {
+        state.loading = 'idle';
+      })
+      .addCase(facebookAuth.pending, (state) => {
+        state.loading = 'pending';
+      })
+      .addCase(facebookAuth.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.loading = 'idle';
+      })
+      .addCase(facebookAuth.rejected, (state) => {
         state.loading = 'idle';
       });
   },
