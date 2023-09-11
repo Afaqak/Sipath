@@ -33,9 +33,6 @@ export const Navbar = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  const isActiveLink = (href) => {
-    return pathname === href ? 'text-[#1850BC]' : '';
-  };
 
   useEffect(() => {
     setNav(false);
@@ -49,12 +46,13 @@ export const Navbar = () => {
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
   ];
+  console.log(pathname, pathname.includes(links[4].href));
   return (
     <>
-      <nav className="">
+      <nav className=" fullShadow">
         <div
           className="
-          justify-between bg-white shadow-md h-[8vh] hidden lg:flex
+          justify-between bg-white fullShadow h-[8vh] hidden lg:flex sticky
         "
         >
           <div
@@ -69,13 +67,13 @@ export const Navbar = () => {
                 key={link.href}
                 onClick={() => router.push(link.href)}
                 className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
-                  pathname === link.href
+                  pathname.includes(link.href)
                     ? 'text-white'
                     : 'text-black hover:opacity-60 transition-colors duration-300'
                 }`}
                 href={link.href}
               >
-                {pathname === link.href && (
+                {pathname.includes(link.href) && (
                   <motion.div
                     style={{ borderRadius: 99999 }}
                     transition={{ type: 'spring', duration: 0.6 }}
