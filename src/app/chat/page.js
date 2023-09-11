@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { fetchConversations } from '@/features/chat/conversation/conversationThunk';
 import { useSelector } from 'react-redux';
 import { getMessagesByConversationId } from '@/features/chat/message/messageThunk';
+import { RequestModal } from '@/components/chat/requestModal';
 const users = [
   {
     id: 1,
@@ -35,6 +36,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState(null);
   const conversations = useSelector((state) => state);
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
   console.log(conversations, 'conversations');
   useEffect(() => {
     dispatch(fetchConversations(12));
@@ -44,6 +46,9 @@ const Chat = () => {
     dispatch(getMessagesByConversationId(3));
   };
 
+  function openModal() {
+    setRequestModalOpen(true);
+  }
   return (
     <div className="flex h-[91vh]  bg-[#F2F0F0]">
       {/* Left Panel - List of Users */}
@@ -53,8 +58,11 @@ const Chat = () => {
         }`}
       >
         <div className="">
-          <button className="bg-white w-full py-4 px-4 text-left border-b-2 border-blue-600">
-            Requests
+          <button
+            onClick={openModal}
+            className="bg-white w-full py-4 px-4 text-left border-b-2 border-blue-600"
+          >
+            View Requests
           </button>
           {/* {Array.isArray(conversations) &&
             conversations?.map((conversation) => (
@@ -81,6 +89,7 @@ const Chat = () => {
       >
         {selectedUser && <ChatScreen user={selectedUser} />}
       </div>
+      <RequestModal isOpen={requestModalOpen} setIsOpen={setRequestModalOpen} />
     </div>
   );
 };
