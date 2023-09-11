@@ -1,10 +1,11 @@
 'use client';
-
-import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserListItem from './UserListItem ';
 import ChatScreen from './ChatScreen';
-
+import { useDispatch } from 'react-redux';
+import { fetchConversations } from '@/features/chat/conversation/conversationThunk';
+import { useSelector } from 'react-redux';
+import { getMessagesByConversationId } from '@/features/chat/message/messageThunk';
 const users = [
   {
     id: 1,
@@ -31,21 +32,34 @@ const users = [
 ];
 
 const Chat = () => {
+  const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const conversations = useSelector((state) => state);
+  console.log(conversations, 'conversations');
+  useEffect(() => {
+    dispatch(fetchConversations(12));
+  }, []);
   const handleUserClick = (user) => {
     setSelectedUser(user);
+    dispatch(getMessagesByConversationId(3));
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 h-[91vh] bg-[#F2F0F0]">
+    <div className="flex h-[91vh]  bg-[#F2F0F0]">
       {/* Left Panel - List of Users */}
       <div
-        className={`border border-r-4 flex flex-col justify-between h-[91vh]  ${
+        className={`border fullShadow  flex flex-col w-[30%] justify-between h-[91vh]  ${
           selectedUser ? 'hidden md:flex justify-between flex-col' : 'block'
         }`}
       >
         <div className="">
+          <button className="bg-white w-full py-4 px-4 text-left border-b-2 border-blue-600">
+            Requests
+          </button>
+          {/* {Array.isArray(conversations) &&
+            conversations?.map((conversation) => (
+              <div key={conversation?.id}>{conversation?.member_one}</div>
+            ))} */}
           {users.map((item) => (
             <UserListItem
               key={item.id}
@@ -55,19 +69,16 @@ const Chat = () => {
             />
           ))}
         </div>
-        <div className={`px-6 py-4 bg-[#FFF] cursor-pointer`}>
-          <h3 className="text-lg font-light">Pending Appointment Request</h3>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center">
-              <Image src={'/svgs/accountname.svg'} width={40} height={40} alt="user" />
-              <p className="font-bold ml-3 text-lg">User Name</p>
-            </div>
-            <p className="text-[#7B7B7B] text-sm font-normal">Yesterday 10:21am</p>
-          </div>
-          <div className="mt-1 text-sm">Lorem ipsum dolor sit amet consectetur adipisicing.</div>
+        <div>
+          {/*button for appointments*/}
+          <button className="bg-white w-full py-4  text-left px-4 border-blue-600 border-t-2">
+            Appointments
+          </button>
         </div>
       </div>
-      <div className={`col-span-1 md:col-span-3 bg-white ${selectedUser ? 'block' : 'hidden'}`}>
+      <div
+        className={`col-span-1 w-[75%] md:col-span-3 bg-white ${selectedUser ? 'block' : 'hidden'}`}
+      >
         {selectedUser && <ChatScreen user={selectedUser} />}
       </div>
     </div>
