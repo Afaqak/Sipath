@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMessageRequests, approveRequest } from '@/features/chat/requests/messageRequestThunk';
 export function RequestModal({ isOpen, setIsOpen }) {
+  const dispatch = useDispatch();
+  const requests = useSelector((state) => state?.messageRequests?.messageRequests);
+
+  useEffect(() => {
+    dispatch(fetchMessageRequests(18));
+  }, []);
+
   const closeModal = () => {
     setIsOpen(false);
+  };
+
+  const approveMessageRequest = (requestId) => {
+    try {
+      dispatch(approveRequest({ userId: 18, id: requestId }));
+    } catch (err) {
+      throw err;
+    }
   };
 
   const requestedPeople = [
@@ -47,21 +63,34 @@ export function RequestModal({ isOpen, setIsOpen }) {
                   Requests for Messages
                 </h3>
                 <div className="mt-4">
-                  {requestedPeople.map((person) => (
-                    <div key={person.id} className="mb-4">
-                      <p className="font-semibold">{person.name}</p>
-                      <p className="text-sm text-gray-500">{person.message}</p>
-                    </div>
-                  ))}
+                  {requests.length > 0 ? (
+                    requests.map((request, index) => (
+                      <div key={index} className="mb-4 flex justify-between items-center">
+                        <div>
+                          <p className="font-semibold">{requestedPeople[index].name}</p>
+                          <p className="text-sm text-gray-500">{request.text}</p>
+                        </div>
+                        <button
+                          type="button"
+                          className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          onClick={() => approveMessageRequest(request.requestId)}
+                        >
+                          approve
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 text-center">No Conversation Requests!</span>
+                  )}
                 </div>
 
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={closeModal}
                   >
-                    Got it, thanks!
+                    close
                   </button>
                 </div>
               </div>
