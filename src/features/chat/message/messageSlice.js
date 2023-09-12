@@ -11,7 +11,7 @@ const messageSlice = createSlice({
       })
       .addCase(createMessage.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.messages = action.payload;
+        state.messages.push(action.payload);
       })
       .addCase(createMessage.rejected, (state, action) => {
         state.isLoading = false;

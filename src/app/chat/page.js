@@ -35,15 +35,16 @@ const users = [
 const Chat = () => {
   const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState(null);
-  const conversations = useSelector((state) => state);
+  const conversations = useSelector((state) => state?.conversations?.conversations);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   console.log(conversations, 'conversations');
   useEffect(() => {
     dispatch(fetchConversations(12));
   }, []);
-  const handleUserClick = (user) => {
-    setSelectedUser(user);
-    dispatch(getMessagesByConversationId(3));
+  const handleUserClick = (conversation) => {
+    console.log(conversation, 'id');
+    setSelectedUser(conversation);
+    dispatch(getMessagesByConversationId(conversation?.id));
   };
 
   function openModal() {
@@ -64,18 +65,15 @@ const Chat = () => {
           >
             View Requests
           </button>
-          {/* {Array.isArray(conversations) &&
-            conversations?.map((conversation) => (
-              <div key={conversation?.id}>{conversation?.member_one}</div>
-            ))} */}
-          {users.map((item) => (
-            <UserListItem
-              key={item.id}
-              user={item}
-              isSelected={selectedUser && selectedUser.id === item.id}
-              onClick={handleUserClick}
-            />
-          ))}
+          {conversations &&
+            conversations?.map((conversation, index) => (
+              <UserListItem
+                key={index}
+                user={users[index]}
+                isSelected={selectedUser && selectedUser.id === conversation.id}
+                onClick={() => handleUserClick(conversation)}
+              />
+            ))}
         </div>
         <div>
           {/*button for appointments*/}

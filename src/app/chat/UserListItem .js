@@ -5,9 +5,9 @@ const UserListItem = ({ user, isSelected, onClick }) => {
   return (
     <div
       className={`p-3  cursor-pointer border relative 
-bg-[#FFF]
+      bg-[#F2F0F0]
       `}
-      onClick={() => onClick(user)}
+      onClick={onClick}
     >
       <div className="flex items-center  justify-between">
         <div className="flex items-center">
