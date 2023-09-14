@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
-import { showErrorToast } from '@/utils/toastUtility';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 
