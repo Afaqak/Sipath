@@ -4,7 +4,6 @@ import { SocialMediaField, InputField, Modal, TextareaField, MyAccountInfo } fro
 export const MyAccount = () => {
   const [interests, setInterests] = useState([]);
   const [expertise, setExpertise] = useState([]);
-  console.log(interests, expertise);
   const [modalType, setModalType] = useState('');
   const [modelOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +35,6 @@ export const MyAccount = () => {
   };
 
   const handleModalSubmit = (value) => {
-    console.log(value);
     if (modalType === 'expertise') {
       setExpertise([...expertise, value]);
     } else if (modalType === 'interests') {
@@ -44,7 +42,7 @@ export const MyAccount = () => {
     }
     setModalOpen(false);
   };
-  console.log(modalType);
+
   let edit = true;
 
   return (

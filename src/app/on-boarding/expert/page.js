@@ -23,7 +23,7 @@ const OnBoardingExpert = () => {
   const onSuccess = () => {
     setTimeout(() => {
       setLoading(false);
-      router.push('/on-boarding');
+      router.push('/');
     }, 2000);
     // showSuccessToast(router, setLoading, 'You are now a tutor! 🎉', '/');
   };

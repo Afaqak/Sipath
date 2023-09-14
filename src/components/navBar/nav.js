@@ -6,15 +6,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
-
+import { useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 export const Navbar = () => {
   const user = useSelector((state) => state.userAuth.user);
-
+  const { data } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
   const [nav, setNav] = React.useState(false);
-  console.log('user', user);
 
   const toggleNav = () => {
     setNav(!nav);
@@ -46,7 +46,7 @@ export const Navbar = () => {
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
   ];
-  console.log(pathname, pathname.includes(links[4].href));
+
   return (
     <>
       <nav className=" fullShadow">
@@ -88,12 +88,22 @@ export const Navbar = () => {
           <div
             className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
           >
-            {user ? (
+            {data || user ? (
               <>
                 <Image alt="message icon" src={'/svgs/message.svg'} width={20} height={20} />
                 <Image alt="bell icon" src={'/svgs/Union.svg'} width={20} height={20} />
                 <Image alt="account icon" src={'/svgs/accountcircle.svg'} width={20} height={20} />
-                <button className="bg-red px-4 py-1 bg-red-600 font-medium text-white">
+                <button
+                  onClick={() => {
+                    if (user) {
+                      localStorage.removeItem('token');
+                      location.reload();
+                    } else {
+                      signOut({ callbackUrl: '/' });
+                    }
+                  }}
+                  className="bg-red px-4 py-1 bg-red-600 font-medium text-white"
+                >
                   Log Out
                 </button>
               </>
@@ -160,7 +170,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-4 mr-4 mt-4 text-sm">
             <Link
               className="py-1 px-8  border-blue-500 text-blue-500 border-[3px] rounded-md"
-              href="/login"
+              href="/sign-in"
             >
               Sign in
             </Link>

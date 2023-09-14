@@ -35,15 +35,15 @@ export const OnBoardingProcess = () => {
   };
 
   const handleModalSubmit = (val) => {
-    console.log(val)
+
     setInterests([...interests, val]);
     setModalOpen(false);
   };
   const onSubmit = (data) => {
     setLoading(true)
-    console.log(data)
+
     const interests=[1,2,3,4]
-    console.log(data,"body");
+
     const formData = new FormData();
 
   formData.append('first_name',data.firstName );
@@ -75,7 +75,7 @@ export const OnBoardingProcess = () => {
 }
 
   const handleImageUpload = (event) => {
-    console.log("work")
+
     const file = event.target.files[0]; 
     if (!file) {
       return;  
@@ -86,7 +86,7 @@ export const OnBoardingProcess = () => {
       if (image.width <= 140 && image.height <= 140) {
         setSelectedImage(file);
       } else {
-        console.log(image.width,image.height)
+    
         showImageErrorToast()
       }
     };

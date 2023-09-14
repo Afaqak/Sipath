@@ -6,7 +6,6 @@ import 'swiper/css/pagination';
 import Image from 'next/image';
 
 export function PodcastSlider({ videos }) {
-  console.log(videos);
   const livePodcastIndex = videos.findIndex((video) => video.livepodcast);
 
   return (

@@ -14,7 +14,6 @@ export const FileInput = ({ file, setFile }) => {
     const file = event.target.files[0];
     setFile(file);
     // Do something with the selected file if needed.
-    console.log('Selected File:', file);
   };
 
   return (

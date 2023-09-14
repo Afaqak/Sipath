@@ -147,7 +147,6 @@ const dataExpert = [
 
 const Page = ({ params }) => {
   const router = useRouter();
-  console.log(colors[params.item]);
 
   // const findCategoryItems=Courses[0].category.split(",").includes(params.item)
   const findCourseWithNoPrize = Courses.filter(

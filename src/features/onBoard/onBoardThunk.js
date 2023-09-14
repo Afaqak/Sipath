@@ -5,12 +5,8 @@ import axios from '../../utils/index';
 export const onBoardUser = createAsyncThunk(
   'onBoard/user',
   async ({ formData, onSuccess }, { dispatch, rejectWithValue }) => {
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
     const token = JSON.parse(localStorage.getItem('token'));
     try {
-      console.log(token);
       const response = await axios.post('onboard/user', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -33,8 +29,6 @@ export const onBoardTutor = createAsyncThunk(
   'onBoard/tutor',
   async ({ formData, onSuccess }, { rejectWithValue }) => {
     try {
-      console.log('run');
-      console.log(formData);
       const token = JSON.parse(localStorage.getItem('token'));
       const response = await axios.post('/onboard/tutor', formData, {
         headers: {

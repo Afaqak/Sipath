@@ -37,12 +37,11 @@ const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const conversations = useSelector((state) => state?.conversations?.conversations);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
-  console.log(conversations, 'conversations');
+
   useEffect(() => {
     dispatch(fetchConversations(12));
   }, []);
   const handleUserClick = (conversation) => {
-    console.log(conversation, 'id');
     setSelectedUser(conversation);
     dispatch(getMessagesByConversationId(conversation?.id));
   };

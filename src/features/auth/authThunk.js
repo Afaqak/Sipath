@@ -52,9 +52,7 @@ export const facebookAuth = createAsyncThunk(
   'auth/facebook',
   async ({ onSuccess, onError }, { rejectWithValue }) => {
     try {
-      console.log('here');
       const response = await axios.get('/auth/facebook');
-      console.log(response, 'here');
 
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
