@@ -10,9 +10,12 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
-import { showSuccessToast, showErrorToast } from '@/utils/toastUtility';
+import { showErrorToast } from '@/utils/toastUtility';
+import { signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const SignUp = () => {
+  const { data: user } = useSession();
   const [loading, setLoading] = useState(null);
   const { register, handleSubmit, reset } = useForm();
   const dispatch = useDispatch();
@@ -23,23 +26,26 @@ const SignUp = () => {
       router.push('/');
     }, 2000);
   };
-  const onError = () => {
-    console.error('run err');
-    setTimeout(() => {
-      setLoading(false);
-      showErrorToast(setLoading);
-    }, 2000);
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true);
+      router.push('/');
+    }
+  }, [user]);
+
+  const handleSignUpWithProvider = async (provider) => {
+    signIn(provider);
   };
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       const { password, email } = data;
-      console.log(data);
 
       const user = { email, password };
 
-      dispatch(signInUser({ user, onSuccess, onError }));
+      dispatch(signInUser({ user, onSuccess }));
     } catch (error) {
       setLoading(false);
       console.error('Error creating user:', error);
@@ -97,7 +103,10 @@ const SignUp = () => {
                 </button>
               </form>
               <span className="text-center text-lg -my-2 font-semibold">Or</span>
-              <button className="bg-[#1850BC]  shadow-lg flex items-center justify-center gap-2 font-semibold py-[0.35rem] rounded-md text-white">
+              <button
+                onClick={() => handleSignUpWithProvider('facebook')}
+                className="bg-[#1850BC]  shadow-lg flex items-center justify-center gap-2 font-semibold py-[0.35rem] rounded-md text-white"
+              >
                 {loading === 'facebook' ? (
                   <ClipLoader
                     loading={true}
@@ -119,7 +128,10 @@ const SignUp = () => {
                   </>
                 )}
               </button>
-              <button className="shadow-lg font-semibold py-[0.35rem] rounded-md bg-white flex items-center justify-center gap-2 ">
+              <button
+                onClick={() => handleSignUpWithProvider('google')}
+                className="shadow-lg font-semibold py-[0.35rem] rounded-md bg-white flex items-center justify-center gap-2 "
+              >
                 {loading === 'google' ? (
                   <ClipLoader
                     loading={true}

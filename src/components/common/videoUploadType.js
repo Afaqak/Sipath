@@ -12,7 +12,7 @@ export const VideoUploadType = ({ type, setType }) => {
   return (
     <div className="flex items-center gap-4 mb-4">
       <p>Free</p>
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-4 items-center">
         <TranslationToggleButton onClick={setUpload} color={'#371FCA'} />
         <input
           type="number"

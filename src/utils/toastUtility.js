@@ -7,7 +7,6 @@ import Toast from './Toast';
 const showToastSuccess = (icon, message, router, setLoading = false, route) => {
   const onClose = () => {
     if (setLoading && typeof setLoading === 'function') {
-      console.log('here on sucess');
       setLoading(false);
     }
 
@@ -30,7 +29,6 @@ const showToastReject = (icon, message, seconds = 2000, setLoading = false) => {
     }
   };
 
-  console.log('make');
   toast.error(<Toast icon={icon} message={message} />, {
     onClose,
     autoClose: seconds,

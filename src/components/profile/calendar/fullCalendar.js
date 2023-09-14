@@ -87,7 +87,6 @@ export const EventsCalendar = () => {
   };
 
   const handleAvailabilityClick = () => {
-    console.log('Availability button clicked');
     setIsAvailabilityOpen(!isAvailabilityOpen);
   };
 
@@ -117,7 +116,6 @@ export const EventsCalendar = () => {
     };
 
     const updatedEvents = calendarEvents.map((event) => {
-      console.log(event.id, updatedEvent.id, parseInt(event.id) === parseInt(updatedEvent.id));
       if (parseInt(event.id) === parseInt(updatedEvent.id)) {
         return updatedEvent;
       }

@@ -20,8 +20,6 @@ export const BookAppointment = ({ setAppointment }) => {
     setTime(e.target.value);
   };
 
-  console.log(isChecked, 'checked');
-
   return (
     <div className="fixed z-[3000] top-0 left-0 bottom-0 backdrop-blur-sm h-screen w-screen flex items-center justify-center">
       <div className="max-h-[80vh] overflow-y-scroll">

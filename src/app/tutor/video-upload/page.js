@@ -5,56 +5,15 @@ import React, { useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType } from '@/components';
 
-// const VideoUpload = () => {
-//   const [videoBodies, setVideoBodies] = useState(1);
-//   const [videoType, setVideoType] = useState('free');
-//   const handleAddVideoBody = () => {
-//     setVideoBodies((prevCount) => prevCount + 1);
-//   };
-//   return (
-//     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
-//       <VideoUploadType type={videoType} setType={setVideoType} />
-//       <div className="flex flex-col gap-4">
-//         {[...Array(videoBodies)].map((_, index) => (
-//           <>
-//             <div
-//               className={`h-[2px] relative w-[84%] lg:w-full bg-[#1850BC] ${
-//                 videoBodies > 1 ? 'block' : 'hidden'
-//               }`}
-//             >
-//               <div className="absolute -top-2 -right-14 flex gap-1">
-//                 <Image alt="circle" src={'/svgs/add_circle.svg'} width={20} height={20} />
-//                 <Image alt="info" src={'/svgs/info.svg'} width={18} height={18} />
-//               </div>
-//             </div>
-//             <div key={index} className="relative">
-//               <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
-//               <VideoBody />
-//             </div>
-//           </>
-//         ))}
-//       </div>
-
-//       <div className="flex justify-end">
-//         <button className="bg-black rounded-md px-8 mt-4 py-1 text-white">Publish</button>
-//       </div>
-//       <div className="flex justify-center mt-4 mb-16">
-//         <button onClick={handleAddVideoBody} className=" text-white plus">
-//           <Image src={'/svgs/add_video.svg'} alt="add_video" width={35} height={35} />
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
 const VideoUpload = () => {
+  console.log([...Array(1)]);
   const [videoBodies, setVideoBodies] = useState([...Array(1)].map((_, index) => ({ id: index })));
   const [videoType, setVideoType] = useState('free');
 
   const handleAddVideoBody = () => {
     setVideoBodies((prevBodies) => [...prevBodies, { id: prevBodies.length }]);
   };
-
+  console.log(videoBodies);
   const handleDragEnd = (result) => {
     if (!result.destination) return;
 

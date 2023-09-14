@@ -8,12 +8,14 @@ const ChatScreen = ({ user }) => {
   const dispatch = useDispatch();
   const [text, setText] = useState('');
   const messages = useSelector((state) => state.messages.messages);
+
   const firstMember = 12;
+
   let secondMember = user.member_one !== 12 ? user.member_one : user.member_two;
-  console.log(secondMember, firstMember);
+
   const sendMessage = (e) => {
     e.preventDefault();
-    console.log('clicked');
+    if (!text) return;
     dispatch(createMessage({ text, senderId: firstMember, receiverId: secondMember }));
     setText('');
   };
@@ -29,7 +31,6 @@ const ChatScreen = ({ user }) => {
     scrollToBottom();
   }, [messages]);
 
-  console.log(user);
   return (
     <div>
       <div className="flex flex-col justify-between overflow-y-scroll">
@@ -62,7 +63,7 @@ const ChatScreen = ({ user }) => {
               <div
                 key={message?.id}
                 className={`px-4 flex justify-center flex-col ${
-                  message.sender_id === user.member_one ? 'items-start' : 'items-end'
+                  message.sender_id === firstMember ? 'items-end' : 'items-start'
                 }`}
               >
                 <p className={`text-gray-300 mb-1  text-[0.70rem] `}>
@@ -70,9 +71,9 @@ const ChatScreen = ({ user }) => {
                 </p>
                 <div
                   className={`p-4 ml-2 text-sm text-white w-fit rounded-t-[13.976px]  rounded-b-[13.976px] rounded-l-[13.976px]  ${
-                    message.sender_id === user.member_one
-                      ? 'bg-[#777b87d9] rounded-bl-[3.976px]'
-                      : 'bg-[#203A60BD] rounded-br-[3.976px]'
+                    message.sender_id === firstMember
+                      ? 'bg-[#203A60BD] rounded-br-[3.976px]'
+                      : 'bg-[#777b87d9] rounded-bl-[3.976px] '
                   }`}
                 >
                   {message?.text}
