@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 export const MediaPagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10; // Replace with the actual total number of pages
+  const totalPages = 10;
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);

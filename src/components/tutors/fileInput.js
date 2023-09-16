@@ -13,7 +13,6 @@ export const FileInput = ({ file, setFile }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFile(file);
-    // Do something with the selected file if needed.
   };
 
   return (
@@ -22,7 +21,7 @@ export const FileInput = ({ file, setFile }) => {
       <input
         type="text"
         className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] w-48 rounded-md px-2 py-1 placeholder:text-sm border-none focus:outline-none"
-        readOnly // Prevent direct editing of the input field
+        readOnly
       />
       {!file ? (
         <span
@@ -33,7 +32,7 @@ export const FileInput = ({ file, setFile }) => {
         </span>
       ) : (
         <span
-          className="font-semibold absolute flex gap-2 top-1/2 whitespace-nowrap transform -translate-y-1/2 text-green-500  text-sm cursor-pointer px-4 py-[0.12rem] rounded-md"
+          className="font-semibold absolute overflow-hidden flex gap-2 top-1/2 whitespace-nowrap transform -translate-y-1/2 text-green-500  text-sm cursor-pointer px-4 py-[0.12rem] rounded-md"
           onClick={handleChooseFile}
         >
           {file?.name}

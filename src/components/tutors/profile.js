@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const Profile = ({ type }) => {
   return (
@@ -63,7 +64,7 @@ export const Profile = ({ type }) => {
               </p>
             </div>
           </div>
-          {type === 'myprofile' && <ActionButtons />}
+          <ActionButtons />
         </div>
       </div>
     </div>
@@ -77,7 +78,10 @@ const ActionButtons = () => {
         <Image src={'/svgs/blueB.svg'} className="w-4 h-4" width={25} height={25} alt="post" />
         <span className="hidden md:block">New Post</span>
       </button>
-      <button className="border-2 border-[#1C8827] w-full whitespace-nowrap font-bold flex gap-1 px-3 items-center text-[0.7rem] text-[#1C8827] bg-transparent justify-center mb-1 rounded">
+      <Link
+        href={'/tutor/video-upload'}
+        className="border-2 border-[#1C8827] w-full whitespace-nowrap font-bold flex gap-1 px-3 items-center text-[0.7rem] text-[#1C8827] bg-transparent justify-center mb-1 rounded"
+      >
         <Image
           src={'/svgs/videogreen.svg'}
           className="h-5 w-5"
@@ -86,7 +90,7 @@ const ActionButtons = () => {
           alt="video"
         />{' '}
         <span className="hidden md:block">New Video</span>
-      </button>
+      </Link>
       <button className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded">
         <Image
           src={'/svgs/messageblack.svg'}
