@@ -1,9 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { VideoItem, Video, ContentContainer } from '@/components';
+
 const premiumVideos = [
   {
-    id: 1,
+    id: 36,
     title: 'Video 1',
     thumbnail: '/new videos/demo-1.jpg',
     account: 'Account 1',
@@ -11,7 +12,7 @@ const premiumVideos = [
     rating: '4.5',
   },
   {
-    id: 2,
+    id: 4,
     title: 'Video 2',
     thumbnail: '/new videos/demo-2.jpg',
     account: 'Account 2',
@@ -19,7 +20,7 @@ const premiumVideos = [
     rating: '4.5',
   },
   {
-    id: 3,
+    id: 6,
     title: 'Video 3',
     thumbnail: '/new videos/demo-9.jpg',
     account: 'Account 3',
@@ -27,7 +28,7 @@ const premiumVideos = [
     rating: '4.5',
   },
   {
-    id: 4,
+    id: 8,
     title: 'Video 4',
     thumbnail: '/new videos/demo-4.jpg',
     account: 'Account 4',
@@ -35,7 +36,7 @@ const premiumVideos = [
     rating: '4.5',
   },
   {
-    id: 5,
+    id: 10,
     title: 'Video 4',
     thumbnail: '/new videos/demo-5.png',
     account: 'Account 4',
@@ -44,7 +45,7 @@ const premiumVideos = [
   },
 
   {
-    id: 2,
+    id: 12,
     title: 'Video 2',
     thumbnail: '/new videos/demo-6.jpg',
     account: 'Account 2',
@@ -52,7 +53,7 @@ const premiumVideos = [
     rating: '4.5',
   },
   {
-    id: 3,
+    id: 14,
     title: 'Video 3',
     thumbnail: '/new videos/demo-3.jpg',
     account: 'Account 3',
