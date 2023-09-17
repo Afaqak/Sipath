@@ -1,20 +1,23 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
+import { setUserDataAndToken } from '@/features/auth/authSlice';
 import { useSession } from 'next-auth/react';
 import { signOut } from 'next-auth/react';
+import { useDispatch } from 'react-redux';
 export const Navbar = () => {
   const user = useSelector((state) => state.userAuth.user);
-  const { data } = useSession();
+  console.log(useSelector((state) => state.userAuth));
+  const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [nav, setNav] = React.useState(false);
+  const [nav, setNav] = useState(false);
 
   const toggleNav = () => {
     setNav(!nav);
@@ -88,18 +91,23 @@ export const Navbar = () => {
           <div
             className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
           >
-            {data || user ? (
+            {user ? (
               <>
                 <Image alt="message icon" src={'/svgs/message.svg'} width={20} height={20} />
                 <Image alt="bell icon" src={'/svgs/Union.svg'} width={20} height={20} />
-                <Image alt="account icon" src={'/svgs/accountcircle.svg'} width={20} height={20} />
+                <Image
+                  onClick={() => router.push('/tutor')}
+                  alt="account icon"
+                  src={'/svgs/accountcircle.svg'}
+                  width={20}
+                  height={20}
+                />
                 <button
                   onClick={() => {
                     if (user) {
-                      localStorage.removeItem('token');
-                      location.reload();
-                    } else {
-                      signOut({ callbackUrl: '/' });
+                      signOut();
+                      dispatch(setUserDataAndToken({ user: null, token: null }));
+                      router.push('/');
                     }
                   }}
                   className="bg-red px-4 py-1 bg-red-600 font-medium text-white"

@@ -17,6 +17,10 @@ const authSlice = createSlice({
     setUserData: (state, action) => {
       state.user = action.payload;
     },
+    setUserDataAndToken(state, action) {
+      state.user = action.payload?.user;
+      state.token = action.payload?.token;
+    },
   },
 
   extraReducers: (builder) => {
@@ -47,8 +51,8 @@ const authSlice = createSlice({
         state.loading = 'pending';
       })
       .addCase(facebookAuth.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = action.payload?.user;
+        state.token = action.payload?.token;
         state.loading = 'idle';
       })
       .addCase(facebookAuth.rejected, (state) => {
@@ -57,6 +61,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setUserData } = authSlice.actions;
+export const { logout, setUserData, setUserDataAndToken } = authSlice.actions;
 
 export default authSlice.reducer;

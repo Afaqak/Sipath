@@ -12,6 +12,7 @@ import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
+import { setUserDataAndToken } from '@/features/auth/authSlice';
 
 const SignUp = () => {
   const { data: user } = useSession();
@@ -19,6 +20,10 @@ const SignUp = () => {
   const { register, handleSubmit, reset } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
+  const [customLoaderMessage, setCustomLoaderMessage] = useState({
+    message: '',
+    subMessage: '',
+  });
   const onSuccess = () => {
     setTimeout(() => {
       setLoading(false);
@@ -27,15 +32,22 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    dispatch(setUserDataAndToken(user));
+    if (user && user?.isNewUser) {
       setLoading(true);
+      setCustomLoaderMessage({
+        message: 'Signing You Up 👌',
+        subMessage: 'Time to create your Profile...🚀',
+      });
+      router.push('/on-boarding');
+    } else if (user && !user?.isNewUser) {
+      setLoading(true);
+      setCustomLoaderMessage({
+        message: 'Signing You In! 🟢',
+      });
       router.push('/');
     }
   }, [user]);
-
-  const handleSignUpWithProvider = async (provider) => {
-    signIn(provider);
-  };
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -45,16 +57,22 @@ const SignUp = () => {
       const user = { email, password };
 
       dispatch(signInUser({ user, onSuccess }));
+      setCustomLoaderMessage({
+        message: 'Signing You In! 🟢',
+      });
     } catch (error) {
       setLoading(false);
       console.error('Error creating user:', error);
     }
   };
+  const handleSignUpWithProvider = async (provider) => {
+    signIn(provider);
+  };
 
   return (
     <>
       {loading ? (
-        <Loader message={'Logging You In 👌'} />
+        <Loader message={customLoaderMessage.message} subMessage={customLoaderMessage.subMessage} />
       ) : (
         <div className="flex items-center flex-col justify-center h-[75vh] md:h-[90vh]">
           <div className="bg-white p-5 w-[80%]  md:w-[40%] lg:w-[30%] xl:w-[23%] shadow-lg rounded-lg">

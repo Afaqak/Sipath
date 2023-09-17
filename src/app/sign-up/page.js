@@ -13,6 +13,7 @@ import { showErrorToast } from '@/utils/toastUtility';
 import { Loader } from '@/components';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
+import { setUserDataAndToken } from '@/features/auth/authSlice';
 
 const SignUp = () => {
   const { data: user } = useSession();
@@ -20,11 +21,27 @@ const SignUp = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-
+  const [customLoaderMessage, setCustomLoaderMessage] = useState({
+    message: '',
+    subMessage: '',
+  });
+  console.log(user, 'user from client');
   useEffect(() => {
-    if (user) {
+    dispatch(setUserDataAndToken(user));
+    if (user && user?.isNewUser) {
       setLoading(true);
+      setCustomLoaderMessage({
+        message: 'Signing You Up 👌',
+        subMessage: 'Time to create your Profile...🚀',
+      });
       router.push('/on-boarding');
+    } else if (user && !user?.isNewUser) {
+      setLoading(true);
+      setCustomLoaderMessage({
+        message: 'Signing You In! 🟢',
+        subMessage: 'You already have an account',
+      });
+      router.push('/');
     }
   }, [user]);
 
@@ -43,6 +60,10 @@ const SignUp = () => {
       const user = { email, password };
 
       dispatch(createUser({ user, onSuccess: handleSuccess }));
+      setCustomLoaderMessage({
+        message: 'Signing You Up 👌',
+        subMessage: 'Time to create your Profile...🚀',
+      });
     } catch (error) {
       setLoading(false);
       console.error('Error creating user:', error);
@@ -59,7 +80,7 @@ const SignUp = () => {
   return (
     <div className="flex items-center flex-col justify-center h-[75vh] md:h-[90vh]">
       {loading ? (
-        <Loader message={'Signing You Up 👌'} subMessage={'Time to create your Profile...🚀'} />
+        <Loader message={customLoaderMessage.message} subMessage={customLoaderMessage.subMessage} />
       ) : (
         <div className="bg-white p-5 w-[80%] md:w-[40%] lg:w-[30%] xl:w-[23%] shadow-lg rounded-lg">
           <h2 className="text-center font-semibold text-lg mb-4">Sign Up</h2>
