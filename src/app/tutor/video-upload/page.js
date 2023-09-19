@@ -17,8 +17,6 @@ const VideoUpload = () => {
     },
   ]);
 
-  console.log(sections);
-
   const handleAddVideoBody = (sectionId) => {
     const updatedSections = sections.map((section) => {
       if (section.id === sectionId) {
@@ -58,48 +56,165 @@ const VideoUpload = () => {
 
     setSections([...updatedSections, newSection]);
   };
+  // const handleDragEnd = (result) => {
+  //   if (!result.destination) return;
+  //   const sourceDroppableId = result.source.droppableId;
+  //   const destinationDroppableId = result.destination.droppableId;
+
+  //   const sourceIndex = result.source.index;
+  //   const destinationIndex = result.destination.index;
+
+  //   if (sourceDroppableId !== destinationDroppableId) {
+  //     const sourceSectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
+  //     const destinationSectionIndex = sections.findIndex(
+  //       (section) => section.id === destinationDroppableId
+  //     );
+
+  //     if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
+
+  //     const updatedSections = [...sections];
+
+  //     // Remove the video from the source section
+  //     const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
+
+  //     // Add the video to the destination section
+  //     updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
+
+  //     setSections(updatedSections);
+
+  //     console.log('from different ids');
+  //     console.log(result, 'from different ids');
+  //   }
+  //   if (sourceDroppableId === destinationDroppableId && result.type === 'group') {
+  //     const sectionIndex = sections.findIndex((section) => section.id === result.draggableId);
+  //     if (sectionIndex === -1) return;
+
+  //     const updatedSections = [...sections];
+
+  //     const [movedSection] = updatedSections.splice(sourceIndex, 1); // Use updatedSections here
+  //     updatedSections.splice(destinationIndex, 0, movedSection); // Use updatedSections here
+
+  //     setSections(updatedSections);
+  //   } else {
+  //     const updatedSections = [...sections];
+  //     const videosSectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
+  //     const videos = [...sections[videosSectionIndex].videos];
+  //     const [movedSection] = videos.splice(sourceIndex, 1);
+  //     videos.splice(destinationIndex, 0, movedSection);
+  //     updatedSections[videosSectionIndex].videos = videos;
+  //     setSections(updatedSections);
+  //     // console.log(movedSection, videos);
+  //     // console.log('now childrens', result);
+  //     // console.log(sourceIndex, destinationIndex);
+  //   }
+  // };
+  // const handleDragEnd = (result) => {
+  //   if (!result.destination) return;
+  //   const sourceDroppableId = result.source.droppableId;
+  //   const destinationDroppableId = result.destination.droppableId;
+
+  //   const sourceIndex = result.source.index;
+  //   const destinationIndex = result.destination.index;
+
+  //   if (sourceDroppableId !== destinationDroppableId) {
+  //     const sourceSectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
+  //     const destinationSectionIndex = sections.findIndex(
+  //       (section) => section.id === destinationDroppableId
+  //     );
+
+  //     if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
+
+  //     const updatedSections = [...sections];
+
+  //     // Remove the video from the source section
+  //     const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
+
+  //     // Add the video to the destination section
+  //     updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
+
+  //     setSections(updatedSections);
+
+  //     console.log('from different ids');
+  //     console.log(result, 'from different ids');
+  //   }
+  // if (sourceDroppableId === destinationDroppableId && result.type === 'group') {
+  //   const sectionIndex = sections.findIndex((section) => section.id === result.draggableId);
+  //   if (sectionIndex === -1) return;
+
+  //   const updatedSections = [...sections];
+
+  //   const [movedSection] = updatedSections.splice(sourceIndex, 1); // Use updatedSections here
+  //   updatedSections.splice(destinationIndex, 0, movedSection); // Use updatedSections here
+
+  //   setSections(updatedSections);
+  //   } else {
+  //     const updatedSections = [...sections];
+  //     const videosSectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
+  //     const videos = [...sections[videosSectionIndex].videos];
+  //     const [movedSection] = videos.splice(sourceIndex, 1);
+  //     videos.splice(destinationIndex, 0, movedSection);
+  //     updatedSections[videosSectionIndex].videos = videos;
+  //     setSections(updatedSections);
+  //     // console.log(movedSection, videos);
+  //     // console.log('now childrens', result);
+  //     // console.log(sourceIndex, destinationIndex);
+  //   }
+  // };
   const handleDragEnd = (result) => {
     if (!result.destination) return;
 
     const sourceDroppableId = result.source.droppableId;
     const destinationDroppableId = result.destination.droppableId;
-    console.log(sourceDroppableId, destinationDroppableId);
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
 
-    if (sourceDroppableId !== destinationDroppableId) return;
-    if (sourceDroppableId === destinationDroppableId) {
-      const sectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
+    // Clone the sections array
+    const updatedSections = [...sections];
+
+    if (sourceDroppableId === destinationDroppableId && result.type === 'group') {
+      const sectionIndex = sections.findIndex((section) => section.id === result.draggableId);
       if (sectionIndex === -1) return;
 
       const updatedSections = [...sections];
-      const section = { ...updatedSections[sectionIndex] };
 
-      const sourceIndex = result.source.index;
-      const destinationIndex = result.destination.index;
+      const [movedSection] = updatedSections.splice(sourceIndex, 1);
+      updatedSections.splice(destinationIndex, 0, movedSection);
 
-      console.log(sourceIndex, destinationIndex);
-      const [movedVideo] = section.videos.splice(sourceIndex, 1);
-      section.videos.splice(destinationIndex, 0, movedVideo);
-
-      updatedSections[sectionIndex] = section;
       setSections(updatedSections);
-      // } else {
-      //   // If the source and destination droppable IDs are different, it means the item is a section
-      //   const sourceSectionIndex = sections.findIndex((section) => section.id === sourceDroppableId);
-      //   const destinationSectionIndex = sections.findIndex(
-      //     (section) => section.id === destinationDroppableId
-      //   );
-
-      //   if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
-
-      //   const updatedSections = [...sections];
-
-      //   const [movedSection] = updatedSections.splice(sourceSectionIndex, 1);
-      //   updatedSections.splice(destinationSectionIndex, 0, movedSection);
-
-      //   setSections(updatedSections);
-      // }
     }
+
+    if (sourceDroppableId !== destinationDroppableId) {
+      // Dragging from one section to another
+      console.log(result);
+      const sourceSectionIndex = updatedSections.findIndex(
+        (section) => section.id === sourceDroppableId
+      );
+      const destinationSectionIndex = updatedSections.findIndex(
+        (section) => section.id === destinationDroppableId
+      );
+
+      if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
+
+      // Remove the video from the source section
+      const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
+
+      // Add the video to the destination section
+      updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
+    } else {
+      console.log(result);
+      // Reordering videos within the same section
+      const sectionIndex = updatedSections.findIndex((section) => section.id === sourceDroppableId);
+
+      if (sectionIndex === -1) return;
+
+      // Remove and insert the video within the same section
+      const [movedVideo] = updatedSections[sectionIndex].videos.splice(sourceIndex, 1);
+      updatedSections[sectionIndex].videos.splice(destinationIndex, 0, movedVideo);
+    }
+
+    setSections(updatedSections);
   };
+
   return (
     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
       <div className="mb-5">
@@ -107,50 +222,66 @@ const VideoUpload = () => {
       </div>
       <div className="flex flex-col gap-4">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="videoBodies" direction="vertical">
+          <Droppable type="group" droppableId="videoBodies" direction="vertical">
             {(provided) => (
               <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
                 {sections.map(({ id, videos }, sectionIndex) => (
-                  <div key={id} className="relative">
-                    {id && <SectionTitle />}
-
-                    <Droppable droppableId={`videos-${id}`} direction="vertical">
-                      {(provided) => (
-                        <div {...provided.droppableProps} ref={provided.innerRef}>
-                          {videos.map(({ id: videoId }, videoIndex) => (
-                            <Draggable
-                              key={videoId}
-                              draggableId={`video-${videoId}`}
-                              index={videoIndex}
-                            >
-                              {(videoProvided) => (
-                                <div
-                                  className="relative"
-                                  ref={videoProvided.innerRef}
-                                  {...videoProvided.draggableProps}
-                                  {...videoProvided.dragHandleProps}
+                  <Draggable key={id} draggableId={id} index={sectionIndex}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        key={id}
+                        className={`relative ${sectionIndex > 0 ? 'mt-24' : 'mt-0'}`}
+                      >
+                        {id && <SectionTitle />}
+                        <Droppable droppableId={id} direction="vertical">
+                          {(provided) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                              {videos.map((video, videoIndex) => (
+                                <Draggable
+                                  key={`${id}-${video.id}`} // Use a unique key
+                                  draggableId={`${id}-${video.id}`}
+                                  index={videoIndex}
                                 >
-                                  <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
-                                  <VideoBody
-                                    sections={sections}
-                                    title={id}
-                                    onClick={() => handleAddSection(videoId)}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                    <button
-                      onClick={() => handleAddVideoBody(id)}
-                      className="text-white absolute -bottom-20 left-1/2 -translate-x-1/2 "
-                    >
-                      <Image src={'/svgs/add_video.svg'} alt="add_video" width={35} height={35} />
-                    </button>
-                  </div>
+                                  {(
+                                    videoProvided // Use a separate provided variable
+                                  ) => (
+                                    <div
+                                      ref={videoProvided.innerRef}
+                                      {...videoProvided.draggableProps}
+                                      {...videoProvided.dragHandleProps}
+                                      className="relative"
+                                    >
+                                      <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
+                                      <VideoBody
+                                        sections={sections}
+                                        title={id}
+                                        onClick={() => handleAddSection(video.id)}
+                                      />
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                        <button
+                          onClick={() => handleAddVideoBody(id)}
+                          className="text-white absolute -bottom-20 left-1/2 -translate-x-1/2 "
+                        >
+                          <Image
+                            src={'/svgs/add_video.svg'}
+                            alt="add_video"
+                            width={35}
+                            height={35}
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </Draggable>
                 ))}
                 {provided.placeholder}
               </div>
