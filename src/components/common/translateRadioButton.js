@@ -16,7 +16,7 @@ export const TranslationToggleButton = ({ onClick, color, image }) => {
       <div
         style={{ backgroundColor: color }}
         className={`w-6 h-6 relative rounded-full transition duration-300 transform p-1 ${
-          translated ? ' -translate-x-2' : 'translate-x-full'
+          translated ? 'translate-x-full' : ' -translate-x-2'
         }`}
       >
         {image && <img src={image} className="h-4 w-4" alt="Icon" />}
