@@ -54,7 +54,7 @@ const OnBoardingExpert = () => {
   return (
     <>
       {loading ? (
-        <Loader />
+        <Loader message={'Congratulations!'} subMessage={'You are a tutor now'} />
       ) : (
         <div className="h-[90vh] items-center justify-center flex">
           <form
