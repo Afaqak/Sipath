@@ -42,7 +42,6 @@ const VideoUpload = () => {
     },
   ]);
 
-  console.log(sections);
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].title = title;
@@ -200,6 +199,7 @@ const VideoUpload = () => {
 
     setSections(updatedSections);
   };
+  console.log(sections);
 
   const handleCourseUpload = async (sectionIndex) => {
     console.log(sectionIndex, sections);
@@ -222,8 +222,8 @@ const VideoUpload = () => {
       setCourseId(data?.course?.id);
       cId = data?.course?.id;
     }
-    console.log(courseId, 'from-out');
-    if (!sectionIds[sectionIndex] && cId) {
+    console.log(courseId, 'from-out', sectionIds[sectionIndex]);
+    if (cId) {
       console.log(courseId, 'from-in', cId);
 
       const { data } = await axios.post(
@@ -244,7 +244,12 @@ const VideoUpload = () => {
     const updatedSections = [...sections];
 
     try {
-      for (const video of updatedSections[sectionIndex].videos) {
+      const videosToUpload = [...updatedSections[sectionIndex].videos];
+
+      async function uploadVideo(video) {
+        const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
+
+        console.log('here');
         const formDataToSend = new FormData();
         formDataToSend.append('video', video.video);
         formDataToSend.append('thumbnail', video.thumbnail);
@@ -253,6 +258,7 @@ const VideoUpload = () => {
         formDataToSend.append('subject', video.formData.subject);
         formDataToSend.append('duration', video.duration.toString());
         formDataToSend.append('price', 12);
+
         video.loading = true;
 
         const config = {
@@ -274,33 +280,44 @@ const VideoUpload = () => {
           },
         };
 
-        const response = await axios.post('/upload/video', formDataToSend, config);
-        if (response.status === 200) {
-          console.log('Video uploaded successfully:', response.data);
-          video.loading = false;
-          video.uploadProgress = 100;
-          setSections(updatedSections);
+        try {
+          const response = await axios.post('/upload/video', formDataToSend, config);
+          if (response.status === 200) {
+            console.log('Video uploaded successfully:', response.data);
 
-          const videoId = response.data.video_id;
+            video.loading = false;
+            video.uploadProgress = 0;
+            console.log('index here', indexOfVid);
+            updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
+            setSections([...updatedSections]);
 
-          const addVideoResponse = await axios.post(
-            `/courses/${cId}/section/${sId[sectionIndex]}/addVideo`,
-            { video_id: videoId },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+            const videoId = response.data?.video?.id;
+            console.log(videoId, 'video_id');
+            const addVideoResponse = await axios.post(
+              `/courses/${cId}/section/${sId[sectionIndex]}/addVideo`,
+              { video_id: videoId },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (addVideoResponse.status === 200) {
+              console.log('Video added to section successfully:', addVideoResponse.data);
+            } else {
+              console.error('Error adding video to section:', addVideoResponse.statusText);
             }
-          );
-
-          if (addVideoResponse.status === 200) {
-            console.log('Video added to section successfully:', addVideoResponse.data);
           } else {
-            console.error('Error adding video to section:', addVideoResponse.statusText);
+            console.error('Error uploading video:', response.statusText);
           }
-        } else {
-          console.error('Error uploading video:', response.statusText);
+        } catch (error) {
+          console.error('Error uploading video:', error.message);
         }
+      }
+
+      for (const [index, video] of videosToUpload.entries()) {
+        await uploadVideo(video, index);
       }
     } catch (error) {
       console.error('Error uploading videos:', error.message);
@@ -503,7 +520,13 @@ const VideoBody = ({
   // };
 
   return (
-    <div className={`relative mt-5 ${sections > 0 ? 'mb-28' : 'mb-10'} `}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }} // Initial animation state (hidden and slightly below)
+      animate={{ opacity: 1, y: 0 }} // Animation when component enters
+      exit={{ opacity: 0, y: -20 }} // Animation when component exits
+      transition={{ duration: 0.5 }} // Animation duration
+      className={`relative mt-5 ${sections > 0 ? 'mb-28' : 'mb-10'} `}
+    >
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       <div
         className={`h-[2px] left-0 ${
@@ -557,6 +580,7 @@ const VideoBody = ({
               </div>
 
               <button
+                type="button"
                 onClick={cancelUpload}
                 className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition-colors duration-300"
               >
@@ -580,7 +604,7 @@ const VideoBody = ({
           />
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 };
 
