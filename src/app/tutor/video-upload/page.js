@@ -4,7 +4,6 @@ import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType } from '@/components';
-import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/index';
@@ -20,27 +19,26 @@ const VideoUpload = () => {
   function cancelUpload() {
     abortController.abort();
   }
-  const [sections, setSections] = useState([
-    {
-      id: 'section-1',
-      title: '',
-      videos: [
-        {
-          id: 0,
-          formData: {
-            title: '',
-            description: '',
-            subject: '',
-          },
-          thumbnail: null,
-          video: null,
-          duration: 0,
-          loading: false,
-          uploadProgress: 0,
+  const initialState = {
+    id: 'section-1',
+    title: '',
+    videos: [
+      {
+        id: 0,
+        formData: {
+          title: '',
+          description: '',
+          subject: '',
         },
-      ],
-    },
-  ]);
+        thumbnail: null,
+        video: null,
+        duration: 0,
+        loading: false,
+        uploadProgress: 0,
+      },
+    ],
+  };
+  const [sections, setSections] = useState([initialState]);
 
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
@@ -49,11 +47,14 @@ const VideoUpload = () => {
     console.log(sections[sectionIndex].title);
   };
 
-  const handleUpdateFormData = (sectionIndex, videoIndex, formData) => {
+  const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
+    const { name, value } = e.target;
     const updatedSections = [...sections];
-    updatedSections[sectionIndex].videos[videoIndex].formData = formData;
+    const videoFormData = { ...updatedSections[sectionIndex].videos[videoIndex].formData };
+    videoFormData[name] = value;
+    updatedSections[sectionIndex].videos[videoIndex].formData = videoFormData;
     setSections(updatedSections);
-    console.log(sections[sectionIndex].videos[videoIndex].formData, 'from main');
+    console.log(sections);
   };
 
   const handleUpdateThumbnail = (sectionIndex, videoIndex, thumbnail) => {
@@ -90,7 +91,10 @@ const VideoUpload = () => {
   const handleAddVideoBody = (sectionId) => {
     const updatedSections = sections.map((section) => {
       if (section.id === sectionId) {
-        const newVideo = { id: section.videos.length };
+        const newVideo = {
+          ...initialState.videos[0],
+          id: section?.videos?.length,
+        };
         return { ...section, videos: [...section.videos, newVideo] };
       }
       return section;
@@ -98,7 +102,7 @@ const VideoUpload = () => {
 
     setSections(updatedSections);
   };
-
+  console.log();
   const handleAddSection = (videoId) => {
     const sectionContainingVideo = sections.find((section) =>
       section.videos.some((video) => video.id === videoId)
@@ -110,12 +114,17 @@ const VideoUpload = () => {
 
     const newSection = {
       id: `section-${sections.length + 1}`,
-      videos: [{ id: 0 }],
+      title: '',
+      videos: [
+        {
+          ...initialState.videos[0],
+          id: 0,
+        },
+      ],
     };
 
     const updatedSections = sections.map((section, index) => {
       if (section === sectionContainingVideo) {
-        console.log('here');
         return {
           ...sectionContainingVideo,
           videos: sectionContainingVideo.videos.filter((video) => video.id !== videoId),
@@ -126,7 +135,7 @@ const VideoUpload = () => {
 
     setSections([...updatedSections, newSection]);
   };
-
+  console.log(sections);
   const generateUniqueVideoId = (videosInSection) => {
     let newId =
       videosInSection.length > 0 ? Math.max(...videosInSection.map((video) => video.id)) + 1 : 0;
@@ -160,7 +169,6 @@ const VideoUpload = () => {
     }
 
     if (sourceDroppableId !== destinationDroppableId) {
-      console.log(result);
       const sourceSectionIndex = updatedSections.findIndex(
         (section) => section.id === sourceDroppableId
       );
@@ -171,21 +179,16 @@ const VideoUpload = () => {
       if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
 
       const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
-      console.log(movedVideo);
+
       const newVideoId = generateUniqueVideoId(updatedSections[destinationSectionIndex].videos);
       movedVideo.id = newVideoId;
 
       updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
 
-      console.log(updatedSections, 'after swap');
-
       if (updatedSections[sourceSectionIndex].videos.length === 0) {
-        console.log('after length===0', sourceDroppableId);
         updatedSections.splice(sourceSectionIndex, 1);
-        console.log(updatedSections, 'after filter');
       }
     } else {
-      console.log(result);
       const sectionIndex = updatedSections.findIndex((section) => section.id === sourceDroppableId);
       if (sectionIndex === -1) return;
 
@@ -199,14 +202,10 @@ const VideoUpload = () => {
 
     setSections(updatedSections);
   };
-  console.log(sections);
 
   const handleCourseUpload = async (sectionIndex) => {
-    console.log(sectionIndex, sections);
     let cId = courseId;
     let sId = sectionIds.slice();
-
-    console.log('clicked', sections[sectionIndex]?.title);
 
     if (!courseId) {
       const { data } = await axios.post(
@@ -218,14 +217,12 @@ const VideoUpload = () => {
           },
         }
       );
-      console.log(data, 'course');
+
       setCourseId(data?.course?.id);
       cId = data?.course?.id;
     }
-    console.log(courseId, 'from-out', sectionIds[sectionIndex]);
-    if (cId) {
-      console.log(courseId, 'from-in', cId);
 
+    if (cId) {
       const { data } = await axios.post(
         `/courses/${cId}/section`,
         {
@@ -249,7 +246,6 @@ const VideoUpload = () => {
       async function uploadVideo(video) {
         const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
 
-        console.log('here');
         const formDataToSend = new FormData();
         formDataToSend.append('video', video.video);
         formDataToSend.append('thumbnail', video.thumbnail);
@@ -269,7 +265,7 @@ const VideoUpload = () => {
           signal: abortSignal,
           onUploadProgress: (progressEvent) => {
             const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log(`Upload Progress: ${progress}%`);
+
             video.uploadProgress = progress;
             const updatedSectionsClone = [...updatedSections];
             updatedSectionsClone[sectionIndex] = {
@@ -287,7 +283,7 @@ const VideoUpload = () => {
 
             video.loading = false;
             video.uploadProgress = 0;
-            console.log('index here', indexOfVid);
+
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
 
@@ -310,9 +306,11 @@ const VideoUpload = () => {
             }
           } else {
             console.error('Error uploading video:', response.statusText);
+            video.loading = false;
           }
         } catch (error) {
           console.error('Error uploading video:', error.message);
+          video.loading = false;
         }
       }
 
@@ -357,7 +355,7 @@ const VideoUpload = () => {
                         <Droppable droppableId={id} direction="vertical">
                           {(provided) => (
                             <div {...provided.droppableProps} ref={provided.innerRef}>
-                              {videos.map((video, videoIndex) => (
+                              {videos?.map((video, videoIndex) => (
                                 <Draggable
                                   key={`${id}-${video.id}`}
                                   draggableId={`${id}-${video.id}`}
@@ -386,8 +384,8 @@ const VideoUpload = () => {
                                           sections[sectionIndex].videos[videoIndex].uploadProgress
                                         }
                                         cancelUpload={cancelUpload}
-                                        onUpdateFormData={(formData) =>
-                                          handleUpdateFormData(sectionIndex, videoIndex, formData)
+                                        onUpdateFormData={(e) =>
+                                          handleUpdateFormData(sectionIndex, videoIndex, e)
                                         }
                                         onUpdateThumbnail={(thumbnail) =>
                                           handleUpdateThumbnail(sectionIndex, videoIndex, thumbnail)
@@ -468,23 +466,17 @@ const VideoBody = ({
   uploadProgress,
   formData,
 }) => {
-  const formValue = {
-    title: '',
-    description: '',
-    subject: '',
-  };
-
   // const [thumbnail, setThumbnail] = useState(null);
   // const [video, setVideo] = useState(null);
   // const [duration, setDuration] = useState(0);
-  const [formDataNew, setFormDataNew] = useState(formValue);
+  // const [formDataNew, setFormDataNew] = useState(formData);
   // const [loading, setLoading] = useState(false);
   // const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFieldChange = (e) => {
-    const { name, value } = e.target;
-    setFormDataNew({ ...formDataNew, [name]: value });
-    onUpdateFormData(formDataNew);
+    // const { name, value } = e.target;
+    // setFormDataNew({ ...formDataNew, [name]: value });
+    onUpdateFormData(e);
   };
 
   const handleThumbnail = (thumb) => {
@@ -521,10 +513,10 @@ const VideoBody = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }} // Initial animation state (hidden and slightly below)
-      animate={{ opacity: 1, y: 0 }} // Animation when component enters
-      exit={{ opacity: 0, y: -20 }} // Animation when component exits
-      transition={{ duration: 0.5 }} // Animation duration
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
       className={`relative mt-5 ${sections > 0 ? 'mb-28' : 'mb-10'} `}
     >
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
@@ -592,9 +584,9 @@ const VideoBody = ({
 
         <div className="flex flex-col lg:flex-row justify-between gap-8">
           <div className="flex gap-8">
-            <VideoInfoColumn onChange={handleFieldChange} formData={formDataNew} />
+            <VideoInfoColumn onChange={handleFieldChange} />
 
-            <QuizUploadColumn onChange={handleFieldChange} formData={formDataNew} />
+            <QuizUploadColumn onChange={handleFieldChange} />
           </div>
           <VideoandThumbnail
             thumbnail={thumbnail}
@@ -608,14 +600,13 @@ const VideoBody = ({
   );
 };
 
-const VideoInfoColumn = ({ onChange, formData }) => {
+const VideoInfoColumn = ({ onChange }) => {
   return (
     <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Video title</label>
         <input
           onChange={onChange}
-          value={formData.title}
           name="title"
           placeholder="Enter title..."
           className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
@@ -627,7 +618,6 @@ const VideoInfoColumn = ({ onChange, formData }) => {
         <textarea
           onChange={onChange}
           name="description"
-          value={formData.description}
           rows={4}
           cols={4}
           typeof="text"
@@ -639,7 +629,7 @@ const VideoInfoColumn = ({ onChange, formData }) => {
   );
 };
 
-const QuizUploadColumn = ({ onChange, formData }) => {
+const QuizUploadColumn = ({ onChange }) => {
   const [quizFile, setQuizFile] = useState(null);
   const [quizSolutionFile, setQuizSolutionFile] = useState(null);
   return (
@@ -648,7 +638,6 @@ const QuizUploadColumn = ({ onChange, formData }) => {
         <label className="text-sm">Subject</label>
         <input
           onChange={onChange}
-          value={formData.subject}
           name="subject"
           placeholder="Enter Subject"
           className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
