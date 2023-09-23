@@ -1,5 +1,5 @@
 'use client';
-import { CommentInput, ContentPlayer, LiveMessages, VideoInfo } from '@/components';
+import { CreateComment, ContentPlayer, LiveMessages, VideoInfo } from '@/components';
 import Image from 'next/image';
 
 const comments = [
@@ -112,7 +112,7 @@ const Comments = () => {
         <h2>Sort by</h2>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CommentInput />
+        <CreateComment />
       </div>
     </div>
   );

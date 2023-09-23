@@ -57,7 +57,26 @@ const commentsSlice = createSlice({
       .addCase(fetchCommentReplies.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      }).addCase(createReplyToComment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
+      .addCase(createReplyToComment.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(typeof action.payload,action.payload)
+        const { reply_to} = action.payload;
+        if (!state.commentReplies[reply_to]) {
+          console.log(reply_to,"new reply")
+          state.commentReplies[reply_to] = [action.payload];
+        } else {
+          state.commentReplies[reply_to].push(action.payload);
+        }
+        // console.log(state,"State")
+      })
+      .addCase(createReplyToComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
     
   },
 });

@@ -2,29 +2,17 @@
 import React from 'react';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
-import { createComment } from '@/features/comments/commentThunk';
+import { createComment, createReplyToComment } from '@/features/comments/commentThunk';
 import { useState } from 'react';
-export const CommentInput = ({ videoId }) => {
-  const [comment, setComment] = useState('');
+export const CreateComment = ({ videoId,commentId=null ,comment,reply,onSubmit,setComments}) => {
   const dispatch = useDispatch();
-  const onSubmit = (e) => {
-    e.preventDefault();
 
-    try {
-      dispatch(createComment({ videoId:1, comment }));
-
-    } catch (error) {
-      console.error(error);
-    }finally{
-      setComment('')
-    }
-  };
 
   return (
-    <form onSubmit={onSubmit} className="p-2 flex gap-3 items-center">
+    <form onSubmit={onSubmit} className="flex gap-3 items-center">
       <Image
         src="/demo-4.jpg"
-        className="rounded-full w-[2.5rem] mr-1 h-[2.5rem] object-cover"
+        className={`rounded-full w-[2.4rem] h-[2.36rem] ${reply?"w-[2.23rem] h-[2.20rem]":"w-[2.4rem] h-[2.36rem]"} object-cover`}
         width={100}
         height={50}
         alt="demo-4"
@@ -55,12 +43,14 @@ export const CommentInput = ({ videoId }) => {
           />
         </div>
         <input
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => setComments(e.target.value)}
           type="text "
+          value={comment}
           placeholder="Add a public comment..."
           className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
         />
       </div>
+      {!reply &&
       <button type="submit">
         {' '}
         <svg
@@ -78,6 +68,7 @@ export const CommentInput = ({ videoId }) => {
           />
         </svg>
       </button>
+}
     </form>
   );
 };

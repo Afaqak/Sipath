@@ -1,5 +1,5 @@
 'use client';
-import { ContentPlayer, VideoInfo, CommentInput, Comments } from '@/components';
+import { ContentPlayer, VideoInfo, CreateComment,CommentsSection} from '@/components';
 import Image from 'next/image';
 import { fetchPrimaryComments } from '@/features/comments/commentThunk';
 import { useEffect } from 'react';
@@ -12,13 +12,10 @@ const videoArray = [
   '/new videos/demo-5.png',
 ];
 
+
 const WatchVideo = () => {
   const primaryComments=useSelector(state=>state.comments?.primaryComments)
   console.log(primaryComments)
-  const dispatch=useDispatch()
-  useEffect(()=>{
-    dispatch(fetchPrimaryComments({videoId:1}))
-  },[])
 
   return (
     <div className="">
@@ -33,7 +30,7 @@ const WatchVideo = () => {
             <Comments comments={primaryComments}  />
           </div> */}
             <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
-          <VideoComments primaryComments={primaryComments} />
+          <CommentsSection primaryComments={primaryComments} />
           </div>
         </div>
         {/* Render the video list for all screens */}
@@ -43,7 +40,7 @@ const WatchVideo = () => {
           })}
           {/* Render the Comments component for small screens */}
           <div className="lg:hidden my-8">
-            <VideoComments primaryComments={primaryComments} />
+            <CommentsSection videoId={1} />
           </div>
         </div>
       </div>
@@ -81,18 +78,4 @@ let NextVideo = ({ img }) => {
   );
 };
 
-const VideoComments = ({primaryComments}) => {
-  
-  return (
-    <div className=" mt-8">
-      <div className="justify-between font-bold text-lg mb-2 flex">
-        <h2>132 comments</h2>
-        <h2>Sort by</h2>
-      </div>
-      <div className="bg-white p-4 rounded-md shadow-md">
-        <CommentInput />
-        <Comments comments={primaryComments} />
-      </div>
-    </div>
-  );
-};
+

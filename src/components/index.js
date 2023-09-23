@@ -2,7 +2,7 @@
 
 export { FileInput } from './tutors/fileInput';
 export { VideoFeed } from './common/videoFeed';
-export { Comments } from './comment/comments';
+export { VideoComments } from './comment/videoComments';
 export { NewVideos } from './main/newVideos';
 export { Carousel } from './main/carousel';
 export { PremiumVideos } from './main/premiumVideos';
@@ -30,7 +30,7 @@ export { ContentPlayer } from './podcast/reactPlayer';
 export { LiveMessages } from './podcast/liveMessages';
 export { VideoInfo } from './podcast/videoInfo';
 export { Stars } from './common/5star';
-export { CommentInput } from './comment/commentInput';
+export { CreateComment} from './comment/createComment';
 export { SubjectDropdown } from './common/subjectDropdown';
 export { VideoUploadType } from './common/videoUploadType';
 export { PodcastSlider } from './tutors/podcastSlider';
@@ -61,3 +61,6 @@ export { CashOutPopup } from './popups/cashOutPopup';
 export { AddCardPopup } from './popups/addCardPopup';
 export { AvailableDays } from './common/Availability';
 export { TranslationToggleButton } from './common/translateRadioButton';
+export { CommentsSection } from './comment/commentsSection';
+export { VideoComment } from './comment/videoComment';
+export { RepliesList } from './comment/repliesList';
