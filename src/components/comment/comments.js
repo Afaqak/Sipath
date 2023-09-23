@@ -2,8 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 export const Comments = ({ comments }) => {
   return (
-    <div className="px-4 py-1 mt-2 md:mt-0">
-      {comments.map((comment) => (
+    <div className="px-4 py-1 md:mt-0">
+      {comments && comments.map((comment) => (
         <div key={comment.id} className="flex flex-col mb-4">
           <div className="flex gap-4">
             <Image
@@ -17,7 +17,7 @@ export const Comments = ({ comments }) => {
             <div className="flex gap-4 items-center max-w-[80%] w-fit">
               <div>
                 <p className="text-sm md:text-base py-2 px-3 bg-gray-100 shadow-md w-fit">
-                  {comment.message}
+                  {comment?.comment}
                 </p>
                 <div className="flex justify-between text-gray-500 mt-2">
                   <div className="flex gap-2">
@@ -75,9 +75,9 @@ export const Comments = ({ comments }) => {
             </div>
           </div>
           {/*reply*/}
-          {comment?.replies?.map((reply) => (
+          {/* {comment?.replies?.map((reply) => (
             <Reply key={reply.id} reply={reply} />
-          ))}
+          ))} */}
         </div>
       ))}
     </div>

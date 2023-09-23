@@ -6,16 +6,18 @@ import { useRouter } from 'next/navigation';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { signInUser } from '@/features/auth/authThunk';
 import { Loader } from '@/components';
-import { useDispatch } from 'react-redux';
+import { showErrorToast } from '@/utils/toastUtility';
+import { useDispatch ,useSelector} from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';1
 import { setUserDataAndToken } from '@/features/auth/authSlice';
 
 const SignUp = () => {
   const { data: user } = useSession();
+  const userAuth=useSelector(state=>state.userAuth.token)
   const [loading, setLoading] = useState(null);
   const { register, handleSubmit, reset } = useForm();
   const dispatch = useDispatch();
@@ -26,14 +28,13 @@ const SignUp = () => {
   });
   const onSuccess = () => {
     setTimeout(() => {
-      setLoading(false);
       router.push('/');
     }, 2000);
   };
 
   useEffect(() => {
     dispatch(setUserDataAndToken(user));
-    if (user && user?.isNewUser) {
+    if ((user && user?.isNewUser)) {
       setLoading(true);
       setCustomLoaderMessage({
         message: 'Signing You Up 👌',
@@ -49,22 +50,31 @@ const SignUp = () => {
     }
   }, [user]);
 
+  const onError = () => {
+    setLoading(false)
+    return showErrorToast(setLoading, 'Server error');
+  };
+
+
   const onSubmit = async (data) => {
-    setLoading(true);
+  
     try {
       const { password, email } = data;
 
       const user = { email, password };
-
-      dispatch(signInUser({ user, onSuccess }));
+      setLoading(true)
       setCustomLoaderMessage({
         message: 'Signing You In! 🟢',
       });
+      dispatch(signInUser({ user, onSuccess ,onError}));
     } catch (error) {
       setLoading(false);
       console.error('Error creating user:', error);
     }
+
   };
+
+
   const handleSignUpWithProvider = async (provider) => {
     signIn(provider);
   };

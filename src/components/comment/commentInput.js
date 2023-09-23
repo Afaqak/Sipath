@@ -1,9 +1,27 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
+import { useDispatch } from 'react-redux';
+import { createComment } from '@/features/comments/commentThunk';
+import { useState } from 'react';
+export const CommentInput = ({ videoId }) => {
+  const [comment, setComment] = useState('');
+  const dispatch = useDispatch();
+  const onSubmit = (e) => {
+    e.preventDefault();
 
-export const CommentInput = () => {
+    try {
+      dispatch(createComment({ videoId:1, comment }));
+
+    } catch (error) {
+      console.error(error);
+    }finally{
+      setComment('')
+    }
+  };
+
   return (
-    <div className="p-4 flex gap-3 items-center">
+    <form onSubmit={onSubmit} className="p-2 flex gap-3 items-center">
       <Image
         src="/demo-4.jpg"
         className="rounded-full w-[2.5rem] mr-1 h-[2.5rem] object-cover"
@@ -37,25 +55,29 @@ export const CommentInput = () => {
           />
         </div>
         <input
+          onChange={(e) => setComment(e.target.value)}
           type="text "
           placeholder="Add a public comment..."
           className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
         />
       </div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="black"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="white"
-        className="md:w-8 w-6 h-6 md:h-8 md:relative md:right-0 absolute right-6 "
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-        />
-      </svg>
-    </div>
+      <button type="submit">
+        {' '}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="black"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="white"
+          className="md:w-8 w-6 h-6 md:h-8 md:relative md:right-0 absolute right-6 "
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+          />
+        </svg>
+      </button>
+    </form>
   );
 };

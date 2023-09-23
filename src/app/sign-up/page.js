@@ -50,31 +50,38 @@ const SignUp = () => {
   };
 
   const onSubmit = async (data) => {
-    setLoading(true);
     try {
       const { password, email, confirmPassword } = data;
       if (confirmPassword !== password) {
         return showErrorToast(setLoading, 'Passwords do not match');
       }
-
+      
       const user = { email, password };
-
-      dispatch(createUser({ user, onSuccess: handleSuccess }));
+      setLoading(true);
+    
       setCustomLoaderMessage({
         message: 'Signing You Up 👌',
         subMessage: 'Time to create your Profile...🚀',
       });
+      dispatch(createUser({ user, onSuccess,onReject }));
+     
     } catch (error) {
       setLoading(false);
       console.error('Error creating user:', error);
+     
     }
   };
 
-  const handleSuccess = () => {
+  const onSuccess = () => {
     setTimeout(() => {
-      setLoading(false);
+      setLoading(false)
       router.push('/on-boarding');
     }, 2000);
+    
+  };
+  const onReject = () => {
+    setLoading(false)
+    return showErrorToast(setLoading, 'Server error');
   };
 
   return (
