@@ -1,12 +1,18 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
+import { useDispatch } from 'react-redux';
+import { createComment, createReplyToComment } from '@/features/comments/commentThunk';
+import { useState } from 'react';
+export const CreateComment = ({ videoId,commentId=null ,comment,reply,onSubmit,setComments}) => {
+  const dispatch = useDispatch();
 
-export const CommentInput = () => {
+
   return (
-    <div className="p-4 flex gap-3 items-center">
+    <form onSubmit={onSubmit} className="flex gap-3 items-center">
       <Image
         src="/demo-4.jpg"
-        className="rounded-full w-[2.5rem] mr-1 h-[2.5rem] object-cover"
+        className={`rounded-full w-[2.4rem] h-[2.36rem] ${reply?"w-[2.23rem] h-[2.20rem]":"w-[2.4rem] h-[2.36rem]"} object-cover`}
         width={100}
         height={50}
         alt="demo-4"
@@ -37,25 +43,32 @@ export const CommentInput = () => {
           />
         </div>
         <input
+          onChange={(e) => setComments(e.target.value)}
           type="text "
+          value={comment}
           placeholder="Add a public comment..."
           className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
         />
       </div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="black"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="white"
-        className="md:w-8 w-6 h-6 md:h-8 md:relative md:right-0 absolute right-6 "
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-        />
-      </svg>
-    </div>
+      {!reply &&
+      <button type="submit">
+        {' '}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="black"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="white"
+          className="md:w-8 w-6 h-6 md:h-8 md:relative md:right-0 absolute right-6 "
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+          />
+        </svg>
+      </button>
+}
+    </form>
   );
 };

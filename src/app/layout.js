@@ -5,6 +5,7 @@ import './globals.css';
 import { store } from '@/store/store';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function RootLayout({ children }) {
   return (
@@ -16,7 +17,7 @@ export default function RootLayout({ children }) {
               <Navbar />
               {children}
             </AuthProvider>
-            <ToastContainer position="top-right" />
+            <Toaster/>
           </main>
         </Provider>
       </body>

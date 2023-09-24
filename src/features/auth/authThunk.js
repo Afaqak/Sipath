@@ -3,7 +3,7 @@ import axios from '../../utils/index';
 
 export const createUser = createAsyncThunk(
   'auth/createUser',
-  async ({ user, onSuccess, onError }, { rejectWithValue }) => {
+  async ({ user, onSuccess, onReject }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/auth/signup', user);
       localStorage.setItem('token', JSON.stringify(response.data.token));
@@ -14,9 +14,9 @@ export const createUser = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      if (onError && typeof onError === 'function') {
+      if (onReject && typeof onReject === 'function') {
         console.log(err, 'eerrr');
-        onError();
+        onReject();
       }
       console.log('err');
       return rejectWithValue(err.response.data);

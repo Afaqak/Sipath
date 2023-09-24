@@ -7,9 +7,12 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { setUserDataAndToken } from '@/features/auth/authSlice';
-import { useSession } from 'next-auth/react';
 import { signOut } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
+import { buttonVariants, Button } from '../ui/button';
+import { cn } from '@/lib/utils';
+import UserAvatar from '../common/userAvatar';
+import { Icons } from '@/components';
 export const Navbar = () => {
   const user = useSelector((state) => state.userAuth.user);
   console.log(useSelector((state) => state.userAuth));
@@ -93,16 +96,16 @@ export const Navbar = () => {
           >
             {user ? (
               <>
-                <Image alt="message icon" src={'/svgs/message.svg'} width={20} height={20} />
-                <Image alt="bell icon" src={'/svgs/Union.svg'} width={20} height={20} />
-                <Image
+                <Icons.message className="w-6 h-6" onClick={() => router.push('/chat')} />
+                <Icons.bell />
+
+                <UserAvatar
                   onClick={() => router.push('/tutor')}
-                  alt="account icon"
-                  src={'/svgs/accountcircle.svg'}
-                  width={20}
-                  height={20}
+                  user={{ name: user?.first_name || user?.display_name || user?.email }}
+                  className="h-8 w-8"
                 />
-                <button
+                <Button
+                  variant="destructive"
                   onClick={() => {
                     if (user) {
                       signOut();
@@ -110,21 +113,24 @@ export const Navbar = () => {
                       router.push('/');
                     }
                   }}
-                  className="bg-red px-4 py-1 bg-red-600 font-medium text-white"
                 >
                   Log Out
-                </button>
+                </Button>
               </>
             ) : (
               <>
                 <Link
-                  className="py-[0.18rem] font-medium px-4 xl:px-6 border-[3px] rounded-md border-blue-500 text-blue-500"
+                  className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    'border-blue-500 text-blue-500 hover:text-blue-500'
+                  )}
                   href="/sign-in"
                 >
                   Sign in
                 </Link>
+
                 <Link
-                  className="py-[0.18rem] font-medium px-4 xl:px-6 border-[3px] rounded-md border-black text-black"
+                  className={cn(buttonVariants({ variant: 'outline' }), 'border-black')}
                   href="/sign-up"
                 >
                   Sign up

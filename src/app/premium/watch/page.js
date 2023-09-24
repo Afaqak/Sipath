@@ -1,5 +1,5 @@
 'use client';
-import { ContentPlayer, VideoInfo, CommentInput } from '@/components';
+import { ContentPlayer, VideoInfo, CreateComment, CommentsSection } from '@/components';
 import Image from 'next/image';
 
 const videoArray = [
@@ -19,7 +19,7 @@ const WatchVideo = () => {
           <VideoInfo />
           {/* Render the Comments component for large screens */}
           <div className="hidden lg:block">
-            <Comments />
+            <CommentsSection />
           </div>
         </div>
         {/* Render the video list for all screens */}
@@ -29,7 +29,7 @@ const WatchVideo = () => {
           })}
           {/* Render the Comments component for small screens */}
           <div className="lg:hidden my-8">
-            <Comments />
+            <CommentsSection />
           </div>
         </div>
       </div>
@@ -62,20 +62,6 @@ let NextVideo = ({ img }) => {
             <span>24K Views</span> . <span>2 months</span>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-const Comments = () => {
-  return (
-    <div className=" mt-8">
-      <div className="justify-between font-bold text-lg mb-2 flex">
-        <h2>132 comments</h2>
-        <h2>Sort by</h2>
-      </div>
-      <div className="bg-white p-4 rounded-md shadow-md">
-        <CommentInput />
       </div>
     </div>
   );

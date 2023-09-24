@@ -99,6 +99,8 @@ const VideoUpload = () => {
       }
       return section;
     });
+    console.log(updatedSections,"updated")
+    
 
     setSections(updatedSections);
   };
@@ -166,6 +168,7 @@ const VideoUpload = () => {
       updatedSections.splice(destinationIndex, 0, movedSection);
 
       setSections(updatedSections);
+      return
     }
 
     if (sourceDroppableId !== destinationDroppableId) {
@@ -179,10 +182,15 @@ const VideoUpload = () => {
       if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
 
       const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
+      updatedSections[sourceSectionIndex].videos = updatedSections[sourceSectionIndex].videos.map(
+        (video, index) => ({
+          ...video,
+          id: index,
+        })
+      );
 
       const newVideoId = generateUniqueVideoId(updatedSections[destinationSectionIndex].videos);
       movedVideo.id = newVideoId;
-
       updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
 
       if (updatedSections[sourceSectionIndex].videos.length === 0) {
@@ -194,9 +202,9 @@ const VideoUpload = () => {
 
       const [movedVideo] = updatedSections[sectionIndex].videos.splice(sourceIndex, 1);
 
-      const newVideoId = generateUniqueVideoId(updatedSections[sectionIndex].videos);
-      movedVideo.id = newVideoId;
-
+      // const newVideoId = generateUniqueVideoId(updatedSections[sectionIndex].videos);
+      // movedVideo.id = newVideoId;
+      // console.log(newVideoId,"new videoid")
       updatedSections[sectionIndex].videos.splice(destinationIndex, 0, movedVideo);
     }
 

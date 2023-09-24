@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CommentInput, Comments, Feed } from '@/components';
+import { CreateComment, VideoComments, Feed } from '@/components';
 
-//fake comments and replies
 
 export const VideoFeed = ({ comments }) => {
   const [showComments, setShowComments] = useState(false);
@@ -20,8 +19,8 @@ export const VideoFeed = ({ comments }) => {
       {showComments && (
         <>
           <div className="w-[95%] h-[1px] bg-gray-200 mx-auto"></div>
-          <CommentInput />
-          <Comments comments={comments} />
+          <CreateComment />
+          {/* <Comments comments={comments} /> */}
         </>
       )}
     </div>

@@ -1,5 +1,5 @@
 'use client';
-import { ContentPlayer, VideoInfo, CommentInput, PlaylistSection } from '@/components';
+import { ContentPlayer, VideoInfo, CreateComment, PlaylistSection } from '@/components';
 import Image from 'next/image';
 
 const videoArray = [
@@ -113,7 +113,7 @@ const Comments = () => {
         <h2>Sort by</h2>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CommentInput />
+        <CreateComment />
       </div>
     </div>
   );

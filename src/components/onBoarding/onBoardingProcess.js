@@ -10,8 +10,10 @@ import { onBoardUser } from '@/features/onBoard/onBoardThunk';
 import { showSuccessToast } from '@/utils/toastUtility';
 import { useRouter } from 'next/navigation';
 import { Loader } from '@/components';
+import { useToast } from '../hooks/use-toast';
 
 export const OnBoardingProcess = () => {
+  const {toast}=useToast()
   const [loading,setLoading]=useState(false)
   const [success,setSuccess]=useState(false)
   const router=useRouter()
@@ -59,6 +61,10 @@ export const OnBoardingProcess = () => {
  
   function onSuccess(){
     setSuccess(true)
+    toast({
+      title:"Profile Created 🟢",
+      description:buttonType==="asUser"?"Redirecting to home... 🏡":"Time to become an expert... 🚀"
+    })
     setTimeout(() => {
       setLoading(false);
       if(buttonType==="asUser"){
@@ -97,10 +103,7 @@ export const OnBoardingProcess = () => {
 
   return (
     <>
-    {loading?<Loader 
-    message={!success?"Creating Your Profile":"Profile Created 🟢"}
-    subMessage={success && (buttonType==="asUser"?"Redirecting to home... 🏡":"Time to become an expert... 🚀")}
-    /> :(
+ 
     <div className="h-screen flex items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -152,7 +155,6 @@ export const OnBoardingProcess = () => {
                 />
   )}
 />
-
                 </div>
               </div>
             </div>
@@ -261,7 +263,7 @@ export const OnBoardingProcess = () => {
           modalType={'Interests'}
         />
     </div>
-    )}
+  
     </>
   );
 };
