@@ -1,94 +1,116 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import { createUser } from '@/features/auth/authThunk';
-import { showErrorToast } from '@/utils/toastUtility';
-import { Loader } from '@/components';
+import { Button } from '@/components/ui/button';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 import { setUserDataAndToken } from '@/features/auth/authSlice';
+import { useToast } from '@/components/hooks/use-toast';
+import { Icons } from '@/components';
 
 const SignUp = () => {
+  const { toast } = useToast();
   const { data: user } = useSession();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-  const [customLoaderMessage, setCustomLoaderMessage] = useState({
-    message: '',
-    subMessage: '',
-  });
+  const [loadingSignUp, setLoadingSignUp] = useState(null);
+  const [loadingGoogleSignUp, setLoadingGoogleSignUp] = useState(null);
+  const [loadingFacebookSignUp, setLoadingFacebookSignUp] = useState(null);
+
   console.log(user, 'user from client');
   useEffect(() => {
+    console.log(user);
     dispatch(setUserDataAndToken(user));
     if (user && user?.isNewUser) {
-      setLoading(true);
-      setCustomLoaderMessage({
-        message: 'Signing You Up 👌',
-        subMessage: 'Time to create your Profile...🚀',
+      toast({
+        title: 'Signing You Up 👌',
+        description: 'Time to create your Profile...🚀',
       });
+
       router.push('/on-boarding');
-    } else if (user && !user?.isNewUser) {
-      setLoading(true);
-      setCustomLoaderMessage({
-        message: 'Signing You In! 🟢',
-        subMessage: 'You already have an account',
+    } else if (user?.user && !user?.isNewUser) {
+      console.log('here');
+      toast({
+        title: 'Signing You In! 🟢',
+        description: 'You already have an account',
       });
       router.push('/');
     }
   }, [user]);
 
   const handleSignUpWithProvider = async (provider) => {
-    signIn(provider);
+    try {
+      if (provider === 'google') {
+        setLoadingGoogleSignUp(true);
+      } else {
+        setLoadingFacebookSignUp(true);
+      }
+      await signIn(provider);
+    } catch (error) {
+      toast({
+        title: 'There was a problem.',
+        description: `There was an error logging in with ${provider}`,
+        variant: 'destructive',
+      });
+    } finally {
+      if (provider === 'google') {
+        setLoadingGoogleSignUp(false);
+      } else {
+        setLoadingFacebookSignUp(false);
+      }
+    }
   };
 
   const onSubmit = async (data) => {
+    setLoadingSignUp();
     try {
       const { password, email, confirmPassword } = data;
       if (confirmPassword !== password) {
-        return showErrorToast(setLoading, 'Passwords do not match');
+        toast({
+          title: 'Passwords do not match',
+          variant: 'destructive',
+        });
       }
-      
+
       const user = { email, password };
       setLoading(true);
-    
-      setCustomLoaderMessage({
-        message: 'Signing You Up 👌',
-        subMessage: 'Time to create your Profile...🚀',
-      });
-      dispatch(createUser({ user, onSuccess,onReject }));
-     
+
+      dispatch(createUser({ user, onSuccess, onReject }));
     } catch (error) {
-      setLoading(false);
       console.error('Error creating user:', error);
-     
+    } finally {
+      setLoadingSignUp(false);
     }
   };
 
   const onSuccess = () => {
-    setTimeout(() => {
-      setLoading(false)
-      router.push('/on-boarding');
-    }, 2000);
-    
+    toast({
+      title: 'Signing You Up 👌',
+      description: 'Time to create your Profile...🚀',
+    });
+    router.push('/on-boarding');
+    setLoadingSignUp(false);
   };
   const onReject = () => {
-    setLoading(false)
-    return showErrorToast(setLoading, 'Server error');
+    setLoading(false);
+    toast({
+      title: 'There was a problem.',
+      description: `There was an error logging in.`,
+      variant: 'destructive',
+    });
   };
 
   return (
     <div className="flex items-center flex-col justify-center h-[75vh] md:h-[90vh]">
-      {loading ? (
-        <Loader message={customLoaderMessage.message} subMessage={customLoaderMessage.subMessage} />
-      ) : (
+
         <div className="bg-white p-5 w-[80%] md:w-[40%] lg:w-[30%] xl:w-[23%] shadow-lg rounded-lg">
           <h2 className="text-center font-semibold text-lg mb-4">Sign Up</h2>
           <div className="flex flex-col gap-4">
@@ -113,81 +135,40 @@ const SignUp = () => {
                 register={register('confirmPassword', { required: true })}
                 placeholder="Confirm Password"
               />
-
-              <button
-                disabled={loading}
+              <Button
+                isLoading={loadingSignUp}
+                variant="outline"
+                className={`border-black flex gap-2 ${loadingSignUp ? 'bg-black text-white' : ''}`}
                 type="submit"
-                className={`justify-center py-1 shadow-md flex items-center hover:bg-black ${
-                  loading ? 'hover:bg-white border-black' : 'hover:bg-black'
-                } transition-all duration-300 ease-in-out hover:text-white border-black text-black font-medium border-[3px] rounded-md`}
               >
-                {loading ? (
-                  <ClipLoader
-                    loading={true}
-                    color={'black'}
-                    size={20}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                  />
-                ) : (
-                  'Confirm'
-                )}
-              </button>
+                Confirm
+              </Button>
             </form>
-            <span className="text-center text-lg font-semibold">Or</span>
-            <button
+            <span className="text-center text-lg -my-2 font-semibold">Or</span>
+
+            <Button
+              isLoading={loadingGoogleSignUp}
+              className="w-full gap-2 bg-black flex items-center justify-center"
+              onClick={() => {
+                console.log('clicked');
+                handleSignUpWithProvider('google');
+              }}
+            >
+              {loadingGoogleSignUp ? null : <Icons.google className="h-4" />}
+              Sign Up with Google
+            </Button>
+
+            <Button
+              isLoading={loadingFacebookSignUp}
+              className="w-full hover:bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
               onClick={() => handleSignUpWithProvider('facebook')}
-              className="bg-[#1850BC] shadow-lg flex items-center justify-center gap-2 font-semibold py-[0.35rem] rounded-md text-white"
             >
-              {loading === 'facebook' ? (
-                <ClipLoader
-                  loading={true}
-                  color={'white'}
-                  size={24}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              ) : (
-                <>
-                  <Image
-                    alt="facebook"
-                    src={'/svgs/facebook.svg'}
-                    className="mt-[0.20rem]"
-                    width={19}
-                    height={19}
-                  />{' '}
-                  Sign In with Facebook
-                </>
-              )}
-            </button>
-            <button
-              onClick={() => handleSignUpWithProvider('google')}
-              className="shadow-lg font-semibold py-[0.35rem] rounded-md bg-white flex items-center justify-center gap-2 "
-            >
-              {loading === 'google' ? (
-                <ClipLoader
-                  loading={true}
-                  color={'black'}
-                  size={24}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              ) : (
-                <>
-                  <Image
-                    alt="google"
-                    src={'/svgs/google.svg'}
-                    className="mt-[0.20rem]"
-                    width={19}
-                    height={19}
-                  />{' '}
-                  Sign In with Google
-                </>
-              )}
-            </button>
+              {loadingFacebookSignUp ? null : <Icons.facebook className="h-3" />}
+              Sign Up with Facebook
+            </Button>
           </div>
         </div>
-      )}
+
       <div className="text-purple-500 cursor-pointer mt-4 w-fit text-sm">
         <span className="italic">Already have an account? </span>
         <Link className="font-semibold border-purple-500  border-b" href={'/sign-in'}>

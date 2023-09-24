@@ -1,7 +1,8 @@
-import React,{useState} from 'react'
+import React,{Suspense, useState} from 'react'
 import { VideoComments,CreateComment } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch } from 'react-redux';
+import { ClipLoader } from 'react-spinners';
 export const CommentsSection = ({videoId=1}) => {
 
   const dispatch=useDispatch()
@@ -30,7 +31,9 @@ export const CommentsSection = ({videoId=1}) => {
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
         <CreateComment setComments={setComment} comment={comment} videoId={videoId} onSubmit={onCommentSubmit}/>
+        <Suspense fallback={<ClipLoader/>}>
         <VideoComments videoId={videoId} />
+        </Suspense>
       </div>
     </div>
   );

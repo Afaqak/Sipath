@@ -4,6 +4,9 @@ import FacebookProvider from 'next-auth/providers/facebook';
 import axios from '../../../../utils/index';
 
 export const authOptions = {
+  pages:{
+    signIn:"/sign-in"
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -20,6 +23,7 @@ export const authOptions = {
     },
     async jwt({ token, user, account, profile, isNewUser }) {
       const { data } = await axios.post('/auth/oauth', { id: token?.sub });
+      
       console.log(data, 'data');
       token.isNewUser = data?.isNewUser;
       token.token = data.token;
@@ -27,14 +31,15 @@ export const authOptions = {
       return token;
     },
     async session({ session, user, token }) {
-      // console.log('session', session, token);
 
       session.isNewUser = token?.isNewUser;
       session.token = token?.token;
       session.user = token.user;
       return session;
-    },
+    }
+    
   },
+  
 };
 export const handler = NextAuth(authOptions);
 

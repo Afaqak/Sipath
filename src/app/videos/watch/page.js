@@ -29,7 +29,7 @@ const WatchVideo = () => {
             <CommentInput/>
             <Comments comments={primaryComments}  />
           </div> */}
-            <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
+          <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
           <CommentsSection primaryComments={primaryComments} />
           </div>
         </div>

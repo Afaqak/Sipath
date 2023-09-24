@@ -7,7 +7,10 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { showSuccessToast, showErrorToast } from '@/utils/toastUtility';
 import { ClipLoader } from 'react-spinners';
+import { useToast } from '@/components/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 const OnBoardingExpert = () => {
+  const {toast}=useToast()
   const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -15,21 +18,27 @@ const OnBoardingExpert = () => {
   const [modelOpen, setModalOpen] = useState(false);
   const [hourlyRate, setHourlyRate] = useState(0);
   const handleModalSubmit = (val) => {
+    
     setExpertise([...expertise, val]);
     setModalOpen(false);
   };
   const [availability, setAvailability] = useState([]);
 
   const onSuccess = () => {
-    setTimeout(() => {
+    toast({
+      title:"Congratulations!",
+      description:"You are a tutor now"
+    })
       setLoading(false);
       router.push('/');
-    }, 2000);
-    // showSuccessToast(router, setLoading, 'You are now a tutor! 🎉', '/');
+
   };
 
   const onError = (error) => {
-    showErrorToast(setLoading, 'Oops! Something went wrong. 😞');
+    toast({
+      title:"Oops! Something went wrong. 😞",
+    variant:"destructuve"
+    })
 
     console.error('Error creating user:', error);
   };
@@ -49,13 +58,14 @@ const OnBoardingExpert = () => {
     } catch (err) {
       console.error(err);
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   return (
     <>
-      {loading ? (
-        <Loader message={'Congratulations!'} subMessage={'You are a tutor now'} />
-      ) : (
+
         <div className="h-[90vh] items-center justify-center flex">
           <form
             onSubmit={handleSubmit}
@@ -111,23 +121,10 @@ const OnBoardingExpert = () => {
               </div>
             </div>
             <div className="flex justify-end">
-              <button
-                disabled={loading}
-                type="submit"
-                className="py-1 border-2 px-16 flex item-center justify-center rounded-md shadow-md border-black"
-              >
-                {loading ? (
-                  <ClipLoader
-                    loading={true}
-                    color={'black'}
-                    size={24}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                  />
-                ) : (
-                  'Complete'
-                )}
-              </button>
+              <Button isLoading={loading} className={`flex items-center gap-2 ${loading?"bg-black text-white":""}`}>
+                Complete
+              </Button>
+           
             </div>
           </form>
 
@@ -138,7 +135,7 @@ const OnBoardingExpert = () => {
             modalType={'Expertise'}
           />
         </div>
-      )}
+    
     </>
   );
 };

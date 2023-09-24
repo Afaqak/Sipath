@@ -66,6 +66,7 @@ const PlaylistVideo = () => {
           })}
 
           {/* Render the Comments component for small screens */}
+          
           <div className="lg:hidden my-8">
             <VideoComments />
           </div>

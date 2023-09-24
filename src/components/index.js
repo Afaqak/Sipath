@@ -1,5 +1,6 @@
 'use client';
 
+export { Icons } from './icons';
 export { FileInput } from './tutors/fileInput';
 export { VideoFeed } from './common/videoFeed';
 export { VideoComments } from './comment/videoComments';
@@ -64,3 +65,4 @@ export { TranslationToggleButton } from './common/translateRadioButton';
 export { CommentsSection } from './comment/commentsSection';
 export { VideoComment } from './comment/videoComment';
 export { RepliesList } from './comment/repliesList';
+

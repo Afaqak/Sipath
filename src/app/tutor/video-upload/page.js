@@ -100,6 +100,15 @@ const VideoUpload = () => {
       return section;
     });
     console.log(updatedSections,"updated")
+    
+    if(updatedSections[sectionId]?.videos)  
+    updatedSections[sectionId].videos = updatedSections[sectionId]?.videos.map(
+      (video, index) => ({
+        ...video,
+        id: index,
+      })
+    );
+
     setSections(updatedSections);
   };
   console.log();

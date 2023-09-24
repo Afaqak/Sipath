@@ -141,27 +141,6 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
               <span className="text-sm">2</span>
             </div>
           </div>
-          {!noView && (
-          <button
-            onClick={handleFetchReplies}
-            className="text-blue-500 font-medium mt-2"
-            type="button"
-          >
-            View Replies
-          </button>
-        )}
-
-        {loadingReplies ? (
-          <div className="flex items-center mt-2">
-            <ClipLoader
-              sizeUnit={'px'}
-              size={15}
-              color={'#123abc'} 
-            />
-            <p className="ml-2 text-gray-500">Loading Replies...</p>
-          </div>
-        ) : null}
-
           {isReplying && (
             <div className="w-full mt-2">
               <CreateComment
@@ -188,6 +167,28 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
               </div>
             </div>
           )}
+          {!noView && (
+          <button
+            onClick={handleFetchReplies}
+            className="text-blue-500 font-medium mt-2"
+            type="button"
+          >
+            View Replies
+          </button>
+        )}
+
+        {loadingReplies ? (
+          <div className="flex items-center mt-2">
+            <ClipLoader
+              sizeUnit={'px'}
+              size={15}
+              color={'#123abc'} 
+            />
+            <p className="ml-2 text-gray-500">Loading Replies...</p>
+          </div>
+        ) : null}
+
+         
         </div>
       </div>
     </div>
