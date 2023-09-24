@@ -27,7 +27,7 @@ export const createComment=createAsyncThunk("comments/createComment",async ({vid
 export const fetchPrimaryComments=createAsyncThunk("comments/fetchPrimaryComments",async ({videoId,data,limit=30},{dispatch})=>{
     const token=JSON.parse(localStorage.getItem('token'))
     try{
-        const response=await axios.get(`/assets/video/${videoId}/comments?limit=${limit}`,{
+        const response=await axios.get(`/assets/video/${videoId}/comments?limit=${limit}&order=asc`,{
             headers:{
                 Authorization:`Bearer ${token}`,
                 "Content-Type":"application/json"

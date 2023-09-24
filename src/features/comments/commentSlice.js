@@ -27,7 +27,7 @@ const commentsSlice = createSlice({
       })
       .addCase(createComment.fulfilled, (state, action) => {
         state.loading = false;
-        state.primaryComments.push(action.payload.comment); 
+        state.primaryComments.unshift(action.payload.comment); 
       })
       .addCase(createComment.rejected, (state, action) => {
         state.loading = false;
