@@ -10,7 +10,7 @@ import {
 
 const initialState = {
   primaryComments: [],
-  commentReplies: {}, 
+  commentReplies: {},
   loading: false,
   error: null,
 };
@@ -27,7 +27,7 @@ const commentsSlice = createSlice({
       })
       .addCase(createComment.fulfilled, (state, action) => {
         state.loading = false;
-        state.primaryComments.unshift(action.payload.comment); 
+        state.primaryComments.unshift(action.payload.comment);
       })
       .addCase(createComment.rejected, (state, action) => {
         state.loading = false;
@@ -39,8 +39,12 @@ const commentsSlice = createSlice({
       })
       .addCase(fetchPrimaryComments.fulfilled, (state, action) => {
         state.loading = false;
-        state.primaryComments = action.payload;
+
+        const existingIds = state.primaryComments.map((comment) => comment.id);
+        const newData = action.payload.filter((comment) => !existingIds.includes(comment.id));
+        state.primaryComments = [...state.primaryComments, ...newData];
       })
+
       .addCase(fetchPrimaryComments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
@@ -57,27 +61,26 @@ const commentsSlice = createSlice({
       .addCase(fetchCommentReplies.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-      }).addCase(createReplyToComment.pending, (state) => {
+      })
+      .addCase(createReplyToComment.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createReplyToComment.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(typeof action.payload,action.payload)
-        const { reply_to} = action.payload;
+        console.log(typeof action.payload, action.payload);
+        const { reply_to } = action.payload;
         if (!state.commentReplies[reply_to]) {
-          console.log(reply_to,"new reply")
+          console.log(reply_to, 'new reply');
           state.commentReplies[reply_to] = [action.payload];
         } else {
           state.commentReplies[reply_to].push(action.payload);
         }
-        // console.log(state,"State")
       })
       .addCase(createReplyToComment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
-    
   },
 });
 

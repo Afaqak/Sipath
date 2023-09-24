@@ -7,9 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { showImageErrorToast } from '@/utils/toastUtility';
 import "react-datepicker/dist/react-datepicker.css";
 import { onBoardUser } from '@/features/onBoard/onBoardThunk';
-import { showSuccessToast } from '@/utils/toastUtility';
 import { useRouter } from 'next/navigation';
-import { Loader } from '@/components';
 import { useToast } from '../hooks/use-toast';
 
 export const OnBoardingProcess = () => {

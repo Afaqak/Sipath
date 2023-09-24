@@ -7,6 +7,8 @@ import { FileInput, VideoUploadType } from '@/components';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/index';
+import { debounce } from 'lodash';
+import { Icons } from '@/components';
 
 const VideoUpload = () => {
   const token = useSelector((state) => state.userAuth?.token);
@@ -99,8 +101,7 @@ const VideoUpload = () => {
       }
       return section;
     });
-    console.log(updatedSections,"updated")
-    
+    console.log(updatedSections, 'updated');
 
     setSections(updatedSections);
   };
@@ -168,7 +169,7 @@ const VideoUpload = () => {
       updatedSections.splice(destinationIndex, 0, movedSection);
 
       setSections(updatedSections);
-      return
+      return;
     }
 
     if (sourceDroppableId !== destinationDroppableId) {
@@ -210,6 +211,8 @@ const VideoUpload = () => {
 
     setSections(updatedSections);
   };
+
+  const handleDragEndDebounced = debounce(handleDragEnd, 200);
 
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
@@ -341,7 +344,7 @@ const VideoUpload = () => {
         />
       </div>
       <div className="flex flex-col gap-4">
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext onDragEnd={handleDragEndDebounced}>
           <Droppable type="group" droppableId="videoBodies" direction="vertical">
             {(provided) => (
               <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
@@ -362,7 +365,11 @@ const VideoUpload = () => {
                         )}
                         <Droppable droppableId={id} direction="vertical">
                           {(provided) => (
-                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                            <div
+                              className="flex flex-col gap-8 "
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
                               {videos?.map((video, videoIndex) => (
                                 <Draggable
                                   key={`${id}-${video.id}`}
@@ -474,16 +481,7 @@ const VideoBody = ({
   uploadProgress,
   formData,
 }) => {
-  // const [thumbnail, setThumbnail] = useState(null);
-  // const [video, setVideo] = useState(null);
-  // const [duration, setDuration] = useState(0);
-  // const [formDataNew, setFormDataNew] = useState(formData);
-  // const [loading, setLoading] = useState(false);
-  // const [uploadProgress, setUploadProgress] = useState(0);
-
   const handleFieldChange = (e) => {
-    // const { name, value } = e.target;
-    // setFormDataNew({ ...formDataNew, [name]: value });
     onUpdateFormData(e);
   };
 
@@ -491,58 +489,23 @@ const VideoBody = ({
     onUpdateThumbnail(thumb);
   };
 
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   console.log(formData, video, thumbnail);
-  //   const formDataToSend = new FormData();
-  //   formDataToSend.append('video', video);
-  //   formDataToSend.append('thumbnail', thumbnail);
-  //   formDataToSend.append('title', formData.title);
-  //   formDataToSend.append('description', formData.description);
-  //   formDataToSend.append('subject', formData.subject);
-  //   formDataToSend.append('duration', duration.toString());
-  //   formDataToSend.append('price', 12);
-
-  //   try {
-  //     setLoading(true);
-  //     // const response = await axios.post('/upload/video', formDataToSend, config);
-  //     // if (response.status === 200) {
-  //     //   console.log('Video uploaded successfully:', response.data);
-  //     // } else {
-  //     //   console.error('Error uploading video:', response.statusText);
-  //     // }
-  //   } catch (error) {
-  //     console.error('Error uploading video:', error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      initial={{ y: 20 }}
+      animate={{ y: 0 }}
+      exit={{ y: -20 }}
       transition={{ duration: 0.5 }}
-      className={`relative mt-5 ${sections > 0 ? 'mb-28' : 'mb-10'} `}
+      className="relative"
     >
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       <div
-        className={`h-[2px] left-0 ${
-          title ? '-bottom-5' : '-top-5'
-        } absolute w-[80%] lg:w-[90%] bg-[#1850BC] `}
+        className={`
+        w-[80%] lg:w-[90%] bg-[#1850BC] `}
       >
         <div className="absolute -top-2 -right-14 flex gap-1">
           {' '}
-          <Image
-            alt="circle"
-            onClick={onClick}
-            src={'/svgs/add_circle.svg'}
-            width={20}
-            height={20}
-          />
-          <Image alt="info" src={'/svgs/info.svg'} width={18} height={18} />
+          <Icons.addTitle className="w-6 h-6" onClick={onClick} />
+          <Icons.info className="w-[1.45rem] h-[1.42rem]" onClick={onClick} />
         </div>
       </div>
       <form className="p-4 flex flex-col relative bg-white mb-4 shadow-lg w-full rounded-md justify-between">
@@ -729,7 +692,7 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
 
 const SectionTitle = ({ onTitleUpdate }) => {
   return (
-    <div className="relative mx-auto">
+    <div className="relative mx-auto mb-6">
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       <div className="p-4 flex flex-col relative bg-white mb-4 shadow-lg ">
         <div className="flex flex-row items-center gap-4 text-[#616161] font-light">

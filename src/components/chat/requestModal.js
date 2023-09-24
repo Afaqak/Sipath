@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
 
@@ -61,7 +61,6 @@ export function RequestModal({ isOpen, setIsOpen }) {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle> Requests for Messages</DialogTitle>
-
           </DialogHeader>
           <div className="mt-4">
             {requests.length > 0 ? (
@@ -86,9 +85,9 @@ export function RequestModal({ isOpen, setIsOpen }) {
           </div>
           <DialogFooter>
             <div className="mt-4">
-             <Button className="bg-black" onClick={closeModal}>
-              close
-             </Button>
+              <Button className="bg-black" onClick={closeModal}>
+                close
+              </Button>
             </div>
           </DialogFooter>
         </DialogContent>
