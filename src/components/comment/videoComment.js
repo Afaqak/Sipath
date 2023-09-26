@@ -1,21 +1,23 @@
 'use client';
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { CreateComment, RepliesList } from '@/components';
+import React, { useState, useCallback } from 'react';
+import { debounce } from 'lodash';
+import { CreateComment, Icons } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import { ClipLoader } from 'react-spinners';
-export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
+import UserAvatar from '../common/userAvatar';
+
+export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [comments, setComments] = useState('');
   const dispatch = useDispatch();
-  const [loadingReplies, setLoadingReplies] = useState(false)
-  const commented = useSelector((state) => state.comments);
+  const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector((state) => state.comments.commentReplies);
+  const user = useSelector((state) => state.userAuth?.user);
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
     const createdAt = new Date(timestamp);
-  
+
     const timeDiff = now - createdAt;
     const seconds = Math.floor(timeDiff / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -23,7 +25,7 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
     const days = Math.floor(hours / 24);
     const weeks = Math.floor(days / 7);
     const months = Math.floor(days / 30);
-  
+
     if (months > 0) {
       return `${months} month${months > 1 ? 's' : ''} ago`;
     } else if (weeks > 0) {
@@ -38,32 +40,37 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
       return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
     }
   };
-  
-  console.log(commented);
-  const onReplySubmit = async (e) => {
+
+  const debouncedOnReplySubmit = useCallback(
+    debounce((comments) => {
+      try {
+        setIsReplying(false);
+        dispatch(createReplyToComment({ videoId: 1, commentId: parentId, comments }));
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300),
+    [dispatch, parentId]
+  );
+
+  const handleOnReplySubmit = (e) => {
     e.preventDefault();
-    console.log(comments, 'running');
-    try {
-      setIsReplying(false)
-      dispatch(createReplyToComment({ videoId: 1, commentId: parentId, comments }));
-    } catch (error) {
-      console.error(error);
-    }
+    debouncedOnReplySubmit(comments);
   };
 
-  const onSuccess=()=>{
-    setLoadingReplies(false)
-  }
+  const onSuccess = () => {
+    setLoadingReplies(false);
+  };
 
   const handleFetchReplies = async () => {
     try {
-      if(!commentReplies[comment?.id]){
-      setLoadingReplies(true);
-      dispatch(fetchCommentReplies({ videoId: 1, commentId: parentId ,onSuccess}));
-      toggleReplyView(parentId)
-    }else{
-    toggleReplyView(parentId)
-  }
+      if (!commentReplies[comment?.id]) {
+        setLoadingReplies(true);
+        dispatch(fetchCommentReplies({ videoId: 1, commentId: parentId, onSuccess }));
+        toggleReplyView(parentId);
+      } else {
+        toggleReplyView(parentId);
+      }
     } catch (error) {
       console.error(error);
       setLoadingReplies(false);
@@ -73,12 +80,9 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
   return (
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
-        <Image
-          src="/demo-4.jpg"
-          alt="demo image"
-          className="rounded-full w-[2.4rem] h-[2.36rem] object-cover"
-          width={100}
-          height={50}
+        <UserAvatar
+          user={{ name: user?.first_name || user?.display_name || user?.email }}
+          className="h-8 w-8"
         />
 
         <div className="w-full">
@@ -124,20 +128,7 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
           </div>
           <div className="flex justify-between text-gray-500 mt-2">
             <div className="flex gap-2 items-center cursor-pointer">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-4 h-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                />
-              </svg>
+              <Icons.love />
               <span className="text-sm">2</span>
             </div>
           </div>
@@ -147,7 +138,7 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
                 comment={comments}
                 comments={comment}
                 setComments={setComments}
-                onSubmit={onReplySubmit}
+                onSubmit={handleOnReplySubmit}
                 reply={isReplying}
               />
               <div className="flex w-full gap-8 mt-2 justify-end items-end">
@@ -159,7 +150,7 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
                   cancel
                 </button>
                 <button
-                  onClick={onReplySubmit}
+                  onClick={handleOnReplySubmit}
                   className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
                 >
                   reply
@@ -168,27 +159,21 @@ export const VideoComment = ({ comment, parentId, noView ,toggleReplyView}) => {
             </div>
           )}
           {!noView && (
-          <button
-            onClick={handleFetchReplies}
-            className="text-blue-500 font-medium mt-2"
-            type="button"
-          >
-            View Replies
-          </button>
-        )}
+            <button
+              onClick={handleFetchReplies}
+              className="text-blue-500 font-medium mt-2"
+              type="button"
+            >
+              View Replies
+            </button>
+          )}
 
-        {loadingReplies ? (
-          <div className="flex items-center mt-2">
-            <ClipLoader
-              sizeUnit={'px'}
-              size={15}
-              color={'#123abc'} 
-            />
-            <p className="ml-2 text-gray-500">Loading Replies...</p>
-          </div>
-        ) : null}
-
-         
+          {loadingReplies ? (
+            <div className="flex items-center mt-2">
+              <ClipLoader sizeUnit={'px'} size={15} color={'#123abc'} />
+              <p className="ml-2 text-gray-500">Loading Replies...</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

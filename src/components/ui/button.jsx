@@ -31,19 +31,15 @@ const buttonVariants = cva(
 );
 
 const Button = React.forwardRef(
-  ({ className, variant, size, isLoading,children, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, isLoading, disabled, children, asChild = false, ...props }, ref) => {
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={isLoading}
+        disabled={disabled}
         {...props}
       >
-        {isLoading ?      <ClipLoader
-              sizeUnit={'px'}
-              size={15}
-              color={'#d9d9d9'} 
-            /> : null}
+        {isLoading ? <ClipLoader sizeUnit={'px'} size={15} color={'#d9d9d9'} /> : null}
         {children}
       </button>
     );

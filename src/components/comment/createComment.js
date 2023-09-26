@@ -1,23 +1,25 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
-import { useDispatch } from 'react-redux';
-import { createComment, createReplyToComment } from '@/features/comments/commentThunk';
-import { useState } from 'react';
-export const CreateComment = ({ videoId,commentId=null ,comment,reply,onSubmit,setComments}) => {
+import { useDispatch, useSelector } from 'react-redux';
+import UserAvatar from '../common/userAvatar';
+import { Icons } from '../icons';
+export const CreateComment = ({
+  videoId,
+  commentId = null,
+  comment,
+  reply,
+  onSubmit,
+  setComments,
+}) => {
   const dispatch = useDispatch();
-
-
+  const user = useSelector((state) => state.userAuth?.user);
   return (
     <form onSubmit={onSubmit} className="flex gap-3 items-center">
-      <Image
-        src="/demo-4.jpg"
-        className={`rounded-full w-[2.4rem] h-[2.36rem] ${reply?"w-[2.23rem] h-[2.20rem]":"w-[2.4rem] h-[2.36rem]"} object-cover`}
-        width={100}
-        height={50}
-        alt="demo-4"
+      <UserAvatar
+        user={{ name: user?.first_name || user?.display_name || user?.email }}
+        className="h-8 w-8"
       />
-
       <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">
         <div className="absolute right-2 md:right-3 flex items-center md:gap-2 gap-1">
           <svg
@@ -26,7 +28,7 @@ export const CreateComment = ({ videoId,commentId=null ,comment,reply,onSubmit,s
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="#616161"
-            class="md:w-6 w-5 h-5 md:h-6 cursor-pointer"
+            className="md:w-6 w-5 h-5 md:h-6 cursor-pointer"
           >
             <path
               strokeLinecap="round"
@@ -50,25 +52,11 @@ export const CreateComment = ({ videoId,commentId=null ,comment,reply,onSubmit,s
           className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
         />
       </div>
-      {!reply &&
-      <button type="submit">
-        {' '}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="black"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="white"
-          className="md:w-8 w-6 h-6 md:h-8 md:relative md:right-0 absolute right-6 "
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-          />
-        </svg>
-      </button>
-}
+      {!reply && (
+        <button type="submit">
+          <Icons.comment />
+        </button>
+      )}
     </form>
   );
 };

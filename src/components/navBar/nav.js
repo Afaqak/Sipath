@@ -15,6 +15,7 @@ import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
 export const Navbar = () => {
   const user = useSelector((state) => state.userAuth.user);
+  const token = useSelector((state) => state.userAuth.token);
   console.log(useSelector((state) => state.userAuth));
   const dispatch = useDispatch();
   const router = useRouter();
@@ -65,7 +66,7 @@ export const Navbar = () => {
             onClick={() => router.push('/')}
             className="flex items-center gap-4 bg-black rounded-r-full cursor-pointer px-4"
           >
-            <Image alt="logo" className="" src="/logo.png" width={80} height={50} />
+            <Image alt="logo" className="" src="/logo.png" width={80} height={45} />
           </div>
           <ul className="flex items-center  gap-4 ml-4 font-semibold">
             {links.map((link) => (
@@ -94,7 +95,7 @@ export const Navbar = () => {
           <div
             className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
           >
-            {user ? (
+            {token ? (
               <>
                 <Icons.message className="w-6 h-6" onClick={() => router.push('/chat')} />
                 <Icons.bell />
@@ -108,9 +109,9 @@ export const Navbar = () => {
                   variant="destructive"
                   onClick={() => {
                     if (user) {
-                      signOut();
                       dispatch(setUserDataAndToken({ user: null, token: null }));
-                      router.push('/');
+                      signOut();
+                      router.refresh();
                     }
                   }}
                 >
