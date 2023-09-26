@@ -1,5 +1,5 @@
 'use client';
-
+import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -7,7 +7,6 @@ import { FileInput, VideoUploadType } from '@/components';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/index';
-import { debounce } from 'lodash';
 import { Icons } from '@/components';
 
 const VideoUpload = () => {
@@ -26,7 +25,7 @@ const VideoUpload = () => {
     title: '',
     videos: [
       {
-        id: 0,
+        id: uuidv4(),
         formData: {
           title: '',
           description: '',
@@ -95,7 +94,7 @@ const VideoUpload = () => {
       if (section.id === sectionId) {
         const newVideo = {
           ...initialState.videos[0],
-          id: section?.videos?.length,
+          id: uuidv4(),
         };
         return { ...section, videos: [...section.videos, newVideo] };
       }
@@ -121,7 +120,7 @@ const VideoUpload = () => {
       videos: [
         {
           ...initialState.videos[0],
-          id: 0,
+          id: uuidv4(),
         },
       ],
     };
@@ -183,36 +182,25 @@ const VideoUpload = () => {
       if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return;
 
       const [movedVideo] = updatedSections[sourceSectionIndex].videos.splice(sourceIndex, 1);
-      updatedSections[sourceSectionIndex].videos = updatedSections[sourceSectionIndex].videos.map(
-        (video, index) => ({
-          ...video,
-          id: index,
-        })
-      );
 
-      const newVideoId = generateUniqueVideoId(updatedSections[destinationSectionIndex].videos);
-      movedVideo.id = newVideoId;
       updatedSections[destinationSectionIndex].videos.splice(destinationIndex, 0, movedVideo);
 
       if (updatedSections[sourceSectionIndex].videos.length === 0) {
         updatedSections.splice(sourceSectionIndex, 1);
       }
+      setSections(updatedSections);
+      return;
     } else {
       const sectionIndex = updatedSections.findIndex((section) => section.id === sourceDroppableId);
       if (sectionIndex === -1) return;
 
       const [movedVideo] = updatedSections[sectionIndex].videos.splice(sourceIndex, 1);
 
-      // const newVideoId = generateUniqueVideoId(updatedSections[sectionIndex].videos);
-      // movedVideo.id = newVideoId;
-      // console.log(newVideoId,"new videoid")
       updatedSections[sectionIndex].videos.splice(destinationIndex, 0, movedVideo);
     }
 
     setSections(updatedSections);
   };
-
-  const handleDragEndDebounced = debounce(handleDragEnd, 200);
 
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
@@ -344,7 +332,7 @@ const VideoUpload = () => {
         />
       </div>
       <div className="flex flex-col gap-4">
-        <DragDropContext onDragEnd={handleDragEndDebounced}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable type="group" droppableId="videoBodies" direction="vertical">
             {(provided) => (
               <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
@@ -366,7 +354,7 @@ const VideoUpload = () => {
                         <Droppable droppableId={id} direction="vertical">
                           {(provided) => (
                             <div
-                              className="flex flex-col gap-8 "
+                              className="flex flex-col "
                               {...provided.droppableProps}
                               ref={provided.innerRef}
                             >
@@ -490,13 +478,7 @@ const VideoBody = ({
   };
 
   return (
-    <motion.div
-      initial={{ y: 20 }}
-      animate={{ y: 0 }}
-      exit={{ y: -20 }}
-      transition={{ duration: 0.5 }}
-      className="relative"
-    >
+    <motion.div className="relative">
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       <div
         className={`

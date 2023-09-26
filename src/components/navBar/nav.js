@@ -110,6 +110,7 @@ export const Navbar = () => {
                   onClick={() => {
                     if (user) {
                       dispatch(setUserDataAndToken({ user: null, token: null }));
+                      signOut();
                       router.refresh();
                     }
                   }}

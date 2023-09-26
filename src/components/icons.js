@@ -1,3 +1,4 @@
+'use client';
 export const Icons = {
   Loader2: (props) => (
     <svg
@@ -107,15 +108,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <mask
-        id="mask0_896_19934"
-        maskType="alpha"
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="23"
-        height="23"
-      >
+      <mask maskUnits="userSpaceOnUse" x="0" y="0" width="23" height="23">
         <rect x="0.869141" y="0.639648" width="21.9609" height="21.9609" fill="#D9D9D9" />
       </mask>
       <g mask="url(#mask0_896_19934)">

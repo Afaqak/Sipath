@@ -111,6 +111,12 @@ const ActionButtons = () => {
         />{' '}
         <span className="hidden md:block">New Quiz</span>
       </button>
+      <Link
+        href={'/tutor/add-book'}
+        className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded"
+      >
+        <span className="hidden md:block">Add Book</span>
+      </Link>
     </div>
   );
 };

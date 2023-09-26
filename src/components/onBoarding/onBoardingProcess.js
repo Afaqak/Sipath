@@ -1,88 +1,88 @@
 'use client';
-import React, { useState ,useRef,forwardRef} from 'react';
+import React, { useState, useRef, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { useDispatch } from 'react-redux';
 import { TextareaField, Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import { showImageErrorToast } from '@/utils/toastUtility';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import { onBoardUser } from '@/features/onBoard/onBoardThunk';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../hooks/use-toast';
 
 export const OnBoardingProcess = () => {
-  const {toast}=useToast()
-  const [loading,setLoading]=useState(false)
-  const [success,setSuccess]=useState(false)
-  const router=useRouter()
-  const dispatch=useDispatch()
-  const fileRef=useRef()
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const fileRef = useRef();
   const [interests, setInterests] = useState([]);
   const [modelOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const { register, watch, handleSubmit, control } = useForm();
-  const [buttonType,setButtonType]=useState("")
-
+  const {
+    register,
+    watch,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const [buttonType, setButtonType] = useState('');
 
   const handleContinueAsUser = () => {
     setButtonType('asUser');
-
   };
 
   const handleContinueAsExpert = () => {
     setButtonType('asExpert');
-
   };
 
   const handleModalSubmit = (val) => {
-
     setInterests([...interests, val]);
     setModalOpen(false);
   };
   const onSubmit = (data) => {
-    setLoading(true)
+    setLoading(true);
 
-    const interests=[1,2,3,4]
+    const interests = [1, 2, 3, 4];
 
     const formData = new FormData();
 
-  formData.append('first_name',data.firstName );
-  formData.append('middle_name',   data.middleName,);
-  formData.append('last_name', data.lastName,);
-  formData.append('date_of_birth', data.birthday); 
-  formData.append('bio', data.bio);
-  formData.append('display_name', data.displayName);
-  formData.append('selected_image', "demo.jpg");
-  for (var i = 0; i < interests.length; i++) {
-  formData.append('interests[]', interests[i]);
-  }
- 
-  function onSuccess(){
-    setSuccess(true)
-    toast({
-      title:"Profile Created 🟢",
-      description:buttonType==="asUser"?"Redirecting to home... 🏡":"Time to become an expert... 🚀"
-    })
-    setTimeout(() => {
-      setLoading(false);
-      if(buttonType==="asUser"){
-        router.push("/")
-       }
-       else{
-        router.push("/on-boarding/expert")
-       }
-    }, 2000);
-  
-  }
+    formData.append('first_name', data.firstName);
+    formData.append('middle_name', data.middleName);
+    formData.append('last_name', data.lastName);
+    formData.append('date_of_birth', data.birthday);
+    formData.append('bio', data.bio);
+    formData.append('display_name', data.displayName);
+    formData.append('selected_image', 'demo.jpg');
+    for (var i = 0; i < interests.length; i++) {
+      formData.append('interests[]', interests[i]);
+    }
 
-  dispatch(onBoardUser({formData,onSuccess}))
-}
+    function onSuccess() {
+      setSuccess(true);
+      toast({
+        title: 'Profile Created 🟢',
+        description:
+          buttonType === 'asUser' ? 'Redirecting to home... 🏡' : 'Time to become an expert... 🚀',
+      });
+      setTimeout(() => {
+        setLoading(false);
+        if (buttonType === 'asUser') {
+          router.push('/');
+        } else {
+          router.push('/on-boarding/expert');
+        }
+      }, 2000);
+    }
+
+    dispatch(onBoardUser({ formData, onSuccess }));
+  };
 
   const handleImageUpload = (event) => {
-
-    const file = event.target.files[0]; 
+    const file = event.target.files[0];
     if (!file) {
-      return;  
+      return;
     }
     const image = new Image();
     image.src = URL.createObjectURL(file);
@@ -90,178 +90,229 @@ export const OnBoardingProcess = () => {
       if (image.width <= 140 && image.height <= 140) {
         setSelectedImage(file);
       } else {
-    
-        showImageErrorToast()
+        toast({
+          title: 'Image must of size 140x140',
+          variant: 'destructive',
+        });
       }
     };
   };
-  
-
- 
 
   return (
     <>
- 
-    <div className="h-screen flex items-center justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="h-[70%] bg-white w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
-      >
-        <div className="">
-          <h1 className="text-xl mb-4 font-semibold">Create Your Profile</h1>
-          <div className="flex gap-4">
-            <div className="flex flex-col w-1/3">
-              <label className="font-thin mb-1 uppercase text-sm">Personal Information</label>
-              <div className="flex flex-col gap-4">
-                <input
-                  {...register('firstName', { required: true })}
-                  placeholder="First Name"
-                  type="text"
-                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
-                  name="firstName"
-                />
-                <input
-                  {...register('middleName', { required: true })}
-                  placeholder="Middle Name"
-                  type="text"
-                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
-                  name="middleName"
-                />
-                <input
-                  {...register('lastName', { required: true })}
-                  placeholder="Last Name"
-                  type="text"
-                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
-                  name="lastName"
-                />
-                <div className="mt-4 flex flex-col gap-2">
-                  <label className="font-thin mb-1 uppercase text-sm">Date of Birth</label>
-                  <Controller
-                name="birthday"
-                control={control}
-                rules={{ required: 'Birthday is required' }}
-                render={({ field }) => (
-                <DatePicker
-                  selected={field.value}
-                  onChange={(date) => field.onChange(date)}
-                  dateFormat="dd-MM-yyyy"
-                  customInput={<CustomInput ref={fileRef} />} 
-                  popperPlacement="bottom"
-                  showYearDropdown
-                  scrollableYearDropdown
-                  yearDropdownItemNumber={100}
-                />
-  )}
-/>
+      <div className="h-screen flex items-center justify-center">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="min-h-[70%] bg-white w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
+        >
+          <div className="">
+            <h1 className="text-xl mb-4 font-semibold">Create Your Profile</h1>
+            <div className="flex gap-4">
+              <div className="flex flex-col w-1/3">
+                <label className="font-thin mb-1 uppercase text-sm">Personal Information</label>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col">
+                    <input
+                      {...register('firstName', { required: 'first name is required' })}
+                      placeholder="First Name"
+                      type="text"
+                      className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
+                      name="firstName"
+                    />
+                    {errors.firstName && (
+                      <span className="text-red-500 text-sm mt-1 lowercase">
+                        {errors.firstName.message}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      {...register('middleName', { required: 'middle name is required' })}
+                      placeholder="Middle Name"
+                      type="text"
+                      className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
+                      name="middleName"
+                    />
+                    {errors.middleName && (
+                      <span className="text-red-500 text-sm mt-1 lowercase">
+                        {errors.middleName.message}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      {...register('lastName', { required: 'last name is required' })}
+                      placeholder="Last Name"
+                      type="text"
+                      className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
+                      name="lastName"
+                    />
+                    {errors.lastName && (
+                      <span className="text-red-500 text-sm mt-1 lowercase">
+                        {errors.lastName.message}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4 flex flex-col gap-2">
+                    <label className="font-thin mb-1 uppercase text-sm">Date of Birth</label>
+                    <Controller
+                      name="birthday"
+                      control={control}
+                      rules={{ required: 'Birthday is required' }}
+                      render={({ field }) => (
+                        <DatePicker
+                          selected={field.value}
+                          onChange={(date) => field.onChange(date)}
+                          dateFormat="dd-MM-yyyy"
+                          customInput={<CustomInput ref={fileRef} />}
+                          popperPlacement="bottom"
+                          showYearDropdown
+                          scrollableYearDropdown
+                          yearDropdownItemNumber={100}
+                        />
+                      )}
+                    />
+                    {errors.birthday && (
+                      <span className="text-red-500 text-sm lowercase mb-1">
+                        {errors.birthday.message}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="w-1/3 flex gap-2 flex-col">
-            <div className="flex flex-col gap-1 ">
-
-              <TextareaField
-                register={...register('bio', { required: true })}
-                label="Bio"
-                name="bio"
-                rows={5}
-                cols={4}
-                placeholder="Bio"
-              />
-    
-              </div>
-              <div className="mt-7">
-                <div className="flex gap-1 mb-2">
-                  <label className="text-sm text-[#616161] font-thin">INTERESTS</label>
-                  <img
-                    onClick={() => setModalOpen(true)}
-                    src={'/svgs/add_box.svg'}
-                    className="cursor-pointer"
-                    alt="add Interest"
-                    width={20}
-                    height={20}
+              <div className="w-1/3 flex gap-2 flex-col">
+                <div className="flex flex-col gap-1 ">
+                  <label className="text-sm text-[#616161] font-thin">Bio</label>
+                  <textarea
+                    {...register('bio', {
+                      required: 'bio is required',
+                    })}
+                    name={'bio'}
+                    rows={4}
+                    cols={4}
+                    className="placeholder:text-sm py-2 resize-none focus:outline-none shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] px-4 rounded"
+                    placeholder={'Bio'}
                   />
-                </div>
-                <div className="flex gap-1 flex-wrap">
-                  {interests.map((item, ind) => (
-                    <span
-                      className="flex gap-1 bg-[#D9D9D9] px-2 py-[0.15rem] text-sm rounded-lg items-center"
-                      key={ind}
-                    >
-                      <img
-                        src={'/svgs/close.svg'}
-                        width={15}
-                        height={15}
-                        alt="close"
-                        className="cursor-pointer self-end"
-                      />
-                      {item}{' '}
+                  {errors.bio && (
+                    <span className="text-red-500 text-sm mt-1 lowercase">
+                      {errors.bio.message}
                     </span>
-                  ))}
+                  )}
+                </div>
+
+                <div className="mt-7">
+                  <div className="flex gap-1 mb-2">
+                    <label className="text-sm text-[#616161] font-thin">INTERESTS</label>
+                    <img
+                      onClick={() => setModalOpen(true)}
+                      src={'/svgs/add_box.svg'}
+                      className="cursor-pointer"
+                      alt="add Interest"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    {interests.map((item, ind) => (
+                      <span
+                        className="flex gap-1 bg-[#D9D9D9] px-2 py-[0.15rem] text-sm rounded-lg items-center"
+                        key={ind}
+                      >
+                        <img
+                          src={'/svgs/close.svg'}
+                          width={15}
+                          height={15}
+                          alt="close"
+                          className="cursor-pointer self-end"
+                        />
+                        {item}{' '}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="w-1/3 flex flex-col gap-16">
-              <div>
-                <label className=" font-thin mb-1 uppercase text-sm">Display Name</label>
-                <input
-                  {...register('displayName', { required: true })}
-                  placeholder="Choose a Display Name"
-                  type="text"
-                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] w-full rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
-                  name="displayName"
-                />
-              </div>
-              <div>
-                <div className="flex items-end gap-4">
-                {selectedImage ? (
-                <img
-                  src={URL.createObjectURL(selectedImage)}
-                  alt="account"
-                  className="h-20 w-20 rounded-full"
-                />
-              ) : (
-                <img
-                  src={'/svgs/accountcircle.svg'}
-                  className="h-20 w-20"
-                  width={60}
-                  height={60}
-                  alt="account"
-                />
-              )}
-                  <p className="w-1/2 text-[0.78rem] text-[#616161]">File must be min. 140x140px</p>
+              <div className="w-1/3 flex flex-col gap-16">
+                <div>
+                  <label className=" font-thin mb-1 uppercase text-sm">Display Name</label>
+                  <input
+                    {...register('displayName', { required: 'display name is required' })}
+                    placeholder="Choose a Display Name"
+                    type="text"
+                    className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] w-full rounded-md px-4 py-2 placeholder:text-sm border-none focus:outline-none"
+                    name="displayName"
+                  />
+                  {errors.displayName && (
+                    <span className="text-red-500 text-sm mt-1 lowercase">
+                      {errors.displayName.message}
+                    </span>
+                  )}
                 </div>
-                <button type='button' onClick={()=>{fileRef.current.click()}} className="bg-[#1C8827] mt-4 text-white py-1 px-3">Upload Image 
-                <input
-                  ref={fileRef}
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="mt-4"
-            />
-                </button>
+                <div>
+                  <div className="flex items-end gap-4">
+                    {selectedImage ? (
+                      <img
+                        src={URL.createObjectURL(selectedImage)}
+                        alt="account"
+                        className="h-20 w-20 rounded-full"
+                      />
+                    ) : (
+                      <img
+                        src={'/svgs/accountcircle.svg'}
+                        className="h-20 w-20"
+                        width={60}
+                        height={60}
+                        alt="account"
+                      />
+                    )}
+                    <p className="w-1/2 text-[0.78rem] text-[#616161]">
+                      File must be min. 140x140px
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fileRef.current.click();
+                    }}
+                    className="bg-[#1C8827] mt-4 text-white py-1 px-3"
+                  >
+                    Upload Image
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="mt-4"
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="w-full flex gap-2 ">
-          <button onClick={handleContinueAsUser} type='submit' className="text-[#1850BC] w-full py-1 text-center border-2 border-[#1850BC] font-medium rounded-md">
-            Continue As User
-          </button>
-          <button onClick={handleContinueAsExpert} type='submit' className="text-black text-center py-1 w-full border-2 border-black font-medium rounded-md">
-            Continue as an Expert
-          </button>
-        </div>
-      </form>
+          <div className="w-full flex gap-2 ">
+            <button
+              onClick={handleContinueAsUser}
+              type="submit"
+              className="text-[#1850BC] w-full py-1 text-center border-2 border-[#1850BC] font-medium rounded-md"
+            >
+              Continue As User
+            </button>
+            <button
+              onClick={handleContinueAsExpert}
+              type="submit"
+              className="text-black text-center py-1 w-full border-2 border-black font-medium rounded-md"
+            >
+              Continue as an Expert
+            </button>
+          </div>
+        </form>
         <Modal
-
           isOpen={modelOpen}
           onClose={() => setModalOpen(false)}
           handleModalSubmit={handleModalSubmit}
           modalType={'Interests'}
         />
-    </div>
-  
+      </div>
     </>
   );
 };
@@ -272,7 +323,7 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => (
     onClick={onClick}
   >
     {value ? (
-      <span className=''>{value}</span>
+      <span className="">{value}</span>
     ) : (
       <label className="text-gray-400 uppercase text-sm">Select Birthdate</label>
     )}
@@ -292,5 +343,4 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => (
     </span>
     <input ref={ref} type="text" style={{ display: 'none' }} />
   </div>
-  
 ));

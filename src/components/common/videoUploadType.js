@@ -1,6 +1,6 @@
 import { TranslationToggleButton } from '@/components';
 
-export const VideoUploadType = ({ type, setType }) => {
+export const VideoUploadType = ({ type, setType, setPrice }) => {
   const setUpload = (isTranslated) => {
     console.log(isTranslated, 'from videouptype');
     if (isTranslated) {
@@ -16,12 +16,13 @@ export const VideoUploadType = ({ type, setType }) => {
       <div className="flex gap-4 items-center">
         <TranslationToggleButton onClick={setUpload} color={'#371FCA'} />
         <input
+          onChange={type === 'premium' ? (e) => setPrice(e.target.value) : null}
           type="number"
           disabled={type === 'free'}
           placeholder="00.00"
           className={`shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] ${
             type === 'free' ? 'bg-[#D9D9D9]' : 'bg-white'
-          } rounded-md px-3 placeholder:text-sm placeholder:text-center border-none w-[20%] focus:outline-none resize-none `}
+          } rounded-md px-3 placeholder:text-sm placeholder:text-center border-none w-[30%] text-center focus:outline-none resize-none `}
         />
         $
       </div>
