@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export const CommentsSection = ({ videoId = 1 }) => {
+export const CommentsSection = ({ videoId = 2 }) => {
   const dispatch = useDispatch();
   const [comment, setComment] = useState('');
   const comments = useSelector((state) => state.comments.primaryComments);
@@ -20,7 +20,7 @@ export const CommentsSection = ({ videoId = 1 }) => {
     e.preventDefault();
 
     try {
-      dispatch(createComment({ videoId: 1, comment, onSuccess }));
+      dispatch(createComment({ videoId: 2, comment, onSuccess }));
     } catch (error) {
       console.error(error);
     } finally {

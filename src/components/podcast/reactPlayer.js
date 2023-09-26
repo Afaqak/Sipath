@@ -23,7 +23,7 @@ export const ContentPlayer = ({ noPremium }) => {
         const response = await axios.get(`/assets/video/stream/${id}`, {
           responseType: 'arraybuffer',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjk1NzE3ODUxLCJleHAiOjE2OTU4MDQyNTF9.PKzN1mrJ7LCcsA5QE7OttISMs37udanlFXymOkD_PgQ`,
           },
         });
         console.log(response.data);

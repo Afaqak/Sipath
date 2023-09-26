@@ -31,7 +31,7 @@ export const VideoComments = ({ videoId }) => {
         await delay;
         dispatch(
           fetchPrimaryComments({
-            videoId: 1,
+            videoId: 2,
             set,
             onSuccess(data) {
               if (data.length === 0) {

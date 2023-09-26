@@ -43,7 +43,7 @@ export const OnBoardingProcess = () => {
   };
   const onSubmit = (data) => {
     setLoading(true);
-
+    console.log(data);
     const interests = [1, 2, 3, 4];
 
     const formData = new FormData();

@@ -1,9 +1,9 @@
 'use client';
-import { ContentPlayer, VideoInfo, CreateComment,CommentsSection} from '@/components';
+import { ContentPlayer, VideoInfo, CreateComment, CommentsSection } from '@/components';
 import Image from 'next/image';
 import { fetchPrimaryComments } from '@/features/comments/commentThunk';
 import { useEffect } from 'react';
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from 'react-redux';
 const videoArray = [
   '/new videos/demo-1.jpg',
   '/new videos/demo-2.jpg',
@@ -12,10 +12,9 @@ const videoArray = [
   '/new videos/demo-5.png',
 ];
 
-
 const WatchVideo = () => {
-  const primaryComments=useSelector(state=>state.comments?.primaryComments)
-  console.log(primaryComments)
+  const primaryComments = useSelector((state) => state.comments?.primaryComments);
+  console.log(primaryComments);
 
   return (
     <div className="">
@@ -24,21 +23,21 @@ const WatchVideo = () => {
           <ContentPlayer noPremium={true} />
           <VideoInfo />
           {/* Render the Comments component for large screens */}
-          
+
           {/* <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentInput/>
             <Comments comments={primaryComments}  />
           </div> */}
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
-          <CommentsSection primaryComments={primaryComments} />
+            <CommentsSection primaryComments={primaryComments} />
           </div>
         </div>
-        {/* Render the video list for all screens */}
+
         <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
           {videoArray.map((img) => {
             return <NextVideo img={img} key={img} />;
           })}
-          {/* Render the Comments component for small screens */}
+
           <div className="lg:hidden my-8">
             <CommentsSection videoId={1} />
           </div>
@@ -77,5 +76,3 @@ let NextVideo = ({ img }) => {
     </div>
   );
 };
-
-

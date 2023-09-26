@@ -4,7 +4,7 @@ import { VideoItem, Video, ContentContainer } from '@/components';
 
 const premiumVideos = [
   {
-    id: 36,
+    id: 2,
     title: 'Video 1',
     thumbnail: '/new videos/demo-1.jpg',
     account: 'Account 1',

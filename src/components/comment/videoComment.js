@@ -138,7 +138,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
                 comment={comments}
                 comments={comment}
                 setComments={setComments}
-                onSubmit={onReplySubmit}
+                onSubmit={handleOnReplySubmit}
                 reply={isReplying}
               />
               <div className="flex w-full gap-8 mt-2 justify-end items-end">
@@ -150,7 +150,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
                   cancel
                 </button>
                 <button
-                  onClick={onReplySubmit}
+                  onClick={handleOnReplySubmit}
                   className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
                 >
                   reply

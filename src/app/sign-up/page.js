@@ -202,7 +202,7 @@ const SignUp = () => {
             className="w-full hover:bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
             onClick={() => handleSignUpWithProvider('facebook')}
           >
-            {loadingFacebookSignUp ? null : <Icons.facebook className="h-3" />}
+            {loadingFacebookSignUp ? null : <Icons.facebook className="h-4" />}
             Sign Up with Facebook
           </Button>
         </div>
