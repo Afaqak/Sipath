@@ -8,10 +8,10 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { ClipLoader } from 'react-spinners';
 import debounce from 'lodash/debounce';
-import { delay } from 'lodash';
-
-//infinite scrolling
+import { useSearchParams } from 'next/navigation';
 export const VideoComments = ({ videoId }) => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const dispatch = useDispatch();
   const [set, setSet] = useState(0);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
@@ -24,38 +24,40 @@ export const VideoComments = ({ videoId }) => {
       resolve();
     }, 1000);
   });
-  const debouncedFetchComments = useMemo(
-    () =>
-      debounce(async () => {
-        setLoading(true);
-        await delay;
-        dispatch(
-          fetchPrimaryComments({
-            videoId: 2,
-            set,
-            onSuccess(data) {
-              if (data.length === 0) {
-                setHasLoadedMore(true);
-              } else {
-                setHasLoadedMore(false);
-              }
-              setLoading(false);
-            },
-          })
-        );
-      }, 300),
-    [set, dispatch]
-  );
+  const debouncedFetchComments = debounce(async () => {
+    try {
+      setLoading(true);
+      await delay;
+      dispatch(
+        fetchPrimaryComments({
+          videoId: id,
+          set,
+          onSuccess(data) {
+            if (data.length === 0) {
+              setHasLoadedMore(true);
+            } else {
+              setHasLoadedMore(false);
+            }
+            setLoading(false);
+          },
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  }, 300);
 
   useEffect(() => {
     debouncedFetchComments();
-  }, [debouncedFetchComments]);
+  }, [set, dispatch]);
 
   const comments = useSelector((state) => state.comments.primaryComments);
   const memoizedComments = useMemo(() => comments, [comments]);
 
   const commentReplies = useSelector((state) => state.comments.commentReplies);
-
+  console.log(commentReplies, 'replies');
   const toggleReplyView = (commentId) => {
     console.log(commentId);
     setReplyView((prevState) => ({
@@ -84,7 +86,11 @@ export const VideoComments = ({ videoId }) => {
             <div className="border-l ml-6 pl-4">
               {commentReplies[comment?.id] && replyView[comment?.id] && (
                 <motion.div>
-                  <RepliesList comments={commentReplies[comment?.id]} parentId={comment?.id} />
+                  <RepliesList
+                    videoId={id}
+                    comments={commentReplies[comment?.id]}
+                    parentId={comment?.id}
+                  />
                 </motion.div>
               )}
             </div>

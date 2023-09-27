@@ -6,8 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
+import { useSearchParams } from 'next/navigation';
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
   const [isReplying, setIsReplying] = useState(false);
   const [comments, setComments] = useState('');
   const dispatch = useDispatch();
@@ -45,7 +49,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     debounce((comments) => {
       try {
         setIsReplying(false);
-        dispatch(createReplyToComment({ videoId: 1, commentId: parentId, comments }));
+        dispatch(createReplyToComment({ videoId: id, commentId: parentId, comments }));
       } catch (error) {
         console.error(error);
       }
@@ -66,7 +70,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     try {
       if (!commentReplies[comment?.id]) {
         setLoadingReplies(true);
-        dispatch(fetchCommentReplies({ videoId: 1, commentId: parentId, onSuccess }));
+        dispatch(fetchCommentReplies({ videoId: id, commentId: parentId, onSuccess }));
         toggleReplyView(parentId);
       } else {
         toggleReplyView(parentId);
@@ -81,13 +85,13 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
         <UserAvatar
-          user={{ name: user?.first_name || user?.display_name || user?.email }}
+          user={{ name: comment?.user?.display_name || comment?.user?.first_name }}
           className="h-8 w-8"
         />
 
         <div className="w-full">
           <div className="flex gap-4 items-center mb-1">
-            <span className="font-medium text-sm ">author</span>{' '}
+            <span className="font-medium text-sm ">{comment?.user?.display_name}</span>{' '}
             <p className="text-[0.75rem] text-gray-500">{formatTimeAgo(comment?.createdAt)}</p>
           </div>
           <div className="flex gap-4 items-center">

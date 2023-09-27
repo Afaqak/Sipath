@@ -1,9 +1,8 @@
 'use client';
 import { ContentPlayer, VideoInfo, CreateComment, CommentsSection } from '@/components';
 import Image from 'next/image';
-import { fetchPrimaryComments } from '@/features/comments/commentThunk';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+
 const videoArray = [
   '/new videos/demo-1.jpg',
   '/new videos/demo-2.jpg',
@@ -39,7 +38,7 @@ const WatchVideo = () => {
           })}
 
           <div className="lg:hidden my-8">
-            <CommentsSection videoId={1} />
+            <CommentsSection />
           </div>
         </div>
       </div>

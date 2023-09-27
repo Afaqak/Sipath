@@ -12,7 +12,7 @@ export const ContentPlayer = ({ noPremium }) => {
 
   const [isClient, setIsClient] = useState(false);
   const [videoBlob, setVideoBlob] = useState(null);
-  const token = useSelector((state) => state.userAuth?.token);
+  const token = JSON.parse(localStorage.getItem('token'));
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -23,12 +23,12 @@ export const ContentPlayer = ({ noPremium }) => {
         const response = await axios.get(`/assets/video/stream/${id}`, {
           responseType: 'arraybuffer',
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjk1NzE3ODUxLCJleHAiOjE2OTU4MDQyNTF9.PKzN1mrJ7LCcsA5QE7OttISMs37udanlFXymOkD_PgQ`,
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log(response.data);
         const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-
+        console.log(videoBlob);
         setVideoBlob(videoBlob);
       } catch (error) {
         console.error('Error fetching video data:', error);

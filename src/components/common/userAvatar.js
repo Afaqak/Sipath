@@ -12,7 +12,7 @@ const UserAvatar = ({ user, ...props }) => {
         <AvatarFallback>
           <span className="uppercase text-white font-medium">
             {' '}
-            {user.name?.[0] || user.email?.[0] || ''}
+            {user?.name?.[0] || user?.email?.[0] || ''}
           </span>
         </AvatarFallback>
       )}

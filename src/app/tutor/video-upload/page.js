@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/index';
 import { Icons } from '@/components';
+import { Button } from '@/components/ui/button';
 
 const VideoUpload = () => {
   const token = useSelector((state) => state.userAuth?.token);
@@ -16,6 +17,8 @@ const VideoUpload = () => {
   const [courseId, setCourseId] = useState(null);
   const [sectionIds, setSectionIds] = useState([]);
   const abortController = new AbortController();
+  const [selectedTab, setSelectedTab] = useState('individual');
+  const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
   function cancelUpload() {
     abortController.abort();
@@ -321,15 +324,105 @@ const VideoUpload = () => {
     }
   };
 
+  const onIndividualVideoSubmit = async (sectionIndex) => {
+    const updatedSections = [...sections];
+
+    try {
+      const videosToUpload = [...updatedSections[sectionIndex].videos];
+      console.log(videosToUpload);
+      async function uploadVideo(video) {
+        console.log(video?.duration);
+        const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
+        const formDataToSend = new FormData();
+        formDataToSend.append('video', video.video);
+        formDataToSend.append('thumbnail', video.thumbnail);
+        formDataToSend.append('title', video.formData.title);
+        formDataToSend.append('description', video.formData.description);
+        formDataToSend.append('subject', video.formData.subject);
+        formDataToSend.append('duration', video.duration);
+
+        if (videoType === 'premium' && price > 0) {
+          formData.append('price', price);
+        }
+
+        video.loading = true;
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          signal: abortSignal,
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+            video.uploadProgress = progress;
+            const updatedSectionsClone = [...updatedSections];
+            updatedSectionsClone[sectionIndex] = {
+              ...updatedSectionsClone[sectionIndex],
+              videos: [...updatedSectionsClone[sectionIndex].videos],
+            };
+            setSections(updatedSectionsClone);
+          },
+        };
+
+        try {
+          const response = await axios.post('/upload/video', formDataToSend, config);
+          if (response.status === 200) {
+            console.log('Video uploaded successfully:', response.data);
+            video.loading = false;
+            video.uploadProgress = 0;
+            updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
+            setSections([...updatedSections]);
+            const videoId = response.data?.video?.id;
+            console.log(videoId, 'video_id');
+          } else {
+            console.error('Error uploading video:', response);
+            video.loading = false;
+          }
+        } catch (error) {
+          console.error('Error uploading video:', error);
+          video.loading = false;
+        }
+      }
+
+      for (const [index, video] of videosToUpload.entries()) {
+        await uploadVideo(video, index);
+      }
+    } catch (error) {
+      console.error('Error uploading videos:', error.message);
+    }
+  };
+  console.log(price);
+
   return (
     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
+      <div className="flex w-full gap-2 justify-end mb-4">
+        <Button
+          onClick={() => setSelectedTab('individual')}
+          className="text-lg"
+          variant={selectedTab === 'individual' ? 'default' : 'outline'}
+        >
+          Individual
+        </Button>
+        <Button
+          className="text-lg"
+          onClick={() => setSelectedTab('premium')}
+          variant={selectedTab === 'premium' ? 'default' : 'outline'}
+        >
+          Course
+        </Button>
+      </div>
+
       <div className="mb-5 flex justify-between items-center">
-        <VideoUploadType type={videoType} setType={setVideoType} />
-        <CourseTopic
-          courseId={courseId}
-          courseTopic={courseTopic}
-          setCourseTopic={setCourseTopic}
-        />
+        <VideoUploadType type={videoType} setType={setVideoType} setPrice={setPrice} />
+        {selectedTab === 'premium' && (
+          <CourseTopic
+            courseId={courseId}
+            courseTopic={courseTopic}
+            setCourseTopic={setCourseTopic}
+          />
+        )}
       </div>
       <div className="flex flex-col gap-4">
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -346,7 +439,7 @@ const VideoUpload = () => {
                         key={id}
                         className={`relative ${sectionIndex > 0 ? 'mt-24' : '0'}`}
                       >
-                        {id && (
+                        {id && selectedTab === 'premium' && (
                           <SectionTitle
                             onTitleUpdate={(title) => handleTitleUpdate(sectionIndex, title)}
                           />
@@ -412,6 +505,7 @@ const VideoUpload = () => {
                                         sections={sections}
                                         title={id}
                                         onClick={() => handleAddSection(video.id)}
+                                        selectedTab={selectedTab}
                                       />
                                     </div>
                                   )}
@@ -422,12 +516,16 @@ const VideoUpload = () => {
                           )}
                         </Droppable>
                         <div className="flex justify-end">
-                          <button
-                            onClick={() => handleCourseUpload(sectionIndex)}
-                            className="bg-black rounded-md px-8 mt-4 py-1 text-white"
+                          <Button
+                            onClick={
+                              selectedTab === 'premium'
+                                ? () => handleCourseUpload(sectionIndex)
+                                : () => onIndividualVideoSubmit(sectionIndex)
+                            }
+                            className="bg-black rounded-md text-base mt-4 py-1 text-white"
                           >
                             Publish All
-                          </button>
+                          </Button>
                         </div>
                         <button
                           onClick={() => handleAddVideoBody(id)}
@@ -457,8 +555,6 @@ export default VideoUpload;
 
 const VideoBody = ({
   onClick,
-  sections,
-  title,
   onUpdateFormData,
   onUpdateThumbnail,
   onUpdateVideo,
@@ -467,7 +563,7 @@ const VideoBody = ({
   thumbnail,
   loading,
   uploadProgress,
-  formData,
+  selectedTab,
 }) => {
   const handleFieldChange = (e) => {
     onUpdateFormData(e);
@@ -480,16 +576,15 @@ const VideoBody = ({
   return (
     <motion.div className="relative">
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
-      <div
-        className={`
-        w-[80%] lg:w-[90%] bg-[#1850BC] `}
-      >
-        <div className="absolute -top-2 -right-14 flex gap-1">
-          {' '}
-          <Icons.addTitle className="w-6 h-6" onClick={onClick} />
-          <Icons.info className="w-[1.45rem] h-[1.42rem]" onClick={onClick} />
+      {selectedTab === 'premium' && (
+        <div>
+          <div className="absolute -top-2 -right-14 flex gap-1">
+            {' '}
+            <Icons.addTitle className="w-6 h-6" onClick={onClick} />
+            <Icons.info className="w-[1.45rem] h-[1.42rem]" onClick={onClick} />
+          </div>
         </div>
-      </div>
+      )}
       <form className="p-4 flex flex-col relative bg-white mb-4 shadow-lg w-full rounded-md justify-between">
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">

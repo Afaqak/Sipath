@@ -1,123 +1,61 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { VideoItem, Video, ContentContainer } from '@/components';
+import axios from '../../utils/index';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const premiumVideos = [
-  {
-    id: 2,
-    title: 'Video 1',
-    thumbnail: '/new videos/demo-1.jpg',
-    account: 'Account 1',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 4,
-    title: 'Video 2',
-    thumbnail: '/new videos/demo-2.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 6,
-    title: 'Video 3',
-    thumbnail: '/new videos/demo-9.jpg',
-    account: 'Account 3',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 8,
-    title: 'Video 4',
-    thumbnail: '/new videos/demo-4.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 10,
-    title: 'Video 4',
-    thumbnail: '/new videos/demo-5.png',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
+const Videos = () => {
+  const [loading, setLoading] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const token = JSON.parse(localStorage.getItem('token'));
+  useEffect(() => {
+    setLoading(true);
+    const fetchVideoData = async () => {
+      setTimeout(async () => {
+        try {
+          const response = await axios.get(`/assets/videos`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(response.data);
+          setVideos(response.data);
+        } catch (error) {
+          console.error('Error fetching video data:', error);
+        } finally {
+          setLoading(false);
+        }
+      }, 2000);
+    };
 
-  {
-    id: 12,
-    title: 'Video 2',
-    thumbnail: '/new videos/demo-6.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 14,
-    title: 'Video 3',
-    thumbnail: '/new videos/demo-3.jpg',
-    account: 'Account 3',
-    views: '1.5M',
-    rating: '4.5',
-  },
-];
-const newUploads = [
-  {
-    id: 1,
-    title: 'Video 1',
-    thumbnail: '/new videos/demo-6.jpg',
-    account: 'Account 1',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 2,
-    title: 'Video 2',
-    thumbnail: '/new videos/demo-7.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 3,
-    title: 'Video 3',
-    thumbnail: '/new videos/demo-8.png',
-    account: 'Account 3',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 4,
-    title: 'Video 4',
-    thumbnail: '/new videos/demo-9.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 5,
-    title: 'Video 4',
-    thumbnail: '/new videos/demo-10.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
+    fetchVideoData();
+  }, []);
 
-  {
-    id: 2,
-    title: 'Video 2',
-    thumbnail: '/new videos/demo-11.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-  },
-];
+  const LoadingSkeletons = () => (
+    <div className="py-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[...Array(10)].map((_, idx) => (
+        <div key={idx} className="bg-white rounded-md p-4 shadow-md">
+          <Skeleton className="h-48 mb-2 " />
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
-const Videos = () => (
-  <ContentContainer>
-    <Video videos={premiumVideos} title="Most Popular" load={true} />
-    <Video videos={newUploads} title="New Uploads" load={true} />
-  </ContentContainer>
-);
+  return (
+    <ContentContainer>
+      {loading && <LoadingSkeletons />}
+      <Video videos={videos} title="New Uploads" load={true} />
+    </ContentContainer>
+  );
+};
 
 export default Videos;

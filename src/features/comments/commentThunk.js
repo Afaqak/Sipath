@@ -3,12 +3,12 @@ import axios from '../../utils/index';
 
 export const createComment = createAsyncThunk(
   'comments/createComment',
-  async ({ videoId, comment, onSuccess }) => {
+  async ({ videoId, comment, onSuccess }, { dispatch }) => {
     const token = JSON.parse(localStorage.getItem('token'));
     console.log(comment, 'com');
     try {
       const response = await axios.post(
-        `/assets/video/2/comments`,
+        `/assets/video/${videoId}/comments`,
         { comment },
         {
           headers: {
@@ -21,9 +21,7 @@ export const createComment = createAsyncThunk(
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
       }
-
-      console.log(response.data, 'data');
-
+      console.log(response.data, 'res');
       return response.data;
     } catch (error) {
       throw new Error();
@@ -33,20 +31,23 @@ export const createComment = createAsyncThunk(
 
 export const fetchPrimaryComments = createAsyncThunk(
   'comments/fetchPrimaryComments',
-  async ({ videoId, data, limit = 10, set = 0, onSuccess }, { dispatch }) => {
+  async ({ videoId, limit = 10, set = 0, onSuccess }, { dispatch }) => {
     const token = JSON.parse(localStorage.getItem('token'));
     try {
       console.log(set, 'from detch');
-      const response = await axios.get(`/assets/video/2/comments?limit=${limit}&set=${set}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.get(
+        `/assets/video/${videoId}/comments?limit=${limit}&set=${set}&order=desc`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
-      console.log(response.data.comments);
+
       return response.data?.comments;
     } catch (error) {
       throw new Error();
@@ -59,7 +60,7 @@ export const fetchCommentReplies = createAsyncThunk(
   async ({ videoId, commentId, onSuccess, limit = 10 }) => {
     const token = JSON.parse(localStorage.getItem('token'));
     try {
-      const response = await axios.get(`/assets/video/2/comments/${commentId}?limit=3`, {
+      const response = await axios.get(`/assets/video/${videoId}/comments/${commentId}?limit=3`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export const createReplyToComment = createAsyncThunk(
     const token = JSON.parse(localStorage.getItem('token'));
     try {
       const response = await axios.post(
-        `assets/video/2/comments/${commentId}`,
+        `assets/video/${videoId}/comments/${commentId}`,
         { comment: comments },
         {
           headers: {

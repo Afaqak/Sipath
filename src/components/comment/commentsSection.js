@@ -2,7 +2,7 @@ import React, { Suspense, useState } from 'react';
 import { VideoComments, CreateComment } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { useSearchParams } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export const CommentsSection = ({ videoId = 2 }) => {
+export const CommentsSection = ({ videoId }) => {
+  const searchParams = useSearchParams();
+
+  const id = searchParams.get('id');
+
   const dispatch = useDispatch();
   const [comment, setComment] = useState('');
   const comments = useSelector((state) => state.comments.primaryComments);
@@ -20,7 +24,7 @@ export const CommentsSection = ({ videoId = 2 }) => {
     e.preventDefault();
 
     try {
-      dispatch(createComment({ videoId: 2, comment, onSuccess }));
+      dispatch(createComment({ videoId: id, comment, onSuccess }));
     } catch (error) {
       console.error(error);
     } finally {

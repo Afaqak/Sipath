@@ -4,15 +4,7 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '../icons';
-export const CreateComment = ({
-  videoId,
-  commentId = null,
-  comment,
-  reply,
-  onSubmit,
-  setComments,
-}) => {
-  const dispatch = useDispatch();
+export const CreateComment = ({ comment, reply, onSubmit, setComments }) => {
   const user = useSelector((state) => state.userAuth?.user);
   return (
     <form onSubmit={onSubmit} className="flex gap-3 items-center">

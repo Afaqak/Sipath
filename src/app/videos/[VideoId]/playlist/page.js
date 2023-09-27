@@ -1,5 +1,11 @@
 'use client';
-import { ContentPlayer, VideoInfo, CreateComment,VideoComments, PlaylistSection } from '@/components';
+import {
+  ContentPlayer,
+  VideoInfo,
+  CreateComment,
+  VideoComments,
+  PlaylistSection,
+} from '@/components';
 import Image from 'next/image';
 
 const videoArray = [
@@ -48,7 +54,6 @@ const PlaylistVideo = () => {
             <VideoComments />
           </div>
         </div>
-        {/* Render the video list for all screens */}
 
         <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
           <div>
@@ -65,8 +70,6 @@ const PlaylistVideo = () => {
             return <NextVideo img={img} key={img} />;
           })}
 
-          {/* Render the Comments component for small screens */}
-          
           <div className="lg:hidden my-8">
             <VideoComments />
           </div>
@@ -105,4 +108,3 @@ let NextVideo = ({ img }) => {
     </div>
   );
 };
-
