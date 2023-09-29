@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '../icons';
-export const CreateComment = ({ comment, reply, onSubmit, setComments }) => {
+export const CreateComment = ({ reply, onSubmit, setComments, commentRef }) => {
   const user = useSelector((state) => state.userAuth?.user);
   return (
     <form onSubmit={onSubmit} className="flex gap-3 items-center">
@@ -37,9 +37,8 @@ export const CreateComment = ({ comment, reply, onSubmit, setComments }) => {
           />
         </div>
         <input
-          onChange={(e) => setComments(e.target.value)}
-          type="text "
-          value={comment}
+          ref={commentRef}
+          type="text"
           placeholder="Add a public comment..."
           className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
         />

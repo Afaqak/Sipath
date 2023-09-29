@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useRef } from 'react';
 import { VideoComments, CreateComment } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,29 +13,31 @@ import {
 
 export const CommentsSection = ({ videoId }) => {
   const searchParams = useSearchParams();
-
+  const commentRef = useRef(null);
   const id = searchParams.get('id');
+  const primaryComments = useSelector((state) => state.comments.primaryComments);
 
   const dispatch = useDispatch();
-  const [comment, setComment] = useState('');
-  const comments = useSelector((state) => state.comments.primaryComments);
-  const onSuccess = () => setComment('');
+
+  const onSuccess = () => {
+    commentRef.current.value = '';
+  };
   const onCommentSubmit = (e) => {
     e.preventDefault();
+    console.log(commentRef.current, 'comment');
 
     try {
-      dispatch(createComment({ videoId: id, comment, onSuccess }));
+      if (!commentRef.current.value) return;
+      dispatch(createComment({ videoId: id, comment: commentRef.current?.value, onSuccess }));
     } catch (error) {
       console.error(error);
     } finally {
-      setComment('');
     }
   };
-
   return (
     <div className=" mt-8">
       <div className="justify-between font-bold text-lg mb-2 flex">
-        <h2>{comments?.length} comments</h2>
+        <h2>{primaryComments?.length} comments</h2>
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none outline-none">
             Sort By
@@ -48,14 +50,9 @@ export const CommentsSection = ({ videoId }) => {
         </DropdownMenu>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CreateComment
-          setComments={setComment}
-          comment={comment}
-          videoId={videoId}
-          onSubmit={onCommentSubmit}
-        />
+        <CreateComment commentRef={commentRef} videoId={videoId} onSubmit={onCommentSubmit} />
 
-        <VideoComments videoId={videoId} />
+        <VideoComments />
       </div>
     </div>
   );

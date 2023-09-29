@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Skeleton } from '../ui/skeleton';
 import { debounce } from 'lodash';
 import { CreateComment, Icons } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,12 +9,29 @@ import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
 import { useSearchParams } from 'next/navigation';
 
+const LoadingSkeletons = () => (
+  <div className="py-8 grid  gap-4">
+    {[...Array(4)].map((_, idx) => (
+      <div key={idx} className="bg-white rounded-md p-4 shadow-md">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  const commentRef = useRef(null);
 
   const [isReplying, setIsReplying] = useState(false);
-  const [comments, setComments] = useState('');
+
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector((state) => state.comments.commentReplies);
@@ -46,12 +64,22 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   };
 
   const debouncedOnReplySubmit = useCallback(
-    debounce((comments) => {
+    debounce(() => {
+      console.log('submitting the reply');
       try {
         setIsReplying(false);
-        dispatch(createReplyToComment({ videoId: id, commentId: parentId, comments }));
+        console.log(commentRef.current?.value, 'com');
+        dispatch(
+          createReplyToComment({
+            videoId: id,
+            commentId: parentId,
+            comment: commentRef.current?.value,
+          })
+        );
       } catch (error) {
         console.error(error);
+      } finally {
+        commentRef.current.value = '';
       }
     }, 300),
     [dispatch, parentId]
@@ -59,11 +87,25 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
 
   const handleOnReplySubmit = (e) => {
     e.preventDefault();
-    debouncedOnReplySubmit(comments);
+    debouncedOnReplySubmit();
   };
 
-  const onSuccess = () => {
+  // const onCommentSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(commentRef.current, 'comment');
+
+  //   try {
+  //     if (!commentRef.current.value) return;
+  //     dispatch(createComment({ videoId: id, comment: commentRef.current?.value, onSuccess }));
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //   }
+  // };
+
+  const onSuccess = (data) => {
     setLoadingReplies(false);
+    console.log(data, 'data after fetch');
   };
 
   const handleFetchReplies = async () => {
@@ -139,9 +181,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           {isReplying && (
             <div className="w-full mt-2">
               <CreateComment
-                comment={comments}
-                comments={comment}
-                setComments={setComments}
+                commentRef={commentRef}
                 onSubmit={handleOnReplySubmit}
                 reply={isReplying}
               />
@@ -172,12 +212,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             </button>
           )}
 
-          {loadingReplies ? (
-            <div className="flex items-center mt-2">
-              <ClipLoader sizeUnit={'px'} size={15} color={'#123abc'} />
-              <p className="ml-2 text-gray-500">Loading Replies...</p>
-            </div>
-          ) : null}
+          {loadingReplies ? <LoadingSkeletons /> : null}
         </div>
       </div>
     </div>

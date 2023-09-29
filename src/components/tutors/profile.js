@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const Profile = ({ type }) => {
   return (
-    <div className=" bg-white flex items-center gap-10 flex-col md:flex-row shadow-md mx-auto rounded-md p-4">
+    <div className=" bg-white mt-10 flex items-center gap-10 flex-col md:flex-row shadow-md mx-auto rounded-md p-4">
       <div className="relative mx-auto flex items-center justify-center">
         <Image
           width={300}
