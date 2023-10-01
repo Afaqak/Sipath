@@ -6,12 +6,14 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType } from '@/components';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
 
 const VideoUpload = () => {
   const token = useSelector((state) => state.userAuth?.token);
+  console.log('token from vidup', token);
+  const axios = useAxiosPrivate();
   const [videoType, setVideoType] = useState('free');
   const [courseTopic, setCourseTopic] = useState('');
   const [courseId, setCourseId] = useState(null);

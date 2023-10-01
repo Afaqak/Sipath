@@ -1,22 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../utils/index';
 
 export const createComment = createAsyncThunk(
   'comments/createComment',
-  async ({ videoId, comment, onSuccess }, { dispatch }) => {
-    const token = JSON.parse(localStorage.getItem('token'));
+  async ({ videoId, comment, onSuccess, axios }, { dispatch }) => {
     console.log(comment, 'com');
     try {
-      const response = await axios.post(
-        `/assets/video/${videoId}/comments`,
-        { comment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axios.post(`/assets/video/${videoId}/comments`, { comment });
 
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -33,8 +22,7 @@ export const createComment = createAsyncThunk(
 
 export const fetchPrimaryComments = createAsyncThunk(
   'comments/fetchPrimaryComments',
-  async ({ videoId, limit = 10, set = 0, onSuccess }, { dispatch }) => {
-    const token = JSON.parse(localStorage.getItem('token'));
+  async ({ videoId, limit = 10, set = 0, onSuccess, axios }, { dispatch }) => {
     try {
       console.log(set, 'from detch');
       const response = await axios.get(
@@ -82,7 +70,7 @@ export const fetchCommentReplies = createAsyncThunk(
 
 export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
-  async ({ videoId, commentId, comment, limit = 10 }) => {
+  async ({ videoId, commentId, comment, limit = 10, axios }) => {
     console.log(comment, 'Data', videoId);
     console.log('hit');
     const token = JSON.parse(localStorage.getItem('token'));

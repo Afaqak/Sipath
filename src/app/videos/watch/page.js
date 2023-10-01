@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from '../../../utils/index';
 import { useSearchParams } from 'next/navigation';
 import { resetComments, setComments } from '@/features/comments/commentSlice';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 const videoArray = [
   '/new videos/demo-1.jpg',
   '/new videos/demo-2.jpg',
@@ -16,21 +17,18 @@ const videoArray = [
 
 const WatchVideo = () => {
   const [primaryComments, setPrimaryComments] = useState([]);
+  const axiosPrivate = useAxiosPrivate();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const token = JSON.parse(localStorage.getItem('token'));
 
   useEffect(() => {
     console.count('times');
     dispatch(resetComments());
     async function getComments() {
-      const response = await axios.get(`/assets/video/${id}/comments?limit=10&set=0&order=desc`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axiosPrivate.get(
+        `/assets/video/${id}/comments?limit=10&set=0&order=desc`
+      );
       console.log(response.data, 'from video');
       dispatch(setComments(response.data.comments));
     }
@@ -41,7 +39,7 @@ const WatchVideo = () => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          {/* <ContentPlayer noPremium={true} /> */}
+          <ContentPlayer noPremium={true} />
           <VideoInfo />
           {/* Render the Comments component for large screens */}
 

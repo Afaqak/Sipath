@@ -8,6 +8,7 @@ import { createReplyToComment, fetchCommentReplies } from '@/features/comments/c
 import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
 import { useSearchParams } from 'next/navigation';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 const LoadingSkeletons = () => (
   <div className="py-8 grid  gap-4">
@@ -26,6 +27,7 @@ const LoadingSkeletons = () => (
 );
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
+  const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const commentRef = useRef(null);
@@ -35,7 +37,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector((state) => state.comments.commentReplies);
-  const user = useSelector((state) => state.userAuth?.user);
+
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
     const createdAt = new Date(timestamp);
@@ -74,6 +76,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             videoId: id,
             commentId: parentId,
             comment: commentRef.current?.value,
+            axios,
           })
         );
       } catch (error) {

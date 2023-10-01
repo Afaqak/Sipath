@@ -1,17 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import UserAvatar from '../common/userAvatar';
 
 export const Profile = ({ type }) => {
+  const user = useSelector((state) => state.userAuth.user);
   return (
     <div className=" bg-white mt-10 flex items-center gap-10 flex-col md:flex-row shadow-md mx-auto rounded-md p-4">
       <div className="relative mx-auto flex items-center justify-center">
-        <Image
-          width={300}
-          height={400}
-          alt="demo image"
-          className="rounded-full object-cover h-[80%] lg:w-full lg:h-f w-[80%] tutor-img"
-          src={'/demo-4.jpg'}
-        />
+        <UserAvatar user={{ name: user.display_name }} className=" w-36 h-36" />
         <button
           className="font-semibold bg-blue-500 text-white rounded-full px-8 py-1 flex justify-center items-center"
           style={{
@@ -26,7 +23,7 @@ export const Profile = ({ type }) => {
       </div>
 
       <div className="">
-        <h1 className="mb-2 uppercase font-medium">Account Name</h1>
+        <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
         <div className="flex md:flex-row flex-col gap-12">
           <div className="flex gap-12">
             <div className="">
@@ -58,9 +55,7 @@ export const Profile = ({ type }) => {
             <div className="">
               <h1>BIO</h1>
               <p className={`text-sm ${type === 'myprofile' ? 'w-full' : 'w-[80%]'}`}>
-                Lorem ipsum dolor sit amet consectetur. Lectus gravida lorem velit quis amet lacus.
-                Nunc non massa. Lorem ipsum dolor sit amet consectetur. Lectus gravida lorem velit
-                quis amet lacus. Nunc non massa.
+                {user?.bio}
               </p>
             </div>
           </div>

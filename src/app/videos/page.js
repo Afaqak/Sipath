@@ -4,17 +4,20 @@ import Image from 'next/image';
 import { VideoItem, Video, ContentContainer } from '@/components';
 import axios from '../../utils/index';
 import { Skeleton } from '@/components/ui/skeleton';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { withPrivateRoute } from '@/components/privateRoute';
 
 const Videos = () => {
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState([]);
   const token = JSON.parse(localStorage.getItem('token'));
+  const axiosPrivate = useAxiosPrivate();
   useEffect(() => {
     setLoading(true);
     const fetchVideoData = async () => {
       setTimeout(async () => {
         try {
-          const response = await axios.get(`/assets/videos`, {
+          const response = await axiosPrivate.get(`/assets/videos`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -42,7 +45,7 @@ const Videos = () => {
             <Skeleton className="h-12 w-12 rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" /> 
+              <Skeleton className="h-4 w-[200px]" />
             </div>
           </div>
         </div>
@@ -58,4 +61,4 @@ const Videos = () => {
   );
 };
 
-export default Videos;
+export default withPrivateRoute(Videos);

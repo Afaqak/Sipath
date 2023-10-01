@@ -1,13 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
-import axios from '../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'next/navigation';
 
 export const ContentPlayer = ({ noPremium }) => {
   const searchParams = useSearchParams();
-
+  const axios = useAxiosPrivate();
   const id = searchParams.get('id');
 
   const [isClient, setIsClient] = useState(false);

@@ -9,7 +9,10 @@ import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '../ui/skeleton';
 import debounce from 'lodash/debounce';
 import { useSearchParams } from 'next/navigation';
-export const VideoComments = ({ videoId }) => {
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+
+export const VideoComments = () => {
+  const axios = useAxiosPrivate();
   const primaryComments = useSelector((state) => state.comments.primaryComments);
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -20,7 +23,6 @@ export const VideoComments = ({ videoId }) => {
   const [replyView, setReplyView] = useState({});
   const { ref, inView } = useInView({ threshold: 1 });
 
-  console.log(inView, 'inview');
   const delay = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve();
@@ -39,6 +41,7 @@ export const VideoComments = ({ videoId }) => {
             fetchPrimaryComments({
               videoId: id,
               set,
+              axios,
               onSuccess(data) {
                 if (data.length === 0) {
                   setHasLoadedMore(true);
