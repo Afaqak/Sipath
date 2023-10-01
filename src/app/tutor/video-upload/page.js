@@ -9,6 +9,15 @@ import { useSelector } from 'react-redux';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const VideoUpload = () => {
   const token = useSelector((state) => state.userAuth?.token);
@@ -686,13 +695,21 @@ const QuizUploadColumn = ({ onChange }) => {
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Subject</label>
-        <input
-          onChange={onChange}
-          name="subject"
-          placeholder="Enter Subject"
-          className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
-          type="text"
-        />
+        <Select>
+          <SelectTrigger className="">
+            <SelectValue placeholder="Select a Subject" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Subjects</SelectLabel>
+              <SelectItem value="1">English</SelectItem>
+              <SelectItem value="2">Chemistry</SelectItem>
+              <SelectItem value="3">Physics</SelectItem>
+              <SelectItem value="4">Science</SelectItem>
+              <SelectItem value="5">Maths</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex flex-col">
         <label className="text-sm">Upload Quiz</label>
