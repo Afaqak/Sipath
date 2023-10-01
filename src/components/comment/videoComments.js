@@ -6,43 +6,58 @@ import { fetchPrimaryComments } from '@/features/comments/commentThunk';
 import { VideoComment, RepliesList } from '@/components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { ClipLoader } from 'react-spinners';
+import { Skeleton } from '../ui/skeleton';
 import debounce from 'lodash/debounce';
-import { delay } from 'lodash';
+import { useSearchParams } from 'next/navigation';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
-//infinite scrolling
-export const VideoComments = ({ videoId }) => {
+export const VideoComments = () => {
+  const axios = useAxiosPrivate();
+  const primaryComments = useSelector((state) => state.comments.primaryComments);
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const dispatch = useDispatch();
   const [set, setSet] = useState(0);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [replyView, setReplyView] = useState({});
   const { ref, inView } = useInView({ threshold: 1 });
-  console.log(inView, 'inview');
+
   const delay = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve();
     }, 1000);
   });
+
+  console.log(primaryComments, 'primary comments');
+
   const debouncedFetchComments = useMemo(
     () =>
       debounce(async () => {
-        setLoading(true);
-        await delay;
-        dispatch(
-          fetchPrimaryComments({
-            videoId: 2,
-            set,
-            onSuccess(data) {
-              if (data.length === 0) {
-                setHasLoadedMore(true);
-              } else {
-                setHasLoadedMore(false);
-              }
-              setLoading(false);
-            },
-          })
-        );
+        try {
+          setLoading(true);
+          await delay;
+          dispatch(
+            fetchPrimaryComments({
+              videoId: id,
+              set,
+              axios,
+              onSuccess(data) {
+                if (data.length === 0) {
+                  setHasLoadedMore(true);
+                } else {
+                  console.log(data, 'new page');
+                  setHasLoadedMore(false);
+                }
+                setLoading(false);
+              },
+            })
+          );
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setLoading(false);
+        }
       }, 300),
     [set, dispatch]
   );
@@ -50,12 +65,25 @@ export const VideoComments = ({ videoId }) => {
   useEffect(() => {
     debouncedFetchComments();
   }, [debouncedFetchComments]);
-
-  const comments = useSelector((state) => state.comments.primaryComments);
-  const memoizedComments = useMemo(() => comments, [comments]);
+  const LoadingSkeletons = () => (
+    <div className="py-8 grid  gap-4">
+      {[...Array(3)].map((_, idx) => (
+        <div key={idx} className="bg-white rounded-md p-4 shadow-md">
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   const commentReplies = useSelector((state) => state.comments.commentReplies);
-
+  console.log('commentReplies', commentReplies);
+  console.log(commentReplies);
   const toggleReplyView = (commentId) => {
     console.log(commentId);
     setReplyView((prevState) => ({
@@ -65,36 +93,37 @@ export const VideoComments = ({ videoId }) => {
   };
 
   useEffect(() => {
-    if (inView && comments.length > 0 && !hasLoadedMore) {
+    if (inView && primaryComments.length > 0 && !hasLoadedMore) {
       setHasLoadedMore(true);
       setSet((prevSet) => prevSet + 10);
     }
-  }, [inView, comments, hasLoadedMore]);
+  }, [inView, primaryComments, hasLoadedMore]);
 
   return (
     <div className="py-1 md:mt-4">
-      {memoizedComments &&
-        memoizedComments.map((comment, index) => (
-          <div key={comment.id} ref={index === comments.length - 1 ? ref : null}>
+      {primaryComments.length > 0 &&
+        primaryComments.map((comment, index) => (
+          <div key={comment.id} ref={index === primaryComments.length - 1 ? ref : null}>
             <VideoComment
               parentId={comment?.id}
               comment={comment}
               toggleReplyView={toggleReplyView}
+              primaryComments={primaryComments}
             />
             <div className="border-l ml-6 pl-4">
               {commentReplies[comment?.id] && replyView[comment?.id] && (
                 <motion.div>
-                  <RepliesList comments={commentReplies[comment?.id]} parentId={comment?.id} />
+                  <RepliesList
+                    videoId={id}
+                    comments={commentReplies[comment?.id]}
+                    parentId={comment?.id}
+                  />
                 </motion.div>
               )}
             </div>
           </div>
         ))}
-      {loading && (
-        <div className="flex justify-center mt-4">
-          <ClipLoader />
-        </div>
-      )}
+      {loading && <LoadingSkeletons />}
     </div>
   );
 };

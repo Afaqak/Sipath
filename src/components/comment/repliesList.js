@@ -1,5 +1,5 @@
-import React from "react";
-import { VideoComment } from "./videoComment";
+import React from 'react';
+import { VideoComment } from './videoComment';
 
 export const RepliesList = ({ comments, parentId }) => {
   return (

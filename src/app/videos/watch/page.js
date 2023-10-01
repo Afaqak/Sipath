@@ -1,9 +1,12 @@
 'use client';
 import { ContentPlayer, VideoInfo, CreateComment, CommentsSection } from '@/components';
 import Image from 'next/image';
-import { fetchPrimaryComments } from '@/features/comments/commentThunk';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from '../../../utils/index';
+import { useSearchParams } from 'next/navigation';
+import { resetComments, setComments } from '@/features/comments/commentSlice';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 const videoArray = [
   '/new videos/demo-1.jpg',
   '/new videos/demo-2.jpg',
@@ -13,8 +16,24 @@ const videoArray = [
 ];
 
 const WatchVideo = () => {
-  const primaryComments = useSelector((state) => state.comments?.primaryComments);
-  console.log(primaryComments);
+  const [primaryComments, setPrimaryComments] = useState([]);
+  const axiosPrivate = useAxiosPrivate();
+  const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  useEffect(() => {
+    console.count('times');
+    dispatch(resetComments());
+    async function getComments() {
+      const response = await axiosPrivate.get(
+        `/assets/video/${id}/comments?limit=10&set=0&order=desc`
+      );
+      console.log(response.data, 'from video');
+      dispatch(setComments(response.data.comments));
+    }
+    getComments();
+  }, []);
 
   return (
     <div className="">
@@ -38,9 +57,7 @@ const WatchVideo = () => {
             return <NextVideo img={img} key={img} />;
           })}
 
-          <div className="lg:hidden my-8">
-            <CommentsSection videoId={1} />
-          </div>
+          <div className="lg:hidden my-8">{/* <CommentsSection /> */}</div>
         </div>
       </div>
     </div>

@@ -1,8 +1,9 @@
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
 import axios from '../utils/index';
+
+import { withPrivateRoute } from '@/components/privateRoute';
 const comments = [
   {
     id: 1,
@@ -73,6 +74,8 @@ const comments = [
 ];
 
 const Home = () => {
+  console.log('run');
+
   return (
     <div className="">
       <div className="w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -99,8 +102,18 @@ const Home = () => {
         <VideoFeed comments={comments.slice(3, 4)} />
       </div>
       <Categories />
+      <button
+        onClick={async () => {
+          let cookie = await axios.get('http://localhost:4000/auth/verify-token', {
+            withCredentials: true,
+          });
+          console.log(cookie.data, 'from cookie');
+        }}
+      >
+        touch me
+      </button>
     </div>
   );
 };
 
-export default Home;
+export default withPrivateRoute(Home);

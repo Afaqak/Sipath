@@ -2,7 +2,8 @@
 import React, { useState, useRef } from 'react';
 import { SubjectDropdown, FileInput, VideoUploadType } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
-import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useSelector } from 'react-redux';
 import { useToast } from '@/components/hooks/use-toast';
 import {
   Select,
@@ -16,6 +17,8 @@ import {
 import { Button } from '@/components/ui/button';
 
 const AddBook = () => {
+  const token = useSelector((state) => state.userAuth.token);
+  const axios = useAxiosPrivate();
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState('free');
   const [book, setBook] = useState(null);
@@ -36,7 +39,6 @@ const AddBook = () => {
     }
     try {
       setLoading(true);
-      const token = JSON.parse(localStorage.getItem('token'));
       const formData = new FormData();
       formData.append('book', book);
       formData.append('title', data.bookTitle);
@@ -66,6 +68,7 @@ const AddBook = () => {
       setThumbnail(null);
       setBook(null);
     } catch (error) {
+      setLoading(false);
       console.error('Error uploading book:', error);
     } finally {
       setLoading(false);
@@ -83,7 +86,6 @@ const AddBook = () => {
         </div>
         <div className="flex justify-end">
           <Button
-            disabled={loading}
             type="submit"
             className="bg-black flex gap-1 rounded-md px-8 mt-4 py-1 text-white"
           >

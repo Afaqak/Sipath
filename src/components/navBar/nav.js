@@ -13,7 +13,10 @@ import { buttonVariants, Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
+import { setUserData } from '@/features/auth/authSlice';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 export const Navbar = () => {
+  const axios = useAxiosPrivate();
   const user = useSelector((state) => state.userAuth.user);
   const token = useSelector((state) => state.userAuth.token);
   console.log(useSelector((state) => state.userAuth));
@@ -44,6 +47,29 @@ export const Navbar = () => {
   useEffect(() => {
     setNav(false);
   }, [pathname]);
+
+  //fetch user data after 15 mints
+  const fetchUserProfile = async () => {
+    try {
+      const res = await axios.get('users/user-profile');
+      console.log(res.data, 'from navbar');
+      if (res.data?.user) {
+        dispatch(setUserData(res.data.user));
+      }
+    } catch (error) {
+      console.error('Error fetching user profile data:', error);
+    }
+  };
+
+  const fifteenMinutes = 15 * 60 * 1000;
+  const userProfileTimer = setInterval(fetchUserProfile, fifteenMinutes);
+
+  useEffect(() => {
+    // Handle cleanup when the component unmounts
+    return () => {
+      clearInterval(userProfileTimer);
+    };
+  }, [userProfileTimer]);
 
   const links = [
     { href: '/videos', label: 'Videos' },
@@ -108,11 +134,10 @@ export const Navbar = () => {
                 <Button
                   variant="destructive"
                   onClick={() => {
-                    if (user) {
-                      dispatch(setUserDataAndToken({ user: null, token: null }));
-                      signOut();
-                      router.refresh();
-                    }
+                    dispatch(setUserDataAndToken({ user: null, token: null }));
+                    router.refresh();
+                    router.push('/');
+                    signOut();
                   }}
                 >
                   Log Out

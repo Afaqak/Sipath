@@ -4,7 +4,6 @@ import DatePicker from 'react-datepicker';
 import { useDispatch } from 'react-redux';
 import { TextareaField, Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
-import { showImageErrorToast } from '@/utils/toastUtility';
 import 'react-datepicker/dist/react-datepicker.css';
 import { onBoardUser } from '@/features/onBoard/onBoardThunk';
 import { useRouter } from 'next/navigation';

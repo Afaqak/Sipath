@@ -18,7 +18,14 @@ const initialState = {
 const commentsSlice = createSlice({
   name: 'comments',
   initialState,
-  reducers: {},
+  reducers: {
+    setComments(state, action) {
+      state.primaryComments = [...state.primaryComments, ...action.payload];
+    },
+    resetComments(state) {
+      state.primaryComments = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createComment.pending, (state) => {
@@ -39,7 +46,7 @@ const commentsSlice = createSlice({
       })
       .addCase(fetchPrimaryComments.fulfilled, (state, action) => {
         state.loading = false;
-
+        console.log(state.primaryComments, action.payload);
         const existingIds = state.primaryComments.map((comment) => comment.id);
         const newData = action.payload.filter((comment) => !existingIds.includes(comment.id));
         state.primaryComments = [...state.primaryComments, ...newData];
@@ -83,5 +90,7 @@ const commentsSlice = createSlice({
       });
   },
 });
+
+export const { setComments, resetComments } = commentsSlice.actions;
 
 export default commentsSlice.reducer;

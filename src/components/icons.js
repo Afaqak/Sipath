@@ -191,4 +191,33 @@ export const Icons = {
       />
     </svg>
   ),
+  live: (props) => (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+    >
+      <circle cx="12" cy="12" r="9" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="5" fill="white" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  play: () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill=""
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="absolute top-1/2 left-1/2 fill-gray-300 -translate-x-1/2 -translate-y-1/2 w-14 h-14"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"
+      />
+    </svg>
+  ),
 };
