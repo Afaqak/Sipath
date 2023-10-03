@@ -4,7 +4,7 @@ import axios from '../../utils/index';
 
 export const onBoardUser = createAsyncThunk(
   'onBoard/user',
-  async ({ formData, onSuccess }, { dispatch, rejectWithValue }) => {
+  async ({ formData, onSuccess, update }, { dispatch, rejectWithValue }) => {
     const token = JSON.parse(localStorage.getItem('token'));
     try {
       const response = await axios.post('onboard/user', formData, {
@@ -15,7 +15,8 @@ export const onBoardUser = createAsyncThunk(
       });
       onSuccess();
       console.log(response.data, 'data');
-      dispatch(setUserData(response.data.user));
+      update(response.data);
+
       return response.data;
     } catch (err) {
       console.log(err);
@@ -27,15 +28,9 @@ export const onBoardUser = createAsyncThunk(
 
 export const onBoardTutor = createAsyncThunk(
   'onBoard/tutor',
-  async ({ formData, onSuccess }, { rejectWithValue }) => {
+  async ({ formData, onSuccess, axios }, { rejectWithValue }) => {
     try {
-      const token = JSON.parse(localStorage.getItem('token'));
-      const response = await axios.post('/onboard/tutor', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post('/onboard/tutor', formData);
       console.log(response.data);
       onSuccess();
       return response.data;

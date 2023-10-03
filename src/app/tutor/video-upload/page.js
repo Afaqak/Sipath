@@ -43,8 +43,8 @@ const VideoUpload = () => {
         formData: {
           title: '',
           description: '',
-          subject: '',
         },
+        subject: 0,
         thumbnail: null,
         video: null,
         duration: 0,
@@ -63,6 +63,7 @@ const VideoUpload = () => {
   };
 
   const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
+    console.log(e);
     const { name, value } = e.target;
     const updatedSections = [...sections];
     const videoFormData = { ...updatedSections[sectionIndex].videos[videoIndex].formData };
@@ -87,7 +88,14 @@ const VideoUpload = () => {
 
   const handleUpdateDuration = (sectionIndex, videoIndex, duration) => {
     const updatedSections = [...sections];
+    console.log(duration, 'dr');
     updatedSections[sectionIndex].videos[videoIndex].duration = duration;
+    setSections(updatedSections);
+  };
+  const handleUpdateSubject = (sectionIndex, videoIndex, subject) => {
+    console.log(subject, 'subject');
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].videos[videoIndex].subject = subject;
     setSections(updatedSections);
   };
 
@@ -264,7 +272,7 @@ const VideoUpload = () => {
         formDataToSend.append('thumbnail', video.thumbnail);
         formDataToSend.append('title', video.formData.title);
         formDataToSend.append('description', video.formData.description);
-        formDataToSend.append('subject', video.formData.subject);
+        formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration.toString());
         formDataToSend.append('price', 12);
 
@@ -349,7 +357,7 @@ const VideoUpload = () => {
         formDataToSend.append('thumbnail', video.thumbnail);
         formDataToSend.append('title', video.formData.title);
         formDataToSend.append('description', video.formData.description);
-        formDataToSend.append('subject', video.formData.subject);
+        formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration);
 
         if (videoType === 'premium' && price > 0) {
@@ -497,6 +505,9 @@ const VideoUpload = () => {
                                         onUpdateThumbnail={(thumbnail) =>
                                           handleUpdateThumbnail(sectionIndex, videoIndex, thumbnail)
                                         }
+                                        onUpdateSubject={(subject) =>
+                                          handleUpdateSubject(sectionIndex, videoIndex, subject)
+                                        }
                                         onUpdateVideo={(video) =>
                                           handleUpdateVideo(sectionIndex, videoIndex, video)
                                         }
@@ -574,6 +585,7 @@ const VideoBody = ({
   thumbnail,
   loading,
   uploadProgress,
+  onUpdateSubject,
   selectedTab,
 }) => {
   const handleFieldChange = (e) => {
@@ -645,7 +657,7 @@ const VideoBody = ({
           <div className="flex gap-8">
             <VideoInfoColumn onChange={handleFieldChange} />
 
-            <QuizUploadColumn onChange={handleFieldChange} />
+            <QuizUploadColumn onChange={onUpdateSubject} />
           </div>
           <VideoandThumbnail
             thumbnail={thumbnail}
@@ -695,8 +707,8 @@ const QuizUploadColumn = ({ onChange }) => {
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Subject</label>
-        <Select>
-          <SelectTrigger className="">
+        <Select onValueChange={onChange}>
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select a Subject" />
           </SelectTrigger>
           <SelectContent>

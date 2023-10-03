@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
 import axios from '../utils/index';
+import { useRouter } from 'next/navigation';
 
 import { withPrivateRoute } from '@/components/privateRoute';
+import { useSession } from 'next-auth/react';
 const comments = [
   {
     id: 1,
@@ -74,6 +76,12 @@ const comments = [
 ];
 
 const Home = () => {
+  const { data } = useSession();
+  const router = useRouter();
+  console.log(data, 'session');
+  if (data?.isNewUser) {
+    router.push('/on-boarding');
+  }
   console.log('run');
 
   return (

@@ -7,13 +7,27 @@ import messageReducer from '../features/chat/message/messageSlice';
 import conversationReducer from '../features/chat/conversation/conversationSlice';
 import messageRequestReducer from '../features/chat/requests/messageRequestSlice';
 import comments from '../features/comments/commentSlice';
-import storage from 'redux-persist/lib/storage';
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+const createNoopStorage = () => {
+  return {
+    getItem(_key) {
+      return Promise.resolve(null);
+    },
+    setItem(_key, value) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key) {
+      return Promise.resolve();
+    },
+  };
+};
+const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage();
 
 const persistConfig = {
-  timeout: 100,
+  timeout: 50,
   key: 'root',
   storage,
-  whitelist: ['userAuth'],
+  blacklist: ['userAuth', 'tutor', 'message', 'conversations', 'messageRequests', 'comments'],
 };
 
 const rootReducer = combineReducers({

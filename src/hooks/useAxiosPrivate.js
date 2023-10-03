@@ -1,48 +1,63 @@
-'use client';
 import { axiosPrivate } from '@/utils';
 import { useEffect } from 'react';
-import { useRefreshToken } from './useRefreshToken';
-import { useSelector } from 'react-redux';
-import { setToken } from '@/features/auth/authSlice';
-import { useDispatch } from 'react-redux';
+
+import { signOut, useSession } from 'next-auth/react';
+import axios from '../../src/utils/index';
+
+const isTokenValid = async (token) => {
+  try {
+    const response = await axios.get('/auth/verify-token', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data);
+    if (response.status === 200 && response.data.isValid) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error validating token:', error);
+    return false;
+  }
+};
 
 const useAxiosPrivate = () => {
-  const user = useSelector((state) => state.userAuth);
-  const refresh = useRefreshToken();
-  const Dispatch = useDispatch();
+  const { data: user } = useSession();
+
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
-      (config) => {
+      async (config) => {
         if (!config.headers['Authorization']) {
-          config.headers['Authorization'] = `Bearer ${user?.token}`;
+          const isValidToken = await isTokenValid(user?.token);
+          console.log(isTokenValid, 'valid');
+          if (isValidToken) {
+            config.headers['Authorization'] = `Bearer ${user?.token}`;
+          } else {
+            signOut();
+          }
         }
-        return config;
       },
       (err) => {
-        Promise.reject(err);
-      }
-    );
-    const responseIntercept = axiosPrivate.interceptors.response.use(
-      (response) => response,
-      async (err) => {
-        const prevRequest = err?.config;
-        if (err?.response?.status === 403 && !prevRequest.sent) {
-          prevRequest.sent = true;
-          const newAccessToken = await refresh();
-          Dispatch(setToken(newAccessToken));
-          prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          console.log(newAccessToken, 'new access token');
-          return axiosPrivate(prevRequest);
-        }
         return Promise.reject(err);
       }
     );
 
+    const responseIntercept = axiosPrivate.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error?.response?.status === 401) {
+        }
+        return Promise.reject(error);
+      }
+    );
+
     return () => {
+      axiosPrivate.interceptors.request.eject(requestIntercept);
       axiosPrivate.interceptors.response.eject(responseIntercept);
-      axiosPrivate.interceptors.response.eject(requestIntercept);
     };
-  }, [user, refresh]);
+  }, [user]);
 
   return axiosPrivate;
 };

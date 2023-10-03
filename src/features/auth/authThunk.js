@@ -6,7 +6,6 @@ export const createUser = createAsyncThunk(
   async ({ user, onSuccess, onReject }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/auth/signup', user);
-      localStorage.setItem('token', JSON.stringify(response.data.token));
 
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data);

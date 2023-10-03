@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { setUserDataAndToken } from '@/features/auth/authSlice';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import { buttonVariants, Button } from '../ui/button';
 import { cn } from '@/lib/utils';
@@ -16,13 +16,11 @@ import { Icons } from '@/components';
 import { setUserData } from '@/features/auth/authSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 export const Navbar = () => {
-  const axios = useAxiosPrivate();
-  const user = useSelector((state) => state.userAuth.user);
-  const token = useSelector((state) => state.userAuth.token);
   console.log(useSelector((state) => state.userAuth));
-  const dispatch = useDispatch();
+
   const router = useRouter();
   const pathname = usePathname();
+  const { data: user } = useSession();
 
   const [nav, setNav] = useState(false);
 
@@ -47,29 +45,6 @@ export const Navbar = () => {
   useEffect(() => {
     setNav(false);
   }, [pathname]);
-
-  //fetch user data after 15 mints
-  const fetchUserProfile = async () => {
-    try {
-      const res = await axios.get('users/user-profile');
-      console.log(res.data, 'from navbar');
-      if (res.data?.user) {
-        dispatch(setUserData(res.data.user));
-      }
-    } catch (error) {
-      console.error('Error fetching user profile data:', error);
-    }
-  };
-
-  const fifteenMinutes = 15 * 60 * 1000;
-  const userProfileTimer = setInterval(fetchUserProfile, fifteenMinutes);
-
-  useEffect(() => {
-    // Handle cleanup when the component unmounts
-    return () => {
-      clearInterval(userProfileTimer);
-    };
-  }, [userProfileTimer]);
 
   const links = [
     { href: '/videos', label: 'Videos' },
@@ -121,23 +96,22 @@ export const Navbar = () => {
           <div
             className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
           >
-            {token ? (
+            {user?.user ? (
               <>
                 <Icons.message className="w-6 h-6" onClick={() => router.push('/chat')} />
                 <Icons.bell />
 
                 <UserAvatar
-                  onClick={() => router.push('/tutor')}
+                  onClick={() => router.push('/my-profile')}
                   user={{ name: user?.first_name || user?.display_name || user?.email }}
                   className="h-8 w-8"
                 />
                 <Button
                   variant="destructive"
-                  onClick={() => {
-                    dispatch(setUserDataAndToken({ user: null, token: null }));
-                    router.refresh();
-                    router.push('/');
-                    signOut();
+                  onClick={async () => {
+                    signOut({
+                      callbackUrl: '/',
+                    });
                   }}
                 >
                   Log Out
