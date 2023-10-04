@@ -78,7 +78,7 @@ const comments = [
 const Home = () => {
   const { data } = useSession();
   const router = useRouter();
-  console.log(data, 'session');
+  console.log(data?.user, 'session');
   if (data?.isNewUser) {
     router.push('/on-boarding');
   }

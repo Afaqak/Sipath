@@ -1,6 +1,6 @@
 import { axiosPrivate } from '@/utils';
 import { useEffect } from 'react';
-
+import { getToken } from 'next-auth/jwt';
 import { signOut, useSession } from 'next-auth/react';
 import axios from '../../src/utils/index';
 
