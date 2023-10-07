@@ -70,25 +70,30 @@ const LivePremium = () => {
       user?.user?.id,
       user?.user?.id === tutorId
     );
+
     if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
-      const peer = new Peer(room);
-      const constraints = {
-        video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
-        audio: true,
-      };
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+        const peer = new Peer(room);
+        const constraints = {
+          video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
+          audio: true,
+        };
 
-      navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-        setLocalStream(stream);
-        createVideoElement(stream);
+        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+          setLocalStream(stream);
+          createVideoElement(stream);
 
-        peer.on('connection', (conn) => {
-          conn.on('open', () => {
-            peer.call(conn.peer, stream);
+          peer.on('connection', (conn) => {
+            conn.on('open', () => {
+              peer.call(conn.peer, stream);
+            });
           });
-        });
 
-        socket.emit('broadcaster-connected', { id: tutorId, room });
-      });
+          socket.emit('broadcaster-connected', { id: tutorId, room });
+        });
+      } else {
+        console.error('navigator.mediaDevices is not available.');
+      }
     } else {
       const peer = new Peer();
       setPeer(peer);
@@ -107,7 +112,6 @@ const LivePremium = () => {
       });
     }
   };
-
   const createVideoElement = (stream) => {
     const video = document.createElement('video');
     video.muted = true;
