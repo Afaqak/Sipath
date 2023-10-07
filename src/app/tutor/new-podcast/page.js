@@ -8,7 +8,7 @@ import {
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import React, { useState } from 'react';
-import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import {
   Select,
   SelectContent,
@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation';
 const NewPodcast = () => {
   const { data: user } = useSession();
   const [scheduleType, setScheduleType] = useState('Go Live');
+  const axios = useAxiosPrivate();
   const [podcastType, setPodcastType] = useState('free');
   const [file, setFile] = useState(null);
   const [price, setPrice] = useState(0);

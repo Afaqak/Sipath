@@ -31,27 +31,6 @@ const SignUp = () => {
   const [loadingGoogleSignUp, setLoadingGoogleSignUp] = useState(false);
   const [loadingFacebookSignUp, setLoadingFacebookSignUp] = useState(false);
 
-  console.log(user, 'user from client');
-  // useEffect(() => {
-  //   console.log(user);
-  //   dispatch(setUserDataAndToken(user));
-  //   if (user && user?.isNewUser) {
-  //     toast({
-  //       title: 'Signing You Up 👌',
-  //       description: 'Time to create your Profile...🚀',
-  //     });
-
-  //     router.push('/on-boarding');
-  //   } else if (user?.user && !user?.isNewUser) {
-  //     console.log('here');
-  //     toast({
-  //       title: 'Signing You In! 🟢',
-  //       description: 'You already have an account',
-  //     });
-  //     router.push('/');
-  //   }
-  // }, [user]);
-
   const handleSignUpWithProvider = async (provider) => {
     try {
       if (provider === 'google') {

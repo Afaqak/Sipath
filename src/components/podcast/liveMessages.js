@@ -2,8 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UserAvatar from '../common/userAvatar';
 
-import { faker } from '@faker-js/faker';
-
 export const LiveMessages = ({ messages }) => {
   const messagesContainerRef = useRef(null);
   console.log(messages);
@@ -19,7 +17,7 @@ export const LiveMessages = ({ messages }) => {
         {messages.map((message, index) => (
           <div key={index} className="message gap-2 flex">
             <UserAvatar />
-            <div className="bg-[#777B87D9] text-white p-3 rounded-t-xl rounded-br-xl">
+            <div className="bg-[#777B87D9] text-white p-3 text-sm rounded-t-xl rounded-br-xl">
               {message}
             </div>
           </div>

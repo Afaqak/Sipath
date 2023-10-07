@@ -1,27 +1,22 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Video, ContentContainer } from '@/components';
-import axios from '../../utils/index';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withPrivateRoute } from '@/components/privateRoute';
 import { useSession } from 'next-auth/react';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 const Videos = () => {
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState([]);
   const { data: user } = useSession();
-
+  const axios = useAxiosPrivate();
   useEffect(() => {
     setLoading(true);
     const fetchVideoData = async () => {
       setTimeout(async () => {
         try {
-          const response = await axios.get(`/assets/videos`, {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          const response = await axios.get(`/assets/videos`);
           console.log(response.data);
           setVideos(response.data);
         } catch (error) {

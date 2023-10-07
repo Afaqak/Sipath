@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import { FileInput, VideoUploadType } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useSelector } from 'react-redux';
 import { useToast } from '@/components/hooks/use-toast';
 import {
   Select,
@@ -15,11 +14,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 
 const AddBook = () => {
-  const token = useSelector((state) => state.userAuth.token);
-  const axios = useAxiosPrivate();
+  const { data: user } = useSession();
   const [loading, setLoading] = useState(false);
+  const axios = useAxiosPrivate();
   const [type, setType] = useState('free');
   const [book, setBook] = useState(null);
   const [price, setPrice] = useState(null);
@@ -54,7 +54,7 @@ const AddBook = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${user?.token}`,
             'Content-Type': 'multipart/form-data',
           },
         }
@@ -85,12 +85,13 @@ const AddBook = () => {
           <CoverPreview thumbnail={thumbnail} setThumbnail={setThumbnail} />
         </div>
         <div className="flex justify-end">
-          <Button
+          <button
+            disabled={loading}
             type="submit"
             className="bg-black flex gap-1 rounded-md px-8 mt-4 py-1 text-white"
           >
             Add Book
-          </Button>
+          </button>
         </div>
       </form>
     </div>

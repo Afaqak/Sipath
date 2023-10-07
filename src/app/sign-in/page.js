@@ -26,7 +26,7 @@ const SignUp = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const dispatch = useDispatch();
+
   const router = useRouter();
 
   const onSuccess = () => {
@@ -73,6 +73,7 @@ const SignUp = () => {
       await signIn('credentials', {
         email: data.email,
         password: data.password,
+        callbackUrl: '/',
       }).then((data) => {
         console.log(data, 'run after u know');
       });
@@ -94,7 +95,7 @@ const SignUp = () => {
       } else {
         setLoadingFacebookSignIn(true);
       }
-      await signIn(provider);
+      signIn(provider, null, { prompt: 'login' });
     } catch (error) {
       toast({
         title: 'There was a problem.',

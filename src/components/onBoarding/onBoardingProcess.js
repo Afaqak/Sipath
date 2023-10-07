@@ -1,11 +1,9 @@
 'use client';
 import React, { useState, useRef, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
-import { useDispatch } from 'react-redux';
 import { Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
-import { onBoardUser } from '@/features/onBoard/onBoardThunk';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../hooks/use-toast';
 import axios from '../../utils/index';

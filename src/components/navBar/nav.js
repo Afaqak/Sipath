@@ -109,9 +109,10 @@ export const Navbar = () => {
                 <Button
                   variant="destructive"
                   onClick={async () => {
-                    signOut({
+                    router.refresh();
+                    await signOut({
                       callbackUrl: '/',
-                    });
+                    }).then((res) => {});
                   }}
                 >
                   Log Out
