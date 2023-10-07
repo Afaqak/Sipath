@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import { Modal, AvailableDays, Loader } from '@/components';
 import Image from 'next/image';
-import { onBoardTutor } from '@/features/onBoard/onBoardThunk';
-import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import axios from '../../../utils/index';
+import { useSession } from 'next-auth/react';
 const OnBoardingExpert = () => {
+  const { data: user } = useSession();
   const { toast } = useToast();
-  const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [expertise, setExpertise] = useState([]);
@@ -39,7 +39,7 @@ const OnBoardingExpert = () => {
     console.error('Error creating user:', error);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!hourlyRate) return;
     try {
@@ -50,7 +50,16 @@ const OnBoardingExpert = () => {
         availability,
       };
 
-      dispatch(onBoardTutor({ formData, onSuccess, onError }));
+      // dispatch(onBoardTutor({ formData, onSuccess, onError, axios }));
+      const response = await axios.post('/onboard/tutor', formData, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.data) {
+        onSuccess();
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -115,12 +124,13 @@ const OnBoardingExpert = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button
-              isLoading={loading}
+            <button
+              type="submit"
+              disabled={loading}
               className={`flex items-center gap-2 ${loading ? 'bg-black text-white' : ''}`}
             >
               Complete
-            </Button>
+            </button>
           </div>
         </form>
 

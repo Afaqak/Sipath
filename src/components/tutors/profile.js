@@ -8,9 +8,9 @@ export const Profile = ({ type }) => {
   return (
     <div className=" bg-white mt-10 flex items-center gap-10 flex-col md:flex-row shadow-md mx-auto rounded-md p-4">
       <div className="relative mx-auto flex items-center justify-center">
-        <UserAvatar user={{ name: user.display_name }} className=" w-36 h-36" />
+        <UserAvatar user={{ name: user?.display_name || '' }} className=" w-36 h-36" />
         <button
-          className="font-semibold bg-blue-500 text-white rounded-full px-8 py-1 flex justify-center items-center"
+          className="font-semibold bg-black text-white rounded-full px-8 py-1 flex justify-center items-center"
           style={{
             position: 'absolute',
             bottom: '-5px',

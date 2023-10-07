@@ -115,7 +115,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     try {
       if (!commentReplies[comment?.id]) {
         setLoadingReplies(true);
-        dispatch(fetchCommentReplies({ videoId: id, commentId: parentId, onSuccess }));
+        dispatch(fetchCommentReplies({ videoId: id, commentId: parentId, onSuccess, axios }));
         toggleReplyView(parentId);
       } else {
         toggleReplyView(parentId);

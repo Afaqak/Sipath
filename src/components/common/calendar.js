@@ -127,7 +127,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
         ))}
         {days.map((day, idx) => (
           <div
-            key={idx}
+            key={Math.random() * 100000}
             className={`py-1 ease-in-out ${
               day
                 ? isCurrentDate(day)

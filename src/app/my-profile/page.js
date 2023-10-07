@@ -32,10 +32,9 @@ const MyProfile = () => {
 
   return (
     <>
-      <div className="mt-0.5">
-        <Profile type={'myprofile'} />
-      </div>
+      <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
+        <Profile type={'myprofile'} />
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}

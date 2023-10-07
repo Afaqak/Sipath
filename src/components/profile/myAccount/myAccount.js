@@ -6,6 +6,7 @@ export const MyAccount = () => {
   const [expertise, setExpertise] = useState([]);
   const [modalType, setModalType] = useState('');
   const [modelOpen, setModalOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -43,12 +44,10 @@ export const MyAccount = () => {
     setModalOpen(false);
   };
 
-  let edit = true;
-
   return (
     <div>
       {!edit ? (
-        <MyAccountInfo />
+        <MyAccountInfo setEdit={setEdit} />
       ) : (
         <form className="flex gap-4 flex-col mt-8">
           <div className="flex lg:flex-row flex-col gap-8 w-full">
@@ -219,10 +218,18 @@ export const MyAccount = () => {
             </div>
           </div>
           <div className="flex justify-end gap-4">
-            <button className="px-6 py-1 border-green-800 rounded-md border-2 shadow-md">
+            <button
+              type="button"
+              onClick={() => setEdit(false)}
+              className="px-6 py-1 border-green-800 rounded-md border-2 shadow-md"
+            >
               Confirm
             </button>
-            <button className="px-6 py-1 border-red-400 border-2 rounded-md shadow-md">
+            <button
+              type="button"
+              onClick={() => setEdit(false)}
+              className="px-6 py-1 border-red-400 border-2 rounded-md shadow-md"
+            >
               Cancel
             </button>
           </div>

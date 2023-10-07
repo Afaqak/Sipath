@@ -10,6 +10,7 @@ export const TranslationToggleButton = ({ onClick, color, image }) => {
   };
   return (
     <button
+      type="button"
       onClick={handleButtonClick}
       className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none ${color}`}
     >

@@ -3,79 +3,183 @@ import {
   CalendarComponent,
   FileInput,
   TranslationToggleButton,
-  SubjectDropdown,
   VideoUploadType,
 } from '@/components';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import React, { useState } from 'react';
+import axios from '../../../utils/index';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { useForm, Controller } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const NewPodcast = () => {
-  const [scheduleType, setScheduleType] = useState('');
+  const { data: user } = useSession();
+  const [scheduleType, setScheduleType] = useState('Go Live');
   const [podcastType, setPodcastType] = useState('free');
+  const [file, setFile] = useState(null);
+  const [price, setPrice] = useState(0);
+  const router = useRouter();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const onPodcastSubmit = async (body) => {
+    console.log(body, 'body', file);
+    try {
+      const formData = new FormData();
+      formData.append('title', body.title);
+      formData.append('description', body.description);
+      formData.append('subject', body.subject);
+      formData.append('file', file);
+      if (scheduleType === 'Go Live') {
+        formData.append('live', true);
+      }
+      if (podcastType === 'premium' && price > 0) {
+        formData.append('price', price);
+      }
+      console.log('submit');
+      const response = await axios.post(`/podcasts`, formData, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response.data, 'res');
+      router.push(
+        `/podcast/live?room=${response.data?.podcast?.room_id}&tutorId=${response.data?.podcast?.tutor_id}`
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="relative mx-auto flex gap-4 justify-center  flex-col px-4 my-16">
-      <div className="flex gap-4 lg:flex-row w-fit lg:w-auto flex-col lg:items-start justify-center">
+      <form
+        onSubmit={handleSubmit(onPodcastSubmit)}
+        className="flex gap-4 lg:flex-row w-fit lg:w-auto flex-col lg:items-start justify-center"
+      >
         <div className="lg:w-fit ">
-          <VideoUploadType type={podcastType} setType={setPodcastType} />
-          <VideoInfoForm />
+          <VideoUploadType setPrice={setPrice} type={podcastType} setType={setPodcastType} />
+          <VideoInfoForm file={file} setFile={setFile} errors={errors} control={control} />
         </div>
 
         <div className="md:w-fit w-full">
           <ScheduleType scheduleType={scheduleType} setScheduleType={setScheduleType} />
           <VideoSchedule scheduleType={scheduleType} setScheduleType={setScheduleType} />
           <div className="flex justify-end">
-            <button
-              className={`rounded-md w-full md:w-fit px-8 mt-4 py-1 text-white ${
-                scheduleType === 'Go Live' ? 'bg-[#FB3C22]' : 'bg-black'
-              }`}
+            <Button
+              type="submit"
+              className={`mt-4 text-lg ${scheduleType === 'Go Live' ? 'bg-[#FB3C22]' : 'bg-black'}`}
             >
               {scheduleType === 'Go Live' ? 'Go Live' : 'Schdeule'}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
 
 export default NewPodcast;
 
-const VideoInfoForm = () => {
-  const [dropDown, setDropDown] = useState(null);
+const VideoInfoForm = ({ control, errors, setFile, file }) => {
   const [ticketType, setTicketType] = useState('unlimited');
-  const [file, setFile] = useState(null);
-
-  // Function to handle radio button change
 
   return (
     <div className="bg-white text-sm p-4 flex md:flex-row flex-col gap-4 rounded-md shadow-md mt-4">
       <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
         <div className="flex flex-col">
-          <label className="text-sm">Video title</label>
-          <input
-            placeholder="Enter title..."
-            className="shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] rounded-md px-3 py-[0.35rem] placeholder:text-sm border-none focus:outline-none"
-            type="text"
+          <label className="text-[#616161] font-light">BOOK TITLE</label>
+          <Controller
+            name="title"
+            control={control}
+            defaultValue=""
+            rules={{ required: 'Book title is required' }}
+            render={({ field }) => (
+              <input
+                {...field}
+                name="title"
+                placeholder="Enter title..."
+                className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none ${
+                  errors.bookTitle ? 'border-red-500' : ''
+                }`}
+                type="text"
+              />
+            )}
           />
+          {errors.bookTitle && (
+            <span className="text-red-500 text-sm mt-1 lowercase">{errors.bookTitle.message}</span>
+          )}
         </div>
         <div className="flex flex-col">
-          <label className="text-sm">Video Description</label>
-          <textarea
-            rows={5}
-            cols={6}
-            typeof="text"
-            placeholder="Enter description"
-            className="md:w-48 w-full  shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none resize-none "
+          <label className="text-[#616161] font-light">Video Description</label>
+          <Controller
+            name="description"
+            control={control}
+            defaultValue=""
+            rules={{ required: 'Book title is required' }}
+            render={({ field }) => (
+              <input
+                {...field}
+                placeholder="Enter title..."
+                className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none ${
+                  errors.bookTitle ? 'border-red-500' : ''
+                }`}
+                type="text"
+              />
+            )}
           />
+          {errors.bookTitle && (
+            <span className="text-red-500 text-sm mt-1 lowercase">{errors.bookTitle.message}</span>
+          )}
         </div>
       </div>
       <div className="flex flex-col justify-between gap-6">
-        <div>
-          <label>SUBJECT</label>
-          <SubjectDropdown dropDown={dropDown} setDropDown={setDropDown} />
+        <div className="flex flex-col">
+          <label className="text-sm text-[#616161] font-light">SUBJECT</label>
+          <Controller
+            name="subject"
+            control={control}
+            defaultValue=""
+            rules={{ required: 'Subject is required' }}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a Subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Subjects</SelectLabel>
+                    <SelectItem value="1">English</SelectItem>
+                    <SelectItem value="2">Chemistry</SelectItem>
+                    <SelectItem value="3">Physics</SelectItem>
+                    <SelectItem value="4">Science</SelectItem>
+                    <SelectItem value="5">Maths</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.subject && (
+            <span className="text-red-500 text-sm mt-1 lowercase">{errors.subject.message}</span>
+          )}
         </div>
+
         <div>
           TICKET LIMIT <span>(OPTIONAL)</span>
           <div className="flex gap-4 ">
@@ -176,9 +280,7 @@ const TimeSlot = () => {
   return (
     <div>
       <div className="flex md:flex-row flex-col md:items-center pb-2 px-2 justify-between md:pb-0">
-        {/* Calendar */}
         <CalendarComponent noRound={true} />
-
         <div className=" md:block flex px-4 justify-between">
           <div className="flex flex-col">
             <label className="font-thin">TIME:</label>

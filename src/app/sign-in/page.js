@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 const SignUp = () => {
   const { toast } = useToast();
   const { data: user } = useSession();
+  console.log(user);
   const [loadingSignIn, setLoadingSignIn] = useState(false);
   const [loadingGoogleSignIn, setLoadingGoogleSignIn] = useState(false);
   const [loadingFacebookSignIn, setLoadingFacebookSignIn] = useState(false);
@@ -39,7 +40,6 @@ const SignUp = () => {
 
   useEffect(() => {
     console.log(user);
-    dispatch(setUserDataAndToken(user));
     if (user && user?.isNewUser) {
       toast({
         title: 'Signing You Up 👌',
@@ -67,14 +67,15 @@ const SignUp = () => {
 
   const onSubmit = async (data) => {
     console.log('clicked');
+    console.log('clicked');
 
     try {
-      setLoadingSignIn(true);
-      const { password, email } = data;
-      console.log(loadingSignIn);
-      const user = { email, password };
-
-      dispatch(signInUser({ user, onSuccess, onError }));
+      await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+      }).then((data) => {
+        console.log(data, 'run after u know');
+      });
     } catch (error) {
       toast({
         title: 'There was a problem.',

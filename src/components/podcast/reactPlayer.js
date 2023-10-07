@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useSelector } from 'react-redux';
 import { useSearchParams } from 'next/navigation';
 
 export const ContentPlayer = ({ noPremium }) => {
@@ -45,29 +44,6 @@ export const ContentPlayer = ({ noPremium }) => {
           {videoBlob && (
             <ReactPlayer controls width="100%" height="100%" url={URL.createObjectURL(videoBlob)} />
           )}
-          {/* <div
-            className={`${videoBlob ? 'hidden' : 'absolute'} w-full h-full top-0 bottom-0 ${
-              noPremium ? 'bg-transparent' : 'bg-[#D9D9D9]'
-            } flex items-center justify-center `}
-          >
-            <div className="flex flex-col gap-4">
-              <label
-                htmlFor="fileInput"
-                id="premium"
-                className="cursor-pointer font-medium text-lg"
-              >
-                Click me to add a video
-                <input className="hidden" type="file" id="fileInput" accept="video/*" />
-              </label>
-              <p
-                className={`bg-green-700 shadow-md rounded-md px-4 py-1 text-white font-medium text-lg text-center ${
-                  noPremium ? 'hidden' : 'block'
-                }`}
-              >
-                Buy Ticket for $19.99
-              </p>
-            </div>
-          </div> */}
         </div>
       )}
     </div>

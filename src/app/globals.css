@@ -316,3 +316,90 @@ video {
 .custom-spinner {
   animation: custom-spin 1s linear infinite;
 }
+
+/* Add your custom styles to a CSS file or a style block in your component */
+
+/* Example styles for the date picker container */
+.date-picker-container {
+  border: 1px solid #ccc !important;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 300px;
+  background-color: #fff;
+}
+
+.date-picker-input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.react-datepicker__day-name {
+  color: white !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  color: white !important;
+}
+.react-datepicker__header {
+  background-color: black !important;
+  padding-top: 5px !important;
+  color: white !important;
+  border: none;
+}
+
+.react-datepicker__year-dropdown {
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  width: 100px;
+  color: #333 !important;
+}
+
+.react-datepicker__year-option {
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.react-datepicker__year-option--selected {
+  color: #fff;
+}
+
+.react-datepicker__day {
+  font-size: 14px;
+
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.react-datepicker__today-button {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.react-datepicker__portal {
+  position: fixed;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

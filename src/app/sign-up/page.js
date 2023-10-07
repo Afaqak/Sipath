@@ -8,15 +8,15 @@ import { useDispatch } from 'react-redux';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import { createUser } from '@/features/auth/authThunk';
 import { Button } from '@/components/ui/button';
-import { signIn } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { setUserDataAndToken } from '@/features/auth/authSlice';
 import { useToast } from '@/components/hooks/use-toast';
 import { Icons } from '@/components';
+import axios from '../../utils/index';
 
 const SignUp = () => {
   const { toast } = useToast();
-  const { data: user } = useSession();
+  const { data: user, update } = useSession();
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -32,25 +32,25 @@ const SignUp = () => {
   const [loadingFacebookSignUp, setLoadingFacebookSignUp] = useState(false);
 
   console.log(user, 'user from client');
-  useEffect(() => {
-    console.log(user);
-    dispatch(setUserDataAndToken(user));
-    if (user && user?.isNewUser) {
-      toast({
-        title: 'Signing You Up 👌',
-        description: 'Time to create your Profile...🚀',
-      });
+  // useEffect(() => {
+  //   console.log(user);
+  //   dispatch(setUserDataAndToken(user));
+  //   if (user && user?.isNewUser) {
+  //     toast({
+  //       title: 'Signing You Up 👌',
+  //       description: 'Time to create your Profile...🚀',
+  //     });
 
-      router.push('/on-boarding');
-    } else if (user?.user && !user?.isNewUser) {
-      console.log('here');
-      toast({
-        title: 'Signing You In! 🟢',
-        description: 'You already have an account',
-      });
-      router.push('/');
-    }
-  }, [user]);
+  //     router.push('/on-boarding');
+  //   } else if (user?.user && !user?.isNewUser) {
+  //     console.log('here');
+  //     toast({
+  //       title: 'Signing You In! 🟢',
+  //       description: 'You already have an account',
+  //     });
+  //     router.push('/');
+  //   }
+  // }, [user]);
 
   const handleSignUpWithProvider = async (provider) => {
     try {
@@ -59,7 +59,9 @@ const SignUp = () => {
       } else {
         setLoadingFacebookSignUp(true);
       }
-      await signIn(provider);
+      await signIn(provider, {
+        callbackUrl: '/',
+      });
     } catch (error) {
       toast({
         title: 'There was a problem.',
@@ -78,11 +80,16 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     try {
       setLoadingSignUp(true);
-      const { password, email, confirmPassword } = data;
+      const { password, email } = data;
       console.log(loadingSignUp);
       const user = { email, password };
-
-      dispatch(createUser({ user, onSuccess, onReject }));
+      const response = await axios.post('/auth/signup', user);
+      console.log(response, 'response');
+      await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/on-boarding',
+      });
     } catch (error) {
       console.error('Error creating user:', error);
     } finally {

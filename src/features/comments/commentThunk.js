@@ -47,7 +47,7 @@ export const fetchPrimaryComments = createAsyncThunk(
 
 export const fetchCommentReplies = createAsyncThunk(
   'comments/fetchCommentReplies',
-  async ({ videoId, commentId, onSuccess, limit = 10 }) => {
+  async ({ videoId, commentId, onSuccess, limit = 10, axios }) => {
     const token = JSON.parse(localStorage.getItem('token'));
     try {
       const response = await axios.get(`/assets/video/${videoId}/comments/${commentId}?limit=3`, {

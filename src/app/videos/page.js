@@ -1,25 +1,24 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { VideoItem, Video, ContentContainer } from '@/components';
+import { Video, ContentContainer } from '@/components';
 import axios from '../../utils/index';
 import { Skeleton } from '@/components/ui/skeleton';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { withPrivateRoute } from '@/components/privateRoute';
+import { useSession } from 'next-auth/react';
 
 const Videos = () => {
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState([]);
-  const token = JSON.parse(localStorage.getItem('token'));
-  const axiosPrivate = useAxiosPrivate();
+  const { data: user } = useSession();
+
   useEffect(() => {
     setLoading(true);
     const fetchVideoData = async () => {
       setTimeout(async () => {
         try {
-          const response = await axiosPrivate.get(`/assets/videos`, {
+          const response = await axios.get(`/assets/videos`, {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${user?.token}`,
               'Content-Type': 'application/json',
             },
           });
@@ -30,10 +29,11 @@ const Videos = () => {
         } finally {
           setLoading(false);
         }
-      }, 2000);
+      }, 1000);
     };
-
-    fetchVideoData();
+    if (user?.token) {
+      fetchVideoData();
+    }
   }, []);
 
   const LoadingSkeletons = () => (

@@ -1,74 +1,73 @@
 'use client';
-import React, { useState } from 'react';
-import { ContentContainer, Video, ArchivedPodcast, UpcomingPodcast } from '@/components';
-
-const newUploads = [
-  {
-    id: 1,
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-6.jpg',
-    account: 'Account 1',
-    views: '1.5M',
-    rating: '4.5',
-    live: true,
-  },
-  {
-    id: 2,
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-7.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-    live: true,
-  },
-  {
-    id: 3,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-8.png',
-    account: 'Account 3',
-    views: '1.5M',
-    rating: '4.5',
-    live: true,
-  },
-  {
-    id: 4,
-    live: true,
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-9.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 5,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-10.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-    live: true,
-  },
-  ,
-  {
-    id: 2,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-11.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-    live: true,
-  },
+import React, { useEffect, useState } from 'react';
+import { ContentContainer, ArchivedPodcast, UpcomingPodcast } from '@/components';
+import axios from '../../utils/index';
+import { useSession } from 'next-auth/react';
+import { Icons } from '@/components';
+import UserAvatar from '@/components/common/userAvatar';
+import Link from 'next/link';
+import Image from 'next/image';
+const thumbnails = [
+  '/new videos/demo-7.jpg',
+  '/new videos/demo-9.jpg',
+  '/new videos/demo-10.jpg',
+  '/new videos/demo-11.jpg',
+  '/new videos/demo-8.png',
 ];
+
+const formatTimeAgo = (timestamp) => {
+  const now = new Date();
+  const createdAt = new Date(timestamp);
+
+  const timeDiff = now - createdAt;
+  const seconds = Math.floor(timeDiff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+
+  if (months > 0) {
+    return `${months} month${months > 1 ? 's' : ''} ago`;
+  } else if (weeks > 0) {
+    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+  } else if (days > 0) {
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else if (hours > 0) {
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (minutes > 0) {
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else {
+    return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+  }
+};
 
 const PodcastPage = () => {
   const [activeButton, setActiveButton] = useState('live');
-
+  const [podcasts, setPodcasts] = useState([]);
+  const { data: user } = useSession();
   const handleButtonClick = (button) => {
     setActiveButton(button);
   };
+
+  useEffect(() => {
+    const fetchPodcasts = async () => {
+      try {
+        const response = await axios.get('/podcasts', {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        setPodcasts(response.data);
+        console.log(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPodcasts();
+  }, []);
 
   return (
     <ContentContainer>
@@ -178,10 +177,86 @@ const PodcastPage = () => {
         </div>
         {activeButton === 'upcoming' && <UpcomingPodcast />}
       </div>
-      {activeButton === 'live' && <Video videos={newUploads} />}
+      {activeButton === 'live' && <PodcastVideos podcasts={podcasts} />}
       {activeButton === 'archived' && <ArchivedPodcast />}
     </ContentContainer>
   );
 };
 
 export default PodcastPage;
+
+const PodcastVideos = ({ podcasts }) => {
+  return (
+    <div className="grid grid-cols-1 py-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4">
+      {podcasts.map((podcast) => (
+        <PodcastItem key={Math.random() * 1000000} podcast={podcast} />
+      ))}
+    </div>
+  );
+};
+
+const PodcastItem = ({ podcast }) => {
+  return (
+    <Link
+      href={`/podcast/live?room=${podcast?.room_id}&listener=true`}
+      className=" h-[18.6rem] relative block mb-6 w-ful p-4 bg-white shadow-md rounded-md"
+    >
+      {podcast?.live && (
+        <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">
+          <Icons.live className="w-5 h-5" />
+          Live
+        </span>
+      )}
+
+      {podcast?.price && podcast?.price > 0 && (
+        <span className="absolute top-2 z-[1000] left-0 bg-green-[#1C8827] bg-green-700 text-[0.7rem] py-[0.15rem]  rounded-r-md text-white px-3 font-medium">
+          {podcast?.price}$
+        </span>
+      )}
+      <div className="relative">
+        <Icons.play />
+        <Image
+          src={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+          alt={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+          width={300}
+          height={200}
+          className="rounded-md object-cover w-full h-44"
+        />
+      </div>
+      <div className="mt-3 flex gap-2 items">
+        <UserAvatar />
+        <div>
+          <h1 className="text-medium font-semibold mb-[0.20rem] line-clamp-2">{podcast?.title}</h1>
+          <div className="flex items-center text-sm gap-2 text-gray-700">
+            <span>authors</span>
+          </div>
+          <div className="flex items-center text-sm gap-2 text-gray-700">
+            <span>{podcast?.views} views</span>
+            <span>&bull;</span>
+            <span>{formatTimeAgo(podcast.createdAt)}</span>
+            <span>&bull;</span>
+            <div className="flex items-center">
+              {podcast?.rating}{' '}
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="orange"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="none"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};
