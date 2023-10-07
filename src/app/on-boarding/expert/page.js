@@ -1,14 +1,14 @@
 'use client';
 import React, { useState } from 'react';
-import { Modal, AvailableDays, Loader } from '@/components';
+import { Modal, AvailableDays } from '@/components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 const OnBoardingExpert = () => {
-  const { data: user } = useSession();
+  const { data: user, update } = useSession();
+  const axios = useAxiosPrivate();
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -30,15 +30,6 @@ const OnBoardingExpert = () => {
     router.push('/');
   };
 
-  const onError = (error) => {
-    toast({
-      title: 'Oops! Something went wrong. 😞',
-      variant: 'destructuve',
-    });
-
-    console.error('Error creating user:', error);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!hourlyRate) return;
@@ -50,14 +41,23 @@ const OnBoardingExpert = () => {
         availability,
       };
 
-      // dispatch(onBoardTutor({ formData, onSuccess, onError, axios }));
       const response = await axios.post('/onboard/tutor', formData, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
           'Content-Type': 'application/json',
         },
       });
+
       if (response.data) {
+        console.log(response.data, 'expert');
+        const newSession = {
+          ...user,
+          user: {
+            ...user.user,
+            user: response.data,
+          },
+        };
+        await update(newSession);
         onSuccess();
       }
     } catch (err) {
@@ -127,7 +127,9 @@ const OnBoardingExpert = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`flex items-center gap-2 ${loading ? 'bg-black text-white' : ''}`}
+              className={`flex items-center rounded-md px-8 py-1 gap-2 ${
+                loading ? 'bg-black text-white' : 'border-2 border-black text-black'
+              }`}
             >
               Complete
             </button>

@@ -44,7 +44,6 @@ const LivePremium = () => {
   useEffect(() => {
     import('peerjs').then((module) => {
       const Peer = module.default;
-
       if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
         const peer = new Peer(room);
         const constraints = {
@@ -79,10 +78,10 @@ const LivePremium = () => {
         peer.on('open', () => {
           peer.connect(room);
           socket.emit('listener-connected', { id: peer.id, room });
+          socket.emit('chat-message', { room, message: `${user?.user?.display_name} joined!` });
         });
       }
     });
-    // initializePeer();
   }, []);
 
   const initializeSocket = () => {
@@ -99,45 +98,6 @@ const LivePremium = () => {
     socket.on('call-ended', () => {
       router.push('/podcast');
     });
-  };
-
-  const initializePeer = () => {
-    if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
-      const peer = new Peer(room);
-      const constraints = {
-        video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
-        audio: true,
-      };
-
-      navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-        setLocalStream(stream);
-        createVideoElement(stream);
-
-        peer.on('connection', (conn) => {
-          conn.on('open', () => {
-            peer.call(conn.peer, stream);
-          });
-        });
-
-        socket.emit('broadcaster-connected', { id: tutorId, room });
-      });
-    } else {
-      const peer = new Peer();
-      setPeer(peer);
-
-      peer.on('call', (call) => {
-        call.on('stream', (remoteStream) => {
-          setLocalStream(remoteStream);
-          createVideoElement(remoteStream);
-        });
-        call.answer(null);
-      });
-
-      peer.on('open', () => {
-        peer.connect(room);
-        socket.emit('listener-connected', { id: peer.id, room });
-      });
-    }
   };
 
   const createVideoElement = (stream) => {

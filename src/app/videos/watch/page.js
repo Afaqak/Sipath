@@ -2,8 +2,6 @@
 import { ContentPlayer, VideoInfo, CreateComment, CommentsSection } from '@/components';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import axios from '../../../utils/index';
 import { useSearchParams } from 'next/navigation';
 import { resetComments, setComments } from '@/features/comments/commentSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
@@ -17,8 +15,7 @@ const videoArray = [
 
 const WatchVideo = () => {
   const [primaryComments, setPrimaryComments] = useState([]);
-  const axiosPrivate = useAxiosPrivate();
-  const dispatch = useDispatch();
+  const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -26,9 +23,7 @@ const WatchVideo = () => {
     console.count('times');
     dispatch(resetComments());
     async function getComments() {
-      const response = await axiosPrivate.get(
-        `/assets/video/${id}/comments?limit=10&set=0&order=desc`
-      );
+      const response = await axios.get(`/assets/video/${id}/comments?limit=10&set=0&order=desc`);
       console.log(response.data, 'from video');
       dispatch(setComments(response.data.comments));
     }
