@@ -8,10 +8,6 @@ import ReactPlayer from 'react-player';
 import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-const Peer = dynamic(() => import('peerjs'), {
-  ssr: false,
-});
 
 const LivePremium = () => {
   const params = useSearchParams();
@@ -25,7 +21,7 @@ const LivePremium = () => {
   const [localStream, setLocalStream] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [videoMuted, setVideoMuted] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
   const [audioMuted, setAudioMuted] = useState(false);
 
   const endCall = () => {
@@ -46,36 +42,10 @@ const LivePremium = () => {
   }, []);
 
   useEffect(() => {
-    initializePeer();
-  }, []);
+    import('peerjs').then((module) => {
+      const Peer = module.default;
 
-  const initializeSocket = () => {
-    socket.connect();
-    socket.on('connect', () => {
-      console.log('Socket connected');
-    });
-
-    socket.on('chat-message', (message) => {
-      console.log('Received chat messsage:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    socket.on('call-ended', () => {
-      router.push('/podcast');
-    });
-  };
-
-  const initializePeer = () => {
-    console.log(
-      user?.user?.isTutor,
-      tutorId,
-
-      user?.user?.id,
-      user?.user?.id === tutorId
-    );
-
-    if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
-      if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+      if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
         const peer = new Peer(room);
         const constraints = {
           video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
@@ -95,8 +65,62 @@ const LivePremium = () => {
           socket.emit('broadcaster-connected', { id: tutorId, room });
         });
       } else {
-        console.error('navigator.mediaDevices is not available.');
+        const peer = new Peer();
+        setPeer(peer);
+
+        peer.on('call', (call) => {
+          call.on('stream', (remoteStream) => {
+            setLocalStream(remoteStream);
+            createVideoElement(remoteStream);
+          });
+          call.answer(null);
+        });
+
+        peer.on('open', () => {
+          peer.connect(room);
+          socket.emit('listener-connected', { id: peer.id, room });
+        });
       }
+    });
+    // initializePeer();
+  }, []);
+
+  const initializeSocket = () => {
+    socket.connect();
+    socket.on('connect', () => {
+      console.log('Socket connected');
+    });
+
+    socket.on('chat-message', (message) => {
+      console.log('Received chat messsage:', message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    socket.on('call-ended', () => {
+      router.push('/podcast');
+    });
+  };
+
+  const initializePeer = () => {
+    if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
+      const peer = new Peer(room);
+      const constraints = {
+        video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
+        audio: true,
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        setLocalStream(stream);
+        createVideoElement(stream);
+
+        peer.on('connection', (conn) => {
+          conn.on('open', () => {
+            peer.call(conn.peer, stream);
+          });
+        });
+
+        socket.emit('broadcaster-connected', { id: tutorId, room });
+      });
     } else {
       const peer = new Peer();
       setPeer(peer);
@@ -115,6 +139,7 @@ const LivePremium = () => {
       });
     }
   };
+
   const createVideoElement = (stream) => {
     const video = document.createElement('video');
     video.muted = true;
