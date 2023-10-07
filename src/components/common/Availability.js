@@ -98,7 +98,7 @@ export const AvailableDays = ({ setAvailability }) => {
                     className="w-full custom-time-picker text-sm flex"
                     showSecond={false}
                     clearIcon={false}
-                    format="HH:mm"
+                    format="hh:mm A"
                     placeholder="Until"
                     onChange={(time) => handleTimeChange(time, day, 'until', slotIndex)}
                     value={slot.until ? moment(slot.until, 'HH:mm') : null}

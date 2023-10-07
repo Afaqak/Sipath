@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import { SubjectDropdown, FileInput, VideoUploadType } from '@/components';
+import { FileInput, VideoUploadType } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSelector } from 'react-redux';

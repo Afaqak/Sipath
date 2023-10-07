@@ -82,7 +82,6 @@ const Home = () => {
   if (data?.isNewUser) {
     router.push('/on-boarding');
   }
-  console.log('run');
 
   return (
     <div className="">

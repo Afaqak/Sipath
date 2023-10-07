@@ -92,7 +92,7 @@ const TimeSlot = ({ handleChange }) => {
               <TimePicker
                 disableClock
                 clearIcon={null}
-                format="HH:mm"
+                format="hh:mm A"
                 className={'px-4 focus:outline-none border rounded-md bg-gray-50'}
                 placeholder="Select time"
                 value={time}

@@ -74,7 +74,7 @@ const SignUp = () => {
         email: data.email,
         password: data.password,
       }).then((data) => {
-        console.log(data, 'run');
+        console.log(data, 'run after u know');
       });
     } catch (error) {
       toast({
