@@ -1,4 +1,5 @@
 'use selector';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -77,7 +78,7 @@ export const MyAccountInfo = ({ setEdit }) => {
 
               <div className="flex justify-between">
                 <div className="flex w-[50%] justify-between">
-                  <h2 className="text-[#1850BC]">Twitter</h2>
+                  <h2 className="text-main">Twitter</h2>
                   <p>@theTeacher</p>
                 </div>
                 <div className="flex gap-2">
@@ -87,7 +88,7 @@ export const MyAccountInfo = ({ setEdit }) => {
 
               <div className="flex justify-between">
                 <div className="flex w-[50%] justify-between">
-                  <h2 className="text-[#0024DD]">Facebook</h2>
+                  <h2 className="text-main">Facebook</h2>
                   <p className="text-center">__</p>
                 </div>
                 <div className="flex gap-2">
@@ -107,12 +108,13 @@ export const MyAccountInfo = ({ setEdit }) => {
               </div>
             </div>
             <div className="flex items-end justify-end flex-grow">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setEdit(true)}
-                className="px-6 py-1 flex w-fit  self-end  border-[#1C8827] text-[#1C8827] font-medium border-2 rounded-md shadow-md"
+                className="border-subcolor text-subcolor font-medium"
               >
                 Edit Information
-              </button>
+              </Button>
             </div>
           </div>
         </div>

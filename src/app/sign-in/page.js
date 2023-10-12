@@ -2,24 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInUser } from '@/features/auth/authThunk';
-import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
-import { setUserDataAndToken } from '@/features/auth/authSlice';
-import { useToast } from '@/components/hooks/use-toast';
+import toast from 'react-hot-toast';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
+import { errorToast, successToast } from '@/utils/toasts';
 const SignUp = () => {
-  const { toast } = useToast();
   const { data: user } = useSession();
-  console.log(user);
-  const [loadingSignIn, setLoadingSignIn] = useState(false);
-  const [loadingGoogleSignIn, setLoadingGoogleSignIn] = useState(false);
-  const [loadingFacebookSignIn, setLoadingFacebookSignIn] = useState(false);
+  console.log(user, 'new user');
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -29,85 +24,48 @@ const SignUp = () => {
 
   const router = useRouter();
 
-  const onSuccess = () => {
-    toast({
-      title: 'Signing You In! 🟢',
-    });
-    reset();
-    router.push('/');
-    setLoadingSignIn(false);
-  };
-
   useEffect(() => {
     console.log(user);
     if (user && user?.isNewUser) {
-      toast({
-        title: 'Signing You Up 👌',
-        description: 'Time to create your Profile...🚀',
-      });
-
+      successToast('Signing You Up!', '#1C8827');
       router.push('/on-boarding');
     } else if (user?.user && !user?.isNewUser) {
       console.log('here');
-      toast({
-        title: 'Signing You In! 🟢',
-      });
+      successToast('Signing You In!', '#1850BC');
       router.push('/');
     }
   }, [user]);
 
-  const onError = () => {
-    setLoadingSignIn(false);
-    toast({
-      title: 'There was a problem.',
-      description: `There was an error logging in.`,
-      variant: 'destructive',
-    });
-  };
-
   const onSubmit = async (data) => {
-    console.log('clicked');
-    console.log('clicked');
-
     try {
+      setLoading(true);
       await signIn('credentials', {
         email: data.email,
         password: data.password,
-        callbackUrl: '/',
+        redirect: false,
       }).then((data) => {
-        console.log(data, 'run after u know');
+        if (data.error !== null) {
+          errorToast('An error occured!', '#fb3c22');
+        }
+        setLoading(false);
       });
     } catch (error) {
-      toast({
-        title: 'There was a problem.',
-        description: `There was an error logging in.`,
-        variant: 'destructive',
-      });
+      errorToast('An error occured!', '#fb3c22');
     } finally {
-      setLoadingSignIn(false);
+      setLoading(false);
     }
   };
 
   const handleSignUpWithProvider = async (provider) => {
     try {
-      if (provider === 'google') {
-        setLoadingGoogleSignIn(true);
-      } else {
-        setLoadingFacebookSignIn(true);
-      }
-      signIn(provider, null, { prompt: 'login' });
-    } catch (error) {
-      toast({
-        title: 'There was a problem.',
-        description: `There was an error logging in with ${provider}`,
-        variant: 'destructive',
+      setLoading(true);
+      await signIn(provider, { redirect: false }, { prompt: 'login' }).then((data) => {
+        console.log(provider, data);
       });
+    } catch (error) {
+      errorToast('An error occured!', '#fb3c22');
     } finally {
-      if (provider === 'google') {
-        setLoadingGoogleSignIn(false);
-      } else {
-        setLoadingFacebookSignIn(false);
-      }
+      setLoading(false);
     }
   };
 
@@ -128,7 +86,7 @@ const SignUp = () => {
                       message: 'Invalid email address',
                     },
                   })}
-                  disabled={loadingSignIn || loadingFacebookSignIn || loadingGoogleSignIn}
+                  disabled={loading}
                   placeholder="Email Address"
                   type="text"
                   className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
@@ -142,7 +100,7 @@ const SignUp = () => {
               </div>
               <div>
                 <PasswordInput
-                  disabled={loadingSignIn || loadingFacebookSignIn || loadingGoogleSignIn}
+                  disabled={loading}
                   name={'password'}
                   register={{
                     ...register('password', {
@@ -165,9 +123,11 @@ const SignUp = () => {
                 Forgot Password ?
               </span>
               <Button
-                isLoading={loadingSignIn}
+                disabled={loading}
                 variant="outline"
-                className={`border-black flex gap-2 ${loadingSignIn ? 'bg-black text-white' : ''}`}
+                className={`border-black border-2 flex gap-2 ${
+                  loading ? 'bg-black text-white' : ''
+                }`}
                 type="submit"
               >
                 Confirm
@@ -176,23 +136,22 @@ const SignUp = () => {
             <span className="text-center text-lg -my-2 font-semibold">Or</span>
 
             <Button
-              isLoading={loadingGoogleSignIn}
+              disabled={loading}
               className="w-full gap-2 bg-black flex items-center justify-center"
               onClick={() => {
-                console.log('clicked');
                 handleSignUpWithProvider('google');
               }}
             >
-              {loadingGoogleSignIn ? null : <Icons.google className="h-4" />}
+              <Icons.google className="h-4" />
               Sign In with Google
             </Button>
 
             <Button
-              isLoading={loadingFacebookSignIn}
+              disabled={loading}
               className="w-full hover:bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
               onClick={() => handleSignUpWithProvider('facebook')}
             >
-              {loadingFacebookSignIn ? null : <Icons.facebook className="h-4" />}
+              <Icons.facebook className="h-4" />
               Sign In with Facebook
             </Button>
           </div>

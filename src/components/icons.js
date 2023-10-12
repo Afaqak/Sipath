@@ -372,4 +372,104 @@ export const Icons = {
       </svg>
     );
   },
+  elipsis(props) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+        />
+      </svg>
+    );
+  },
+  trash(props) {
+    return (
+      <svg
+        {...props}
+        width="15"
+        height="19"
+        viewBox="0 0 15 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.5 9.91634V8.73491C2.5 7.87901 2.2224 7.0462 1.70886 6.36149V6.36149C1.00477 5.4227 1.67462 4.08301 2.8481 4.08301H12.1519C13.3254 4.08301 13.9952 5.4227 13.2911 6.36149V6.36149C12.7776 7.0462 12.5 7.87901 12.5 8.73491V13.4163C12.5 15.6255 10.7091 17.4163 8.5 17.4163H6.5C4.29086 17.4163 2.5 15.6255 2.5 13.4163V13.2497"
+          stroke="#FB3C22"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M9.16699 13.25L9.16699 8.25"
+          stroke="#FB3C22"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M5.83301 13.25L5.83301 8.25"
+          stroke="#FB3C22"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M9.69736 1.84598C9.43524 1.67814 9.12535 1.58301 8.79878 1.58301H6.20132C5.87475 1.58301 5.56486 1.67814 5.30273 1.84598"
+          stroke="#FB3C22"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  },
+  edit(props) {
+    return (
+      <svg
+        {...props}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10.565 7.40509L15.3036 2.6593C16.3753 1.58594 18.1136 1.58529 19.1861 2.65783L21.465 4.93666C22.5284 6.00005 22.5394 7.72157 21.4897 8.79853L11.2882 19.2654C10.5131 20.0606 9.45011 20.509 8.34008 20.509L5.21985 20.5088C4.34521 20.5088 3.64671 19.7797 3.6835 18.9051V18.9051L3.75095 17.3016L3.8184 15.698V15.698C3.86178 14.6666 4.29041 13.6892 5.01948 12.959L7.22542 10.7497"
+          strokeWidth="2.05981"
+          strokeLinecap="round"
+        />
+        <path
+          d="M16.5821 8.41022L18.8975 10.7256"
+          strokeWidth="2.05981"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  },
+  expantArrow(props) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-chevron-down"
+      >
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    );
+  },
 };

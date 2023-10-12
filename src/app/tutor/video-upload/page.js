@@ -18,10 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { errorToast, successToast } from '@/utils/toasts';
 
 const VideoUpload = () => {
   const token = useSelector((state) => state.userAuth?.token);
   console.log('token from vidup', token);
+
   const axios = useAxiosPrivate();
   const [videoType, setVideoType] = useState('free');
   const [courseTopic, setCourseTopic] = useState('');
@@ -31,6 +33,7 @@ const VideoUpload = () => {
   const [selectedTab, setSelectedTab] = useState('individual');
   const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
+
   function cancelUpload() {
     abortController.abort();
   }
@@ -50,11 +53,13 @@ const VideoUpload = () => {
         duration: 0,
         loading: false,
         uploadProgress: 0,
+        quiz: null,
+        quiz_solution: null,
       },
     ],
   };
   const [sections, setSections] = useState([initialState]);
-
+  console.log(sections);
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].title = title;
@@ -63,6 +68,7 @@ const VideoUpload = () => {
   };
 
   const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
+    e.preventDefault();
     console.log(e);
     const { name, value } = e.target;
     const updatedSections = [...sections];
@@ -83,6 +89,17 @@ const VideoUpload = () => {
   const handleUpdateVideo = (sectionIndex, videoIndex, video) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].videos[videoIndex].video = video;
+    setSections(updatedSections);
+  };
+
+  const handleQuizUpload = (sectionIndex, videoIndex, quiz) => {
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].videos[videoIndex].quiz = quiz;
+    setSections(updatedSections);
+  };
+  const handleQuizSolution = (sectionIndex, videoIndex, quizSolution) => {
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].videos[videoIndex].quiz_solution = quizSolution;
     setSections(updatedSections);
   };
 
@@ -159,16 +176,6 @@ const VideoUpload = () => {
 
     setSections([...updatedSections, newSection]);
   };
-  console.log(sections);
-  const generateUniqueVideoId = (videosInSection) => {
-    let newId =
-      videosInSection.length > 0 ? Math.max(...videosInSection.map((video) => video.id)) + 1 : 0;
-
-    while (videosInSection.some((video) => video.id === newId)) {
-      newId++;
-    }
-    return newId;
-  };
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -227,8 +234,14 @@ const VideoUpload = () => {
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
     let sId = sectionIds.slice();
+    console.log(sId, 'sid', sectionIds);
 
     if (!courseId) {
+      if (!courseTopic) {
+        errorToast('Please enter a course name', '#fb3c22');
+
+        return;
+      }
       const { data } = await axios.post(
         '/courses',
         { name: courseTopic },
@@ -239,11 +252,19 @@ const VideoUpload = () => {
         }
       );
 
+      successToast('Course added!', '#1850BC');
+
       setCourseId(data?.course?.id);
       cId = data?.course?.id;
     }
 
-    if (cId) {
+    if (cId && !sId[sectionIndex]) {
+      if (!sections[sectionIndex].title) {
+        errorToast('Please enter a section title', '#fb3c22');
+
+        return;
+      }
+
       const { data } = await axios.post(
         `/courses/${cId}/section`,
         {
@@ -256,6 +277,9 @@ const VideoUpload = () => {
         }
       );
       sId[sectionIndex] = data?.section?.id;
+
+      successToast(`Section Added!`, '#1850BC');
+
       setSectionIds(sId);
     }
 
@@ -266,6 +290,18 @@ const VideoUpload = () => {
 
       async function uploadVideo(video) {
         const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
+        if (
+          !video.video ||
+          !video.formData.title ||
+          !video.formData.description ||
+          !video.subject ||
+          !video.duration ||
+          !video.thumbnail
+        ) {
+          errorToast('Please fill in all required fields for the video', '#fb3c22');
+
+          return;
+        }
 
         const formDataToSend = new FormData();
         formDataToSend.append('video', video.video);
@@ -311,7 +347,7 @@ const VideoUpload = () => {
             const videoId = response.data?.video?.id;
             console.log(videoId, 'video_id');
             const addVideoResponse = await axios.post(
-              `/courses/${cId}/section/${sId[sectionIndex]}/addVideo`,
+              `/courses/${cId}/section/${sId[sectionIndex]}/videos`,
               { video_id: videoId },
               {
                 headers: {
@@ -322,6 +358,7 @@ const VideoUpload = () => {
 
             if (addVideoResponse.status === 200) {
               console.log('Video added to section successfully:', addVideoResponse.data);
+              successToast('Video Added to Section!', '#1850BC');
             } else {
               console.error('Error adding video to section:', addVideoResponse.statusText);
             }
@@ -330,7 +367,7 @@ const VideoUpload = () => {
             video.loading = false;
           }
         } catch (error) {
-          console.error('Error uploading video:', error.message);
+          console.error('Error uploading video:', error);
           video.loading = false;
         }
       }
@@ -339,7 +376,7 @@ const VideoUpload = () => {
         await uploadVideo(video, index);
       }
     } catch (error) {
-      console.error('Error uploading videos:', error.message);
+      console.error('Error uploading videos:', error);
     }
   };
 
@@ -418,6 +455,7 @@ const VideoUpload = () => {
     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
       <div className="flex w-full gap-2 justify-end mb-4">
         <Button
+          type="button"
           onClick={() => setSelectedTab('individual')}
           className="text-lg"
           variant={selectedTab === 'individual' ? 'default' : 'outline'}
@@ -425,6 +463,7 @@ const VideoUpload = () => {
           Individual
         </Button>
         <Button
+          type="button"
           className="text-lg"
           onClick={() => setSelectedTab('premium')}
           variant={selectedTab === 'premium' ? 'default' : 'outline'}
@@ -498,18 +537,29 @@ const VideoUpload = () => {
                                         uploadProgress={
                                           sections[sectionIndex].videos[videoIndex].uploadProgress
                                         }
-                                        cancelUpload={cancelUpload}
-                                        onUpdateFormData={(e) =>
-                                          handleUpdateFormData(sectionIndex, videoIndex, e)
+                                        quiz={sections[sectionIndex].videos[videoIndex].quiz}
+                                        quizSolution={
+                                          sections[sectionIndex].videos[videoIndex].quiz_solution
                                         }
+                                        cancelUpload={cancelUpload}
+                                        onUpdateFormData={(e) => {
+                                          e.preventDefault();
+                                          handleUpdateFormData(sectionIndex, videoIndex, e);
+                                        }}
                                         onUpdateThumbnail={(thumbnail) =>
                                           handleUpdateThumbnail(sectionIndex, videoIndex, thumbnail)
                                         }
                                         onUpdateSubject={(subject) =>
                                           handleUpdateSubject(sectionIndex, videoIndex, subject)
                                         }
+                                        onUpdateQuiz={(quiz) =>
+                                          handleQuizUpload(sectionIndex, videoIndex, quiz)
+                                        }
                                         onUpdateVideo={(video) =>
                                           handleUpdateVideo(sectionIndex, videoIndex, video)
+                                        }
+                                        onUpdateQuizSolution={(quizSolution) =>
+                                          handleQuizSolution(sectionIndex, videoIndex, quizSolution)
                                         }
                                         onUpdateDuration={(duration) =>
                                           handleUpdateDuration(sectionIndex, videoIndex, duration)
@@ -539,6 +589,7 @@ const VideoUpload = () => {
                         </Droppable>
                         <div className="flex justify-end">
                           <Button
+                            type="button"
                             onClick={
                               selectedTab === 'premium'
                                 ? () => handleCourseUpload(sectionIndex)
@@ -546,7 +597,7 @@ const VideoUpload = () => {
                             }
                             className="bg-black rounded-md text-base mt-4 py-1 text-white"
                           >
-                            Publish All
+                            Publish Section
                           </Button>
                         </div>
                         <button
@@ -587,6 +638,10 @@ const VideoBody = ({
   uploadProgress,
   onUpdateSubject,
   selectedTab,
+  onUpdateQuiz,
+  onUpdateQuizSolution,
+  quizSolution,
+  quiz,
 }) => {
   const handleFieldChange = (e) => {
     onUpdateFormData(e);
@@ -655,9 +710,40 @@ const VideoBody = ({
 
         <div className="flex flex-col lg:flex-row justify-between gap-8">
           <div className="flex gap-8">
-            <VideoInfoColumn onChange={handleFieldChange} />
-
-            <QuizUploadColumn onChange={onUpdateSubject} />
+            <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
+              <div className="flex flex-col">
+                <label className="text-sm">Video title</label>
+                <input
+                  onChange={(e) => {
+                    e.preventDefault();
+                    handleFieldChange(e);
+                  }}
+                  name="title"
+                  placeholder="Enter title..."
+                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
+                  type="text"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm">Video Description</label>
+                <textarea
+                  onChange={handleFieldChange}
+                  name="description"
+                  rows={4}
+                  cols={4}
+                  typeof="text"
+                  placeholder="Enter description"
+                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none resize-none "
+                />
+              </div>
+            </div>
+            <QuizUploadColumn
+              quiz={quiz}
+              quizSolution={quizSolution}
+              setQuiz={onUpdateQuiz}
+              setQuizSolution={onUpdateQuizSolution}
+              onChange={onUpdateSubject}
+            />
           </div>
           <VideoandThumbnail
             thumbnail={thumbnail}
@@ -671,38 +757,8 @@ const VideoBody = ({
   );
 };
 
-const VideoInfoColumn = ({ onChange }) => {
-  return (
-    <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
-      <div className="flex flex-col">
-        <label className="text-sm">Video title</label>
-        <input
-          onChange={onChange}
-          name="title"
-          placeholder="Enter title..."
-          className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
-          type="text"
-        />
-      </div>
-      <div className="flex flex-col">
-        <label className="text-sm">Video Description</label>
-        <textarea
-          onChange={onChange}
-          name="description"
-          rows={4}
-          cols={4}
-          typeof="text"
-          placeholder="Enter description"
-          className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none resize-none "
-        />
-      </div>
-    </div>
-  );
-};
-
-const QuizUploadColumn = ({ onChange }) => {
-  const [quizFile, setQuizFile] = useState(null);
-  const [quizSolutionFile, setQuizSolutionFile] = useState(null);
+const QuizUploadColumn = ({ onChange, setQuiz, quiz, quizSolution, setQuizSolution }) => {
+  console.log(quizSolution);
   return (
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
@@ -725,11 +781,11 @@ const QuizUploadColumn = ({ onChange }) => {
       </div>
       <div className="flex flex-col">
         <label className="text-sm">Upload Quiz</label>
-        <FileInput file={quizFile} setFile={setQuizFile} />
+        <FileInput file={quiz} setFile={setQuiz} />
       </div>
       <div className="flex flex-col">
         <label className="text-sm">Upload Quiz Solution</label>
-        <FileInput file={quizSolutionFile} setFile={setQuizSolutionFile} />
+        <FileInput file={quizSolution} setFile={setQuizSolution} />
       </div>
     </div>
   );
@@ -829,7 +885,7 @@ const CourseTopic = ({ courseId, setCourseTopic, courseTopic }) => {
         name="courseTopics"
         value={courseTopic}
         placeholder="ENTER TITLE"
-        className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] bg-white rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
+        className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] bg-white rounded-md px-3 w-80 py-1 placeholder:text-sm border-none focus:outline-none"
         type="text"
       />
     </div>

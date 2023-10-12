@@ -5,13 +5,12 @@ import { Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useRouter } from 'next/navigation';
-import { useToast } from '../hooks/use-toast';
+import toast from 'react-hot-toast';
 import axios from '../../utils/index';
 import { useSession } from 'next-auth/react';
 
 export const OnBoardingProcess = () => {
   const { data: user, update } = useSession();
-  const { toast } = useToast();
 
   const router = useRouter();
   const fileRef = useRef();
@@ -63,19 +62,45 @@ export const OnBoardingProcess = () => {
     }
 
     function onSuccess() {
-      toast({
-        title: 'Profile Created 🟢',
-        description:
-          buttonType === 'asUser' ? 'Redirecting to home... 🏡' : 'Time to become an expert... 🚀',
+      toast.success('Profile Created!\nTime to become an expert!', {
+        style: {
+          color: 'white',
+          borderRadius: '30px',
+          background: '#1C8827',
+        },
+        iconTheme: {
+          color: 'white',
+        },
+        icon: '⚪',
       });
 
-      setTimeout(() => {
-        if (buttonType === 'asUser') {
-          router.push('/');
-        } else {
-          router.push('/on-boarding/expert');
-        }
-      }, 2000);
+      if (buttonType === 'asUser') {
+        toast.success('Profile Created!', {
+          style: {
+            color: 'white',
+            borderRadius: '30px',
+            background: '#1C8827',
+          },
+          iconTheme: {
+            color: 'white',
+          },
+          icon: '⚪',
+        });
+        router.push('/');
+      } else {
+        toast.success('Profile Created!\nTime to become an expert!', {
+          style: {
+            color: 'white',
+            borderRadius: '30px',
+            background: '#1C8827',
+          },
+          iconTheme: {
+            color: 'white',
+          },
+          icon: '⚪',
+        });
+        router.push('/on-boarding/expert');
+      }
     }
 
     const response = await axios.post('onboard/user', formData, {
@@ -293,7 +318,7 @@ export const OnBoardingProcess = () => {
                     onClick={() => {
                       fileRef.current.click();
                     }}
-                    className="bg-[#1C8827] mt-4 text-white py-1 px-3"
+                    className="bg-subcolor mt-4 text-white py-1 px-3"
                   >
                     Upload Image
                     <input
@@ -313,7 +338,7 @@ export const OnBoardingProcess = () => {
             <button
               onClick={handleContinueAsUser}
               type="submit"
-              className="text-[#1850BC] w-full py-1 text-center border-2 border-[#1850BC] font-medium rounded-md"
+              className="text-main w-full py-1 text-center border-2 border-main font-medium rounded-md"
             >
               Continue As User
             </button>

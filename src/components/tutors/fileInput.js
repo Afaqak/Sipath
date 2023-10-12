@@ -2,8 +2,12 @@
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
+import { Icon } from '@radix-ui/react-select';
+import { Icons } from '../icons';
 
 export const FileInput = ({ file, setFile }) => {
+  console.log(file);
+  // console.log(file);
   const inputRef = useRef(null);
 
   const handleChooseFile = () => {
@@ -28,18 +32,24 @@ export const FileInput = ({ file, setFile }) => {
             CHOOSE FILE <Image src={'/svgs/upload_file.svg'} width={15} height={15} alt="file" />
           </span>
         ) : (
-          <p
-            className="font-semibold text-[0.7rem] text-green-500 cursor-pointer"
-            onClick={handleChooseFile}
-            style={{
-              width: '100%',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {file?.name}
-          </p>
+          <div className="relative">
+            <p
+              className="font-semibold relative text-[0.7rem] text-green-500 cursor-pointer"
+              onClick={handleChooseFile}
+              style={{
+                width: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {file?.name || file.toString()}
+            </p>
+            <Icons.trash
+              onClick={() => setFile(null)}
+              className="absolute h-[0.86rem] w-[0.86rem] -right-[0.48rem] top-[1px] cursor-pointer"
+            />
+          </div>
         )}
       </div>
     </div>

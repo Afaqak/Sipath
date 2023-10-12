@@ -131,7 +131,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
             className={`py-1 ease-in-out ${
               day
                 ? isCurrentDate(day)
-                  ? 'bg-[#1850BC] text-white'
+                  ? 'bg-main text-white'
                   : selectedDate === idx
                   ? 'ring'
                   : ''

@@ -139,7 +139,7 @@ export const EventsCalendar = () => {
             <span className=" text-2xl font-semibold">{titleDate}</span>
             <select
               value={viewType}
-              className="border-[#1850BC] text-[#1850BC] focus:outline-none border-2 text-sm rounded-md py-1 px-2"
+              className="border-main text-main focus:outline-none border-2 text-sm rounded-md py-1 px-2"
               onChange={(e) => handleChangeView(e.target.value)}
             >
               {Object.keys(viewOptions).map((option) => (
@@ -150,7 +150,7 @@ export const EventsCalendar = () => {
             </select>
           </div>
           <button
-            className="bg-[#1850BC] text-white px-4 rounded-md text-sm py-2"
+            className="bg-main text-white px-4 rounded-md text-sm py-2"
             onClick={handleAvailabilityClick}
           >
             Edit Availability
@@ -202,7 +202,7 @@ export const EventsCalendar = () => {
               >
                 <Image src={'/svgs/cancel_black.svg'} alt="cancel" width={18} height={18} /> Cancel
               </button>
-              <button className="px-4 py-[0.18rem] border-2 border-[#1850BC] font-medium flex gap-2 items-center text-[#1850BC] rounded-md shadow-md ">
+              <button className="px-4 py-[0.18rem] border-2 border-main font-medium flex gap-2 items-center text-main rounded-md shadow-md ">
                 <Image src={'/svgs/confirm_blue.svg'} alt="cancel" width={18} height={18} /> Confirm
               </button>
             </div>
@@ -346,7 +346,7 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
           </div>
           <button
             onClick={handleConfirm}
-            className="bg-[#1850BC] text-white px-4 rounded-md text-sm py-2 font-medium w-full  mt-4"
+            className="bg-main text-white px-4 rounded-md text-sm py-2 font-medium w-full  mt-4"
           >
             Save
           </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { Button } from '../ui/button';
 export const Quiz = () => {
   return (
     <div className="mt-4 flex md:flex-row flex-col md:items-center justify-between bg-white rounded-lg shadow-lg">
@@ -44,10 +45,8 @@ export const Quiz = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2 text-sm lg:text-base sel justify-end">
-            <button className="px-4 py-1 rounded-md border-2 border-black">View Quiz</button>
-            <button className="px-4 py-1 rounded-md text-[#1C8827] border-[#1C8827] border-2">
-              View Solutions
-            </button>
+            <Button className=" border-2 border-black">View Quiz</Button>
+            <Button className=" text-subcolor border-subcolor">View Solutions</Button>
           </div>
         </div>
       </div>

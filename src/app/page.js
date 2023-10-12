@@ -1,11 +1,10 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
-import axios from '../utils/index';
-import { useRouter } from 'next/navigation';
-
 import { withPrivateRoute } from '@/components/privateRoute';
 import { useSession } from 'next-auth/react';
+import cookieCutter from 'cookie-cutter';
+
 const comments = [
   {
     id: 1,
@@ -77,6 +76,9 @@ const comments = [
 
 const Home = () => {
   const { data } = useSession();
+  const token = data?.token;
+
+  console.log(token, 'token');
 
   console.log(data?.user, 'session');
 
@@ -106,16 +108,6 @@ const Home = () => {
         <VideoFeed comments={comments.slice(3, 4)} />
       </div>
       <Categories />
-      <button
-        onClick={async () => {
-          let cookie = await axios.get('http://localhost:4000/auth/verify-token', {
-            withCredentials: true,
-          });
-          console.log(cookie.data, 'from cookie');
-        }}
-      >
-        touch me
-      </button>
     </div>
   );
 };

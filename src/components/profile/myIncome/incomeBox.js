@@ -17,7 +17,7 @@ export const IncomeBox = () => {
       </div>
       <button
         onClick={() => setCashOutPopup(!cashOutPopup)}
-        className="px-16 text-[#1C8827] rounded-md shadow-md border-2 py-1 border-[#1C8827] "
+        className="px-16 text-subcolor rounded-md shadow-md border-2 py-1 border-subcolor"
       >
         Cash Out
       </button>
