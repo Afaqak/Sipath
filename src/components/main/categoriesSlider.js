@@ -51,7 +51,7 @@ export function CategoriesSlider() {
         >
           <Image src={'/svgs/mathematics.svg'} alt="maths" width={90} height={90} />
 
-          <h1 className="text-xl font-semibold mt-4 text-[#1C8827] ">Mathematics</h1>
+          <h1 className="text-xl font-semibold mt-4 text-subcolor ">Mathematics</h1>
         </div>
       </SwiperSlide>
       <SwiperSlide className="customCatSlide">

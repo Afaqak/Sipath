@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Stars } from './5star';
+import { Button } from '../ui/button';
 export const Book = () => {
   return (
     <div className="bg-white p-4 relative flex-col md:flex-row shadow-lg rounded-md flex gap-4 md:w-full">
@@ -45,10 +46,10 @@ export const Book = () => {
           </p>
         </div>
         <div>
-          <button className="font-semibold w-full text-[#1C8827] justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-[#1C8827] py-1">
+          <Button className="font-semibold w-full text-subcolor justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-subcolor">
             <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
             <span>Buy Book</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

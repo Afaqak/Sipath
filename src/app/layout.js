@@ -4,7 +4,8 @@ import AuthProvider from '@/components/AuthProvider.js';
 import './globals.css';
 import { store, persistor } from '@/store/store';
 import { Provider } from 'react-redux';
-import { Toaster } from '@/components/ui/toaster';
+// import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from 'react-hot-toast';
 import { Roboto } from 'next/font/google';
 import { PersistGate } from 'redux-persist/integration/react';
 

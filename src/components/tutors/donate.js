@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import Image from 'next/image';
+import { Button } from '../ui/button';
 
 export const Donate = ({ setDonate }) => {
   const [dropDown, setDropDown] = useState(null);
@@ -24,13 +25,16 @@ export const Donate = ({ setDonate }) => {
             <DropDown dropDown={dropDown} setDropDown={setDropDown} />
           </div>
         </div>
-        <button className="font-semibold w-full text-[#1C8827] justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-[#1C8827] py-1">
+        <Button
+          variant="outline"
+          className="font-semibold w-full text-subcolor justify-center flex items-center gap-1 px-8  border-subcolor"
+        >
           <Image width={20} height={20} alt="coins" src={'/svgs/coins.svg'} />
           <span>Donate</span>
-        </button>
-        <button onClick={() => setDonate(false)} className="font-semibold">
+        </Button>
+        <Button onClick={() => setDonate(false)} className="font-semibold">
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );

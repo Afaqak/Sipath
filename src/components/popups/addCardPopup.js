@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../ui/button';
 
 export const AddCardPopup = ({ close }) => {
   return (
@@ -55,15 +56,19 @@ export const AddCardPopup = ({ close }) => {
             </div>
           </div>
           <div className="flex flex-col md:mt-0 gap-2">
-            <button className="py-1 w-full md:w-fit px-4 border-[#1C8827] text-[#1C8827] font-semibold shadow-md rounded-md border-2">
+            <Button
+              variant="outline"
+              className="py-1 w-full md:w-fit px-4 border-subcolor text-subcolor font-semibold"
+            >
               Add Card
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={close}
-              className="py-1 px-4 w-full md:w-fit border-[#FB3C22] text-[#FB3C22] font-semibold shadow-md rounded-md border-2"
+              className="py-1 px-4 w-full md:w-fit border-[#FB3C22] text-[#FB3C22] font-semibold"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
 

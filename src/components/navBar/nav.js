@@ -15,6 +15,7 @@ import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
 import { setUserData } from '@/features/auth/authSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import toast from 'react-hot-toast';
 export const Navbar = () => {
   console.log(useSelector((state) => state.userAuth));
 
@@ -85,7 +86,7 @@ export const Navbar = () => {
                   <motion.div
                     style={{ borderRadius: 99999 }}
                     transition={{ type: 'spring', duration: 0.6 }}
-                    className="absolute inset-0 bg-[#1850BC]"
+                    className="absolute inset-0 bg-main"
                     layoutId="active-pill"
                   ></motion.div>
                 )}
@@ -109,7 +110,13 @@ export const Navbar = () => {
                 <Button
                   variant="destructive"
                   onClick={async () => {
-                    router.refresh();
+                    toast.error('Logging out!', {
+                      style: {
+                        backgroundColor: '#fb3c22',
+                        color: 'white',
+                      },
+                      icon: '⚪',
+                    });
                     await signOut({
                       callbackUrl: '/',
                     }).then((res) => {});

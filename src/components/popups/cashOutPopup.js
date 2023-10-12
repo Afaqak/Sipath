@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../ui/button';
 
 export const CashOutPopup = ({ close }) => {
   return (
@@ -26,15 +27,15 @@ export const CashOutPopup = ({ close }) => {
           </div>
         </div>
         <div className="flex md:mt-0 gap-2 items-end">
-          <button className="py-1 w-full md:w-fit px-4 border-[#1C8827] text-[#1C8827] font-semibold shadow-md rounded-md border-2">
+          <Button className="w-full md:w-fit border-subcolor text-subcolor font-semibold ">
             Cash Out
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={close}
-            className="py-1 px-4 w-full md:w-fit border-[#FB3C22] text-[#FB3C22] font-semibold shadow-md rounded-md border-2"
+            className="w-full md:w-fit border-[#FB3C22] text-[#FB3C22] font-semibold "
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>

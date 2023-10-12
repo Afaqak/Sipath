@@ -75,7 +75,7 @@ const ActionButtons = () => {
       </button>
       <Link
         href={'/tutor/video-upload'}
-        className="border-2 border-[#1C8827] w-full whitespace-nowrap font-bold flex gap-1 px-3 items-center text-[0.7rem] text-[#1C8827] bg-transparent justify-center mb-1 rounded"
+        className="border-2 border-subcolor w-full whitespace-nowrap font-bold flex gap-1 px-3 items-center text-[0.7rem] text-subcolor bg-transparent justify-center mb-1 rounded"
       >
         <Image
           src={'/svgs/videogreen.svg'}

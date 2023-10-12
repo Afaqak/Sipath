@@ -154,7 +154,7 @@ const PodcastItem = ({ podcast }) => {
       )}
 
       {podcast?.price && podcast?.price > 0 && (
-        <span className="absolute top-2 z-[1000] left-0 bg-green-[#1C8827] bg-green-700 text-[0.7rem] py-[0.15rem]  rounded-r-md text-white px-3 font-medium">
+        <span className="absolute top-2 z-[1000] left-0 bg-subcolor  text-[0.7rem] py-[0.15rem]  rounded-r-md text-white px-3 font-medium">
           {podcast?.price}$
         </span>
       )}

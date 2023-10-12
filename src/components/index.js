@@ -31,7 +31,7 @@ export { ContentPlayer } from './podcast/reactPlayer';
 export { LiveMessages } from './podcast/liveMessages';
 export { VideoInfo } from './podcast/videoInfo';
 export { Stars } from './common/5star';
-export { CreateComment} from './comment/createComment';
+export { CreateComment } from './comment/createComment';
 export { SubjectDropdown } from './common/subjectDropdown';
 export { VideoUploadType } from './common/videoUploadType';
 export { PodcastSlider } from './tutors/podcastSlider';
@@ -65,4 +65,8 @@ export { TranslationToggleButton } from './common/translateRadioButton';
 export { CommentsSection } from './comment/commentsSection';
 export { VideoComment } from './comment/videoComment';
 export { RepliesList } from './comment/repliesList';
-
+export { formatTimeAgo } from '@/utils';
+export { LoadingSkeletons } from '@/utils';
+export { VideoandThumbnail } from './video/videoAndThumbnail';
+export { QuizUploadColumn } from './video/quizUploadColumn';
+export { DeleteModal } from './video/deleteVideoModal';

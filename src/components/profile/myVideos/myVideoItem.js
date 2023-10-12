@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 export const MyVideoItem = ({ video }) => (
-  <div className="min-h-64 relative border-2 border-[#1C8827]  mb-6 w-ful p-4 bg-white shadow-md rounded-md">
+  <div className="min-h-64 relative border-2 border-subcolor  mb-6 w-ful p-4 bg-white shadow-md rounded-md">
     <div className="relative">
       <svg
         xmlns="http://www.w3.org/2000/svg"

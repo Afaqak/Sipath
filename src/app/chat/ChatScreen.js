@@ -41,7 +41,7 @@ const ChatScreen = ({ user }) => {
               <p className="ml-4">{user.accountName}</p>
             </div>
             <div className="flex">
-              <button className="bg-[#1C8827] py-[0.20rem] rounded-md px-4 text-sm font-bold text-white flex items-center">
+              <button className="bg-subcolor py-[0.20rem] rounded-md px-4 text-sm font-bold text-white flex items-center">
                 <Image src={'/svgs/propose-appointment.svg'} width={20} height={20} alt="user" />
                 <span className="ml-2">Propose Appointment</span>
               </button>

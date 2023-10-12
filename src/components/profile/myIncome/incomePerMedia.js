@@ -26,7 +26,7 @@ const Media = () => {
           <h1 className="font-bold text-lg">Video title goes here</h1>
           <div className="text-sm">
             <span className="text-[#616161] font-bold">24k Views</span> -{' '}
-            <span className="text-[#1850BC] font-bold">Single Video</span>
+            <span className="text-main font-bold">Single Video</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   Feed,
@@ -13,7 +13,10 @@ import {
   Profile,
   UniversalTab,
 } from '@/components';
-
+import Link from 'next/link';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import UserAvatar from '@/components/common/userAvatar';
+import { formatTimeAgo } from '@/utils';
 const courses = [
   {
     id: 1,
@@ -105,13 +108,13 @@ const Tutor = () => {
           <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
           <span className="md:block hidden">Book Appointment</span>
         </button>
-        <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-[#1850BC]">
+        <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
           <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
           <span className="md:block hidden">Message Expert</span>
         </button>
         <button
           onClick={() => setDonate(!donate)}
-          className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-[#1C8827]"
+          className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor"
         >
           <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
           <span className="md:block hidden">Donate</span>
@@ -161,7 +164,7 @@ const Tutor = () => {
           </div>
         </div>
       )}
-      {active === 'courses' && <Video videos={courses} />}
+      {active === 'courses' && <MyCourses />}
       {active === 'quiz' && (
         <div className="w-[90%] mx-auto mt-10">
           <Quiz />
@@ -185,3 +188,61 @@ const Tutor = () => {
 };
 
 export default Tutor;
+
+const MyCourses = () => {
+  const [courses, setCourses] = useState([]);
+  const axios = useAxiosPrivate();
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const response = await axios.get('/courses');
+      console.log(response.data.courses);
+      setCourses(response.data.courses);
+    };
+    fetchCourses();
+  }, []);
+  return (
+    <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
+      {courses.map((course) => (
+        <CourseCard key={course?.id} course={course} />
+      ))}
+    </div>
+  );
+};
+
+const CourseCard = ({ course }) => {
+  return (
+    <Link
+      href={`/tutor/courses/${course?.id}`}
+      className="min-h-64 relative block mb-6 w-full p-4 bg-white shadow-md rounded-md"
+    >
+      {course?.price && course?.price > 0 && (
+        <span className="absolute top-2 z-[1000] left-0 bg-subcolor text-[0.7rem] py-[0.15rem]  rounded-r-md text-white px-3 font-medium">
+          {course?.price}$
+        </span>
+      )}
+      <div className="relative">
+        {/* <Image
+          src={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+          alt={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+          width={300}
+          height={200}
+          className="rounded-md object-cover w-full h-44"
+        /> */}
+        <div className="w-full h-44 rounded-md"></div>
+      </div>
+      <div className="mt-3 flex gap-2 items">
+        <UserAvatar />
+        <div>
+          <h1 className="text-lg font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</h1>
+          <div className="flex items-center text-sm gap-2 text-gray-700">
+            <span>authors</span>
+          </div>
+          <div className="flex items-center text-sm gap-2 text-gray-700">
+            <span>{formatTimeAgo(course.createdAt)}</span>
+            <span>&bull;</span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};

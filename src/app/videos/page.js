@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Video, ContentContainer } from '@/components';
+import { Video, ContentContainer, LoadingSkeletons } from '@/components';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withPrivateRoute } from '@/components/privateRoute';
 import { useSession } from 'next-auth/react';
@@ -31,27 +31,12 @@ const Videos = () => {
     }
   }, []);
 
-  const LoadingSkeletons = () => (
-    <div className="py-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {[...Array(10)].map((_, idx) => (
-        <div key={idx} className="bg-white rounded-md p-4 shadow-md">
-          <Skeleton className="h-48 mb-2 " />
-          <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <ContentContainer>
-      {loading && <LoadingSkeletons />}
-      <Video videos={videos} title="New Uploads" load={true} />
+      <div className="pt-8">
+        {loading && <LoadingSkeletons times={10} />}
+        <Video videos={videos} title="New Uploads" load={true} />
+      </div>
     </ContentContainer>
   );
 };

@@ -54,15 +54,15 @@ export const handler = NextAuth({
       if (providerName === 'facebook') {
         const { data } = await axios.post('/auth/oauth', { id: token?.sub });
         console.log(data);
-        token.isUpdated = true;
+
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
         token.user = data.user;
       } else if (providerName === 'google') {
-        console.log('token here', token?.isUpdated);
+        console.log('email from google', token);
 
         console.log('token.sub', token.sub, token);
-        const { data } = await axios.post('/auth/oauth', { id: token?.sub });
+        const { data } = await axios.post('/auth/oauth', { id: token?.sub, email: token.email });
         token.isUpdated = true;
         console.log(data, 'data');
 

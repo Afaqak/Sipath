@@ -35,7 +35,7 @@ export const ExpertItem = ({ expert }) => {
             </div>
             <div className="text-[0.8rem] flex items-center lg:justify-normal lg:gap-4 justify-between">
               <p className="font-medium text-[#616161]">{expert.followers} followers</p>
-              <p className="text-[#1850BC] font-medium">Maths-Chemistry-Physics</p>
+              <p className="text-main font-medium">Maths-Chemistry-Physics</p>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ const useAxiosPrivate = () => {
     },
     (error) => {
       if (error.response?.status === 403) {
-        signOut({ callbackUrl: '/' });
+        // signOut({ callbackUrl: '/' });
       }
       return Promise.reject(error);
     }

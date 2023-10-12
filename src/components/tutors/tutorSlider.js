@@ -27,11 +27,6 @@ export function TutorSlider() {
       }}
       className="mySwiper"
     >
-      {/* {videos.map((video) => (
-        <SwiperSlide className="customSlide" key={video.id}>
-
-        </SwiperSlide>
-      ))} */}
       <SwiperSlide>1</SwiperSlide>
     </Swiper>
   );

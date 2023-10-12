@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { resetComments, setComments } from '@/features/comments/commentSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useDispatch } from 'react-redux';
 const videoArray = [
   '/new videos/demo-1.jpg',
   '/new videos/demo-2.jpg',
@@ -15,6 +16,7 @@ const videoArray = [
 
 const WatchVideo = () => {
   const [primaryComments, setPrimaryComments] = useState([]);
+  const dispatch = useDispatch();
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');

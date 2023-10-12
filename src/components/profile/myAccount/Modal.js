@@ -34,7 +34,7 @@ export const Modal = ({ isOpen, onClose, handleModalSubmit, modalType }) => {
               </button>
               <button
                 type="submit"
-                className="px-4 py-1 ml-2 text-sm font-medium bg-[#1850BC] text-white bg-primary rounded-md hover:bg-primary-dark"
+                className="px-4 py-1 ml-2 text-sm font-medium bg-main text-white bg-primary rounded-md hover:bg-primary-dark"
               >
                 Save
               </button>
