@@ -3,27 +3,31 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import { DeleteModal, LoadingSkeletons } from '@/components';
+import { DeleteModal, LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
+import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
-import { Icons } from '@/components';
 import { motion } from 'framer-motion';
-import { formatTimeAgo } from '@/components';
 import { VideoEditModal } from '@/components/video/editModal';
+import { useSession } from 'next-auth/react';
+
 const CoursePage = ({ params }) => {
   const axios = useAxiosPrivate();
   const router = useRouter();
+  const { data: user } = useSession();
   const [sections, setSections] = useState([]);
   const [videosBySection, setVideosBySection] = useState({});
   const [buttonStates, setButtonStates] = useState({});
   const [loadingStates, setLoadingStates] = useState([]);
+  const [course, setCourse] = useState({});
   console.log(videosBySection);
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`);
+      console.log(response.data);
       setSections(response.data.sections);
-
+      setCourse(response.data.course);
       setLoadingStates(new Array(response.data.sections.length).fill(false));
       setButtonStates(new Array(response.data.sections.length).fill(false));
     };
@@ -73,7 +77,7 @@ const CoursePage = ({ params }) => {
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
       <div className="flex justify-between mb-8 items-center">
-        <h1 className="text-4xl capitalize font-semibold">{params?.course}</h1>
+        <h1 className="text-4xl capitalize font-semibold">{course?.name}</h1>
         <div className="flex gap-2">
           <Button
             onClick={() => router.push(`/tutor/courses/${params?.course}/edit`)}
@@ -84,6 +88,15 @@ const CoursePage = ({ params }) => {
             Edit Course
           </Button>
         </div>
+      </div>
+      <div className="rounded-md">
+        <Image
+          src={course?.thumbnail}
+          width={500}
+          height={500}
+          className="mb-4 rounded-md"
+          alt="course-thumbnail"
+        />
       </div>
       {sections &&
         sections.map((section, sectionIndex) => (
@@ -148,10 +161,26 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
   const [open, setOpen] = useState(false);
   const [deletOpen, setDeleteOpen] = useState(false);
   const axios = useAxiosPrivate();
+  const { data: user } = useSession();
   const [toggleMenu, setToggleMenu] = useState(false);
-  const onDeleteSubmit = async () => {
-    const response = await axios(`/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`);
-    console.log(response.data);
+  const onDeleteSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.delete(
+        `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`
+      );
+      errorToast('Video Deleted Successfully');
+      console.log(response, 'response delete video');
+      if (response.status === 200) {
+        const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
+        console.log(response.data);
+        const updatedVideosBySection = { ...videosBySection };
+        updatedVideosBySection[sectionId] = response.data.videos;
+        setVideosBySection(updatedVideosBySection);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   console.log(video, 'video');
   return (
@@ -183,7 +212,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         )}
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <UserAvatar />
+        <UserAvatar user={{ image: user?.profile_image }} />
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
@@ -247,7 +276,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         </div>
       </div>
       <DeleteModal
-        message={'DO you reall want to delete this video ? '}
+        message={`Do you reall want to delete ${video?.title} ? `}
         onDeleteSubmit={onDeleteSubmit}
         isOpen={deletOpen}
         setIsOpen={setDeleteOpen}
@@ -258,6 +287,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         courseId={courseId}
         sectionId={sectionId}
         video={video}
+        isEdit={true}
         isOpen={open}
         setIsOpen={setOpen}
       />

@@ -70,3 +70,4 @@ export { LoadingSkeletons } from '@/utils';
 export { VideoandThumbnail } from './video/videoAndThumbnail';
 export { QuizUploadColumn } from './video/quizUploadColumn';
 export { DeleteModal } from './video/deleteVideoModal';
+export { SectionAddModal } from './video/sectionAddModal';

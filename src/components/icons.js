@@ -472,4 +472,71 @@ export const Icons = {
       </svg>
     );
   },
+  profile(props) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="10" r="3" />
+        <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
+      </svg>
+    );
+  },
+  logout(props) {
+    return (
+      <svg
+        {...props}
+        width="21"
+        height="21"
+        viewBox="0 0 21 21"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 14V15.75C14 17.683 12.433 19.25 10.5 19.25H6.125C4.192 19.25 2.625 17.683 2.625 15.75V5.25C2.625 3.317 4.192 1.75 6.125 1.75H10.5C12.433 1.75 14 3.317 14 5.25V7"
+          stroke="#FB3C22"
+          strokeWidth="1.3125"
+          strokeLinecap="round"
+        />
+        <path
+          d="M16.625 13.125L18.6313 11.1187C18.973 10.777 18.973 10.223 18.6313 9.88128L16.625 7.875"
+          stroke="#FB3C22"
+          strokeWidth="1.3125"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18.375 10.5L7.875 10.5"
+          stroke="#FB3C22"
+          strokeWidth="1.3125"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  },
+  addVideo(props) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m22 8-6 4 6 4V8Z" />
+        <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
+      </svg>
+    );
+  },
 };

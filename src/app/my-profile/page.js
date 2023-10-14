@@ -15,6 +15,7 @@ import {
   MyVideos,
 } from '@/components';
 import { UniversalTab } from '@/components';
+import { useSession } from 'next-auth/react';
 
 const tabs = [
   { key: 'feed', label: 'My Feed', icon: '/svgs/Browser.svg' },
@@ -29,7 +30,7 @@ const tabs = [
 
 const MyProfile = () => {
   const [active, setActive] = useState(tabs[0].key);
-
+  const { data: user } = useSession();
   return (
     <>
       <div className="mt-0.5"></div>

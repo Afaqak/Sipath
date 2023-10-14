@@ -6,7 +6,7 @@ const UserAvatar = ({ user, ...props }) => {
     <Avatar {...props}>
       {user?.image ? (
         <div className="relative aspect-square h-full w-full">
-          <Image fill src={user.image} alt="profile picture" referrerPolicy="no-referrer" />
+          <img src={user.image} alt="profile picture" referrerPolicy="no-referrer" />
         </div>
       ) : (
         <AvatarFallback>

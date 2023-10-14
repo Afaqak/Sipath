@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/hooks/use-toast';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
+import { successToast } from '@/utils/toasts';
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession();
   const axios = useAxiosPrivate();
@@ -22,10 +23,7 @@ const OnBoardingExpert = () => {
   const [availability, setAvailability] = useState([]);
 
   const onSuccess = () => {
-    toast({
-      title: 'Congratulations!',
-      description: 'You are a tutor now',
-    });
+    successToast('Congratulations! You are a tutor now.');
     setLoading(false);
     router.push('/');
   };

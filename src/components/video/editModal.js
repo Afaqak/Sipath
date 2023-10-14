@@ -1,11 +1,11 @@
-'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { VideoandThumbnail, QuizUploadColumn } from '@/components';
-
 import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { errorToast, successToast } from '@/utils/toasts';
+import { isWeakMap } from 'lodash';
 
 export function VideoEditModal({
   isOpen,
@@ -15,6 +15,7 @@ export function VideoEditModal({
   sectionId,
   setVideosBySection,
   videosBySection,
+  isEdit = false,
 }) {
   const initialStates = {
     title: video?.title,
@@ -27,7 +28,7 @@ export function VideoEditModal({
   const [duration, setDuration] = useState(null);
   const [body, setBody] = useState(initialStates);
   const [videoFile, setVideoFile] = useState(null);
-  console.log(quiz, setQuiz, duration, subject, body, 'new data');
+
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setBody({ ...body, [name]: value });
@@ -71,9 +72,11 @@ export function VideoEditModal({
   };
 
   const handleSubmit = async () => {
+    console.log(sectionId, courseId);
+    console.log(quiz, subject, duration, body, videoFile, thumbnail);
+
     let updatedData = {};
     const updatedSections = { ...videosBySection };
-    console.log(updatedSections, 'from edit');
     const data = { quiz, thumbnail, video, duration, ...body, subject };
 
     for (const key in data) {
@@ -81,23 +84,94 @@ export function VideoEditModal({
         updatedData[key] = data[key];
       }
     }
-    console.log(updatedData, 'updated new data');
-    try {
-      if (!courseId && sectionId) {
-        const response = await axios.patch(`/assets/videos/${video?.id}`, updatedData);
-        console.log(response.data);
-      } else {
-        const response = await axios.patch(
-          `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`,
-          updatedData
-        );
-        updatedSections[sectionId] = updatedSections[sectionId].map((video) =>
-          video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
-        );
-        console.log(response.data);
-        setVideosBySection(updatedSections);
+    if (!isEdit) {
+      console.log(isEdit);
+      if (!thumbnail || !duration || !videoFile || !body.description || !body.title || !duration) {
+        return errorToast('Some fields are Missing!');
+      }
+    }
 
-        console.log(response.data.updatedVideo, 'updated', videosBySection);
+    try {
+      if (isEdit) {
+        if (!courseId && sectionId) {
+          const response = await axios.patch(`/assets/videos/${video?.id}`, updatedData);
+          console.log(response.data);
+        } else {
+          const response = await axios.patch(
+            `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`,
+            updatedData
+          );
+          updatedSections[sectionId] = updatedSections[sectionId].map((video) =>
+            video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
+          );
+          console.log(response.data);
+          setVideosBySection(updatedSections);
+
+          console.log(response.data.updatedVideo, 'updated', videosBySection);
+        }
+        successToast('Video updated Sucessfully!', '#1850BC');
+      } else {
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+
+          onUploadProgress: (progressEvent) => {
+            const progress = progressEvent;
+            console.log(progress, 'progress');
+          },
+        };
+        const formDataToSend = new FormData();
+        formDataToSend.append('video', videoFile);
+        formDataToSend.append('thumbnail', thumbnail);
+        formDataToSend.append('title', body.title);
+        formDataToSend.append('description', body.description);
+        formDataToSend.append('subject', subject);
+        formDataToSend.append('duration', duration);
+        const response = await axios.post('/upload/video', formDataToSend, config);
+        if (response.status === 200) {
+          console.log('Video uploaded successfully:', response.data);
+          successToast('Video uploaded Sucessfully!', '#1850BC');
+          const videoId = response.data?.video?.id;
+          console.log(videoId, 'video_id');
+          const addVideoResponse = await axios.post(
+            `/courses/${courseId}/section/${sectionId}/videos`,
+            { video_id: videoId }
+          );
+
+          if (addVideoResponse.status === 200) {
+            console.log('Video added to section successfully:', addVideoResponse.data);
+            successToast('Video Added to Section!', '#1850BC');
+            const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
+            console.log(response.data);
+            const updatedVideosBySection = { ...videosBySection };
+            updatedVideosBySection[sectionId] = response.data.videos;
+            setVideosBySection(updatedVideosBySection);
+            console.log(updatedVideosBySection, 'uvbs');
+          } else {
+            console.error('Error adding video to section:', addVideoResponse.statusText);
+          }
+        } else {
+          console.error('Error uploading video:', response.statusText);
+        }
+        //   const config = {
+        //     headers: {
+        //       'Content-Type': 'multipart/form-data',
+        //     },
+
+        //     onUploadProgress: (progressEvent) => {
+        //       const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        //       console.log(progress);
+        //     },
+        //   };
+
+        //   const response = await axios.post(
+        //     `/courses/${courseId}/section/${sectionId}/videos`,
+        //     formDataToSend,
+        //     config
+        //   );
+        //   console.log(response.data);
+        // }
       }
     } catch (err) {
       console.log(err);
@@ -108,7 +182,7 @@ export function VideoEditModal({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={openModal}>
+      <Dialog className="bg-gray-100 bg-opacity-100" open={isOpen} onOpenChange={openModal}>
         <DialogContent className="w-full">
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             <div className="flex gap-8">
@@ -157,16 +231,29 @@ export function VideoEditModal({
 
           <DialogFooter className="absolute -bottom-14 right-0">
             <div className="mt-4">
-              <Button onClick={deleteVideo} className="bg-black border mr-2">
-                Delete Forever
-              </Button>
-              <Button
-                className="border-green-500 text-green-500"
-                variant="outline"
-                onClick={handleSubmit}
-              >
-                Finish Editing
-              </Button>
+              {isEdit && (
+                <>
+                  <Button onClick={deleteVideo} variant="destructive" className=" border mr-2">
+                    Delete Forever
+                  </Button>
+                  <Button
+                    className="border-green-500 text-green-500"
+                    variant="outline"
+                    onClick={handleSubmit}
+                  >
+                    Finish Editing
+                  </Button>
+                </>
+              )}
+              {!isEdit && (
+                <Button
+                  className="border-green-500 text-green-500"
+                  variant="outline"
+                  onClick={handleSubmit}
+                >
+                  Add Video
+                </Button>
+              )}
             </div>
           </DialogFooter>
         </DialogContent>

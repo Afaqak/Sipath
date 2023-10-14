@@ -22,7 +22,7 @@ export const QuizUploadColumn = ({
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Subject</label>
-        <Select onValueChange={onChange} value={subject.toString()}>
+        <Select onValueChange={onChange} value={subject?.toString()}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select a Subject" />
           </SelectTrigger>

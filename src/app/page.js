@@ -78,8 +78,6 @@ const Home = () => {
   const { data } = useSession();
   const token = data?.token;
 
-  console.log(token, 'token');
-
   console.log(data?.user, 'session');
 
   return (

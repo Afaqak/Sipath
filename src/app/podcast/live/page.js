@@ -40,6 +40,7 @@ const LivePremium = () => {
   useEffect(() => {
     initializeSocket();
   }, []);
+  console.log(user?.user?.id === +tutorId, tutorId, user?.user?.id, 'user');
 
   useEffect(() => {
     import('peerjs').then((module) => {
