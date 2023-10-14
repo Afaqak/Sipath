@@ -8,7 +8,7 @@ export const errorToast = (text, color = '#fb3c22') =>
     icon: '⚪',
   });
 
-export const successToast = (text, color) =>
+export const successToast = (text, color = '#1850BC') =>
   toast.success(text, {
     style: {
       color: 'white',

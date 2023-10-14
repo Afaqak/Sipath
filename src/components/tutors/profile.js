@@ -1,14 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
 import UserAvatar from '../common/userAvatar';
+import { useSession } from 'next-auth/react';
 
 export const Profile = ({ type }) => {
-  const user = useSelector((state) => state.userAuth.user);
+  const { data: user } = useSession();
   return (
     <div className=" bg-white mt-10 flex items-center gap-10 flex-col md:flex-row shadow-md mx-auto rounded-md p-4">
       <div className="relative mx-auto flex items-center justify-center">
-        <UserAvatar user={{ name: user?.display_name || '' }} className=" w-36 h-36" />
+        <UserAvatar
+          user={{ image: user?.user?.profile_image, name: user?.user?.display_name || '' }}
+          className=" w-36 h-36"
+        />
         <button
           className="font-semibold bg-black text-white rounded-full px-8 py-1 flex justify-center items-center"
           style={{
@@ -23,7 +26,7 @@ export const Profile = ({ type }) => {
       </div>
 
       <div className="">
-        <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
+        <h1 className="mb-2 uppercase font-medium">{user?.user?.display_name}</h1>
         <div className="flex md:flex-row flex-col gap-12">
           <div className="flex gap-12">
             <div className="">
@@ -55,7 +58,7 @@ export const Profile = ({ type }) => {
             <div className="">
               <h1>BIO</h1>
               <p className={`text-sm ${type === 'myprofile' ? 'w-full' : 'w-[80%]'}`}>
-                {user?.bio}
+                {user?.user?.bio}
               </p>
             </div>
           </div>
@@ -68,7 +71,7 @@ export const Profile = ({ type }) => {
 
 const ActionButtons = () => {
   return (
-    <div className="flex md:flex-col lg:gap-0 gap-4 flex-row text-sm lg:mr-5">
+    <div className=" grid grid-cols-2 gap-1 flex-row text-sm lg:mr-5">
       <button className="border-2 border-blue-500 w-full px-3 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-blue-500 bg-transparent   mb-1 rounded">
         <Image src={'/svgs/blueB.svg'} className="w-4 h-4" width={25} height={25} alt="post" />
         <span className="hidden md:block">New Post</span>
@@ -96,7 +99,10 @@ const ActionButtons = () => {
         />{' '}
         <span className="hidden md:block">Chat</span>
       </button>
-      <button className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded">
+      <Link
+        href={'/tutor/new-quiz'}
+        className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded"
+      >
         <Image
           src={'/svgs/editblue.svg'}
           className="h-4 w-4"
@@ -105,12 +111,26 @@ const ActionButtons = () => {
           alt="message"
         />{' '}
         <span className="hidden md:block">New Quiz</span>
-      </button>
+      </Link>
       <Link
         href={'/tutor/add-book'}
         className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded"
       >
+        <Image src={'/svgs/book.svg'} className="h-4 w-4" width={15} height={15} alt="message" />{' '}
         <span className="hidden md:block">Add Book</span>
+      </Link>
+      <Link
+        href={'/tutor/new-podcast'}
+        className="border-2 border-gray-500 w-full whitespace-nowrap font-bold flex items-center gap-2 text-[0.7rem] text-gray-500 bg-transparent justify-center mb-1 px-1 rounded"
+      >
+        <Image
+          src={'/svgs/podcasts.svg'}
+          className="h-4 w-4"
+          width={15}
+          height={15}
+          alt="message"
+        />{' '}
+        <span className="hidden md:block">New Podcast</span>
       </Link>
     </div>
   );

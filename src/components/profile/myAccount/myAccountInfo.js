@@ -1,11 +1,13 @@
 'use selector';
 import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 export const MyAccountInfo = ({ setEdit }) => {
-  const user = useSelector((state) => state.userAuth.user);
+  const {
+    data: { user },
+  } = useSession();
   return (
     <div>
       <div className="flex gap-4 flex-col mt-8">

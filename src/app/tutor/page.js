@@ -164,6 +164,7 @@ const Tutor = () => {
           </div>
         </div>
       )}
+      {/* {active==='videos' && <MyVideos/>} */}
       {active === 'courses' && <MyCourses />}
       {active === 'quiz' && (
         <div className="w-[90%] mx-auto mt-10">
@@ -221,14 +222,13 @@ const CourseCard = ({ course }) => {
         </span>
       )}
       <div className="relative">
-        {/* <Image
-          src={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
-          alt={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+        <Image
+          src={course?.thumbnail}
+          alt={'course'}
           width={300}
           height={200}
           className="rounded-md object-cover w-full h-44"
-        /> */}
-        <div className="w-full h-44 rounded-md"></div>
+        />
       </div>
       <div className="mt-3 flex gap-2 items">
         <UserAvatar />
@@ -246,3 +246,15 @@ const CourseCard = ({ course }) => {
     </Link>
   );
 };
+
+// const MyVideos=()=>{
+//   const axios=useAxiosPrivate()
+//   useEffect(()=>{
+//     const fetchVideos=async ()=>{
+
+//     }
+//   },[])
+//   return (
+//     <div></div>
+//   )
+// }

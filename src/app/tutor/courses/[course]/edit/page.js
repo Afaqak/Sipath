@@ -2,23 +2,32 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { DeleteModal, LoadingSkeletons, Video } from '@/components';
+import { DeleteModal, LoadingSkeletons, Video, Icons, formatTimeAgo } from '@/components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
-import { Icons } from '@/components';
 import { motion } from 'framer-motion';
-import { formatTimeAgo } from '@/components';
 import { VideoEditModal } from '@/components/video/editModal';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useRouter } from 'next/navigation';
 const EditPage = ({ params }) => {
   const axios = useAxiosPrivate();
   const [sections, setSections] = useState([]);
+  const [sectionOpen, setSectionOpen] = useState(false);
   const [videosBySection, setVideosBySection] = useState({});
   const [buttonStates, setButtonStates] = useState({});
   const [open, setOpen] = useState(false);
+  const [openAddVideo, setOpenAddVideo] = useState(false);
   const router = useRouter();
+  const [sectionName, setSectionName] = useState('');
   const [loadingStates, setLoadingStates] = useState([]);
   console.log(videosBySection);
   useEffect(() => {
@@ -30,14 +39,33 @@ const EditPage = ({ params }) => {
     };
     fetchSections();
   }, []);
-  console.log(loadingStates, 'lS');
-  console.log(sections, 'sections');
 
   const toggleButton = (sectionId) => {
     setButtonStates((prevState) => ({
       ...prevState,
       [sectionId]: !prevState[sectionId],
     }));
+  };
+
+  const handleAddSection = async () => {
+    try {
+      if (!sectionName) return;
+      const response = await axios.post(`/courses/${params?.course}/section`, {
+        name: sectionName,
+      });
+      console.log(response.data);
+      if (response.status === 200) {
+        successToast('Section Added Successfully!', '#1850BC');
+        const response = await axios.get(`/courses/${params?.course}/sections`);
+        console.log(response.data, 'after sec added');
+        setSectionName('');
+        setSections(response.data.sections);
+      }
+    } catch (err) {
+      errorToast('An error occured!');
+    } finally {
+      setSectionOpen(false);
+    }
   };
 
   const handleDisplayVideos = async (sectionId) => {
@@ -74,11 +102,11 @@ const EditPage = ({ params }) => {
   const onDeleteCourse = async () => {
     try {
       const response = await axios.delete(`/courses/${params.course}`);
-      if (response === 200) {
+      if (response.status === 200) {
+        errorToast('Course Deleted', '#1850BC');
         setOpen(false);
-        router.back();
+        router.push('/tutor');
       }
-      errorToast('Course Deleted', '#1850BC');
       console.log(response.data);
     } catch (err) {
       console.log(err);
@@ -96,9 +124,9 @@ const EditPage = ({ params }) => {
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="flex gap-2 transform active:-translate-y-1 text-subcolor border-subcolor items-center"
+            className="flex gap-2 transform active:-translate-y-1 text-main border-main items-center"
           >
-            <Icons.edit className="w-4 h-4 stroke-subcolor" />
+            <Icons.edit className="w-4 h-4 stroke-main" />
             Finish Editing
           </Button>
           <Button
@@ -109,12 +137,23 @@ const EditPage = ({ params }) => {
             <Icons.trash className="w-4 h-4 stroke-subcolor2" />
             Delete Course
           </Button>
+          <Button
+            onClick={() => setSectionOpen(true)}
+            variant="outline"
+            className="flex gap-2 transform active:-translate-y-1 text-subcolor border-subcolor items-center"
+          >
+            <Image width={16} height={16} alt="add more" src={'/svgs/add_video.svg'} />
+            New Section
+          </Button>
         </div>
       </div>
       {sections.map((section, sectionIndex) => (
         <div className="" key={section.id}>
           <EditPageHeader
+            openAddVideo={openAddVideo}
+            setOpenAddVideo={setOpenAddVideo}
             section={section}
+            videosBySection={videosBySection}
             sectionIndex={sectionIndex}
             setVideosBySection={setVideosBySection}
             handleDisplayVideos={handleDisplayVideos}
@@ -130,7 +169,7 @@ const EditPage = ({ params }) => {
               </div>
             ) : (
               <div
-                className={`grid md:grid-cols-2 lg:grid-cols-3  ${
+                className={`grid md:grid-cols-2 gap-4 lg:grid-cols-3  ${
                   buttonStates[section?.id] ? 'mb-2 ' : ''
                 }`}
               >
@@ -158,6 +197,13 @@ const EditPage = ({ params }) => {
         message={'Do you reall want to delete this course?'}
         onDeleteSubmit={onDeleteCourse}
       />
+      <SectionAddModal
+        isOpen={sectionOpen}
+        setIsOpen={setSectionOpen}
+        sectionName={sectionName}
+        setSectionName={setSectionName}
+        handleAddSection={handleAddSection}
+      />
     </div>
   );
 };
@@ -169,8 +215,12 @@ function EditPageHeader({
   setSections,
   sectionIndex,
   handleDisplayVideos,
+  setVideosBySection,
   buttonStates,
   courseId,
+  videosBySection,
+  openAddVideo,
+  setOpenAddVideo,
 }) {
   const [editMode, setEditMode] = useState(false);
   const axios = useAxiosPrivate();
@@ -183,11 +233,11 @@ function EditPageHeader({
         const response = await axios.get(`/courses/${courseId}/sections`);
         setSections(response.data?.sections);
       }
-      errorToast('Section Deleted', '#1850BC');
+      errorToast('Section Deleted');
       console.log(response.data);
     } catch (err) {
       console.log(err);
-      errorToast('An error occured!', '#fb3c22');
+      errorToast('An error occured!');
     } finally {
       setEditMode(false);
     }
@@ -203,7 +253,7 @@ function EditPageHeader({
         const response = await axios.get(`/courses/${courseId}/sections`);
         setSections(response.data?.sections);
       }
-      successToast('Section Updated', '#1850BC');
+      successToast('Section Updated!', '#1850BC');
       console.log(response.data);
       section.name = response.data?.section?.name;
     } catch (err) {
@@ -260,8 +310,23 @@ function EditPageHeader({
             <Icons.trash className="h-4 w-4 " />
             Delete
           </motion.li>
+          <motion.li
+            onClick={() => setOpenAddVideo(true)}
+            className="flex items-center gap-3 px-2 py-2 hover-bg-[#d1d1d1]"
+          >
+            <Icons.addVideo className="h-4 w-4  fill-main" />
+            Add Video
+          </motion.li>
         </motion.ul>
       </div>
+      <VideoEditModal
+        videosBySection={videosBySection}
+        setVideosBySection={setVideosBySection}
+        courseId={courseId}
+        sectionId={section?.id}
+        isOpen={openAddVideo}
+        setIsOpen={setOpenAddVideo}
+      />
       <DeleteModal
         isOpen={open}
         setIsOpen={setOpen}
@@ -274,8 +339,33 @@ function EditPageHeader({
 
 export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, videosBySection }) => {
   const [open, setOpen] = useState(false);
+  const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
+  const axios = useAxiosPrivate();
+
   console.log(video, 'video');
+
+  const onDeleteSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.delete(
+        `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`
+      );
+      errorToast('Video Deleted Successfully');
+      console.log(response, 'response delete video');
+      if (response.status === 200) {
+        const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
+        console.log(response.data);
+        const updatedVideosBySection = { ...videosBySection };
+        updatedVideosBySection[sectionId] = response.data.videos;
+
+        setVideosBySection(updatedVideosBySection);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="h-[20rem] relative block w-full p-4 bg-white shadow-md rounded-md">
       {video?.live && (
@@ -336,7 +426,10 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
                       Edit
                     </p>
                   </motion.li>
-                  <motion.li className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]">
+                  <motion.li
+                    onClick={() => setVideoDelete(true)}
+                    className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                  >
                     <Icons.trash className="h-4 w-4 " />
                     Delete
                   </motion.li>
@@ -361,7 +454,14 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           </div>
         </div>
       </div>
+      <DeleteModal
+        isOpen={openVideoDelete}
+        setIsOpen={setVideoDelete}
+        message={`Do you really want to delete ${video?.title} ?`}
+        onDeleteSubmit={onDeleteSubmit}
+      />
       <VideoEditModal
+        isEdit={true}
         videosBySection={videosBySection}
         setVideosBySection={setVideosBySection}
         courseId={courseId}
@@ -371,5 +471,46 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         setIsOpen={setOpen}
       />
     </div>
+  );
+};
+
+const SectionAddModal = ({ isOpen, setIsOpen, setSectionName, sectionName, handleAddSection }) => {
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(!isOpen);
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={openModal}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add New Section</DialogTitle>
+        </DialogHeader>
+
+        <DialogDescription>
+          <input
+            type="text"
+            value={sectionName}
+            className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] focus:outline-none rounded-md w-full px-4 py-1 placeholder:text-sm border-none focus:outline-non"
+            onChange={(e) => setSectionName(e.target.value)}
+            placeholder="Section Name"
+          />
+        </DialogDescription>
+
+        <DialogFooter>
+          <Button
+            onClick={handleAddSection}
+            variant="outline"
+            className="flex gap-2 transform active:-translate-y-1 text-subcolor border-subcolor items-center"
+          >
+            <Image width={16} height={16} alt="add more" src={'/svgs/add_video.svg'} />
+            New Section
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

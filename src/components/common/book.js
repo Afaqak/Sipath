@@ -46,7 +46,7 @@ export const Book = () => {
           </p>
         </div>
         <div>
-          <Button className="font-semibold w-full text-subcolor justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-subcolor">
+          <Button className="font-semibold bg-white w-full text-subcolor justify-center flex items-center gap-1 px-8 rounded-md border-[3px] border-subcolor">
             <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
             <span>Buy Book</span>
           </Button>

@@ -60,9 +60,7 @@ const NewPodcast = () => {
         },
       });
       console.log(response.data, 'res');
-      router.push(
-        `/podcast/live?room=${response.data?.podcast?.room_id}&tutorId=${response.data?.podcast?.tutor_id}`
-      );
+      router.push(`/podcast/live?room=${response.data?.podcast?.room_id}&tutorId=${user.user?.id}`);
     } catch (err) {
       console.error(err);
     }

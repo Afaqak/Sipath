@@ -130,7 +130,10 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
         <UserAvatar
-          user={{ name: comment?.user?.display_name || comment?.user?.first_name }}
+          user={{
+            image: comment.user?.profile_image,
+            name: comment?.user?.display_name || comment?.user?.first_name,
+          }}
           className="h-8 w-8"
         />
 

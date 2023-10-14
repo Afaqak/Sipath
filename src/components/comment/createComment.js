@@ -4,12 +4,16 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '../icons';
+import { useSession } from 'next-auth/react';
 export const CreateComment = ({ reply, onSubmit, setComments, commentRef }) => {
-  const user = useSelector((state) => state.userAuth?.user);
+  const { data: user } = useSession();
   return (
     <form onSubmit={onSubmit} className="flex gap-3 items-center">
       <UserAvatar
-        user={{ name: user?.first_name || user?.display_name || user?.email }}
+        user={{
+          image: user.user?.profile_image,
+          name: user?.user?.first_name || user?.user?.display_name || user?.email,
+        }}
         className="h-8 w-8"
       />
       <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">

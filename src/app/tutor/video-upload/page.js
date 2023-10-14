@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType } from '@/components';
 import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
+import { ClipLoader } from 'react-spinners';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
@@ -19,11 +19,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { errorToast, successToast } from '@/utils/toasts';
+import { useSession } from 'next-auth/react';
 
 const VideoUpload = () => {
-  const token = useSelector((state) => state.userAuth?.token);
-  console.log('token from vidup', token);
-
+  const { data: user } = useSession();
+  console.log('token from vidup', user?.token);
   const axios = useAxiosPrivate();
   const [videoType, setVideoType] = useState('free');
   const [courseTopic, setCourseTopic] = useState('');
@@ -31,6 +31,7 @@ const VideoUpload = () => {
   const [sectionIds, setSectionIds] = useState([]);
   const abortController = new AbortController();
   const [selectedTab, setSelectedTab] = useState('individual');
+  const [courseThumbnail, setCourseThumbnail] = useState(null);
   const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
 
@@ -242,15 +243,14 @@ const VideoUpload = () => {
 
         return;
       }
-      const { data } = await axios.post(
-        '/courses',
-        { name: courseTopic },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const courseForm = new FormData();
+      courseForm.append('name', courseTopic);
+      courseForm.append('thumbnail', courseThumbnail);
+      const { data } = await axios.post('/courses', courseForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       successToast('Course added!', '#1850BC');
 
@@ -272,7 +272,7 @@ const VideoUpload = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${user?.token}`,
           },
         }
       );
@@ -310,26 +310,33 @@ const VideoUpload = () => {
         formDataToSend.append('description', video.formData.description);
         formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration.toString());
-        formDataToSend.append('price', 12);
 
         video.loading = true;
 
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${user?.token}`,
             'Content-Type': 'multipart/form-data',
           },
           signal: abortSignal,
           onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            if (video.loading) {
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              console.log(progress, 'progress');
+              const updatedSectionsClone = [...updatedSections];
 
-            video.uploadProgress = progress;
-            const updatedSectionsClone = [...updatedSections];
-            updatedSectionsClone[sectionIndex] = {
-              ...updatedSectionsClone[sectionIndex],
-              videos: [...updatedSectionsClone[sectionIndex].videos],
-            };
-            setSections(updatedSectionsClone);
+              const videoIndex = updatedSectionsClone[sectionIndex].videos.findIndex(
+                (v) => v === video
+              );
+              if (videoIndex !== -1) {
+                updatedSectionsClone[sectionIndex] = {
+                  ...updatedSectionsClone[sectionIndex],
+                  videos: [...updatedSectionsClone[sectionIndex].videos],
+                };
+                updatedSectionsClone[sectionIndex].videos[videoIndex].uploadProgress = progress;
+                setSections(updatedSectionsClone);
+              }
+            }
           },
         };
 
@@ -351,7 +358,7 @@ const VideoUpload = () => {
               { video_id: videoId },
               {
                 headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${user?.token}`,
                 },
               }
             );
@@ -405,7 +412,7 @@ const VideoUpload = () => {
 
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${user?.token}`,
             'Content-Type': 'multipart/form-data',
           },
           signal: abortSignal,
@@ -426,6 +433,8 @@ const VideoUpload = () => {
           const response = await axios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
             console.log('Video uploaded successfully:', response.data);
+
+            successToast('Video uploaded successfully!');
             video.loading = false;
             video.uploadProgress = 0;
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
@@ -438,6 +447,9 @@ const VideoUpload = () => {
           }
         } catch (error) {
           console.error('Error uploading video:', error);
+          errorToast('Error uploading video!');
+          video.loading = false;
+        } finally {
           video.loading = false;
         }
       }
@@ -472,10 +484,12 @@ const VideoUpload = () => {
         </Button>
       </div>
 
-      <div className="mb-5 flex justify-between items-center">
+      <div className="mb-5 flex flex-col justify-between gap-4">
         <VideoUploadType type={videoType} setType={setVideoType} setPrice={setPrice} />
         {selectedTab === 'premium' && (
           <CourseTopic
+            coursethumbnail={courseThumbnail}
+            setCourseThumbnail={setCourseThumbnail}
             courseId={courseId}
             courseTopic={courseTopic}
             setCourseTopic={setCourseTopic}
@@ -667,7 +681,8 @@ const VideoBody = ({
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
             <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
-              <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
+              <ClipLoader color="black" />
+              {/* <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
                 <motion.span
                   initial={{ scale: 0.5 }}
                   animate={{ scale: 1 }}
@@ -685,9 +700,9 @@ const VideoBody = ({
                     <motion.div>{`${uploadProgress}%`}</motion.div>
                   )}
                 </motion.span>
-              </motion.div>
+              </motion.div> */}
 
-              <div className="w-52 h-1 bg-white shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md relative">
+              {/* <div className="w-52 h-1 bg-white shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md relative">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
@@ -695,7 +710,7 @@ const VideoBody = ({
                   className="h-full bg-gray-500 rounded-md"
                   style={{ width: `${uploadProgress}%` }}
                 ></motion.div>
-              </div>
+              </div> */}
 
               <button
                 type="button"
@@ -874,7 +889,13 @@ const SectionTitle = ({ onTitleUpdate }) => {
   );
 };
 
-const CourseTopic = ({ courseId, setCourseTopic, courseTopic }) => {
+const CourseTopic = ({
+  courseId,
+  setCourseTopic,
+  courseTopic,
+  coursethumbnail,
+  setCourseThumbnail,
+}) => {
   console.log(courseId, 'courseid');
   return (
     <div className="flex flex-row items-center gap-4 text-[#616161] font-light">
@@ -887,6 +908,12 @@ const CourseTopic = ({ courseId, setCourseTopic, courseTopic }) => {
         placeholder="ENTER TITLE"
         className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] bg-white rounded-md px-3 w-80 py-1 placeholder:text-sm border-none focus:outline-none"
         type="text"
+      />
+      <label className="text-sm uppercase text-[#616161] font-light">Thumbnail</label>
+      <FileInput
+        disabled={courseId ? true : false}
+        file={coursethumbnail}
+        setFile={setCourseThumbnail}
       />
     </div>
   );

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Icon } from '@radix-ui/react-select';
 import { Icons } from '../icons';
 
-export const FileInput = ({ file, setFile }) => {
+export const FileInput = ({ file, setFile, disabled = false }) => {
   console.log(file);
   // console.log(file);
   const inputRef = useRef(null);
@@ -21,7 +21,13 @@ export const FileInput = ({ file, setFile }) => {
 
   return (
     <div className="relative">
-      <input type="file" ref={inputRef} className="hidden" onChange={handleFileChange} />
+      <input
+        disabled={disabled}
+        type="file"
+        ref={inputRef}
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
       <div className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)]  text-ellipsis z-[20] truncate  w-48 py-1 rounded-md px-2 placeholder:text-sm border-none focus:outline-none">
         {!file ? (
@@ -34,7 +40,7 @@ export const FileInput = ({ file, setFile }) => {
         ) : (
           <div className="relative">
             <p
-              className="font-semibold relative text-[0.7rem] text-green-500 cursor-pointer"
+              className="font-semibold relative text-sm text-green-500 cursor-pointer"
               onClick={handleChooseFile}
               style={{
                 width: '100%',
@@ -47,7 +53,7 @@ export const FileInput = ({ file, setFile }) => {
             </p>
             <Icons.trash
               onClick={() => setFile(null)}
-              className="absolute h-[0.86rem] w-[0.86rem] -right-[0.48rem] top-[1px] cursor-pointer"
+              className="absolute h-[0.86rem] w-[0.86rem] -right-[0.47rem] top-[2px] cursor-pointer"
             />
           </div>
         )}

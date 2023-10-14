@@ -18,7 +18,7 @@ export const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDurati
 
       video.onloadedmetadata = () => {
         const duration = video.duration;
-        setDuration(duration.toString());
+        setDuration(duration);
         setVideoUrl(video.src);
       };
 
@@ -35,9 +35,9 @@ export const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDurati
     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
       <div
         onClick={handleButtonClick}
-        className="lg:h-28 h-36 flex items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full bg-[#D9D9D9]"
+        className="lg:h-28 h-36 flex items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full bg-gray-100"
       >
-        {/* {videoUrl ? (
+        {videoUrl ? (
           <video controls className="w-full h-full rounded-md object-contain">
             <source src={videoUrl} type="video/mp4" />
             Your browser does not support the video tag.
@@ -45,15 +45,21 @@ export const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDurati
         ) : (
           <div className="w-full h-full rounded-md object-contain">
             {thumbnail ? (
-              <div>wewq</div>
+              <img
+                src={thumbnail}
+                width={15}
+                height={15}
+                className="w-full h-full object-cover rounded-md"
+                alt="file"
+              />
             ) : (
               <div className="flex items-center justify-center h-full gap-2">
                 Upload Video{' '}
-                <Image src={'/svgs/upload_video.svg'} width={15} height={15} alt="file" />
+                <img src={'/svgs/upload_video.svg'} width={15} height={15} alt="file" />
               </div>
             )}
           </div>
-        )} */}
+        )}
         <input
           type="file"
           accept="video/*"

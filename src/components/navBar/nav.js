@@ -5,25 +5,19 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { setUserDataAndToken } from '@/features/auth/authSlice';
 import { signOut, useSession } from 'next-auth/react';
-import { useDispatch } from 'react-redux';
 import { buttonVariants, Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
-import { setUserData } from '@/features/auth/authSlice';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import toast from 'react-hot-toast';
 export const Navbar = () => {
-  console.log(useSelector((state) => state.userAuth));
-
   const router = useRouter();
   const pathname = usePathname();
   const { data: user } = useSession();
 
   const [nav, setNav] = useState(false);
+  const [toggleMenu, setToggleMenu] = useState(false);
 
   const toggleNav = () => {
     setNav(!nav);
@@ -102,28 +96,69 @@ export const Navbar = () => {
                 <Icons.message className="w-6 h-6" onClick={() => router.push('/chat')} />
                 <Icons.bell />
 
-                <UserAvatar
-                  onClick={() => router.push('/my-profile')}
-                  user={{ name: user?.first_name || user?.display_name || user?.email }}
-                  className="h-8 w-8"
-                />
-                <Button
-                  variant="destructive"
-                  onClick={async () => {
-                    toast.error('Logging out!', {
-                      style: {
-                        backgroundColor: '#fb3c22',
-                        color: 'white',
-                      },
-                      icon: '⚪',
-                    });
-                    await signOut({
-                      callbackUrl: '/',
-                    }).then((res) => {});
-                  }}
-                >
-                  Log Out
-                </Button>
+                <div className="relative">
+                  <UserAvatar
+                    onClick={() => setToggleMenu(!toggleMenu)}
+                    user={{
+                      image: user.user?.profile_image,
+                      name: user.user?.first_name || user?.display_name || user?.email,
+                    }}
+                    className="h-8 w-8"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, visibility: 'hidden' }}
+                    animate={{
+                      opacity: toggleMenu ? 1 : 0,
+                      y: toggleMenu ? 0 : 10,
+                      visibility: toggleMenu ? 'visible' : 'hidden',
+                    }}
+                    transition={{ type: 'spring', stiffness: 100 }}
+                    className="bg-white rounded-md shadow-md w-32 absolute border top-10 right-0"
+                  >
+                    <motion.ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
+                      <motion.li
+                        onClick={() => {
+                          router.push('/my-profile');
+                          setToggleMenu(false);
+                        }}
+                        className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
+                      >
+                        <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                        my profile
+                      </motion.li>
+                      <motion.li
+                        onClick={() => {
+                          router.push('/tutor');
+                          setToggleMenu(false);
+                        }}
+                        className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
+                      >
+                        <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                        tutor
+                      </motion.li>
+
+                      <motion.li
+                        onClick={async () => {
+                          setToggleMenu(false);
+                          toast.error('Logging out!', {
+                            style: {
+                              backgroundColor: '#fb3c22',
+                              color: 'white',
+                            },
+                            icon: '⚪',
+                          });
+                          await signOut({
+                            callbackUrl: '/',
+                          }).then((res) => {});
+                        }}
+                        className="flex items-center rounded-bl-md rounded-br-md  gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                      >
+                        <Icons.logout className="h-4 w-4 " />
+                        logout
+                      </motion.li>
+                    </motion.ul>
+                  </motion.div>
+                </div>
               </>
             ) : (
               <>
