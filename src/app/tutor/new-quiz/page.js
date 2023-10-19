@@ -1,28 +1,36 @@
 'use client';
 
-import { FileInput } from '@/components';
+import { NewQuizBodyRow, UploadQuizRow } from '@/components';
 import React, { useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useDispatch } from 'react-redux';
+import { createQuiz } from '@/features/quiz/quizThunk';
 import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-
+import { useSession } from 'next-auth/react';
 const NewQuiz = () => {
+  const dispatch = useDispatch();
   const [quizTitle, setQuizTitle] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [quizSolutionFiles, setQuizSolutionFiles] = useState(null);
   const [quizFile, setQuizFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const axios = useAxiosPrivate();
+  const { data: user } = useSession();
   console.log(quizFile, 'u');
+
+  const onSuccess = () => {
+    successToast('Quiz Added Successfully!');
+    setQuizTitle('');
+    setSelectedSubject('');
+    setQuizFile(null);
+    setQuizSolutionFiles(null);
+    setThumbnailFile(null);
+  };
+
+  const onError = () => {
+    errorToast('Error uploading Quiz!');
+  };
+
   const handlePublish = async () => {
     if (!quizTitle || !selectedSubject || !quizFile || !quizSolutionFiles || !thumbnailFile) {
       errorToast('Please fill in all required fields.');
@@ -58,19 +66,8 @@ const NewQuiz = () => {
     formData.append('subject', selectedSubject);
 
     try {
-      const response = await axios.post(`/upload/quiz`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if (response.status === 200) {
-        successToast('Quiz Added Successfully!');
-        setQuizTitle('');
-        setSelectedSubject('');
-        setQuizFile(null);
-        setQuizSolutionFiles(null);
-        setThumbnailFile(null);
-      }
+      dispatch(createQuiz({ token: user?.token, data: formData, onSuccess, onError }));
+
       console.log(response.data);
     } catch (err) {
     } finally {
@@ -99,67 +96,6 @@ const NewQuiz = () => {
         <button className="bg-black rounded-md px-8 mt-4 py-1 text-white" onClick={handlePublish}>
           Publish
         </button>
-      </div>
-    </div>
-  );
-};
-
-const NewQuizBodyRow = ({ quizTitle, setQuizTitle, selectedSubject, setSelectedSubject }) => {
-  return (
-    <div className="flex gap-4 text-[#616161] font-light">
-      <div className="flex flex-col">
-        <label className="text-sm font-light">Quiz title</label>
-        <input
-          placeholder="ENTER TITLE"
-          className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] w-48 rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
-          type="text"
-          value={quizTitle}
-          onChange={(e) => setQuizTitle(e.target.value)}
-        />
-      </div>
-      <div className="flex flex-col">
-        <label className="text-sm text-[#616161] font-light">Subject</label>
-        <Select onValueChange={setSelectedSubject} defaultValue={selectedSubject}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a Subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Subjects</SelectLabel>
-              <SelectItem value="1">English</SelectItem>
-              <SelectItem value="2">Chemistry</SelectItem>
-              <SelectItem value="3">Physics</SelectItem>
-              <SelectItem value="4">Science</SelectItem>
-              <SelectItem value="5">Maths</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
-};
-
-const UploadQuizRow = ({
-  quizSolutionFiles,
-  setQuizSolutionFiles,
-  thumbnailFile,
-  setThumbnailFile,
-  quizFile,
-  setQuizFile,
-}) => {
-  return (
-    <div className="flex gap-4">
-      <div className="flex flex-col">
-        <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
-        <FileInput setFile={setQuizFile} file={quizFile} />
-      </div>
-      <div className="flex flex-col">
-        <label className="text-sm text-[#616161] font-light">Upload Quiz Solution</label>
-        <FileInput setFile={setQuizSolutionFiles} file={quizSolutionFiles} />
-      </div>
-      <div className="flex flex-col">
-        <label className="text-sm text-[#616161] font-light">Upload Thumbnail</label>
-        <FileInput setFile={setThumbnailFile} file={thumbnailFile} />
       </div>
     </div>
   );

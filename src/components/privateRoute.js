@@ -6,10 +6,6 @@ import { useEffect } from 'react';
 
 export function withPrivateRoute(Component, allowedRoles = []) {
   return function WithPrivate(props) {
-    useEffect(() => {
-      console.log('run');
-    }, []);
-
     const router = useRouter();
     const user = useSelector((state) => state.userAuth.user);
 

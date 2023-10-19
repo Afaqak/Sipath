@@ -11,7 +11,7 @@ export const CreateComment = ({ reply, onSubmit, setComments, commentRef }) => {
     <form onSubmit={onSubmit} className="flex gap-3 items-center">
       <UserAvatar
         user={{
-          image: user.user?.profile_image,
+          image: user?.user?.profile_image,
           name: user?.user?.first_name || user?.user?.display_name || user?.email,
         }}
         className="h-8 w-8"

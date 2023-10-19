@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
-import { isWeakMap } from 'lodash';
 
 export function VideoEditModal({
   isOpen,
@@ -21,6 +20,8 @@ export function VideoEditModal({
     title: video?.title,
     description: video?.description,
   };
+  console.log(video, 'from my profile');
+
   const [quiz, setQuiz] = useState(null);
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
@@ -93,7 +94,7 @@ export function VideoEditModal({
 
     try {
       if (isEdit) {
-        if (!courseId && sectionId) {
+        if (!courseId && !sectionId) {
           const response = await axios.patch(`/assets/videos/${video?.id}`, updatedData);
           console.log(response.data);
         } else {
@@ -183,7 +184,7 @@ export function VideoEditModal({
   return (
     <>
       <Dialog className="bg-gray-100 bg-opacity-100" open={isOpen} onOpenChange={openModal}>
-        <DialogContent className="w-full">
+        <DialogContent className="w-full bg-white shadow-lg">
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             <div className="flex gap-8">
               <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">

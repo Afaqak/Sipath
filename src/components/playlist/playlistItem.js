@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-export const PlaylistItem = ({ title, duration, isChecked }) => {
+export const PlaylistItem = ({ title, duration, isChecked, onClick, id }) => {
   return (
     <li className="flex gap-4">
       <div className="flex items-center mb-4">
@@ -12,7 +12,9 @@ export const PlaylistItem = ({ title, duration, isChecked }) => {
         />
       </div>
       <div>
-        <p>{title}</p>
+        <p onClick={() => onClick(id)} className="border-b py-1">
+          {title}
+        </p>
         <div className="flex gap-2">
           <Image src={'/svgs/smartdisplay.svg'} width={15} height={15} alt="smart display" />
           <span className="text-[0.75rem] font-semibold">{duration}</span>

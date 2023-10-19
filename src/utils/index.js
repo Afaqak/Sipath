@@ -41,20 +41,3 @@ export const formatTimeAgo = (timestamp) => {
     return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
   }
 };
-
-export const LoadingSkeletons = ({ times }) => (
-  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 ">
-    {[...Array(times)].map((_, idx) => (
-      <div key={idx} className="bg-white rounded-md p-4 shadow-md">
-        <Skeleton className="h-48 mb-2 " />
-        <div className="flex items-center space-x-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);

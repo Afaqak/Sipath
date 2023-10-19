@@ -8,8 +8,8 @@ export const Video = ({ videos, title, load }) => {
         <div className="py-8">
           <h2 className="text-2xl  font-extrabold mb-4">{title}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4">
-            {videos.map((video) => (
-              <VideoItem key={Math.random() * 1000000} video={video} />
+            {videos.map((video, index) => (
+              <VideoItem key={index} video={video} />
             ))}
           </div>
           {load && (

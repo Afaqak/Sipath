@@ -10,10 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+
+import { useSession } from 'next-auth/react';
 
 export const CommentsSection = ({ videoId }) => {
-  const axios = useAxiosPrivate();
+  const { data: user } = useSession();
   const searchParams = useSearchParams();
   const commentRef = useRef(null);
   const id = searchParams.get('id');
@@ -31,7 +32,12 @@ export const CommentsSection = ({ videoId }) => {
     try {
       if (!commentRef.current.value) return;
       dispatch(
-        createComment({ videoId: id, comment: commentRef.current?.value, onSuccess, axios })
+        createComment({
+          videoId: id,
+          comment: commentRef.current?.value,
+          onSuccess,
+          token: user?.token,
+        })
       );
     } catch (error) {
       console.error(error);

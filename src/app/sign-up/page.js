@@ -7,10 +7,10 @@ import { PasswordInput } from '@/components/authentication/passwordInput';
 import { Button } from '@/components/ui/button';
 import { useSession, signIn } from 'next-auth/react';
 import { Icons } from '@/components';
-import toast from 'react-hot-toast';
+
 import axios from '../../utils/index';
 import { useRouter } from 'next/navigation';
-import { successToast } from '@/utils/toasts';
+import { successToast, errorToast } from '@/utils/toasts';
 
 const SignUp = () => {
   const router = useRouter();
