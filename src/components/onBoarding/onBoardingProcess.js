@@ -6,13 +6,13 @@ import { useForm, Controller } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import axios from '../../utils/index';
 import { useSession } from 'next-auth/react';
-import { errorToast } from '@/utils/toasts';
+import { errorToast, successToast } from '@/utils/toasts';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 export const OnBoardingProcess = () => {
   const { data: user, update } = useSession();
-
+  const axios = useAxiosPrivate();
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
@@ -59,43 +59,11 @@ export const OnBoardingProcess = () => {
     }
 
     function onSuccess() {
-      toast.success('Profile Created!\nTime to become an expert!', {
-        style: {
-          color: 'white',
-          borderRadius: '30px',
-          background: '#1C8827',
-        },
-        iconTheme: {
-          color: 'white',
-        },
-        icon: '⚪',
-      });
-
       if (buttonType === 'asUser') {
-        toast.success('Profile Created!', {
-          style: {
-            color: 'white',
-            borderRadius: '30px',
-            background: '#1C8827',
-          },
-          iconTheme: {
-            color: 'white',
-          },
-          icon: '⚪',
-        });
+        successToast('Profile Created!');
         router.push('/');
       } else {
-        toast.success('Profile Created!\nTime to become an expert!', {
-          style: {
-            color: 'white',
-            borderRadius: '30px',
-            background: '#1C8827',
-          },
-          iconTheme: {
-            color: 'white',
-          },
-          icon: '⚪',
-        });
+        successToast('Profile Created!\nTime to become an expert!');
         router.push('/on-boarding/expert');
       }
     }

@@ -3,14 +3,12 @@ import React, { useState } from 'react';
 import { Modal, AvailableDays } from '@/components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/hooks/use-toast';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession();
   const axios = useAxiosPrivate();
-  const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [expertise, setExpertise] = useState([]);
@@ -39,12 +37,7 @@ const OnBoardingExpert = () => {
         availability,
       };
 
-      const response = await axios.post('/onboard/tutor', formData, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post('/onboard/tutor', formData);
 
       if (response.data) {
         console.log(response.data, 'expert');

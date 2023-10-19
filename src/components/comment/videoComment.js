@@ -2,13 +2,14 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { debounce } from 'lodash';
-import { CreateComment, Icons } from '@/components';
+import { CreateComment, Icons, formatTimeAgo } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
 import { useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useSession } from 'next-auth/react';
 
 const LoadingSkeletons = () => (
   <div className="py-8 grid  gap-4">
@@ -27,43 +28,15 @@ const LoadingSkeletons = () => (
 );
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
-  const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const commentRef = useRef(null);
-
+  const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
 
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector((state) => state.comments.commentReplies);
-
-  const formatTimeAgo = (timestamp) => {
-    const now = new Date();
-    const createdAt = new Date(timestamp);
-
-    const timeDiff = now - createdAt;
-    const seconds = Math.floor(timeDiff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30);
-
-    if (months > 0) {
-      return `${months} month${months > 1 ? 's' : ''} ago`;
-    } else if (weeks > 0) {
-      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
-    } else if (days > 0) {
-      return `${days} day${days > 1 ? 's' : ''} ago`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    } else {
-      return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-    }
-  };
 
   const debouncedOnReplySubmit = useCallback(
     debounce(() => {
@@ -76,7 +49,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             videoId: id,
             commentId: parentId,
             comment: commentRef.current?.value,
-            axios,
+            token: user?.token,
           })
         );
       } catch (error) {
@@ -115,7 +88,9 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     try {
       if (!commentReplies[comment?.id]) {
         setLoadingReplies(true);
-        dispatch(fetchCommentReplies({ videoId: id, commentId: parentId, onSuccess, axios }));
+        dispatch(
+          fetchCommentReplies({ videoId: id, commentId: parentId, onSuccess, token: user?.token })
+        );
         toggleReplyView(parentId);
       } else {
         toggleReplyView(parentId);

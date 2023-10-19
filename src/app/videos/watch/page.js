@@ -36,7 +36,7 @@ const WatchVideo = () => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} />
+          <ContentPlayer noPremium={true} id={id} />
           <VideoInfo />
           {/* Render the Comments component for large screens */}
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { MyProfile } from '.';
-import { authOptions } from '../api/auth/[...nextauth]/route';
+
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
-import axios from '../../utils/index';
+import PlaylistVideo from '.';
 import { redirect } from 'next/navigation';
 
 const MyProfilePage = async () => {
@@ -12,9 +12,9 @@ const MyProfilePage = async () => {
     redirect('/');
   }
 
-  const response = await axios.post('/auth/verify-token', { token: session?.token });
+  // const response = await axios.post('/auth/verify-token', { token: session?.token });
 
-  return <MyProfile session={session} />;
+  return <PlaylistVideo session={session} />;
 };
 
 export default MyProfilePage;

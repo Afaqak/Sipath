@@ -3,8 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from '../../../../utils/index';
-
-export const handler = NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -31,7 +30,11 @@ export const handler = NextAuth({
 
         if (response.data.user) {
           console.log(response?.data?.token, 'token');
-          return { user: response.data.user, token: response.data.token };
+          return {
+            user: response.data.user,
+            token: response.data.token,
+            tutor: response.data.tutor,
+          };
         } else {
           return null;
         }
@@ -57,6 +60,7 @@ export const handler = NextAuth({
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
+        token.tutor = data.tutor;
         token.user = data.user;
       } else if (providerName === 'google') {
         console.log('email from google', token);
@@ -64,11 +68,13 @@ export const handler = NextAuth({
         console.log('token.sub', token.sub, token);
         const { data } = await axios.post('/auth/oauth', { id: token?.sub, email: token.email });
         token.isUpdated = true;
+
         console.log(data, 'data');
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
         token.user = data.user;
+        token.tutor = data.user;
       } else {
         if (user) {
           return {
@@ -83,7 +89,8 @@ export const handler = NextAuth({
       return token;
     },
   },
-});
+};
+export const handler = NextAuth(authOptions);
 
 // const handler = async function auth(req, res) {
 //   console.log(req, res);

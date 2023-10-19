@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { PlaylistItem } from '@/components';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export const PlaylistSection = ({ sectionTitle, sectionDuration, items }) => {
+export const PlaylistSection = ({
+  sectionTitle,
+  sectionDuration,
+  videos,
+  index,
+  onClick,
+  setVideoId,
+}) => {
   const [isListVisible, setListVisible] = useState(false);
 
   const toggleListVisibility = () => {
@@ -9,22 +17,28 @@ export const PlaylistSection = ({ sectionTitle, sectionDuration, items }) => {
   };
 
   return (
-    <div className="rounded-md bg-white p-4 mb-4 shadow-md ">
+    <motion.div onClick={onClick} className="rounded-md bg-white p-4 mb-4 shadow-md">
       <header className="cursor-pointer" onClick={toggleListVisibility}>
-        <h2 className="font-semibold">{sectionTitle}</h2>
+        <h2 className="font-semibold">{`Section ${index + 1} : ${sectionTitle}`}</h2>
         <p className="text-sm">{sectionDuration}</p>
       </header>
-
-      <ul className={`text-sm pt-4 border-t mt-4 ${isListVisible ? '' : 'hidden'}`}>
-        {items.map((item) => (
-          <PlaylistItem
-            key={item.id}
-            title={item.title}
-            duration={item.duration}
-            isChecked={item.isChecked}
-          />
-        ))}
-      </ul>
-    </div>
+      <AnimatePresence>
+        {isListVisible && (
+          <motion.ul className="text-sm pt-4 border-t mt-4">
+            {videos &&
+              videos?.map((item) => (
+                <PlaylistItem
+                  id={item?.id}
+                  onClick={setVideoId}
+                  key={item?.id}
+                  title={item?.title}
+                  duration={item?.subject}
+                  isChecked={true}
+                />
+              ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };

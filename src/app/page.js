@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
 import { withPrivateRoute } from '@/components/privateRoute';
-import { useSession } from 'next-auth/react';
-import cookieCutter from 'cookie-cutter';
 
 const comments = [
   {
@@ -75,10 +73,7 @@ const comments = [
 ];
 
 const Home = () => {
-  const { data } = useSession();
-  const token = data?.token;
-
-  console.log(data?.user, 'session');
+  // console.log(data?.user, 'session');
 
   return (
     <div className="">
