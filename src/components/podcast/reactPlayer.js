@@ -5,10 +5,10 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
-export const ContentPlayer = ({ noPremium, id }) => {
-  const searchParams = useSearchParams();
+export const ContentPlayer = ({ noPremium, id, token }) => {
+  // const searchParams = useSearchParams();
   const axios = useAxiosPrivate();
-  // const id = searchParams.get('id');
+  console.log(id, token, 'from cp');
 
   const [isClient, setIsClient] = useState(false);
   const [videoBlob, setVideoBlob] = useState(null);
@@ -23,7 +23,7 @@ export const ContentPlayer = ({ noPremium, id }) => {
         const response = await axios.get(`/assets/video/stream/${id}`, {
           responseType: 'arraybuffer',
           headers: {
-            Authorization: `Bearer ${user?.token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log(response.data);
