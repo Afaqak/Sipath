@@ -1,5 +1,6 @@
 'use client';
-import { CreateComment, ContentPlayer, LiveMessages, VideoInfo } from '@/components';
+import { CreateComment, LiveMessages, VideoInfo } from '@/components';
+s;
 import Image from 'next/image';
 
 const comments = [

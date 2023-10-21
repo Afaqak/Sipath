@@ -1,5 +1,6 @@
 'use client';
-import { ContentPlayer, VideoInfo, CreateComment, PlaylistSection } from '@/components';
+import { VideoInfo, CreateComment, PlaylistSection } from '@/components';
+import ContentPlayer from '../../../../components/podcast/reactPlayer';
 import Image from 'next/image';
 
 const videoArray = [

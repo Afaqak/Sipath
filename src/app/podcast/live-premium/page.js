@@ -1,7 +1,7 @@
 'use client';
-import { ContentPlayer, LiveMessages, VideoInfo } from '@/components';
+import { LiveMessages, VideoInfo } from '@/components';
 import Image from 'next/image';
-
+import ContentPlayer from '../../../components/podcast/reactPlayer';
 const LivePremium = () => {
   return (
     <div className="">

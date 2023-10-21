@@ -85,6 +85,7 @@ const EditPage = ({ session }) => {
       errorToast('An error occured!');
     } finally {
       setSectionOpen(false);
+      s;
     }
   };
 

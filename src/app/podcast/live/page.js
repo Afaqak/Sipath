@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { socket } from '@/socket';
-import ReactPlayer from 'react-player';
 import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
