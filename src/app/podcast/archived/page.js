@@ -8,7 +8,7 @@ const Archived = () => {
     <div className="container ">
       <div className="grid grid-cols-1 lg:grid-cols-3">
         <div className="  col-span-2 relative  md:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer />
+          {/* <ContentPlayer  /> */}
           <VideoInfo />
           <Comments />
         </div>

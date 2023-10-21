@@ -1,4 +1,4 @@
-import axios from '../../utils/index';
+import axios from 'axios';
 import { VideoGallery } from '@/components/video/videoGallery';
 
 const Videos = async () => {
