@@ -1,27 +1,30 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { buttonVariants, Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
 import toast from 'react-hot-toast';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 export const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { data: user } = useSession();
-
+  const toggleRef = useRef();
   const [nav, setNav] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
 
   const toggleNav = () => {
     setNav(!nav);
   };
+
+  useOutsideClick(toggleRef, () => setToggleMenu(false));
 
   useEffect(() => {
     const handleResize = () => {
@@ -105,59 +108,51 @@ export const Navbar = () => {
                     }}
                     className="h-8 w-8"
                   />
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, visibility: 'hidden' }}
-                    animate={{
-                      opacity: toggleMenu ? 1 : 0,
-                      y: toggleMenu ? 0 : 10,
-                      visibility: toggleMenu ? 'visible' : 'hidden',
-                    }}
-                    transition={{ type: 'spring', stiffness: 100 }}
-                    className="bg-white rounded-md shadow-md w-32 absolute border top-10 right-0"
-                  >
-                    <motion.ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
-                      <motion.li
-                        onClick={() => {
-                          router.push('/my-profile');
-                          setToggleMenu(false);
-                        }}
-                        className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
+                  <AnimatePresence>
+                    {toggleMenu && (
+                      <motion.div
+                        ref={toggleRef}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white rounded-md shadow-md w-32 absolute border top-10 right-0"
                       >
-                        <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                        my profile
-                      </motion.li>
-                      <motion.li
-                        onClick={() => {
-                          router.push('/tutor');
-                          setToggleMenu(false);
-                        }}
-                        className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
-                      >
-                        <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                        tutor
-                      </motion.li>
+                        <motion.ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
+                          <motion.li
+                            onClick={() => {
+                              router.push('/my-profile');
+                              setToggleMenu(false);
+                            }}
+                            className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
+                          >
+                            <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                            my profile
+                          </motion.li>
 
-                      <motion.li
-                        onClick={async () => {
-                          setToggleMenu(false);
-                          toast.error('Logging out!', {
-                            style: {
-                              backgroundColor: '#fb3c22',
-                              color: 'white',
-                            },
-                            icon: '⚪',
-                          });
-                          await signOut({
-                            callbackUrl: '/',
-                          }).then((res) => {});
-                        }}
-                        className="flex items-center rounded-bl-md rounded-br-md  gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                      >
-                        <Icons.logout className="h-4 w-4 " />
-                        logout
-                      </motion.li>
-                    </motion.ul>
-                  </motion.div>
+                          <motion.li
+                            onClick={async () => {
+                              setToggleMenu(false);
+                              toast.error('Logging out!', {
+                                style: {
+                                  backgroundColor: '#fb3c22',
+                                  color: 'white',
+                                },
+                                icon: '⚪',
+                              });
+                              await signOut({
+                                callbackUrl: '/',
+                              }).then((res) => {});
+                            }}
+                            className="flex items-center rounded-bl-md rounded-br-md  gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                          >
+                            <Icons.logout className="h-4 w-4 " />
+                            logout
+                          </motion.li>
+                        </motion.ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </>
             ) : (

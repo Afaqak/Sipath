@@ -41,7 +41,7 @@ export const fetchPrimaryComments = createAsyncThunk(
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
-
+      console.log(response.data?.comments);
       return response.data?.comments;
     } catch (error) {
       throw new Error();

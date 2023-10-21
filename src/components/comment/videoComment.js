@@ -7,9 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const LoadingSkeletons = () => (
   <div className="py-8 grid  gap-4">
@@ -28,6 +29,8 @@ const LoadingSkeletons = () => (
 );
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
+  const router = useRouter();
+  console.log(comment, 'video comment');
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const commentRef = useRef(null);
@@ -104,13 +107,15 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   return (
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
-        <UserAvatar
-          user={{
-            image: comment.user?.profile_image,
-            name: comment?.user?.display_name || comment?.user?.first_name,
-          }}
-          className="h-8 w-8"
-        />
+        <Link className="block" href={`/profile/${comment?.author_id}`}>
+          <UserAvatar
+            user={{
+              image: comment.user?.profile_image,
+              name: comment?.user?.display_name || comment?.user?.first_name,
+            }}
+            className="h-8 w-8"
+          />
+        </Link>
 
         <div className="w-full">
           <div className="flex gap-4 items-center mb-1">

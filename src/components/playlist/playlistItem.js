@@ -1,6 +1,10 @@
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 
 export const PlaylistItem = ({ title, duration, isChecked, setVideoId, id }) => {
+  const searchParams = useSearchParams();
+  const videoid = searchParams.get('id');
+  console.log(videoid, 'videoid', id);
   console.log('click');
   return (
     <li
@@ -8,9 +12,11 @@ export const PlaylistItem = ({ title, duration, isChecked, setVideoId, id }) => 
         setVideoId(id);
         console.log('cl', id);
       }}
-      className="flex gap-4 cursor-pointer"
+      className={`flex gap-4 hover:bg-blue-50 cursor-pointer px-2 py-1 mb-1 rounded ${
+        +videoid === id && 'bg-blue-50'
+      }`}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-4 ">
         <input
           id="default-checkbox"
           type="checkbox"

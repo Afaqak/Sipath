@@ -1,23 +1,32 @@
 'use client';
-import {
-  ContentPlayer,
-  VideoInfo,
-  CreateComment,
-  VideoComments,
-  PlaylistSection,
-} from '@/components';
+import { VideoInfo, CreateComment, VideoComments, PlaylistSection } from '@/components';
+import ContentPLayer from '../../../components/podcast/reactPlayer';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
 const PlaylistVideo = ({ session }) => {
   const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [sections, setSections] = useState([]);
   const [buttonStates, setButtonStates] = useState({});
   const [videosBySection, setVideosBySection] = useState({});
   const [videoId, setVideoId] = useState(0);
   const axios = useAxiosPrivate();
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [videoId]
+  );
+
   const toggleButton = (sectionId) => {
     setButtonStates((prevState) => ({
       ...prevState,
@@ -25,6 +34,7 @@ const PlaylistVideo = ({ session }) => {
     }));
   };
   console.log(videoId);
+
   const handleDisplayVideos = async (sectionId) => {
     try {
       console.log('try');
@@ -37,7 +47,7 @@ const PlaylistVideo = ({ session }) => {
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
-        setVideoId(response.data?.videos[0]?.id);
+        setVideoId(response.data?.videos[0]);
 
         const initialButtonStates = new Array(sections.length).fill(false);
         setButtonStates(initialButtonStates);
@@ -71,8 +81,8 @@ const PlaylistVideo = ({ session }) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer id={videoId} noPremium={true} token={session?.token} />
-          <VideoInfo />
+          <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
+          <VideoInfo video={videoId} />
           {/* Render the Comments component for large screens */}
           <div className="hidden lg:block">{/* <VideoComments /> */}</div>
         </div>
@@ -86,7 +96,9 @@ const PlaylistVideo = ({ session }) => {
                 key={section.id}
                 isButtonToggled={buttonStates[section.id]}
                 toggleButton={() => toggleButton(section.id)}
-                setVideoId={(id) => setVideoId(id)}
+                setVideoId={(id) => {
+                  router.push(pathname + '?' + createQueryString('id', id));
+                }}
                 videos={videosBySection[section?.id]}
                 sectionTitle={section?.name}
                 sectionDuration={section?.subject}

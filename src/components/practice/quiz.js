@@ -4,9 +4,11 @@ import { Button } from '../ui/button';
 import UserAvatar from '../common/userAvatar';
 import { useSession } from 'next-auth/react';
 import { EditQuizModal } from '@/components';
+import { useRouter } from 'next/navigation';
 export const Quiz = ({ quiz, isEdit }) => {
   const { data: user } = useSession();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   console.log(isEdit);
   return (
     <div
@@ -15,7 +17,7 @@ export const Quiz = ({ quiz, isEdit }) => {
       } mt-4 flex md:flex-row border flex-col md:items-center -z-10 justify-between bg-white rounded-lg shadow-lg`}
     >
       <div className="flex md:flex-row  relative md:max-w-[20%] items-center flex-col">
-        <div className="h-44 md:h-28 rounded-lg">
+        <div className="h-44 md:h-28 w-44 rounded-lg">
           <Image
             src={quiz?.thumbnail}
             alt="demo-4"
@@ -58,7 +60,11 @@ export const Quiz = ({ quiz, isEdit }) => {
             </Button>
           ) : (
             <div className="flex flex-col gap-2 text-sm lg:text-base sel justify-end">
-              <Button variant="outline" className=" border-2 text-black bg-white border-black">
+              <Button
+                onClick={() => router.push(`/practice/view-quiz/${quiz?.id}`)}
+                variant="outline"
+                className=" border-2 text-black bg-white border-black"
+              >
                 View Quiz
               </Button>
               <Button variant="outline" className=" text-subcolor bg-white border-subcolor">

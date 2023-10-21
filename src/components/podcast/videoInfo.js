@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Stars } from '../common/5star';
+import { formatTimeAgo } from '..';
 const ProfileInfo = () => {
   return (
     <div className="text-gray-600 flex items-center gap-2">
@@ -38,26 +39,23 @@ const ActionButton = ({ icon, text }) => {
   );
 };
 
-const TagsAndDescription = () => {
+const TagsAndDescription = ({ description, createdAt }) => {
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>2 months ago</span> #loremipsum #lorem
+        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span> #loremipsum #lorem
       </div>
-      <p>
-        Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet
-        consectetur. Id massa et fermentum. Show more
-      </p>
+      <p>{description}</p>
     </div>
   );
 };
 
-export const VideoInfo = () => {
+export const VideoInfo = ({ video }) => {
   return (
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
-          <h1 className="font-semibold text-lg mb-1">Video title goes here</h1>
+          <h1 className="font-semibold text-lg mb-1">{video?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
             <ProfileInfo />
             <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
@@ -116,7 +114,7 @@ export const VideoInfo = () => {
           </div>
         </div>
       </div>
-      <TagsAndDescription />
+      <TagsAndDescription description={video?.description} createdAt={video?.createdAt} />
     </div>
   );
 };

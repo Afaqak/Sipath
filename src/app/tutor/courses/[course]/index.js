@@ -87,7 +87,9 @@ const CoursePage = ({ session }) => {
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
       <div className="flex justify-between mb-8 items-center">
-        <h1 className="text-4xl capitalize font-semibold">{course?.name}</h1>
+        <div className="flex gap-2">
+          <h1 className="text-4xl capitalize font-semibold">{course?.name}</h1>
+        </div>
         {
           <div className="flex gap-2">
             {user?.tutor?.tutor_id === course?.tutor_id && (
@@ -101,7 +103,7 @@ const CoursePage = ({ session }) => {
               </Button>
             )}
             <Button
-              onClick={() => router.push(`/courses/${params?.course}`)}
+              onClick={() => router.push(`/courses/${params?.course}?id=${sections[0]?.videos[0]}`)}
               variant="outline"
               className="flex gap-2 transform active:-translate-y-1 border-subcolor2 items-center"
             >
@@ -112,13 +114,15 @@ const CoursePage = ({ session }) => {
         }
       </div>
       <div className="rounded-md">
-        <Image
-          src={course?.thumbnail}
-          width={500}
-          height={500}
-          className="mb-4 rounded-md"
-          alt="course-thumbnail"
-        />
+        {course.thumbnail && (
+          <Image
+            src={course?.thumbnail}
+            width={500}
+            height={500}
+            className="mb-4 rounded-md"
+            alt="course-thumbnail"
+          />
+        )}
       </div>
       {sections &&
         sections.map((section, sectionIndex) => (

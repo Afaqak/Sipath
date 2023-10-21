@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
+import { useSession } from 'next-auth/react';
 
 export function VideoEditModal({
   isOpen,
@@ -20,8 +21,8 @@ export function VideoEditModal({
     title: video?.title,
     description: video?.description,
   };
-  console.log(video, 'from my profile');
-
+  const { data: user } = useSession();
+  console.log(user?.token, 'from edit videoModal');
   const [quiz, setQuiz] = useState(null);
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
@@ -48,12 +49,21 @@ export function VideoEditModal({
   const deleteVideo = async () => {
     try {
       if (!courseId && !sectionId) {
-        const response = await axios.delete(`/assets/videos/${video?.id}`);
+        const response = await axios.delete(`/assets/videos/${video?.id}`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
         console.log(response.data);
       } else {
         const updatedSections = { ...videosBySection };
         const response = await axios.delete(
-          `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`
+          `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
         );
 
         console.log(response);
@@ -100,7 +110,12 @@ export function VideoEditModal({
         } else {
           const response = await axios.patch(
             `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`,
-            updatedData
+            updatedData,
+            {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            }
           );
           updatedSections[sectionId] = updatedSections[sectionId].map((video) =>
             video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
@@ -112,16 +127,6 @@ export function VideoEditModal({
         }
         successToast('Video updated Sucessfully!', '#1850BC');
       } else {
-        const config = {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-
-          onUploadProgress: (progressEvent) => {
-            const progress = progressEvent;
-            console.log(progress, 'progress');
-          },
-        };
         const formDataToSend = new FormData();
         formDataToSend.append('video', videoFile);
         formDataToSend.append('thumbnail', thumbnail);
@@ -129,7 +134,12 @@ export function VideoEditModal({
         formDataToSend.append('description', body.description);
         formDataToSend.append('subject', subject);
         formDataToSend.append('duration', duration);
-        const response = await axios.post('/upload/video', formDataToSend, config);
+        const response = await axios.post('/upload/video', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
         if (response.status === 200) {
           console.log('Video uploaded successfully:', response.data);
           successToast('Video uploaded Sucessfully!', '#1850BC');
@@ -137,13 +147,22 @@ export function VideoEditModal({
           console.log(videoId, 'video_id');
           const addVideoResponse = await axios.post(
             `/courses/${courseId}/section/${sectionId}/videos`,
-            { video_id: videoId }
+            { video_id: videoId },
+            {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            }
           );
 
           if (addVideoResponse.status === 200) {
             console.log('Video added to section successfully:', addVideoResponse.data);
             successToast('Video Added to Section!', '#1850BC');
-            const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
+            const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`, {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            });
             console.log(response.data);
             const updatedVideosBySection = { ...videosBySection };
             updatedVideosBySection[sectionId] = response.data.videos;

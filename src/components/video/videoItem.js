@@ -42,7 +42,7 @@ export const VideoItem = ({ video, isEdit }) => {
         />
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <UserAvatar />
+        <UserAvatar user={{ image: video?.profile_image }} />
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
@@ -57,10 +57,7 @@ export const VideoItem = ({ video, isEdit }) => {
             {isEdit && (
               <div className="relative">
                 <div className="cursor-pointer">
-                  <Icons.elipsis
-                    onClick={() => setToggleMenu(!toggleMenu)}
-                    className="h-[1.25rem] text-gray-500 w-[1.25rem] "
-                  />
+                  <Icons.elipsis className="h-[1.25rem] text-gray-500 w-[1.25rem] " />
                 </div>
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}

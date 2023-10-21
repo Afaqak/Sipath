@@ -238,8 +238,8 @@ const VideoUpload = () => {
     console.log(sId, 'sid', sectionIds);
 
     if (!courseId) {
-      if (!courseTopic) {
-        errorToast('Please enter a course name', '#fb3c22');
+      if (!courseTopic || !courseThumbnail) {
+        errorToast('Please fill in all required fields', '#fb3c22');
 
         return;
       }
@@ -249,6 +249,7 @@ const VideoUpload = () => {
       const { data } = await axios.post('/courses', courseForm, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user?.token}`,
         },
       });
 
@@ -394,6 +395,18 @@ const VideoUpload = () => {
       const videosToUpload = [...updatedSections[sectionIndex].videos];
       console.log(videosToUpload);
       async function uploadVideo(video) {
+        if (
+          !video.video ||
+          !video.formData.title ||
+          !video.formData.description ||
+          !video.subject ||
+          !video.duration ||
+          !video.thumbnail
+        ) {
+          errorToast('Please fill in all required fields for the video', '#fb3c22');
+
+          return;
+        }
         console.log(video?.duration);
         const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
         const formDataToSend = new FormData();

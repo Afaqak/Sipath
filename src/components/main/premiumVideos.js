@@ -52,7 +52,7 @@ const premiumVideos = [
 export const PremiumVideos = () => {
   return (
     <div className="bg-[#FFD654] my-8">
-      <div className="pt-8 overflow-visible justify-between items-center relative w-[90%] mx-auto">
+      <div className="py-8 overflow-visible justify-between items-center relative w-[90%] mx-auto">
         <div className="flex gap-2 items-center mb-4">
           <Image
             src={'/svgs/premiumstar.svg'}

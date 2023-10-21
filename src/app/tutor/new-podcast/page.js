@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { useForm, Controller } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { successToast } from '@/utils/toasts';
 
 const NewPodcast = () => {
   const { data: user } = useSession();
@@ -45,7 +46,7 @@ const NewPodcast = () => {
       formData.append('title', body.title);
       formData.append('description', body.description);
       formData.append('subject', body.subject);
-      formData.append('file', file);
+      formData.append('thumbnail', file);
       if (scheduleType === 'Go Live') {
         formData.append('live', true);
       }
@@ -59,6 +60,9 @@ const NewPodcast = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+
+      successToast('Joining Podcast!');
+
       console.log(response.data, 'res');
       router.push(`/podcast/live?room=${response.data?.podcast?.room_id}&tutorId=${user.user?.id}`);
     } catch (err) {
@@ -103,7 +107,7 @@ const VideoInfoForm = ({ control, errors, setFile, file }) => {
     <div className="bg-white text-sm p-4 flex md:flex-row flex-col gap-4 rounded-md shadow-md mt-4">
       <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
         <div className="flex flex-col">
-          <label className="text-[#616161] font-light">BOOK TITLE</label>
+          <label className="text-[#616161] font-light">PODCAST TITLE</label>
           <Controller
             name="title"
             control={control}
@@ -126,7 +130,7 @@ const VideoInfoForm = ({ control, errors, setFile, file }) => {
           )}
         </div>
         <div className="flex flex-col">
-          <label className="text-[#616161] font-light">Video Description</label>
+          <label className="text-[#616161] font-light">Podcast Description</label>
           <Controller
             name="description"
             control={control}
@@ -137,7 +141,7 @@ const VideoInfoForm = ({ control, errors, setFile, file }) => {
                 {...field}
                 placeholder="Enter title..."
                 className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none ${
-                  errors.bookTitle ? 'border-red-500' : ''
+                  errors.title ? 'border-red-500' : ''
                 }`}
                 type="text"
               />
