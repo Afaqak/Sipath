@@ -13,7 +13,7 @@ const Archived = () => {
           <Comments />
         </div>
         <div className="mt-8 relative ">
-          <LiveMessages />
+          {/* <LiveMessages /> */}
           <div className="bg-white  py-2 shadow-sm">
             <div className="flex gap-2 py-1 items-center justify-center">
               <input
