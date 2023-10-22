@@ -20,7 +20,9 @@ const commentsSlice = createSlice({
   initialState,
   reducers: {
     setComments(state, action) {
-      state.primaryComments = [...state.primaryComments, ...action.payload];
+      const existingIds = state.primaryComments.map((comment) => comment.id);
+      const newData = action.payload.filter((comment) => !existingIds.includes(comment.id));
+      state.primaryComments = [...state.primaryComments, ...newData];
     },
     resetComments(state) {
       state.primaryComments = [];
@@ -47,6 +49,8 @@ const commentsSlice = createSlice({
       .addCase(fetchPrimaryComments.fulfilled, (state, action) => {
         state.loading = false;
         console.log(state.primaryComments, action.payload);
+
+        // Otherwise, append new comments as before.
         const existingIds = state.primaryComments.map((comment) => comment.id);
         const newData = action.payload.filter((comment) => !existingIds.includes(comment.id));
         state.primaryComments = [...state.primaryComments, ...newData];

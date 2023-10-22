@@ -38,14 +38,14 @@ const tabs = [
   { key: 'podcast', label: 'My Podcast', icon: '/svgs/podcasts.svg' },
 ];
 
-export const MyProfile = ({ user }) => {
+export const MyProfile = ({ user, session }) => {
   const [active, setActive] = useState(tabs[0].key);
 
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile isActon={false} type={'myprofile'} user={user} />
+        <Profile isActon={false} type={'myprofile'} session={session} user={user} />
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-6'}
           active={active}
@@ -68,10 +68,10 @@ export const MyProfile = ({ user }) => {
             <Video videos={courses} title={'Past Podcasts'} />
           </div>
         )} */}
-        {active === 'books' && <Mybooks id={user?.id} />}
+        {active === 'books' && <Mybooks id={user.user?.id} />}
 
         {/* {active === 'income' && <MyIncome />} */}
-        {active === 'myvideos' && <MyVideos userId={user?.id} />}
+        {active === 'myvideos' && <MyVideos userId={user?.user?.id} />}
         {/* {active === 'myaccount' && <MyAccount />} */}
         {/* {active === 'mylearning' && <MyCourses token={session?.token} />} */}
       </div>
@@ -225,7 +225,6 @@ const MyVideos = ({ userId }) => {
 
 const Mybooks = ({ id }) => {
   const axios = useAxiosPrivate();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
   useEffect(() => {
@@ -250,9 +249,7 @@ const Mybooks = ({ id }) => {
       ) : (
         <div className="grid mt-8 gap-4 grid-cols-1 lg:grid-cols-2">
           {books &&
-            books?.map((book, index) => (
-              <Book setBooks={setBooks} isProfile={true} book={book} key={index} />
-            ))}
+            books?.map((book, index) => <Book setBooks={setBooks} book={book} key={index} />)}
         </div>
       )}
     </div>

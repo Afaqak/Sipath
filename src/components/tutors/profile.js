@@ -5,45 +5,119 @@ import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { motion, AnimatePresence } from 'framer-motion';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useRouter } from 'next/navigation';
+import { errorToast, successToast } from '@/utils/toasts';
 
-export const Profile = ({ type, user, isActon = true }) => {
-  console.log(type, user, '{From Profile}');
+export const Profile = ({ type, user, isActon = true, session }) => {
+  const axios = useAxiosPrivate();
+
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
-
   const closeActions = () => {
     setShowActions(false);
   };
-  useOutsideClick(actionRef, closeActions);
 
+  const handleFollowUser = async () => {
+    try {
+      console.log(session);
+      const isFollowing = user?.followers?.some(
+        (follower) =>
+          follower.follower === session?.user?.id && follower.following === user?.user?.id
+      );
+      console.log(isFollowing, '{handle follow user}', user);
+
+      if (isFollowing) {
+        setLoading(true);
+
+        const response = await axios.delete(
+          '/users/unfollow',
+
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+            data: {
+              user_id: user?.user?.id,
+            },
+          }
+        );
+        errorToast('Unfollowed the User!');
+        console.log(response.data);
+        router.refresh();
+      } else {
+        setLoading(true);
+        const response = await axios.post(
+          '/users/follow',
+          {
+            user_id: user?.user?.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        successToast('Followed the User!');
+        console.log(response.data);
+        router.refresh();
+      }
+    } catch (err) {
+      errorToast('Error Occured!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useOutsideClick(actionRef, closeActions);
+  const isFollowing = user?.followers?.some(
+    (follower) => follower?.follower === session?.user?.id && follower.following === user?.user?.id
+  );
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
         <UserAvatar
-          user={{ image: user?.profile_image, name: user?.display_name || '' }}
+          user={{ image: user?.user?.profile_image, name: user?.user?.display_name || '' }}
           className="w-36 h-36"
         />
-        <button
-          className="font-semibold bg-black text-white rounded-full px-8 py-1 flex justify-center items-center"
-          style={{
-            position: 'absolute',
-            bottom: '-5px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }}
-        >
-          Follow
-        </button>
+        {!type === 'myprofile' && (
+          <button
+            className={`font-bold  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${
+              isFollowing ? 'bg-main' : 'bg-[#FBA422]'
+            } `}
+            disabled={loading}
+            onClick={handleFollowUser}
+            style={{
+              position: 'absolute',
+              bottom: '-5px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            {isFollowing ? (
+              <span className="flex gap-2 items-center">
+                <img className="h-6 w-6" src="/svgs/check_circle.svg" />
+                Followed
+              </span>
+            ) : (
+              'Follow'
+            )}
+          </button>
+        )}
       </div>
 
       <div className="col-span-3 w-full">
-        <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
+        <h1 className="mb-2 uppercase font-medium">{user?.user?.display_name}</h1>
         <div className="flex md:flex-row flex-col gap-12">
           <div className="flex gap-12">
             <div className="">
               <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
                 <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">24K</span> Followers
+                  <span className="font-semibold text-[0.85rem]">{user?.user?.follower_count}</span>{' '}
+                  Followers
                 </li>
                 <li className="text-[0.75rem]">
                   <span className="font-semibold text-[0.85rem]">521</span> Following
@@ -68,7 +142,7 @@ export const Profile = ({ type, user, isActon = true }) => {
           <div className="text-[#616161] font-light col-span-2">
             <div className="">
               <h1>BIO</h1>
-              <p className={`text-sm w-full`}>{user?.bio}</p>
+              <p className={`text-sm w-full`}>{user?.user?.bio}</p>
             </div>
           </div>
         </div>

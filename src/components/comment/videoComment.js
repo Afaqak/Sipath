@@ -11,6 +11,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { selectCommentReplies } from '@/utils/selectors';
 
 const LoadingSkeletons = () => (
   <div className="py-8 grid  gap-4">
@@ -29,29 +31,39 @@ const LoadingSkeletons = () => (
 );
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
-  const router = useRouter();
-  console.log(comment, 'video comment');
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const commentRef = useRef(null);
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
-
+  const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
-  const commentReplies = useSelector((state) => state.comments.commentReplies);
-
+  const commentReplies = useSelector(selectCommentReplies);
+  console.log(commentReplies, '${com replies}');
   const debouncedOnReplySubmit = useCallback(
     debounce(() => {
       console.log('submitting the reply');
+      setIsReplying(false);
+      console.log(commentRef.current.value, 'comment');
+      const imgRegex = /<img[^>]*>/g;
+      const textWithoutImages = commentRef.current.value.replace(imgRegex, '');
+
       try {
-        setIsReplying(false);
-        console.log(commentRef.current?.value, 'com');
+        if (!commentRef.current.value) return;
+        const formdata = new FormData();
+        formdata.append(
+          'comment',
+          `<div class="flex gap-1"><span class="font-bold">${comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+        );
+        formdata.append('image', file);
+        console.log('{here}', file);
         dispatch(
           createReplyToComment({
             videoId: id,
             commentId: parentId,
-            comment: commentRef.current?.value,
+            data: formdata,
+            onSuccess,
             token: user?.token,
           })
         );
@@ -123,9 +135,18 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             <p className="text-[0.75rem] text-gray-500">{formatTimeAgo(comment?.createdAt)}</p>
           </div>
           <div className="flex gap-4 items-center">
-            <p className="text-sm md:text-base py-2 px-3 bg-gray-100 shadow-md w-fit">
-              {comment.comment}
-            </p>
+            <div className="flex flex-col gap-1">
+              {comment?.image && (
+                <Image src={comment?.image} alt="comment-image" height={300} width={300} />
+              )}
+              <div
+                style={{
+                  whiteSpace: 'pre-wrap',
+                }}
+                dangerouslySetInnerHTML={{ __html: comment.comment }}
+                className="text-sm md:text-base py-2 px-3 bg-gray-100 shadow-md w-fit break-words"
+              ></div>
+            </div>
             <div className="flex flex-col gap-2 self-start">
               <svg
                 onClick={handleIsReplying}
@@ -167,8 +188,9 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           {isReplying && (
             <div className="w-full mt-2">
               <CreateComment
+                setFile={setFile}
                 commentRef={commentRef}
-                onSubmit={handleOnReplySubmit}
+                handleSubmit={handleOnReplySubmit}
                 reply={isReplying}
               />
               <div className="flex w-full gap-8 mt-2 justify-end items-end">

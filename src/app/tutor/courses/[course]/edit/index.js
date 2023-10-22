@@ -85,7 +85,6 @@ const EditPage = ({ session }) => {
       errorToast('An error occured!');
     } finally {
       setSectionOpen(false);
-      s;
     }
   };
 
@@ -232,20 +231,20 @@ const EditPage = ({ session }) => {
           },
         }
       );
-
-      const sectionResponse = await axios.post(
-        `/courses/${course?.id}/sections/${destinationSectionId}/videos`,
-        {
-          video_id: videoId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${session?.token}`,
+      if (response.status === 200) {
+        const sectionResponse = await axios.post(
+          `/courses/${course?.id}/sections/${destinationSectionId}/videos`,
+          {
+            video_id: videoId,
           },
-        }
-      );
-
-      console.log(response.data, 'while drag', sectionResponse.data);
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        console.log(response.data, 'while drag', sectionResponse.data);
+      }
 
       const sourceSectionVideos = videosBySection[sourceSectionId];
       const destinationSectionVideos = videosBySection[destinationSectionId];

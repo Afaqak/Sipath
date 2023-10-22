@@ -17,7 +17,8 @@ const videoArray = [
 ];
 
 const WatchVideo = ({ session }) => {
-  const [primaryComments, setPrimaryComments] = useState([]);
+  const [primaryComments] = useState([]);
+  const [video, setVideo] = useState({});
   const dispatch = useDispatch();
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
@@ -29,17 +30,31 @@ const WatchVideo = ({ session }) => {
     async function getComments() {
       const response = await axios.get(`/assets/video/${id}/comments?limit=10&set=0&order=desc`);
       console.log(response.data, 'from video');
+
       dispatch(setComments(response.data.comments));
     }
     getComments();
+  }, []);
+
+  useEffect(() => {
+    const getVideo = async function () {
+      const response = await axios.get(`/assets/video/${id}`, {
+        headers: {
+          Authorization: `Bearer ${session.token}`,
+        },
+      });
+      setVideo(response.data);
+      console.log(response.data, '{video}');
+    };
+    getVideo();
   }, []);
 
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} id={id} token={session?.token} />
-          <VideoInfo />
+          {/* <ContentPlayer noPremium={true} id={id} token={session?.token} /> */}
+          <VideoInfo video={video} setVideo={setVideo} token={session?.token} />
           {/* Render the Comments component for large screens */}
 
           {/* <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">

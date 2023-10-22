@@ -1,50 +1,90 @@
 'use client';
-import React from 'react';
-import Image from 'next/image';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useRef, useState, useEffect } from 'react';
 import UserAvatar from '../common/userAvatar';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
-export const CreateComment = ({ reply, onSubmit, setComments, commentRef }) => {
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+window.katex = katex;
+
+export const CreateComment = ({ reply, commentRef, setFile, handleSubmit }) => {
   const { data: user } = useSession();
+
+  const formats = [
+    'header',
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'blockquote',
+    'list',
+    'formula',
+    'bullet',
+    'indent',
+    'link',
+    'image',
+    'imageBlot',
+    'code-block',
+  ];
+
+  useEffect(() => {
+    commentRef.current
+      .getEditor()
+      .getModule('toolbar')
+      .addHandler('image', () => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+        input.onchange = () => {
+          if (!input.files || !input?.files?.length || !input?.files?.[0]) return;
+          const editor = commentRef?.current?.getEditor();
+          const file = input.files[0];
+          setFile(file);
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const imageUrl = event.target.result;
+            editor.insertEmbed(editor.getSelection(true).index, 'image', imageUrl);
+          };
+          reader.readAsDataURL(file);
+        };
+      });
+  }, [commentRef]);
+
+  const handleChange = () => {
+    const editor = commentRef.current.value;
+    const imgRegex = /<img[^>]*>/g;
+    const textWithoutImages = editor.replace(imgRegex, '');
+    console.log(textWithoutImages);
+    // commentRef.current.value = textWithoutImages;
+  };
+
+  const modules = {
+    toolbar: [['bold', 'italic', 'image', 'code-block', 'formula', 'underline', 'indent']],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+  // console.log(quillRef, '{Quil text}');
+
   return (
-    <form onSubmit={onSubmit} className="flex gap-3 items-center">
+    <form onSubmit={handleSubmit} className="flex gap-3 items-center">
       <UserAvatar
         user={{
           image: user?.user?.profile_image,
           name: user?.user?.first_name || user?.user?.display_name || user?.email,
         }}
-        className="h-8 w-8"
+        className="h-8 w-8 self-start"
       />
       <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">
-        <div className="absolute right-2 md:right-3 flex items-center md:gap-2 gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="#616161"
-            className="md:w-6 w-5 h-5 md:h-6 cursor-pointer"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-            />
-          </svg>
-          <Image
-            src="/svgs/function.svg"
-            className="md:w-6 w-5 h-5 md:h-6 cursor-pointer"
-            width={25}
-            height={25}
-            alt="function"
-          />
-        </div>
-        <input
+        <ReactQuill
+          formats={formats}
           ref={commentRef}
-          type="text"
-          placeholder="Add a public comment..."
-          className="w-full placeholder:text-sm placeholder:md:text-base px-2 md:px-0 bg-transparent outline-none border-none focus:ring-0 focus:outline-none"
+          modules={modules}
+          onChange={handleChange}
+          className="w-full"
         />
       </div>
       {!reply && (

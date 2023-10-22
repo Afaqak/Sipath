@@ -1,5 +1,11 @@
 'use client';
-import { VideoInfo, CreateComment, VideoComments, PlaylistSection } from '@/components';
+import {
+  VideoInfo,
+  CreateComment,
+  VideoComments,
+  PlaylistSection,
+  CommentsSection,
+} from '@/components';
 import ContentPLayer from '../../../components/podcast/reactPlayer';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -14,7 +20,7 @@ const PlaylistVideo = ({ session }) => {
   const [sections, setSections] = useState([]);
   const [buttonStates, setButtonStates] = useState({});
   const [videosBySection, setVideosBySection] = useState({});
-  const [videoId, setVideoId] = useState(0);
+  const [videoId, setVideoId] = useState({});
   const axios = useAxiosPrivate();
 
   const createQueryString = useCallback(
@@ -33,7 +39,7 @@ const PlaylistVideo = ({ session }) => {
       [sectionId]: !prevState[sectionId],
     }));
   };
-  console.log(videoId);
+  console.log(videosBySection, '{checking for change}');
 
   const handleDisplayVideos = async (sectionId) => {
     try {
@@ -47,7 +53,6 @@ const PlaylistVideo = ({ session }) => {
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
-        setVideoId(response.data?.videos[0]);
 
         const initialButtonStates = new Array(sections.length).fill(false);
         setButtonStates(initialButtonStates);
@@ -59,6 +64,8 @@ const PlaylistVideo = ({ session }) => {
       console.log(err);
     }
   };
+
+  console.log(session.token, '{tpken}');
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -81,10 +88,13 @@ const PlaylistVideo = ({ session }) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
-          <VideoInfo video={videoId} />
+          {/* <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} /> */}
+          <VideoInfo video={videoId} token={session?.token} />
           {/* Render the Comments component for large screens */}
-          <div className="hidden lg:block">{/* <VideoComments /> */}</div>
+          <div className="hidden lg:block">
+            {' '}
+            <CommentsSection />
+          </div>
         </div>
 
         <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
@@ -106,7 +116,9 @@ const PlaylistVideo = ({ session }) => {
             ))}
           </div>
 
-          <div className="lg:hidden my-8">{/* <VideoComments /> */}</div>
+          <div className="lg:hidden my-8">
+            <CommentsSection />
+          </div>
         </div>
       </div>
     </div>

@@ -12,29 +12,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { useSession } from 'next-auth/react';
+import { selectPrimaryComments } from '@/utils/selectors';
 
-export const CommentsSection = ({ videoId }) => {
+export const CommentsSection = () => {
+  const [file, setFile] = useState(null);
   const { data: user } = useSession();
   const searchParams = useSearchParams();
   const commentRef = useRef(null);
   const id = searchParams.get('id');
-  const primaryComments = useSelector((state) => state.comments.primaryComments);
-
+  const primaryComments = useSelector(selectPrimaryComments);
   const dispatch = useDispatch();
 
   const onSuccess = () => {
     commentRef.current.value = '';
+    setFile(null);
   };
   const onCommentSubmit = (e) => {
     e.preventDefault();
-    console.log(commentRef.current, 'comment');
+    console.log(commentRef.current.value, 'comment');
+    const imgRegex = /<img[^>]*>/g;
+    const textWithoutImages = commentRef.current.value.replace(imgRegex, '');
 
     try {
       if (!commentRef.current.value) return;
+      const formdata = new FormData();
+      formdata.append('comment', textWithoutImages);
+      formdata.append('image', file);
+      console.log('{here}', file);
       dispatch(
         createComment({
           videoId: id,
-          comment: commentRef.current?.value,
+          data: formdata,
           onSuccess,
           token: user?.token,
         })
@@ -60,7 +68,7 @@ export const CommentsSection = ({ videoId }) => {
         </DropdownMenu>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CreateComment commentRef={commentRef} videoId={videoId} onSubmit={onCommentSubmit} />
+        <CreateComment commentRef={commentRef} setFile={setFile} handleSubmit={onCommentSubmit} />
 
         <VideoComments />
       </div>

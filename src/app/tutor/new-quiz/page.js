@@ -39,11 +39,11 @@ const NewQuiz = () => {
 
     let errors = [];
 
-    if (!quizFile.type.startsWith('application/pdf')) {
+    if (quizFile.type.startsWith('image/')) {
       errors.push('Quiz file must be a PDF.');
     }
 
-    if (!quizSolutionFiles.type.startsWith('application/pdf')) {
+    if (quizSolutionFiles.type.startsWith('image/')) {
       errors.push('Quiz solution file must be a PDF.');
     }
 
