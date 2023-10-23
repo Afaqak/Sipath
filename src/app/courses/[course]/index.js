@@ -88,7 +88,7 @@ const PlaylistVideo = ({ session }) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          {/* <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} /> */}
+          <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
           <VideoInfo video={videoId} token={session?.token} />
           {/* Render the Comments component for large screens */}
           <div className="hidden lg:block">

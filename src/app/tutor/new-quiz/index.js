@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createQuiz } from '@/features/quiz/quizThunk';
 import { errorToast, successToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { ClipLoader } from 'react-spinners';
 import { useSession } from 'next-auth/react';
 const NewQuiz = ({ session }) => {
