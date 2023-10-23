@@ -7,7 +7,7 @@ import { successToast, errorToast } from '@/utils/toasts';
 import { useDispatch } from 'react-redux';
 import { ClipLoader } from 'react-spinners';
 import { createBook } from '@/features/book/bookThunk';
-const AddBook = ({ session }) => {
+const AddBook = () => {
   const dispatch = useDispatch();
   const { data: user } = useSession();
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ const AddBook = ({ session }) => {
       if (type === 'premium' && price > 0) {
         formData.append('price', price);
       }
-      dispatch(createBook({ formData, token: session?.token, onSuccess, isDownloadable, onError }));
+      dispatch(createBook({ formData, token: user?.token, onSuccess, isDownloadable, onError }));
     } catch (error) {
       setLoading(false);
     } finally {
