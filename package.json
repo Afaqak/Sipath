@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "deploy": "npm run build && rsync --exclude=.git -azP . ubuntu@44.202.0.164:/home/ubuntu/apps/sipath",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
