@@ -5,9 +5,9 @@ import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
-import katex from 'katex';
+// import katex from 'katex';
 import 'katex/dist/katex.min.css';
-window.katex = katex;
+// window.katex = katex;
 
 export const CreateComment = ({ reply, commentRef, setFile, handleSubmit }) => {
   const { data: user } = useSession();
