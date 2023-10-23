@@ -30,24 +30,37 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
 const tabs = [
-  { key: 'myfeed', label: 'My Feed', icon: '/svgs/Play.svg' },
-  { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
-  { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
-  { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
-  { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
-  { key: 'podcast', label: 'My Podcast', icon: '/svgs/podcasts.svg' },
+  { key: 'myvideos', label: 'Videos', icon: '/svgs/Play.svg' },
+  { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
+  { key: 'quiz', label: 'Quizzes', icon: '/svgs/quiz.svg' },
+  { key: 'mylearning', label: 'Learning', icon: '/svgs/book.svg' },
+  { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
 ];
 
 export const MyProfile = ({ user, session }) => {
   const [active, setActive] = useState(tabs[0].key);
-
+  console.log(user?.user);
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile isActon={false} type={'myprofile'} session={session} user={user} />
+        <Profile isActon={false} type={'userprofile'} session={session} user={user?.user} />
+        <div className="flex justify-between gap-2 mt-4">
+          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
+            <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
+            <span className="md:block hidden">Book Appointment</span>
+          </button>
+          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
+            <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
+            <span className="md:block hidden">Message Expert</span>
+          </button>
+          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor">
+            <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
+            <span className="md:block hidden">Donate</span>
+          </button>
+        </div>
         <UniversalTab
-          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-6'}
+          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-5'}
           active={active}
           tabs={tabs}
           setActive={setActive}
@@ -73,7 +86,7 @@ export const MyProfile = ({ user, session }) => {
         {/* {active === 'income' && <MyIncome />} */}
         {active === 'myvideos' && <MyVideos userId={user?.user?.id} />}
         {/* {active === 'myaccount' && <MyAccount />} */}
-        {/* {active === 'mylearning' && <MyCourses token={session?.token} />} */}
+        {active === 'mylearning' && <MyCourses token={session?.token} />}
       </div>
     </>
   );

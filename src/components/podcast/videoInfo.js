@@ -54,7 +54,7 @@ const TagsAndDescription = ({ description, createdAt }) => {
   );
 };
 
-export const VideoInfo = ({ token }) => {
+export const VideoInfo = ({ token, type }) => {
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
   console.log(token, '${videoInfo');
@@ -79,9 +79,16 @@ export const VideoInfo = ({ token }) => {
     fetchVideoInfo();
   }, [id]);
   const setAssetRating = async (newRating) => {
+    let assetId;
     try {
+      if (type === 'solovideo') {
+        assetId = id;
+      } else {
+        assetId = video?.id;
+      }
+
       const response = await axios.post(
-        `/rate/${video?.id}?type=video`,
+        `/rate/${assetId}?type=video`,
         {
           rating: newRating,
         },

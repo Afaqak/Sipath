@@ -13,7 +13,7 @@ export const UniversalTab = ({ tabs, active, tabStyle, setActive }) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.98 }}
           className={`py-3 ${
             active === tab.key && 'border-2 border-subcolor3'
           } bg-white flex items-center justify-center gap-2 font-thin text-subcolor3 text-sm rounded w-full shadow-md `}

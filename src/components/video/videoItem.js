@@ -4,15 +4,21 @@ import Link from 'next/link';
 import { Icons } from '../icons';
 import UserAvatar from '../common/userAvatar';
 import { formatTimeAgo } from '@/utils';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { VideoEditModal } from './editVideoModal';
+import { DeleteModal } from '../common/deleteModal';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
+import { useSession } from 'next-auth/react';
 
-export const VideoItem = ({ video, isEdit }) => {
+export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [open, setOpen] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
-  console.log(video, 'video');
+  const ref = useRef();
+  console.log(video['user.profile_image'], video, 'video');
+
+  useOutsideClick(ref, () => setToggleMenu(false));
   return (
     <div
       className={`h-[20rem] ${
@@ -42,7 +48,7 @@ export const VideoItem = ({ video, isEdit }) => {
         />
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <UserAvatar user={{ image: video?.profile_image }} />
+        <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} />
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
@@ -57,9 +63,13 @@ export const VideoItem = ({ video, isEdit }) => {
             {isEdit && (
               <div className="relative">
                 <div className="cursor-pointer">
-                  <Icons.elipsis className="h-[1.25rem] text-gray-500 w-[1.25rem] " />
+                  <Icons.elipsis
+                    onClick={() => setToggleMenu(!toggleMenu)}
+                    className="h-[1.25rem] text-gray-500 w-[1.25rem] "
+                  />
                 </div>
                 <motion.div
+                  ref={ref}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: toggleMenu ? 1 : 0, y: toggleMenu ? 0 : 10 }}
                   transition={{ type: 'spring', stiffness: 100 }}
@@ -88,7 +98,7 @@ export const VideoItem = ({ video, isEdit }) => {
             )}
           </div>
           <div className="flex items-center text-sm gap-2 text-gray-700">
-            <span>authors</span>
+            <span>{video['user.display_name'] && video['user.display_name']}</span>
           </div>
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{video?.views} views</span>
@@ -104,7 +114,19 @@ export const VideoItem = ({ video, isEdit }) => {
           </div>
         </div>
       </div>
-      <VideoEditModal video={video} isEdit={true} isOpen={open} setIsOpen={setOpen} />
+      <VideoEditModal
+        video={video}
+        setVideos={setVideos}
+        isEdit={true}
+        isOpen={open}
+        setIsOpen={setOpen}
+      />
+      <DeleteModal
+        isOpen={videoDelete}
+        onDeleteSubmit={() => setDeletedVideo(video?.id)}
+        setIsOpen={setVideoDelete}
+        text={video?.title}
+      />
     </div>
   );
 };

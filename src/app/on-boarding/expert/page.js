@@ -39,7 +39,7 @@ const OnBoardingExpert = () => {
 
       const response = await axios.post('/onboard/tutor', formData, {
         headers: {
-          Authorization: `Bearer ${user?.tokenss}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
 

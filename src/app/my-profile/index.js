@@ -24,7 +24,7 @@ import { UniversalTab } from '@/components';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { errorToast } from '@/utils/toasts';
+import { errorToast, successToast } from '@/utils/toasts';
 import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -42,11 +42,12 @@ const tabs = [
 export const MyProfile = ({ session }) => {
   const [active, setActive] = useState(tabs[0].key);
   const { data: user } = useSession();
+  console.log(user);
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile type={'myprofile'} user={user} />
+        <Profile type={'myprofile'} user={user?.user} />
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}
@@ -221,6 +222,28 @@ const MyVideos = ({ userId, token }) => {
   }, []);
   console.log(videos, '{videos}');
 
+  const handleSetUpdateVideos = (updatedVideo) => {
+    console.log(updatedVideo, '{from setVideo}');
+    setVideos((prev) =>
+      prev.map((video) => (video?.id === updatedVideo?.id ? { ...updatedVideo } : video))
+    );
+  };
+  const setDeletedVideo = async (id) => {
+    try {
+      console.log(id, '{id}');
+      const response = await axios.delete(`/assets/videos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        successToast('Video deleted!');
+        setVideos((prev) => prev.filter((video) => video?.id !== id));
+      }
+    } catch (err) {
+      errorToast('Error deleting the video!');
+    }
+  };
   return (
     <div className=" py-8">
       <div className="flex justify-end w-full">
@@ -246,7 +269,13 @@ const MyVideos = ({ userId, token }) => {
       </div>
       <div className="grid grid-cols-3 gap-4 mt-4">
         {videos.map((video, index) => (
-          <VideoItem video={video} isEdit={isEdit} key={index} />
+          <VideoItem
+            video={video}
+            setDeletedVideo={setDeletedVideo}
+            setVideos={handleSetUpdateVideos}
+            isEdit={isEdit}
+            key={index}
+          />
         ))}
       </div>
     </div>

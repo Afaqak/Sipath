@@ -1,16 +1,18 @@
+'use client';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
-import { Icons } from '@/components';
+import { Icons, Stars } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
 import { errorToast, successToast } from '@/utils/toasts';
 
-export const Profile = ({ type, user, isActon = true, session }) => {
+export const Profile = ({ type, user, isActon = true, session, setUser }) => {
   const axios = useAxiosPrivate();
+  const [rating, setRating] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -25,8 +27,7 @@ export const Profile = ({ type, user, isActon = true, session }) => {
     try {
       console.log(session);
       const isFollowing = user?.followers?.some(
-        (follower) =>
-          follower.follower === session?.user?.id && follower.following === user?.user?.id
+        (follower) => follower.follower === session?.user?.id && follower.following === user?.id
       );
       console.log(isFollowing, '{handle follow user}', user);
 
@@ -41,19 +42,19 @@ export const Profile = ({ type, user, isActon = true, session }) => {
               Authorization: `Bearer ${session?.token}`,
             },
             data: {
-              user_id: user?.user?.id,
+              user_id: user?.id,
             },
           }
         );
+        window.location.reload();
         errorToast('Unfollowed the User!');
         console.log(response.data);
-        router.refresh();
       } else {
         setLoading(true);
         const response = await axios.post(
           '/users/follow',
           {
-            user_id: user?.user?.id,
+            user_id: user?.id,
           },
           {
             headers: {
@@ -61,6 +62,7 @@ export const Profile = ({ type, user, isActon = true, session }) => {
             },
           }
         );
+        window.location.reload();
         successToast('Followed the User!');
         console.log(response.data);
         router.refresh();
@@ -72,18 +74,46 @@ export const Profile = ({ type, user, isActon = true, session }) => {
     }
   };
 
+  const setAssetRating = async (newRating) => {
+    try {
+      const response = await axios.post(
+        `/rate/${user?.id}?type=user`,
+        {
+          rating: newRating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      );
+
+      setUser(response.data.asset);
+      successToast('User Rated!');
+      console.log(response, '{rated user}');
+    } catch (err) {
+      errorToast("Error! Can't rate the User");
+      console.error(err);
+    }
+  };
+
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+    setAssetRating(newRating);
+  };
+
   useOutsideClick(actionRef, closeActions);
   const isFollowing = user?.followers?.some(
-    (follower) => follower?.follower === session?.user?.id && follower.following === user?.user?.id
+    (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
         <UserAvatar
-          user={{ image: user?.user?.profile_image, name: user?.user?.display_name || '' }}
+          user={{ image: user?.profile_image, name: user?.display_name || '' }}
           className="w-36 h-36"
         />
-        {!type === 'myprofile' && (
+        {type === 'userprofile' && (
           <button
             className={`font-bold  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${
               isFollowing ? 'bg-main' : 'bg-[#FBA422]'
@@ -110,13 +140,13 @@ export const Profile = ({ type, user, isActon = true, session }) => {
       </div>
 
       <div className="col-span-3 w-full">
-        <h1 className="mb-2 uppercase font-medium">{user?.user?.display_name}</h1>
+        <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
         <div className="flex md:flex-row flex-col gap-12">
           <div className="flex gap-12">
             <div className="">
               <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
                 <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">{user?.user?.follower_count}</span>{' '}
+                  <span className="font-semibold text-[0.85rem]">{user?.follower_count}</span>{' '}
                   Followers
                 </li>
                 <li className="text-[0.75rem]">
@@ -125,8 +155,15 @@ export const Profile = ({ type, user, isActon = true, session }) => {
                 <li className="text-[0.75rem]">
                   <span className="font-semibold text-[0.85rem]">24$/hr</span> Hourly rate
                 </li>
+                {!type === 'myprofile' && (
+                  <Stars
+                    rating={rating}
+                    setRating={handleRatingChange}
+                    initialRating={user?.rating}
+                  />
+                )}
                 <div className="flex font-bold gap-2">
-                  4.7 <Image src={'/svgs/star.svg'} alt="star" width={20} height={20} />
+                  {user?.rating} <Image src={'/svgs/star.svg'} alt="star" width={20} height={20} />
                 </div>
               </ul>
             </div>
@@ -142,7 +179,7 @@ export const Profile = ({ type, user, isActon = true, session }) => {
           <div className="text-[#616161] font-light col-span-2">
             <div className="">
               <h1>BIO</h1>
-              <p className={`text-sm w-full`}>{user?.user?.bio}</p>
+              <p className={`text-sm w-full`}>{user?.bio}</p>
             </div>
           </div>
         </div>

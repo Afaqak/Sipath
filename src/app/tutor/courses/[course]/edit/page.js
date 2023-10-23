@@ -7,7 +7,7 @@ const MyEdit = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect('/');
+    redirect('/sign-in');
   }
 
   return <EditPage session={session} />;

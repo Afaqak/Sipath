@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export function VideoEditModal({
   isOpen,
   setIsOpen,
   video,
   courseId,
+  setVideos,
   sectionId,
   setVideosBySection,
   videosBySection,
@@ -27,6 +29,7 @@ export function VideoEditModal({
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
   const [subject, setSubject] = useState(video?.subject);
+  const router = useRouter();
   const [duration, setDuration] = useState(null);
   const [body, setBody] = useState(initialStates);
   const [videoFile, setVideoFile] = useState(null);
@@ -105,8 +108,15 @@ export function VideoEditModal({
     try {
       if (isEdit) {
         if (!courseId && !sectionId) {
-          const response = await axios.patch(`/assets/videos/${video?.id}`, updatedData);
-          console.log(response.data);
+          const response = await axios.patch(`/assets/videos/${video?.id}`, updatedData, {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          });
+
+          console.log(response.data, '{data}');
+
+          setVideos(response.data.updatedVideo);
         } else {
           const response = await axios.patch(
             `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`,
@@ -121,6 +131,8 @@ export function VideoEditModal({
             video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
           );
           console.log(response.data);
+          setVideosBySection(updatedSections);
+
           setVideosBySection(updatedSections);
 
           console.log(response.data.updatedVideo, 'updated', videosBySection);

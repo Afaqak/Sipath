@@ -54,7 +54,7 @@ const WatchVideo = ({ session }) => {
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
           {/* <ContentPlayer noPremium={true} id={id} token={session?.token} /> */}
-          <VideoInfo video={video} setVideo={setVideo} token={session?.token} />
+          <VideoInfo type={'solovideo'} video={video} setVideo={setVideo} token={session?.token} />
           {/* Render the Comments component for large screens */}
 
           {/* <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
@@ -66,13 +66,7 @@ const WatchVideo = ({ session }) => {
           </div>
         </div>
 
-        <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
-          {videoArray.map((img) => {
-            return <NextVideo img={img} key={img} />;
-          })}
-
-          <div className="lg:hidden my-8">{/* <CommentsSection /> */}</div>
-        </div>
+        <ListSection />
       </div>
     </div>
   );
@@ -80,13 +74,45 @@ const WatchVideo = ({ session }) => {
 
 export default WatchVideo;
 
-let NextVideo = ({ img }) => {
+const ListSection = () => {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const params = useSearchParams();
+  const id = params.get('id');
+  useEffect(() => {
+    const fetchVideos = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get('/assets/videos');
+        setVideos(response.data);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
+
+  console.log(videos, '{videos}');
+  return (
+    <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
+      {videos.map((video, index) => {
+        return <NextVideo video={video} key={index} />;
+      })}
+
+      <div className="lg:hidden my-8">{/* <CommentsSection /> */}</div>
+    </div>
+  );
+};
+
+let NextVideo = ({ video }) => {
   return (
     <div>
       <div className="p-3 flex gap-4 bg-white rounded-md shadow-md mb-4">
         <div>
           <Image
-            src={img}
+            src={video?.thumbnail}
             width={200}
             height={200}
             className="object-cover h-32 rounded-md"
@@ -94,8 +120,8 @@ let NextVideo = ({ img }) => {
           />
         </div>
         <div className="flex flex-col justify-evenly text-sm">
-          <h1 className="font-semibold">Video title goes here</h1>
-          <div>owner name </div>
+          <h1 className="font-semibold">{video?.title}</h1>
+          <div>{video['user.display_name'] && video['user.display_name']}</div>
           <h2 className="font-extrabold gap-1 flex items-center">
             4.7 <Image src="/svgs/star.png" className="" width={24} height={24} alt="star" />
           </h2>
