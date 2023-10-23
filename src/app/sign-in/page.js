@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router'; // Import from 'next/router' instead of 'next/navigation' for Next.js 12
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
@@ -11,28 +11,21 @@ import toast from 'react-hot-toast';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
+
 const SignUp = () => {
   const { data: user } = useSession();
-  console.log(user, 'new user');
   const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
   const router = useRouter();
 
   useEffect(() => {
-    console.log(user);
-    if (user && user?.isNewUser) {
-      successToast('Signing You Up!', '#1C8827');
-      router.push('/on-boarding');
-    } else if (user?.user && !user?.isNewUser) {
-      console.log('here');
-      successToast('Signing You In!', '#1850BC');
-      router.push('/');
+    if (typeof window !== 'undefined') {
+      if (user && user?.isNewUser) {
+        successToast('Signing You Up!', '#1C8827');
+        router.push('/on-boarding');
+      } else if (user?.user && !user?.isNewUser) {
+        successToast('Signing You In!', '#1850BC');
+        router.push('/');
+      }
     }
   }, [user]);
 
@@ -45,12 +38,12 @@ const SignUp = () => {
         redirect: false,
       }).then((data) => {
         if (data.error !== null) {
-          errorToast('An error occured!', '#fb3c22');
+          errorToast('An error occurred!', '#fb3c22');
         }
         setLoading(false);
       });
     } catch (error) {
-      errorToast('An error occured!', '#fb3c22');
+      errorToast('An error occurred!', '#fb3c22');
     } finally {
       setLoading(false);
     }
@@ -63,7 +56,7 @@ const SignUp = () => {
         console.log(provider, data);
       });
     } catch (error) {
-      errorToast('An error occured!', '#fb3c22');
+      errorToast('An error occurred!', '#fb3c22');
     } finally {
       setLoading(false);
     }
@@ -148,7 +141,7 @@ const SignUp = () => {
 
             <Button
               disabled={loading}
-              className="w-full hover:bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
+              className="w-full hover-bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
               onClick={() => handleSignUpWithProvider('facebook')}
             >
               <Icons.facebook className="h-4" />
