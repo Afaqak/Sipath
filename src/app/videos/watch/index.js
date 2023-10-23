@@ -53,7 +53,7 @@ const WatchVideo = ({ session }) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} id={id} token={session?.token} />
+          {/* <ContentPlayer noPremium={true} id={id} token={session?.token} /> */}
           <VideoInfo type={'solovideo'} video={video} setVideo={setVideo} token={session?.token} />
 
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">

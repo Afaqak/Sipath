@@ -7,7 +7,6 @@ import { PasswordInput } from '@/components/authentication/passwordInput';
 import { Button } from '@/components/ui/button';
 import { useSession, signIn } from 'next-auth/react';
 import { Icons } from '@/components';
-
 import axios from '../../utils/index';
 import { useRouter } from 'next/navigation';
 import { successToast, errorToast } from '@/utils/toasts';

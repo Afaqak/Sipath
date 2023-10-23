@@ -1,73 +1,81 @@
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import UserAvatar from '../common/userAvatar';
-import ReactQuill, { Quill } from 'react-quill';
+import dynamic from 'next/dynamic';
+const QuillNoSSRWrapper = dynamic(
+  async () => {
+    const { default: RQ } = await import('react-quill');
+    // eslint-disable-next-line react/display-name
+    return ({ forwardedRef, ...props }) => <RQ ref={forwardedRef} {...props} />;
+  },
+  { ssr: false }
+);
 import 'react-quill/dist/quill.snow.css';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
-// import katex from 'katex';
-import 'katex/dist/katex.min.css';
-// window.katex = katex;
 
-export const CreateComment = ({ reply, commentRef, setFile, handleSubmit }) => {
+export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const { data: user } = useSession();
+  const quillRef = useRef();
+  const handleChange = (editor) => {
+    setText(editor);
+    console.log(editor);
+  };
 
-  const formats = [
-    'header',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'blockquote',
-    'list',
-    'formula',
-    'bullet',
-    'indent',
-    'link',
-    'image',
-    'imageBlot',
-    'code-block',
-  ];
+  const quillImageCallback = async () => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
 
-  useEffect(() => {
-    commentRef.current
-      .getEditor()
-      .getModule('toolbar')
-      .addHandler('image', () => {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
-        input.click();
-        input.onchange = () => {
-          if (!input.files || !input?.files?.length || !input?.files?.[0]) return;
-          const editor = commentRef?.current?.getEditor();
-          const file = input.files[0];
-          setFile(file);
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const imageUrl = event.target.result;
-            editor.insertEmbed(editor.getSelection(true).index, 'image', imageUrl);
-          };
-          reader.readAsDataURL(file);
+    input.onchange = async () => {
+      const file = input.files ? input.files[0] : null;
+      console.log(file);
+    };
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, false] }],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['image', 'code-block'],
+        ],
+        handlers: {
+          image: selectLocalImage,
+        },
+      },
+    }),
+    []
+  );
+
+  function selectLocalImage() {
+    console.log('custom image handler');
+    const editor = quillRef.current.getEditor();
+
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      console.log(file, 'from quil');
+      if (file) {
+        setFile(file);
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const imageUrl = event.target.result;
+
+          const range = editor.getSelection();
+          editor.insertEmbed(range.index, 'image', imageUrl);
         };
-      });
-  }, [commentRef]);
-
-  const handleChange = () => {
-    const editor = commentRef.current.value;
-    const imgRegex = /<img[^>]*>/g;
-    const textWithoutImages = editor.replace(imgRegex, '');
-    console.log(textWithoutImages);
-    // commentRef.current.value = textWithoutImages;
-  };
-
-  const modules = {
-    toolbar: [['bold', 'italic', 'image', 'code-block', 'formula', 'underline', 'indent']],
-    clipboard: {
-      matchVisual: false,
-    },
-  };
-  // console.log(quillRef, '{Quil text}');
+        reader.readAsDataURL(file);
+      }
+    };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-3 items-center">
@@ -79,11 +87,10 @@ export const CreateComment = ({ reply, commentRef, setFile, handleSubmit }) => {
         className="h-8 w-8 self-start"
       />
       <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">
-        <ReactQuill
-          formats={formats}
-          ref={commentRef}
-          modules={modules}
+        <QuillNoSSRWrapper
+          forwardedRef={quillRef}
           onChange={handleChange}
+          modules={modules}
           className="w-full"
         />
       </div>

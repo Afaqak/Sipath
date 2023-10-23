@@ -1,3 +1,4 @@
+'use client';
 import React, { Suspense, useState, useRef } from 'react';
 import { VideoComments, CreateComment } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
@@ -16,29 +17,29 @@ import { selectPrimaryComments } from '@/utils/selectors';
 
 export const CommentsSection = () => {
   const [file, setFile] = useState(null);
+  const [text, setText] = useState('');
   const { data: user } = useSession();
   const searchParams = useSearchParams();
-  const commentRef = useRef(null);
+
   const id = searchParams.get('id');
   const primaryComments = useSelector(selectPrimaryComments);
   const dispatch = useDispatch();
 
   const onSuccess = () => {
-    commentRef.current.value = '';
     setFile(null);
   };
   const onCommentSubmit = (e) => {
     e.preventDefault();
-    console.log(commentRef.current.value, 'comment');
+    console.log(text, 'comment');
     const imgRegex = /<img[^>]*>/g;
-    const textWithoutImages = commentRef.current.value.replace(imgRegex, '');
-
+    const textWithoutImages = text.replace(imgRegex, '');
+    console.log(textWithoutImages, 'twi');
     try {
-      if (!commentRef.current.value) return;
+      if (!text) return;
       const formdata = new FormData();
       formdata.append('comment', textWithoutImages);
       formdata.append('image', file);
-      console.log('{here}', file);
+
       dispatch(
         createComment({
           videoId: id,
@@ -68,7 +69,7 @@ export const CommentsSection = () => {
         </DropdownMenu>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CreateComment commentRef={commentRef} setFile={setFile} handleSubmit={onCommentSubmit} />
+        <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} />
 
         <VideoComments />
       </div>
