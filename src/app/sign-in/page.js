@@ -42,6 +42,7 @@ const SignUp = () => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
       errorToast('All fields are required to be filled!');
+      return;
     }
     try {
       setLoading(true);
