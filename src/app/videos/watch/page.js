@@ -5,7 +5,6 @@ import WatchVideo from '.';
 
 const WatchVideoPage = async () => {
   const session = await getServerSession(authOptions);
-
   return <WatchVideo session={session} />;
 };
 

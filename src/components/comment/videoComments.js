@@ -2,7 +2,7 @@
 
 import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchPrimaryComments } from '@/features/comments/commentThunk';
+import { fetchCommentReplies, fetchPrimaryComments } from '@/features/comments/commentThunk';
 import { VideoComment, RepliesList } from '@/components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -12,8 +12,9 @@ import { useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { selectCommentReplies, selectPrimaryComments } from '@/utils/selectors';
 import { Button } from '../ui/button';
-import { resetComments, setComments } from '@/features/comments/commentSlice';
+import { resetComments, setComments, setReplyComments } from '@/features/comments/commentSlice';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 export const VideoComments = () => {
   const axios = useAxiosPrivate();
@@ -21,8 +22,10 @@ export const VideoComments = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const dispatch = useDispatch();
-  const [set, setSet] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
+  const { data: user } = useSession();
+  const [repliesLimit, setRepliesLimit] = useState(10);
   const commentReplies = useSelector(selectCommentReplies);
   const [replyView, setReplyView] = useState({});
 
@@ -75,7 +78,6 @@ export const VideoComments = () => {
   );
 
   const toggleReplyView = (commentId) => {
-    console.log(commentId);
     setReplyView((prevState) => ({
       ...prevState,
       [commentId]: !prevState[commentId],
@@ -83,16 +85,34 @@ export const VideoComments = () => {
   };
 
   const loadMore = async () => {
-    setSet((prev) => prev + 1);
-    console.log(set);
+    const newLimit = limit + 10;
+
     try {
       const response = await axios.get(
-        `/assets/video/${id}/comments?limit=10&set=${set}&order=desc`
+        `/assets/video/${id}/comments?limit=${newLimit}&set=0&order=desc`
       );
 
       console.log(response.data, '{load more}');
       dispatch(setComments(response.data.comments));
-    } catch (err) {}
+      setLimit(newLimit);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleFetchReplies = async (commentId) => {
+    const newLimit = repliesLimit + 10;
+    console.log(newLimit, '{newLimit}');
+    try {
+      const response = await axios.get(
+        `/assets/video/${id}/comments/${commentId}?limit=${newLimit}`
+      );
+      console.log(response.data, '{replies fetch}');
+      dispatch(setReplyComments({ commentId, replies: response.data?.comments }));
+      setRepliesLimit(newLimit);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -111,6 +131,7 @@ export const VideoComments = () => {
                 <motion.div>
                   <RepliesList
                     videoId={id}
+                    handleFetchReplies={() => handleFetchReplies(comment?.id)}
                     comments={commentReplies[comment?.id]}
                     parentId={comment?.id}
                   />

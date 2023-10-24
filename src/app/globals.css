@@ -124,10 +124,6 @@ input::-webkit-inner-spin-button {
   @apply bg-gray-50  text-[#CDCBCB] !important;
 }
 
-video {
-  object-fit: cover;
-}
-
 .fc-timegrid-slot-label {
   font-size: 12px;
 }

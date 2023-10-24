@@ -30,10 +30,7 @@ export const fetchPrimaryComments = createAsyncThunk(
   'comments/fetchPrimaryComments',
   async ({ videoId, limit = 10, set = 0, onSuccess }) => {
     try {
-      console.log(set, 'from detch');
-      const response = await axios.get(
-        `/assets/video/${videoId}/comments?limit=10&set=${set}&order=desc`
-      );
+      const response = await axios.get(`/assets/video/${videoId}/comments?limit=10&&order=desc`);
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
@@ -50,7 +47,9 @@ export const fetchCommentReplies = createAsyncThunk(
   async ({ videoId, commentId, onSuccess, limit = 10 }) => {
     const axios = useAxiosPrivate();
     try {
-      const response = await axios.get(`/assets/video/${videoId}/comments/${commentId}?limit=20`);
+      const response = await axios.get(
+        `/assets/video/${videoId}/comments/${commentId}?limit=${limit}`
+      );
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data);
         console.log('here');

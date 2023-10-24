@@ -32,23 +32,22 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const searchParams = useSearchParams();
   const [text, setText] = useState('');
   const id = searchParams.get('id');
-  const commentRef = useRef(null);
+
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
-  console.log(commentReplies, '${com replies}');
-  console.log(text);
+
   const onReplySubmit = (e) => {
     e.preventDefault();
-    console.log('submitting the reply');
+
     setIsReplying(false);
-    console.log(text, 'comment me');
+
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
-    console.log(textWithoutImages, 'twi', text);
+
     try {
       const formdata = new FormData();
       formdata.append(
@@ -72,7 +71,6 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
 
   const onSuccess = (data) => {
     setLoadingReplies(false);
-    console.log(data, 'data after fetch');
   };
 
   const handleFetchReplies = async () => {
