@@ -16,6 +16,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  console.log(user, 'user');
 
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
@@ -25,7 +26,6 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
 
   const handleFollowUser = async () => {
     try {
-      console.log(session);
       const isFollowing = user?.followers?.some(
         (follower) => follower.follower === session?.user?.id && follower.following === user?.id
       );

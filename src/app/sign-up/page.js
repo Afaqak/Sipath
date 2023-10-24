@@ -15,14 +15,12 @@ const SignUp = () => {
   const router = useRouter();
   const { data: user, update } = useSession();
   const [active, setActive] = useState(false);
-  console.log(user);
-  const {
-    register,
-    handleSubmit,
-    getValues,
-
-    formState: { errors },
-  } = useForm();
+  const initialData = {
+    email: '',
+    password: '',
+    confirmPassword: '',
+  };
+  const [formData, setFormData] = useState(initialData);
 
   useEffect(() => {
     console.log(user);
@@ -54,18 +52,29 @@ const SignUp = () => {
       setLoading(false);
     }
   };
-
-  const onSubmit = async (data) => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
-      const { password, email } = data;
+      if (!formData.email || !formData.password || !formData.confirmPassword) {
+        errorToast('All the field are required to be filled!');
+        return;
+      }
+      if (formData.password.length < 8) {
+        errorToast('Passwords length must be 8 or greater!');
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        errorToast('Both passwords must be same!');
+        return;
+      }
+      const user = { email: formData.email, password: formData.password };
 
-      const user = { email, password };
       const response = await axios.post('/auth/signup', user);
       console.log(response, 'response');
       await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        email: formData.email,
+        password: formData.password,
         redirect: false,
       }).then((data) => {
         console.log('provider', data);
@@ -81,70 +90,42 @@ const SignUp = () => {
     }
   };
 
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   return (
     <div className="flex items-center flex-col justify-center h-[75vh] md:h-[90vh]">
       <div className="bg-white p-5 w-[80%] md:w-[40%] lg:w-[30%] xl:w-[23%] shadow-lg rounded-lg">
         <h2 className="text-center font-semibold text-lg mb-4">Sign Up</h2>
         <div className="flex flex-col gap-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col">
               <input
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
-                })}
+                onChange={handleFormChange}
                 disabled={loading}
                 placeholder="Email Address"
                 type="text"
                 className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
                 name="email"
               />
-              {errors.email && (
-                <span className="text-red-500 text-sm mt-1 lowercase">{errors.email.message}</span>
-              )}
             </div>
             <div className="flex flex-col">
               <PasswordInput
                 disabled={loading}
                 name={'password'}
-                register={{
-                  ...register('password', {
-                    required: 'Password is required',
-                    minLength: {
-                      value: 8,
-                      message: 'Password must be at least 8 characters long',
-                    },
-                  }),
-                }}
+                onChange={handleFormChange}
                 placeholder="Password"
               />
-              {errors.password && (
-                <span className="text-red-500 text-sm mt-1 lowercase">
-                  {errors.password.message}
-                </span>
-              )}
             </div>
             <div className="flex flex-col">
               <PasswordInput
                 disabled={loading}
                 name={'confirmPassword'}
-                register={{
-                  ...register('confirmPassword', {
-                    required: 'Confirm Password is required',
-                    validate: (value) =>
-                      value === getValues('password') || 'Passwords do not match',
-                  }),
-                }}
+                onChange={handleFormChange}
                 placeholder="Confirm Password"
               />
-              {errors.confirmPassword && (
-                <span className="text-red-500 text-sm mt-1 lowercase">
-                  {errors.confirmPassword.message}
-                </span>
-              )}
             </div>
             <Button
               disabled={loading}

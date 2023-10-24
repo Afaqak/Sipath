@@ -22,11 +22,9 @@ export const VideoComments = () => {
   const id = searchParams.get('id');
   const dispatch = useDispatch();
   const [set, setSet] = useState(1);
-  const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
   const [replyView, setReplyView] = useState({});
-  const { ref, inView } = useInView({ threshold: 1 });
 
   const delay = new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -101,7 +99,7 @@ export const VideoComments = () => {
     <div className="py-1 md:mt-4">
       {primaryComments.length > 0 &&
         primaryComments.map((comment, index) => (
-          <div key={comment.id} ref={index === primaryComments.length - 1 ? ref : null}>
+          <div key={comment.id}>
             <VideoComment
               parentId={comment?.id}
               comment={comment}

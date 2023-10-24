@@ -67,6 +67,7 @@ export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
   async ({ videoId, commentId, data, token }) => {
     const axios = useAxiosPrivate();
+    console.log(videoId, commentId, data, token, 'crtc');
 
     try {
       const response = await axios.post(`assets/video/${videoId}/comments/${commentId}`, data, {

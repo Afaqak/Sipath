@@ -42,12 +42,12 @@ const tabs = [
 export const MyProfile = ({ session }) => {
   const [active, setActive] = useState(tabs[0].key);
   const { data: user } = useSession();
-  console.log(user);
+  console.log(session, 'session');
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile type={'myprofile'} user={user?.user} />
+        <Profile type={'myprofile'} session={session} user={user?.user} />
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}

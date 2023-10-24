@@ -49,7 +49,7 @@ const OnBoardingExpert = () => {
           ...user,
           user: {
             ...user.user,
-            user: response.data,
+            user: { isTutor: true, ...response.data },
           },
         };
         await update(newSession);

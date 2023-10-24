@@ -8,14 +8,6 @@ import { resetComments, setComments } from '@/features/comments/commentSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useDispatch } from 'react-redux';
 
-const videoArray = [
-  '/new videos/demo-1.jpg',
-  '/new videos/demo-2.jpg',
-  '/new videos/demo-3.jpg',
-  '/new videos/demo-4.jpg',
-  '/new videos/demo-5.png',
-];
-
 const WatchVideo = ({ session }) => {
   const [primaryComments] = useState([]);
   const [video, setVideo] = useState({});

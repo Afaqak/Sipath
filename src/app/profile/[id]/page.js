@@ -4,11 +4,7 @@ import axios from '../../../utils/index';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 const MyProfilePage = async ({ params }) => {
   const session = await getServerSession(authOptions);
-  const response = await axios.get(`/users/${params?.id}/profile`, {
-    headers: {
-      Authorization: `Bearer ${session?.token}`,
-    },
-  });
+  const response = await axios.get(`/users/${params?.id}/profile`);
   console.log(response.data.user);
   return <MyProfile user={response.data} session={session} />;
 };
