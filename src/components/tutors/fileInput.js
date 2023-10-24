@@ -40,7 +40,7 @@ export const FileInput = ({ file, setFile, disabled = false }) => {
         ) : (
           <div className="relative">
             <p
-              className="font-semibold relative text-sm text-green-500 cursor-pointer"
+              className="font-semibold relative text-[0.8rem] text-green-500 cursor-pointer"
               onClick={handleChooseFile}
               style={{
                 width: '100%',

@@ -1,62 +1,72 @@
 'use client';
 import {
-  ContentPlayer,
   VideoInfo,
   CreateComment,
   VideoComments,
   PlaylistSection,
+  CommentsSection,
 } from '@/components';
+import ContentPLayer from '../../../components/podcast/reactPlayer';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
 const PlaylistVideo = ({ session }) => {
   const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [sections, setSections] = useState([]);
   const [buttonStates, setButtonStates] = useState({});
   const [videosBySection, setVideosBySection] = useState({});
-  const [videoId, setVideoId] = useState(0);
-  const { data: user } = useSession();
+  const [videoId, setVideoId] = useState({});
   const axios = useAxiosPrivate();
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [videoId]
+  );
+
   const toggleButton = (sectionId) => {
     setButtonStates((prevState) => ({
       ...prevState,
       [sectionId]: !prevState[sectionId],
     }));
   };
-  console.log(videoId);
+  console.log(videosBySection, '{checking for change}');
+
   const handleDisplayVideos = async (sectionId) => {
     try {
       console.log('try');
       if (!videosBySection[sectionId]) {
-        console.log(sectionId, 'sid');
-        toggleButton(sectionId);
-        console.log(buttonStates);
         const response = await axios.get(`/courses/${params?.course}/sections/${sectionId}`, {
           headers: {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-        console.log(response.data, 'resoibse');
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
+
+        const initialButtonStates = new Array(sections.length).fill(false);
+        setButtonStates(initialButtonStates);
+        toggleButton(sectionId);
       } else {
         toggleButton(sectionId);
       }
     } catch (err) {
       console.log(err);
-    } finally {
-      // setTimeout(() => {
-      //   setLoadingStates((prevLoadingSections) => {
-      //     const updatedLoadingSections = [...prevLoadingSections];
-      //     updatedLoadingSections[sectionId] = false;
-      //     return updatedLoadingSections;
-      //   });
-      // }, 1000);
     }
   };
+
+  console.log(session.token, '{tpken}');
+
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {
@@ -64,21 +74,10 @@ const PlaylistVideo = ({ session }) => {
           Authorization: `Bearer ${session?.token}`,
         },
       });
-
       setSections(response.data.sections);
-      setButtonStates(new Array(response.data.sections.length).fill(false));
-
-      if (response.data.sections.length > 0) {
-        const firstSectionId = response.data.sections[0].id;
-        toggleButton(firstSectionId);
-
+      if (response.data?.sections.length > 0) {
+        const firstSectionId = response.data?.sections[0]?.id;
         await handleDisplayVideos(firstSectionId);
-        setButtonStates((prevButtonStates) => {
-          const updatedButtonStates = { ...prevButtonStates };
-          updatedButtonStates[firstSectionId] = true;
-          return updatedButtonStates;
-        });
-        console.log(buttonStates);
       }
     };
 
@@ -89,10 +88,13 @@ const PlaylistVideo = ({ session }) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} />
-          <VideoInfo />
+          <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
+          <VideoInfo video={videoId} token={session?.token} />
           {/* Render the Comments component for large screens */}
-          <div className="hidden lg:block">{/* <VideoComments /> */}</div>
+          <div className="hidden lg:block">
+            {' '}
+            <CommentsSection />
+          </div>
         </div>
 
         <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
@@ -102,7 +104,11 @@ const PlaylistVideo = ({ session }) => {
                 onClick={() => handleDisplayVideos(section?.id)}
                 index={index}
                 key={section.id}
-                setVideoId={(id) => setVideoId(id)}
+                isButtonToggled={buttonStates[section.id]}
+                toggleButton={() => toggleButton(section.id)}
+                setVideoId={(id) => {
+                  router.push(pathname + '?' + createQueryString('id', id));
+                }}
                 videos={videosBySection[section?.id]}
                 sectionTitle={section?.name}
                 sectionDuration={section?.subject}
@@ -110,7 +116,9 @@ const PlaylistVideo = ({ session }) => {
             ))}
           </div>
 
-          <div className="lg:hidden my-8">{/* <VideoComments /> */}</div>
+          <div className="lg:hidden my-8">
+            <CommentsSection />
+          </div>
         </div>
       </div>
     </div>

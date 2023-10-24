@@ -5,6 +5,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast, errorToast } from '@/utils/toasts';
 import { useDispatch } from 'react-redux';
+import { ClipLoader } from 'react-spinners';
 import { createBook } from '@/features/book/bookThunk';
 const AddBook = () => {
   const dispatch = useDispatch();
@@ -28,10 +29,12 @@ const AddBook = () => {
     setBookDescription('');
     setBookTitle('');
     setThumbnail(null);
+    setLoading(false);
     setBook(null);
   };
 
   const onError = () => {
+    setLoading(false);
     errorToast('Error uploading book!');
   };
 
@@ -66,6 +69,13 @@ const AddBook = () => {
       <VideoUploadType type={type} setType={setType} setPrice={setPrice} />
       <form onSubmit={onSubmit}>
         <div className=" bg-white mt-4 flex md:flex-row flex-col uppercase gap-6 p-4 rounded-md shadow-md">
+          {loading && (
+            <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
+              <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
+                <ClipLoader color="black" />
+              </div>
+            </div>
+          )}
           <NewBookBodyColumn
             bookTitle={bookTitle}
             setBookTitle={(e) => setBookTitle(e.target.value)}

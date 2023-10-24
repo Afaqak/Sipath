@@ -10,7 +10,7 @@ const useAxiosPrivate = () => {
     (error) => {
       if (error.response?.status === 403) {
         errorToast('Your session has expired. You have been logged out.');
-        signOut({ callbackUrl: '/' });
+        // signOut({ callbackUrl: '/' });
       }
       return Promise.reject(error);
     }

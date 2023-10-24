@@ -5,11 +5,12 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
-export const ContentPlayer = ({ noPremium, id }) => {
+const ContentPlayer = ({ noPremium, token }) => {
   const searchParams = useSearchParams();
   const axios = useAxiosPrivate();
-  // const id = searchParams.get('id');
 
+  const videoId = searchParams.get('id');
+  console.log(videoId, '{videoid}');
   const [isClient, setIsClient] = useState(false);
   const [videoBlob, setVideoBlob] = useState(null);
   const { data: user } = useSession();
@@ -18,12 +19,13 @@ export const ContentPlayer = ({ noPremium, id }) => {
   }, []);
 
   useEffect(() => {
+    console.log('effect run ');
     const fetchVideoData = async () => {
       try {
-        const response = await axios.get(`/assets/video/stream/${id}`, {
+        const response = await axios.get(`/assets/video/stream/${videoId}`, {
           responseType: 'arraybuffer',
           headers: {
-            Authorization: `Bearer ${user?.token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log(response.data);
@@ -36,7 +38,7 @@ export const ContentPlayer = ({ noPremium, id }) => {
     };
 
     fetchVideoData();
-  }, []);
+  }, [videoId]);
 
   return (
     <div>
@@ -50,3 +52,5 @@ export const ContentPlayer = ({ noPremium, id }) => {
     </div>
   );
 };
+
+export default React.memo(ContentPlayer);

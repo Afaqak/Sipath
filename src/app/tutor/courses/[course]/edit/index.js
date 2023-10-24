@@ -18,9 +18,13 @@ import { motion } from 'framer-motion';
 import { VideoEditModal } from '@/components/video/editVideoModal';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useRouter, useParams } from 'next/navigation';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const EditPage = ({ session }) => {
   const axios = useAxiosPrivate();
+  const [course, setCourse] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [editCoursePriceMode, setEditPriceMode] = useState(false);
   const params = useParams();
   const [sections, setSections] = useState([]);
   const [sectionOpen, setSectionOpen] = useState(false);
@@ -28,10 +32,15 @@ const EditPage = ({ session }) => {
   const [buttonStates, setButtonStates] = useState({});
   const [open, setOpen] = useState(false);
   const [openAddVideo, setOpenAddVideo] = useState(false);
+  const [courseName, setCourseName] = useState('');
+  const [coursePrice, setCoursePrice] = useState('');
   const router = useRouter();
   const [sectionName, setSectionName] = useState('');
   const [loadingStates, setLoadingStates] = useState([]);
-  console.log(videosBySection);
+
+  function handleEditMode() {
+    setEditMode(!editMode);
+  }
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {
@@ -40,6 +49,7 @@ const EditPage = ({ session }) => {
         },
       });
       setSections(response.data.sections);
+      setCourse(response.data.course);
       setLoadingStates(new Array(response.data.sections.length).fill(false));
       setButtonStates(new Array(response.data.sections.length).fill(false));
     };
@@ -67,18 +77,10 @@ const EditPage = ({ session }) => {
           },
         }
       );
-      console.log(response.data);
-      if (response.status === 200) {
-        successToast('Section Added Successfully!', '#1850BC');
-        const response = await axios.get(`/courses/${params?.course}/sections`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(response.data, 'after sec added');
-        setSectionName('');
-        setSections(response.data.sections);
-      }
+
+      console.log(response.data, response.status, '{Section}');
+      successToast('Section Added Successfully!', '#1850BC');
+      setSections((prev) => [...prev, response.data.section]);
     } catch (err) {
       errorToast('An error occured!');
     } finally {
@@ -131,7 +133,7 @@ const EditPage = ({ session }) => {
       if (response.status === 200) {
         errorToast('Course Deleted', '#1850BC');
         setOpen(false);
-        router.push('/tutor');
+        router.push('/my-profile');
       }
       console.log(response.data);
     } catch (err) {
@@ -140,12 +142,193 @@ const EditPage = ({ session }) => {
     }
   };
 
-  console.log(videosBySection, buttonStates);
+  async function handleCourseSubmit(e) {
+    e.preventDefault();
+    if (!courseName) {
+      setEditMode(false);
+      return;
+    }
+    try {
+      const response = await axios.patch(
+        `/courses/${course?.id}`,
+        {
+          name: courseName,
+        },
+        { headers: { Authorization: `Bearer ${session?.token}` } }
+      );
+      console.log(response.data);
+      successToast('Course Updated!');
+      setEditMode(false);
+      setCourseName('');
+      setCourse(response.data?.course);
+    } catch (err) {
+      console.log(err);
+      errorToast('Error occured while updating course!');
+    }
+  }
+  async function handleCoursePriceSubmit(e) {
+    e.preventDefault();
+    if (!coursePrice || coursePrice < 0) {
+      setEditPriceMode(false);
+      return;
+    }
+    try {
+      const response = await axios.patch(
+        `/courses/${course?.id}`,
+        {
+          price: coursePrice,
+        },
+        { headers: { Authorization: `Bearer ${session?.token}` } }
+      );
+      console.log(response.data);
+      successToast('Course Price Updated!');
+      setEditPriceMode(false);
+      setCoursePrice('');
+      setCourse(response.data?.course);
+    } catch (err) {
+      console.log(err);
+      errorToast('Error occured while updating course!');
+    }
+  }
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const sourceSectionId = result.source.droppableId;
+    const destinationSectionId = result.destination.droppableId;
+    const videoId = result.draggableId;
+    console.log(
+      'Video ID:',
+      videoId,
+      'Source Section:',
+      sourceSectionId,
+      'Destination Section:',
+      destinationSectionId,
+      'Source Index:',
+      result.source.index,
+      'Destination Index:',
+      result.destination.index
+    );
+
+    if (sourceSectionId === destinationSectionId) {
+      const sectionVideos = videosBySection[sourceSectionId];
+      const [removedVideo] = sectionVideos.splice(result.source.index, 1);
+      sectionVideos.splice(result.destination.index, 0, removedVideo);
+      setVideosBySection({
+        ...videosBySection,
+        [sourceSectionId]: sectionVideos,
+      });
+    } else {
+      console.log('here');
+      const response = await axios.patch(
+        `/courses/${course?.id}/sections/${sourceSectionId}/videos`,
+        {
+          video_id: videoId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const sectionResponse = await axios.post(
+          `/courses/${course?.id}/sections/${destinationSectionId}/videos`,
+          {
+            video_id: videoId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        console.log(response.data, 'while drag', sectionResponse.data);
+      }
+
+      const sourceSectionVideos = videosBySection[sourceSectionId];
+      const destinationSectionVideos = videosBySection[destinationSectionId];
+      const [movedVideo] = sourceSectionVideos.splice(result.source.index, 1);
+      destinationSectionVideos.splice(result.destination.index, 0, movedVideo);
+
+      setVideosBySection({
+        ...videosBySection,
+        [sourceSectionId]: sourceSectionVideos,
+        [destinationSectionId]: destinationSectionVideos,
+      });
+    }
+  };
 
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-      <div className="flex justify-between mb-8 items-center">
-        <h1 className="text-4xl capitalize font-semibold">{params?.course}</h1>
+      <div className="flex items-center gap-2">
+        {editCoursePriceMode ? (
+          <form className="flex gap-1 items-center" onSubmit={handleCoursePriceSubmit}>
+            {' '}
+            <input
+              type="number"
+              onChange={(e) => setCoursePrice(e.target.value)}
+              value={coursePrice}
+              className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="flex items-center justify-center cursor-pointer h-6 w-6 rounded-full bg-subcolor"
+            >
+              <Icons.check className="h-4 w-4 stroke-white " />
+            </button>
+          </form>
+        ) : (
+          <div className="flex items-center mb-2 gap-2">
+            <p className="bg-main w-fit  inline-block px-4 py-1 text-white text-[0.8rem] font-medium rounded-full">
+              {+course?.price === 0 ? 'Free' : `${course?.price}$`}
+            </p>
+            <button
+              variant="outline"
+              onClick={() => setEditPriceMode(true)}
+              className="bg-subcolor3 w-fit inline-block px-4 py-1 text-white text-[0.8rem] font-medium rounded-full"
+            >
+              <Icons.edit className="w-4 h-4 stroke-white" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-between mb-6 items-center">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            {editMode ? (
+              <form className="flex items-center gap-1" onSubmit={handleCourseSubmit}>
+                {' '}
+                <input
+                  type="text"
+                  onChange={(e) => setCourseName(e.target.value)}
+                  value={courseName}
+                  className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="flex items-center cursor-pointer justify-center h-6 w-6 rounded-full bg-subcolor"
+                >
+                  <Icons.check className="h-4 w-4 stroke-white " />
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl capitalize font-semibold">{course?.name}</h1>
+
+                <button
+                  variant="outline"
+                  onClick={handleEditMode}
+                  className="bg-subcolor3 w-fit inline-block px-4 py-1 text-white text-[0.8rem] font-medium rounded-full"
+                >
+                  <Icons.edit className="w-4 h-4 stroke-white" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -173,52 +356,112 @@ const EditPage = ({ session }) => {
           </Button>
         </div>
       </div>
-      {sections.map((section, sectionIndex) => (
-        <div className="" key={section.id}>
-          <EditPageHeader
-            openAddVideo={openAddVideo}
-            setOpenAddVideo={setOpenAddVideo}
-            section={section}
-            videosBySection={videosBySection}
-            sectionIndex={sectionIndex}
-            token={session?.token}
-            setVideosBySection={setVideosBySection}
-            handleDisplayVideos={handleDisplayVideos}
-            buttonStates={buttonStates}
-            setSections={setSections}
-            courseId={params.course}
+      <div className="rounded-md">
+        {course?.thumbnail && (
+          <Image
+            src={course?.thumbnail}
+            width={500}
+            height={500}
+            className="mb-4 rounded-md"
+            alt="course-thumbnail"
           />
+        )}
+      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable type="group" droppableId="videoBodies" direction="vertical">
+          {(provided) => (
+            <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
+              {sections.map((section, sectionIndex) => (
+                <Draggable
+                  key={sectionIndex}
+                  draggableId={sectionIndex.toString()}
+                  index={sectionIndex}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.draggableProps}
+                      key={sectionIndex}
+                      className={`relative ${sectionIndex > 0 ? '' : '0'}`}
+                    >
+                      <div className="" key={section.id}>
+                        <EditPageHeader
+                          openAddVideo={openAddVideo}
+                          setOpenAddVideo={setOpenAddVideo}
+                          section={section}
+                          videosBySection={videosBySection}
+                          sectionIndex={sectionIndex}
+                          token={session?.token}
+                          setVideosBySection={setVideosBySection}
+                          handleDisplayVideos={handleDisplayVideos}
+                          buttonStates={buttonStates}
+                          setSections={setSections}
+                          courseId={params.course}
+                        />
 
-          {buttonStates[section?.id] ? (
-            loadingStates[section?.id] ? (
-              <div className={` ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}>
-                <LoadingSkeletons times={3} />
-              </div>
-            ) : (
-              <div
-                className={`grid md:grid-cols-2 gap-4 lg:grid-cols-3  ${
-                  buttonStates[section?.id] ? 'mb-2 ' : ''
-                }`}
-              >
-                {videosBySection[section?.id] &&
-                  videosBySection[section?.id]?.map((video, videoIndex) => {
-                    return (
-                      <VideoItem
-                        setVideosBySection={setVideosBySection}
-                        sectionId={section?.id}
-                        courseId={params.course}
-                        token={session?.token}
-                        key={video.id}
-                        video={video}
-                        videosBySection={videosBySection}
-                      />
-                    );
-                  })}
-              </div>
-            )
-          ) : null}
-        </div>
-      ))}
+                        <Droppable
+                          direction="horizontal"
+                          droppableId={section.id.toString()}
+                          key={section.id}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              className={` ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}
+                            >
+                              {buttonStates[section?.id] ? (
+                                loadingStates[section?.id] ? (
+                                  <LoadingSkeletons times={3} />
+                                ) : (
+                                  <div
+                                    className={`grid md:grid-cols-2 gap-4 lg:grid-cols-3 ${
+                                      buttonStates[section?.id] ? 'mb-2 ' : ''
+                                    }`}
+                                  >
+                                    {videosBySection[section?.id] &&
+                                      videosBySection[section?.id]?.map((video, videoIndex) => (
+                                        <Draggable
+                                          draggableId={video.id.toString()}
+                                          index={videoIndex}
+                                          key={video.id}
+                                        >
+                                          {(provided, snapshot) => (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                            >
+                                              <VideoItem
+                                                setVideosBySection={setVideosBySection}
+                                                sectionId={section?.id}
+                                                courseId={params.course}
+                                                token={session?.token}
+                                                key={video.id}
+                                                video={video}
+                                                videosBySection={videosBySection}
+                                              />
+                                            </div>
+                                          )}
+                                        </Draggable>
+                                      ))}
+                                  </div>
+                                )
+                              ) : null}
+                            </div>
+                          )}
+                        </Droppable>
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
       <DeleteModal
         isOpen={open}
         setIsOpen={setOpen}
@@ -252,6 +495,7 @@ function EditPageHeader({
   token,
 }) {
   const [editMode, setEditMode] = useState(false);
+
   const axios = useAxiosPrivate();
   const [sectionName, setSectionName] = useState('');
 
@@ -344,13 +588,20 @@ function EditPageHeader({
         </div>
         <motion.ul className="flex divide-x cursor-pointer text-sm">
           <motion.li>
-            <p
+            <div
               className="flex items-center gap-3 px-2 py-2 hover-bg-[#d1d1d1]"
               onClick={(e) => (editMode ? onUpdateSection(e) : setEditMode(!editMode))}
             >
-              <Icons.edit className="h-4 w-4 stroke-[#616161]" />
-              {editMode ? 'Finish Editing' : 'Edit'}
-            </p>
+              {editMode ? (
+                <p className="flex items-center justify-center cursor-pointer h-6 w-6 rounded-full bg-subcolor">
+                  <Icons.check className="h-4 w-4 stroke-white " />
+                </p>
+              ) : (
+                <>
+                  <Icons.edit className="h-4 w-4 stroke-[#616161]" /> Edit
+                </>
+              )}
+            </div>
           </motion.li>
           <motion.li
             onClick={() => setOpen(true)}
@@ -398,8 +649,7 @@ export const VideoItem = ({
   const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const axios = useAxiosPrivate();
-
-  console.log(video, 'video');
+  console.log(video, '{videoItem}');
 
   const onDeleteSubmit = async (e) => {
     e.preventDefault();
@@ -447,16 +697,18 @@ export const VideoItem = ({
       )}
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
-        <Image
-          src={video?.thumbnail}
-          alt={'thumbnail'}
-          width={300}
-          height={200}
-          className="rounded-md object-cover w-full h-[11.2rem]"
-        />
+        {video?.thumbnail && (
+          <Image
+            src={video?.thumbnail}
+            alt={'thumbnail'}
+            width={300}
+            height={200}
+            className="rounded-md object-cover w-full h-[11.2rem]"
+          />
+        )}
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <UserAvatar />
+        <UserAvatar user={{ image: video?.profile_image }} />
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link

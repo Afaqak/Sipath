@@ -1,7 +1,7 @@
 'use client';
-import { ContentPlayer, LiveMessages, VideoInfo } from '@/components';
+import { LiveMessages, VideoInfo } from '@/components';
 import Image from 'next/image';
-
+import ContentPlayer from '../../../components/podcast/reactPlayer';
 const LivePremium = () => {
   return (
     <div className="">
@@ -14,7 +14,7 @@ const LivePremium = () => {
         {/*col2*/}
         <div className="mt-8 relative col-span-3 overflow-hidden live-message">
           <div className="py-2 shadow-lg live-message h-[500px] overflow-auto">
-            <LiveMessages />
+            {/* <LiveMessages /> */}
           </div>
           <div className="flex gap-2  bg-white py-2 items-center justify-center">
             <input

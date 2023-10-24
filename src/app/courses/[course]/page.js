@@ -12,8 +12,6 @@ const MyProfilePage = async () => {
     redirect('/');
   }
 
-  // const response = await axios.post('/auth/verify-token', { token: session?.token });
-
   return <PlaylistVideo session={session} />;
 };
 

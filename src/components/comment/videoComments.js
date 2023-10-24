@@ -10,18 +10,21 @@ import { Skeleton } from '../ui/skeleton';
 import debounce from 'lodash/debounce';
 import { useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { selectCommentReplies, selectPrimaryComments } from '@/utils/selectors';
+import { Button } from '../ui/button';
+import { resetComments, setComments } from '@/features/comments/commentSlice';
+import Image from 'next/image';
 
 export const VideoComments = () => {
   const axios = useAxiosPrivate();
-  const primaryComments = useSelector((state) => state.comments.primaryComments);
+  const primaryComments = useSelector(selectPrimaryComments);
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const dispatch = useDispatch();
-  const [set, setSet] = useState(0);
-  const [hasLoadedMore, setHasLoadedMore] = useState(false);
+  const [set, setSet] = useState(1);
   const [loading, setLoading] = useState(false);
+  const commentReplies = useSelector(selectCommentReplies);
   const [replyView, setReplyView] = useState({});
-  const { ref, inView } = useInView({ threshold: 1 });
 
   const delay = new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -29,28 +32,17 @@ export const VideoComments = () => {
     }, 1000);
   });
 
-  console.log(primaryComments, 'primary comments');
-
   const debouncedFetchComments = useMemo(
     () =>
       debounce(async () => {
         try {
           setLoading(true);
           await delay;
+          dispatch(resetComments());
           dispatch(
             fetchPrimaryComments({
               videoId: id,
-              set,
               axios,
-              onSuccess(data) {
-                if (data.length === 0) {
-                  setHasLoadedMore(true);
-                } else {
-                  console.log(data, 'new page');
-                  setHasLoadedMore(false);
-                }
-                setLoading(false);
-              },
             })
           );
         } catch (err) {
@@ -59,10 +51,11 @@ export const VideoComments = () => {
           setLoading(false);
         }
       }, 300),
-    [set, dispatch]
+    [id]
   );
 
   useEffect(() => {
+    console.count('run');
     debouncedFetchComments();
   }, [debouncedFetchComments]);
   const LoadingSkeletons = () => (
@@ -81,9 +74,6 @@ export const VideoComments = () => {
     </div>
   );
 
-  const commentReplies = useSelector((state) => state.comments.commentReplies);
-  console.log('commentReplies', commentReplies);
-  console.log(commentReplies);
   const toggleReplyView = (commentId) => {
     console.log(commentId);
     setReplyView((prevState) => ({
@@ -92,18 +82,24 @@ export const VideoComments = () => {
     }));
   };
 
-  useEffect(() => {
-    if (inView && primaryComments.length > 0 && !hasLoadedMore) {
-      setHasLoadedMore(true);
-      setSet((prevSet) => prevSet + 10);
-    }
-  }, [inView, primaryComments, hasLoadedMore]);
+  const loadMore = async () => {
+    setSet((prev) => prev + 1);
+    console.log(set);
+    try {
+      const response = await axios.get(
+        `/assets/video/${id}/comments?limit=10&set=${set}&order=desc`
+      );
+
+      console.log(response.data, '{load more}');
+      dispatch(setComments(response.data.comments));
+    } catch (err) {}
+  };
 
   return (
     <div className="py-1 md:mt-4">
       {primaryComments.length > 0 &&
         primaryComments.map((comment, index) => (
-          <div key={comment.id} ref={index === primaryComments.length - 1 ? ref : null}>
+          <div key={comment.id}>
             <VideoComment
               parentId={comment?.id}
               comment={comment}
@@ -124,6 +120,11 @@ export const VideoComments = () => {
           </div>
         ))}
       {loading && <LoadingSkeletons />}
+      <div className="w-full flex justify-center">
+        <button className="" onClick={loadMore}>
+          <Image src={'/svgs/add_circle.svg'} width={30} height={30} />
+        </button>
+      </div>
     </div>
   );
 };

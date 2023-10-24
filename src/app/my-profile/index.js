@@ -24,7 +24,7 @@ import { UniversalTab } from '@/components';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { errorToast } from '@/utils/toasts';
+import { errorToast, successToast } from '@/utils/toasts';
 import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -41,12 +41,13 @@ const tabs = [
 
 export const MyProfile = ({ session }) => {
   const [active, setActive] = useState(tabs[0].key);
-
+  const { data: user } = useSession();
+  console.log(session, 'session');
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile type={'myprofile'} />
+        <Profile type={'myprofile'} session={session} user={user?.user} />
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}
@@ -72,17 +73,15 @@ export const MyProfile = ({ session }) => {
         {active === 'books' && <Mybooks token={session?.token} />}
         {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
-        {active === 'myvideos' && (
-          <MyVideos token={session?.token} tutorId={session?.tutor?.tutor_id} />
-        )}
+        {active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
         {active === 'myaccount' && <MyAccount />}
-        {active === 'mylearning' && <MyCourses token={session?.token} />}
+        {active === 'mylearning' && <MyCourses session={session} />}
       </div>
     </>
   );
 };
 
-const MyCourses = ({ token }) => {
+const MyCourses = ({ session }) => {
   const [courses, setCourses] = useState([]);
   const axios = useAxiosPrivate();
   useEffect(() => {
@@ -90,7 +89,7 @@ const MyCourses = ({ token }) => {
       try {
         const response = await axios.get('/courses', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session?.token}`,
           },
         });
         console.log(response.data.courses);
@@ -104,13 +103,14 @@ const MyCourses = ({ token }) => {
   return (
     <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
       {courses.map((course) => (
-        <CourseCard key={course?.id} course={course} />
+        <CourseCard session={session} key={course?.id} course={course} />
       ))}
     </div>
   );
 };
 
-const CourseCard = ({ course }) => {
+const CourseCard = ({ course, session }) => {
+  console.log(session, '{my-profile}');
   return (
     <Link
       href={`/tutor/courses/${course?.id}`}
@@ -122,16 +122,20 @@ const CourseCard = ({ course }) => {
         </span>
       )}
       <div className="relative">
-        <Image
-          src={course?.thumbnail}
-          alt={'course'}
-          width={300}
-          height={200}
-          className="rounded-md object-cover w-full h-44"
-        />
+        {course?.thumbnail ? (
+          <Image
+            src={course?.thumbnail}
+            alt={'course'}
+            width={300}
+            height={200}
+            className="rounded-md object-cover w-full h-44"
+          />
+        ) : (
+          <div className="rounded-md object-cover w-full h-44"></div>
+        )}
       </div>
       <div className="mt-3 flex gap-2 items">
-        <UserAvatar />
+        <UserAvatar user={{ image: session?.user?.profile_image }} />
         <div>
           <h1 className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</h1>
           <div className="flex items-center text-sm gap-2 text-gray-700">
@@ -172,37 +176,39 @@ const MyQuizzes = ({ tutorId, token }) => {
   return (
     <div className="w-[90%] mx-auto mt-10">
       <div className="flex justify-end w-full">
-        <button
-          type="button"
-          onClick={() => setIsEdit(!isEdit)}
-          className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
-        >
-          <div
-            className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-              isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-            }`}
+        {quizes && quizes.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setIsEdit(!isEdit)}
+            className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
           >
-            {isEdit ? (
-              <Icons.cross className=" stroke-white h-2 w-2" />
-            ) : (
-              <Icons.editPencil className=" stroke-white h-3 w-3" />
-            )}
-          </div>
-        </button>
+            <div
+              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
+                isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
+              }`}
+            >
+              {isEdit ? (
+                <Icons.cross className=" stroke-white h-2 w-2" />
+              ) : (
+                <Icons.editPencil className=" stroke-white h-3 w-3" />
+              )}
+            </div>
+          </button>
+        )}
       </div>
       {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
     </div>
   );
 };
 
-const MyVideos = ({ tutorId, token }) => {
+const MyVideos = ({ userId, token }) => {
   const axios = useAxiosPrivate();
   const [videos, setVideos] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   useEffect(() => {
     const fetchTutorVideos = async () => {
       try {
-        const response = await axios.get(`/assets/videos/tutor/${tutorId}`, {
+        const response = await axios.get(`/assets/videos/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -214,31 +220,62 @@ const MyVideos = ({ tutorId, token }) => {
     };
     fetchTutorVideos();
   }, []);
+  console.log(videos, '{videos}');
 
+  const handleSetUpdateVideos = (updatedVideo) => {
+    console.log(updatedVideo, '{from setVideo}');
+    setVideos((prev) =>
+      prev.map((video) => (video?.id === updatedVideo?.id ? { ...updatedVideo } : video))
+    );
+  };
+  const setDeletedVideo = async (id) => {
+    try {
+      console.log(id, '{id}');
+      const response = await axios.delete(`/assets/videos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        successToast('Video deleted!');
+        setVideos((prev) => prev.filter((video) => video?.id !== id));
+      }
+    } catch (err) {
+      errorToast('Error deleting the video!');
+    }
+  };
   return (
     <div className=" py-8">
       <div className="flex justify-end w-full">
-        <button
-          type="button"
-          onClick={() => setIsEdit(!isEdit)}
-          className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
-        >
-          <div
-            className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-              isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-            }`}
+        {videos && videos?.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setIsEdit(!isEdit)}
+            className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
           >
-            {isEdit ? (
-              <Icons.cross className=" stroke-white h-2 w-2" />
-            ) : (
-              <Icons.editPencil className=" stroke-white h-3 w-3" />
-            )}
-          </div>
-        </button>
+            <div
+              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
+                isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
+              }`}
+            >
+              {isEdit ? (
+                <Icons.cross className=" stroke-white h-2 w-2" />
+              ) : (
+                <Icons.editPencil className=" stroke-white h-3 w-3" />
+              )}
+            </div>
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-3 gap-4 mt-4">
         {videos.map((video, index) => (
-          <VideoItem video={video} isEdit={isEdit} key={index} />
+          <VideoItem
+            video={video}
+            setDeletedVideo={setDeletedVideo}
+            setVideos={handleSetUpdateVideos}
+            isEdit={isEdit}
+            key={index}
+          />
         ))}
       </div>
     </div>
@@ -256,7 +293,7 @@ const Mybooks = ({ token }) => {
     const fetchBooks = async () => {
       try {
         setLoading(false);
-        const response = await axios.get(`/assets/books/tutor/${user?.tutor?.tutor_id}`, {
+        const response = await axios.get(`/assets/books/user/${user?.user?.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

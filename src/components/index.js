@@ -27,7 +27,6 @@ export { Book } from './common/book';
 export { BookSlider } from './tutors/bookSlider';
 export { Donate } from './tutors/donate';
 export { CalendarComponent } from './common/calendar';
-export { ContentPlayer } from './podcast/reactPlayer';
 export { LiveMessages } from './podcast/liveMessages';
 export { VideoInfo } from './podcast/videoInfo';
 export { Stars } from './common/5star';

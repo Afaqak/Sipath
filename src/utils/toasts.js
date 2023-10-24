@@ -3,6 +3,7 @@ export const errorToast = (text, color = '#fb3c22') =>
   toast.error(text, {
     style: {
       backgroundColor: color,
+      borderRadius: '30px',
       color: 'white',
     },
     icon: '⚪',

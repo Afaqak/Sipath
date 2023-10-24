@@ -81,7 +81,6 @@ export const OnBoardingProcess = () => {
         user: {
           ...user.user,
           user: response.data?.user,
-          new: 'fffff',
         },
       };
       await update(newSession);

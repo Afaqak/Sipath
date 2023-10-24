@@ -81,10 +81,11 @@ export const AvailableDays = ({ setAvailability }) => {
             <div className="mb-2 mr-3 text-sm w-[4%]">{day}</div>
             {schedule[day].map((slot, slotIndex) => (
               <div key={slotIndex} className="flex text-sm mb-2 gap-3 mr-2">
-                <div className="w-16">
+                <div className="w-[5.4rem]">
                   <TimePicker
                     className="w-full custom-time-picker text-sm"
-                    format="HH:mm"
+                    format="hh:mm A"
+                    use12Hours
                     placeholder="From"
                     showSecond={false}
                     clearIcon={false}
@@ -93,12 +94,13 @@ export const AvailableDays = ({ setAvailability }) => {
                     disabled={!checkboxes[day]} // Disable TimePicker if checkbox is not checked
                   />
                 </div>
-                <div className="w-16">
+                <div className="w-[5.4rem]">
                   <TimePicker
                     className="w-full custom-time-picker text-sm flex"
                     showSecond={false}
                     clearIcon={false}
                     format="hh:mm A"
+                    use12Hours
                     placeholder="Until"
                     onChange={(time) => handleTimeChange(time, day, 'until', slotIndex)}
                     value={slot.until ? moment(slot.until, 'HH:mm') : null}

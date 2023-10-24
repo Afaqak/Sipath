@@ -4,18 +4,14 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 export const createComment = createAsyncThunk(
   'comments/createComment',
-  async ({ videoId, comment, onSuccess, token }) => {
-    console.log(comment, 'com');
+  async ({ videoId, data, onSuccess, token }) => {
+    console.log(data, 'dispatch');
     try {
-      const response = await axios.post(
-        `/assets/video/${videoId}/comments`,
-        { comment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(`/assets/video/${videoId}/comments`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -36,12 +32,12 @@ export const fetchPrimaryComments = createAsyncThunk(
     try {
       console.log(set, 'from detch');
       const response = await axios.get(
-        `/assets/video/${videoId}/comments?limit=${limit}&set=${set}&order=desc`
+        `/assets/video/${videoId}/comments?limit=10&set=${set}&order=desc`
       );
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
-
+      console.log(response.data?.comments, '{newly fetched}');
       return response.data?.comments;
     } catch (error) {
       throw new Error();
@@ -69,21 +65,16 @@ export const fetchCommentReplies = createAsyncThunk(
 
 export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
-  async ({ videoId, commentId, comment, token }) => {
+  async ({ videoId, commentId, data, token }) => {
     const axios = useAxiosPrivate();
+    console.log(videoId, commentId, data, token, 'crtc');
 
     try {
-      const response = await axios.post(
-        `assets/video/${videoId}/comments/${commentId}`,
-        {
-          comment,
+      const response = await axios.post(`assets/video/${videoId}/comments/${commentId}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
       console.log(response.data);
       return response.data.comment;
     } catch (error) {

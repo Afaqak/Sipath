@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 export const MyAccountInfo = ({ setEdit }) => {
   const {
-    data: { user },
+    data: { user, tutor },
   } = useSession();
   return (
     <div>
@@ -42,7 +42,7 @@ export const MyAccountInfo = ({ setEdit }) => {
           <div className="lg:w-1/3 grid grid-cols-3 lg:grid-cols-1 border-l border-[#D9D9D9] pl-6 md:pl-10 gap-6">
             <div className="">
               <label className="text-sm font-thin">Hourly Rate</label>
-              <h2 className=" text-lg">25$/hr</h2>
+              <h2 className=" text-lg">{tutor?.hourly_rate}$</h2>
             </div>
             <div>
               <label className="text-sm font-thin">Expertise</label>

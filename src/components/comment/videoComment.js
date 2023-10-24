@@ -5,11 +5,12 @@ import { debounce } from 'lodash';
 import { CreateComment, Icons, formatTimeAgo } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
-import { ClipLoader } from 'react-spinners';
 import UserAvatar from '../common/userAvatar';
-import { useSearchParams } from 'next/navigation';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { selectCommentReplies } from '@/utils/selectors';
 
 const LoadingSkeletons = () => (
   <div className="py-8 grid  gap-4">
@@ -29,55 +30,45 @@ const LoadingSkeletons = () => (
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
   const searchParams = useSearchParams();
+  const [text, setText] = useState('');
   const id = searchParams.get('id');
   const commentRef = useRef(null);
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
-
+  const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
-  const commentReplies = useSelector((state) => state.comments.commentReplies);
-
-  const debouncedOnReplySubmit = useCallback(
-    debounce(() => {
-      console.log('submitting the reply');
-      try {
-        setIsReplying(false);
-        console.log(commentRef.current?.value, 'com');
-        dispatch(
-          createReplyToComment({
-            videoId: id,
-            commentId: parentId,
-            comment: commentRef.current?.value,
-            token: user?.token,
-          })
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        commentRef.current.value = '';
-      }
-    }, 300),
-    [dispatch, parentId]
-  );
-
-  const handleOnReplySubmit = (e) => {
+  const commentReplies = useSelector(selectCommentReplies);
+  console.log(commentReplies, '${com replies}');
+  console.log(text);
+  const onReplySubmit = (e) => {
     e.preventDefault();
-    debouncedOnReplySubmit();
+    console.log('submitting the reply');
+    setIsReplying(false);
+    console.log(text, 'comment me');
+    const imgRegex = /<img[^>]*>/g;
+    const textWithoutImages = text.replace(imgRegex, '');
+    console.log(textWithoutImages, 'twi', text);
+    try {
+      const formdata = new FormData();
+      formdata.append(
+        'comment',
+        `<div class="flex gap-1"><span class="font-bold">${comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+      );
+      formdata.append('image', file);
+
+      dispatch(
+        createReplyToComment({
+          videoId: id,
+          commentId: parentId,
+          data: formdata,
+          token: user?.token,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
-
-  // const onCommentSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(commentRef.current, 'comment');
-
-  //   try {
-  //     if (!commentRef.current.value) return;
-  //     dispatch(createComment({ videoId: id, comment: commentRef.current?.value, onSuccess }));
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //   }
-  // };
 
   const onSuccess = (data) => {
     setLoadingReplies(false);
@@ -104,13 +95,15 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   return (
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
-        <UserAvatar
-          user={{
-            image: comment.user?.profile_image,
-            name: comment?.user?.display_name || comment?.user?.first_name,
-          }}
-          className="h-8 w-8"
-        />
+        <Link className="block" href={`/profile/${comment?.author_id}`}>
+          <UserAvatar
+            user={{
+              image: comment.user?.profile_image,
+              name: comment?.user?.display_name || comment?.user?.first_name,
+            }}
+            className="h-8 w-8"
+          />
+        </Link>
 
         <div className="w-full">
           <div className="flex gap-4 items-center mb-1">
@@ -118,9 +111,18 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             <p className="text-[0.75rem] text-gray-500">{formatTimeAgo(comment?.createdAt)}</p>
           </div>
           <div className="flex gap-4 items-center">
-            <p className="text-sm md:text-base py-2 px-3 bg-gray-100 shadow-md w-fit">
-              {comment.comment}
-            </p>
+            <div className="flex flex-col gap-1">
+              {comment?.image && (
+                <Image src={comment?.image} alt="comment-image" height={300} width={300} />
+              )}
+              <div
+                style={{
+                  whiteSpace: 'pre-wrap',
+                }}
+                dangerouslySetInnerHTML={{ __html: comment.comment }}
+                className="text-sm md:text-base py-2 px-3 bg-gray-100 shadow-md w-fit break-words"
+              ></div>
+            </div>
             <div className="flex flex-col gap-2 self-start">
               <svg
                 onClick={handleIsReplying}
@@ -162,8 +164,9 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           {isReplying && (
             <div className="w-full mt-2">
               <CreateComment
-                commentRef={commentRef}
-                onSubmit={handleOnReplySubmit}
+                setFile={setFile}
+                setText={setText}
+                handleSubmit={onReplySubmit}
                 reply={isReplying}
               />
               <div className="flex w-full gap-8 mt-2 justify-end items-end">
@@ -175,7 +178,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
                   cancel
                 </button>
                 <button
-                  onClick={handleOnReplySubmit}
+                  onClick={onReplySubmit}
                   className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
                 >
                   reply

@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { socket } from '@/socket';
-import ReactPlayer from 'react-player';
 import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
+import { errorToast } from '@/utils/toasts';
 
 const LivePremium = () => {
   const params = useSearchParams();
@@ -21,7 +21,7 @@ const LivePremium = () => {
   const [localStream, setLocalStream] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
 
   const endCall = () => {
@@ -83,6 +83,11 @@ const LivePremium = () => {
         });
       }
     });
+    return () => {
+      if (peer) {
+        peer.destroy();
+      }
+    };
   }, []);
 
   const initializeSocket = () => {
@@ -97,6 +102,7 @@ const LivePremium = () => {
     });
 
     socket.on('call-ended', () => {
+      errorToast('Podcast ended!');
       router.push('/podcast');
     });
   };
@@ -132,7 +138,7 @@ const LivePremium = () => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim() !== '') {
-      socket.emit('chat-message', { room, message: newMessage });
+      socket.emit('chat-message', { room, message: newMessage, avatar: user?.user?.profile_image });
       setNewMessage('');
     }
   };

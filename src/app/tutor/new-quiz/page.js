@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createQuiz } from '@/features/quiz/quizThunk';
 import { errorToast, successToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { ClipLoader } from 'react-spinners';
 import { useSession } from 'next-auth/react';
 const NewQuiz = () => {
   const dispatch = useDispatch();
@@ -16,7 +16,6 @@ const NewQuiz = () => {
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const { data: user } = useSession();
-  console.log(quizFile, 'u');
 
   const onSuccess = () => {
     successToast('Quiz Added Successfully!');
@@ -24,11 +23,13 @@ const NewQuiz = () => {
     setSelectedSubject('');
     setQuizFile(null);
     setQuizSolutionFiles(null);
+    setLoading(false);
     setThumbnailFile(null);
   };
 
   const onError = () => {
     errorToast('Error uploading Quiz!');
+    setLoading(false);
   };
 
   const handlePublish = async () => {
@@ -39,11 +40,11 @@ const NewQuiz = () => {
 
     let errors = [];
 
-    if (!quizFile.type.startsWith('application/pdf')) {
+    if (quizFile.type.startsWith('image/')) {
       errors.push('Quiz file must be a PDF.');
     }
 
-    if (!quizSolutionFiles.type.startsWith('application/pdf')) {
+    if (quizSolutionFiles.type.startsWith('image/')) {
       errors.push('Quiz solution file must be a PDF.');
     }
 
@@ -58,6 +59,7 @@ const NewQuiz = () => {
       return;
     }
 
+    setLoading(true);
     const formData = new FormData();
     formData.append('title', quizTitle);
     formData.append('quiz', quizFile);
@@ -77,6 +79,13 @@ const NewQuiz = () => {
   return (
     <div className="relative w-[90%] lg:w-[60%] mx-auto">
       <div className=" mt-16 bg-white flex uppercase flex-col gap-4 p-4 rounded-md shadow-md">
+        {loading && (
+          <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
+            <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
+              <ClipLoader color="black" />
+            </div>
+          </div>
+        )}
         <NewQuizBodyRow
           quizTitle={quizTitle}
           setQuizTitle={setQuizTitle}

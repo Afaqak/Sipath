@@ -7,10 +7,8 @@ const MyEdit = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect('/');
+    redirect('/sign-in');
   }
-
-  // const response = await axios.post('/auth/verify-token', { token: session?.token });
 
   return <EditPage session={session} />;
 };

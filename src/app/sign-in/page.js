@@ -11,46 +11,53 @@ import toast from 'react-hot-toast';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
+
 const SignUp = () => {
   const { data: user } = useSession();
-  console.log(user, 'new user');
+  const initialData = {
+    email: '',
+    password: '',
+  };
   const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
+  const [formData, setFormData] = useState(initialData);
   const router = useRouter();
 
   useEffect(() => {
-    console.log(user);
-    if (user && user?.isNewUser) {
-      successToast('Signing You Up!', '#1C8827');
-      router.push('/on-boarding');
-    } else if (user?.user && !user?.isNewUser) {
-      console.log('here');
-      successToast('Signing You In!', '#1850BC');
-      router.push('/');
+    if (typeof window !== 'undefined') {
+      if (user && user?.isNewUser) {
+        successToast('Signing You Up!', '#1C8827');
+        router.push('/on-boarding');
+      } else if (user?.user && !user?.isNewUser) {
+        successToast('Signing You In!', '#1850BC');
+        router.push('/');
+      }
     }
   }, [user]);
-
-  const onSubmit = async (data) => {
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+  console.log(formData, 'formdata');
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.email || !formData.password) {
+      errorToast('All fields are required to be filled!');
+      return;
+    }
     try {
       setLoading(true);
       await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        email: formData.email,
+        password: formData.password,
         redirect: false,
       }).then((data) => {
         if (data.error !== null) {
-          errorToast('An error occured!', '#fb3c22');
+          errorToast('An error occurred!', '#fb3c22');
         }
         setLoading(false);
       });
     } catch (error) {
-      errorToast('An error occured!', '#fb3c22');
+      errorToast('An error occurred!', '#fb3c22');
     } finally {
       setLoading(false);
     }
@@ -63,7 +70,7 @@ const SignUp = () => {
         console.log(provider, data);
       });
     } catch (error) {
-      errorToast('An error occured!', '#fb3c22');
+      errorToast('An error occurred!', '#fb3c22');
     } finally {
       setLoading(false);
     }
@@ -76,48 +83,24 @@ const SignUp = () => {
           <h2 className="text-center font-semibold text-lg mb-4">Sign In</h2>
 
           <div className="flex flex-col gap-4">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <div className="flex-col flex">
                 <input
-                  {...register('email', {
-                    required: 'Email is required',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address',
-                    },
-                  })}
                   disabled={loading}
                   placeholder="Email Address"
+                  onChange={handleFormChange}
                   type="text"
                   className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm border-none focus:outline-none"
                   name="email"
                 />
-                {errors.email && (
-                  <span className="text-red-500 text-sm mt-1 lowercase">
-                    {errors.email.message}
-                  </span>
-                )}
               </div>
               <div>
                 <PasswordInput
+                  onChange={handleFormChange}
                   disabled={loading}
                   name={'password'}
-                  register={{
-                    ...register('password', {
-                      required: 'Password is required',
-                      minLength: {
-                        value: 8,
-                        message: 'Password must be at least 8 characters long',
-                      },
-                    }),
-                  }}
                   placeholder="Password"
                 />
-                {errors.password && (
-                  <span className="text-red-500 text-sm mt-1 lowercase">
-                    {errors.password.message}
-                  </span>
-                )}
               </div>
               <span className=" text-purple-500 border-purple-500 cursor-pointer border-b -mt-2 w-fit text-sm italic">
                 Forgot Password ?
@@ -148,7 +131,7 @@ const SignUp = () => {
 
             <Button
               disabled={loading}
-              className="w-full hover:bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
+              className="w-full hover-bg-[#1850BC] flex items-center gap-2 justify-center bg-[#1850BC]"
               onClick={() => handleSignUpWithProvider('facebook')}
             >
               <Icons.facebook className="h-4" />

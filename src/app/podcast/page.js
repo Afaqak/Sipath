@@ -54,12 +54,7 @@ const PodcastPage = () => {
   useEffect(() => {
     const fetchPodcasts = async () => {
       try {
-        const response = await axios.get('/podcasts', {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axios.get('/podcasts');
 
         setPodcasts(response.data);
         console.log(response.data);
@@ -161,8 +156,8 @@ const PodcastItem = ({ podcast }) => {
       <div className="relative">
         <Icons.play />
         <Image
-          src={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
-          alt={thumbnails[Math.floor(Math.random() * thumbnails.length)]}
+          src={podcast?.thumbnail}
+          alt={podcast?.title}
           width={300}
           height={200}
           className="rounded-md object-cover w-full h-44"

@@ -37,7 +37,11 @@ const OnBoardingExpert = () => {
         availability,
       };
 
-      const response = await axios.post('/onboard/tutor', formData);
+      const response = await axios.post('/onboard/tutor', formData, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.data) {
         console.log(response.data, 'expert');
@@ -45,7 +49,7 @@ const OnBoardingExpert = () => {
           ...user,
           user: {
             ...user.user,
-            user: response.data,
+            user: { isTutor: true, ...response.data },
           },
         };
         await update(newSession);

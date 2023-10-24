@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Stars } from '../common/5star';
+import { Icons, formatTimeAgo } from '..';
+import { errorToast, successToast } from '@/utils/toasts';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useParams, useSearchParams } from 'next/navigation';
+
 const ProfileInfo = () => {
   return (
     <div className="text-gray-600 flex items-center gap-2">
@@ -19,12 +24,12 @@ const ProfileInfo = () => {
   );
 };
 
-const Ratings = () => {
+const Ratings = ({ rating }) => {
   return (
     <div className="flex gap-1 items-center flex-col text-sm">
-      <h2 className="flex items-center font-bold">
-        4.7 <Image src="/svgs/star.png" alt="star" width={24} height={24} />
-      </h2>
+      <div className="flex items-center font-bold">
+        {rating?.slice(0, -1)} <Image src="/svgs/star.png" alt="star" width={24} height={24} />
+      </div>
     </div>
   );
 };
@@ -38,26 +43,78 @@ const ActionButton = ({ icon, text }) => {
   );
 };
 
-const TagsAndDescription = () => {
+const TagsAndDescription = ({ description, createdAt }) => {
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>2 months ago</span> #loremipsum #lorem
+        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span> #loremipsum #lorem
       </div>
-      <p>
-        Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet
-        consectetur. Id massa et fermentum. Show more
-      </p>
+      <p>{description}</p>
     </div>
   );
 };
 
-export const VideoInfo = () => {
+export const VideoInfo = ({ token, type }) => {
+  const axios = useAxiosPrivate();
+  const [rating, setRating] = useState(null);
+  console.log(token, '${videoInfo');
+
+  const searchParams = useSearchParams();
+  const [video, setVideo] = useState({});
+  const id = searchParams.get('id');
+
+  console.log(video, id, '{vidoeInfor}');
+  useEffect(() => {
+    const fetchVideoInfo = async () => {
+      try {
+        const response = await axios.get(`/assets/video/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data, '${video');
+        setVideo(response.data);
+      } catch (err) {}
+    };
+    fetchVideoInfo();
+  }, [id]);
+  const setAssetRating = async (newRating) => {
+    let assetId;
+    try {
+      if (type === 'solovideo') {
+        assetId = id;
+      } else {
+        assetId = video?.id;
+      }
+
+      const response = await axios.post(
+        `/rate/${assetId}?type=video`,
+        {
+          rating: newRating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setVideo(response.data?.asset);
+      console.log(response.data);
+      successToast('You have rated the Video!');
+    } catch (error) {
+      errorToast('Error Occured while setting the rating!');
+    }
+  };
+  const handleRatingChange = (newRating) => {
+    setRating(newRating);
+    setAssetRating(newRating);
+  };
+  // console.log(video, '{video info}', token);
   return (
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
-          <h1 className="font-semibold text-lg mb-1">Video title goes here</h1>
+          <h1 className="font-semibold text-lg mb-1">{video?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
             <ProfileInfo />
             <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
@@ -67,56 +124,22 @@ export const VideoInfo = () => {
         </div>
         <div className="">
           <div className="flex items-center gap-3 justify-end">
-            <Stars /> <Ratings />
+            <Stars rating={rating} initialRating={video?.rating} setRating={handleRatingChange} />{' '}
+            <Ratings rating={video?.rating} />
           </div>
           <div className="flex gap-3 md:mt-2 mt-3 justify-end md:justify-start">
-            <ActionButton
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-                  />
-                </svg>
-              }
-              text="Share"
-            />
+            <ActionButton icon={<Icons.share />} text="Share" />
             <ActionButton
               icon={
                 <Image alt="platlist_add" src={'/svgs/playlist_add.svg'} width={25} height={25} />
               }
               text="Save"
             />
-            <ActionButton
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                  />
-                </svg>
-              }
-            />
+            <ActionButton icon={<Icons.elipsis className="h-6 w-6 fill-black stroke-black" />} />
           </div>
         </div>
       </div>
-      <TagsAndDescription />
+      <TagsAndDescription description={video?.description} createdAt={video?.createdAt} />
     </div>
   );
 };

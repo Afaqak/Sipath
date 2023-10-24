@@ -1,89 +1,19 @@
 'use client';
-import { CreateComment, ContentPlayer, LiveMessages, VideoInfo } from '@/components';
+import { CreateComment, LiveMessages, VideoInfo } from '@/components';
+
 import Image from 'next/image';
 
-const comments = [
-  {
-    id: 1,
-    avatar: '/course-details.png',
-    title: 'Video title goes here',
-    sender: 'User',
-    message: 'Hello! how are you?',
-  },
-  {
-    id: 2,
-    avatar: '/new videos/demo-2.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 3,
-
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 4,
-    avatar: '/new videos/demo-3.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 5,
-    avatar: '/demo-5.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-];
-
 const Archived = () => {
-  // State to indicate if the component is on the client-side
-
   return (
     <div className="container ">
       <div className="grid grid-cols-1 lg:grid-cols-3">
         <div className="  col-span-2 relative  md:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer />
+          {/* <ContentPlayer  /> */}
           <VideoInfo />
           <Comments />
         </div>
         <div className="mt-8 relative ">
-          <LiveMessages />
+          {/* <LiveMessages /> */}
           <div className="bg-white  py-2 shadow-sm">
             <div className="flex gap-2 py-1 items-center justify-center">
               <input

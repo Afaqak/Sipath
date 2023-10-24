@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-export function PasswordInput({ placeholder, register, name, disabled }) {
+export function PasswordInput({ placeholder, name, disabled, onChange }) {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -10,8 +10,8 @@ export function PasswordInput({ placeholder, register, name, disabled }) {
   return (
     <div className="relative">
       <input
+        onChange={onChange}
         disabled={disabled}
-        {...register}
         placeholder={placeholder}
         type={showPassword ? 'text' : 'password'}
         className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-4 py-1 placeholder:text-sm w-full border-none focus:outline-none"

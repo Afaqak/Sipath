@@ -403,3 +403,10 @@ video {
   justify-content: center;
   align-items: center;
 }
+
+.ql-syntax {
+  @apply !whitespace-pre-wrap;
+}
+.text-format {
+  display: flex;
+}

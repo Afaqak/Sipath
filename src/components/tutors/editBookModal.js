@@ -16,6 +16,7 @@ import { UpdateBook, deleteBook } from '@/features/book/bookThunk';
 import { Button } from '../ui/button';
 
 export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
+  console.log(book, '{book from modal}');
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const dispatch = useDispatch();
   const { data: user } = useSession();
@@ -40,11 +41,6 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
   const onUpdateSuccess = () => {
     closeModal();
     successToast('Book Updated Successfully!');
-    setSubject('');
-    setBookDescription('');
-    setBookTitle('');
-    setThumbnail(null);
-    csetBook(null);
   };
 
   const onUpdateError = () => {
