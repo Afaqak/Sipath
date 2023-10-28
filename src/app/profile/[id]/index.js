@@ -6,6 +6,7 @@ import { formatTimeAgo } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 import {
   Quiz,
   Video,
@@ -37,9 +38,34 @@ const tabs = [
   { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
 ];
 
+
+
+
 export const MyProfile = ({ user, session }) => {
+  const axios=useAxiosPrivate()
   const [active, setActive] = useState(tabs[0].key);
+  const [openChat,setOpenChat]=useState(false)
   console.log(user?.user);
+
+  const handleMessageRequest=async (message,onClose)=>{
+    console.log(message,"{message}")
+    if(!message) return
+    try { 
+      const response=await axios.post(`chats/request/${user?.user?.id}`,{
+        message
+      },{
+        headers:{
+          Authorization:`Bearer ${session?.token}`
+        }
+      })
+      onClose()
+        
+    } catch (error) {
+      
+    }
+  }
+
+
   return (
     <>
       <div className="mt-0.5"></div>
@@ -50,9 +76,9 @@ export const MyProfile = ({ user, session }) => {
             <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
             <span className="md:block hidden">Book Appointment</span>
           </button>
-          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
+          <button onClick={()=>setOpenChat(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
             <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
-            <span className="md:block hidden">Message Expert</span>
+            <span className="md:block hidden" >Message Expert</span>
           </button>
           <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor">
             <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
@@ -88,6 +114,7 @@ export const MyProfile = ({ user, session }) => {
         {/* {active === 'myaccount' && <MyAccount />} */}
         {active === 'mylearning' && <MyCourses token={session?.token} />}
       </div>
+      <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat}/>
     </>
   );
 };

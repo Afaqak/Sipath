@@ -197,6 +197,7 @@ const MyCourses = () => {
     };
     fetchCourses();
   }, []);
+  console.log(courses,"{courses}")
   return (
     <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
       {courses.map((course) => (

@@ -197,18 +197,6 @@ const EditPage = ({ session }) => {
     const sourceSectionId = result.source.droppableId;
     const destinationSectionId = result.destination.droppableId;
     const videoId = result.draggableId;
-    console.log(
-      'Video ID:',
-      videoId,
-      'Source Section:',
-      sourceSectionId,
-      'Destination Section:',
-      destinationSectionId,
-      'Source Index:',
-      result.source.index,
-      'Destination Index:',
-      result.destination.index
-    );
 
     if (sourceSectionId === destinationSectionId) {
       const sectionVideos = videosBySection[sourceSectionId];
@@ -232,8 +220,9 @@ const EditPage = ({ session }) => {
         }
       );
       if (response.status === 200) {
+        console.log(course?.id,destinationSectionId,sourceSectionId,videoId)
         const sectionResponse = await axios.post(
-          `/courses/${course?.id}/sections/${destinationSectionId}/videos`,
+          `/courses/${course?.id}/section/${destinationSectionId}/videos`,
           {
             video_id: videoId,
           },
@@ -649,7 +638,6 @@ export const VideoItem = ({
   const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const axios = useAxiosPrivate();
-  console.log(video, '{videoItem}');
 
   const onDeleteSubmit = async (e) => {
     e.preventDefault();

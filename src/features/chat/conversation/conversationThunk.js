@@ -3,9 +3,14 @@ import axios from '../../../utils/index';
 
 export const fetchConversations = createAsyncThunk(
   'conversations/fetchConversations',
-  async (conversationId) => {
+  async ({token}) => {
     try {
-      const response = await axios.get(`/conversations/${conversationId}`);
+      const response = await axios.get(`/chats`,{
+        headers:{
+        Authorization:`Bearer ${token}`
+        }
+      });
+      console.log(response.data?.userChats)
 
       return response.data;
     } catch (err) {

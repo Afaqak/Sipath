@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMessageRequests, approveRequest } from '@/features/chat/requests/messageRequestThunk';
 
@@ -12,40 +12,30 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
+import { useSession } from 'next-auth/react';
 
-export function RequestModal({ isOpen, setIsOpen }) {
+
+
+export function RequestModal({ isOpen, setIsOpen,token }) {
   const dispatch = useDispatch();
+  const [agreeLoading,setAgreeLoading]=useState(false)
+  const [rejectLoading,setRejectLoading]=useState(false)
   const requests = useSelector((state) => state?.messageRequests?.messageRequests);
-
+  const {data:user}=useSession()
   useEffect(() => {
-    dispatch(fetchMessageRequests(18));
+    dispatch(fetchMessageRequests({token}));
   }, []);
 
-  const approveMessageRequest = (requestId) => {
+  const approveMessageRequest = (id) => {
+    console.log(id,"{id}")
     try {
-      dispatch(approveRequest({ userId: 18, id: requestId }));
+      dispatch(approveRequest({id,token}));
     } catch (err) {
       throw err;
     }
   };
 
-  const requestedPeople = [
-    {
-      id: 1,
-      name: 'John Doe',
-      message: 'Hi, can we chat?',
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      message: 'I have a question for you.',
-    },
-    {
-      id: 3,
-      name: 'Alice Johnson',
-      message: "Let's chat about our project.",
-    },
-  ];
+  
 
   function closeModal() {
     setIsOpen(false);
@@ -58,7 +48,7 @@ export function RequestModal({ isOpen, setIsOpen }) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={openModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="bg-white shadow-md sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle> Requests for Messages</DialogTitle>
           </DialogHeader>
@@ -67,16 +57,25 @@ export function RequestModal({ isOpen, setIsOpen }) {
               requests.map((request, index) => (
                 <div key={index} className="mb-4 flex justify-between items-center">
                   <div>
-                    <p className="font-semibold">{requestedPeople[index].name}</p>
-                    <p className="text-sm text-gray-500">{request.text}</p>
+                    {/* <p className="font-semibold">{requestedPeople[index].name}</p> */}
+                    <p className="text-sm text-gray-500">{request?.message}</p>
                   </div>
+                  <div className='flex gap-2'>
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={() => approveMessageRequest(request.requestId)}
+                    className="inline-flex justify-center capitalize rounded-md border border-transparent bg-blue-100 px-4 py-1 text-[0.79rem] font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    onClick={() => approveMessageRequest(request?.id)}
                   >
                     approve
                   </button>
+                  <button
+                    type="button"
+                    className="inline-flex justify-center capitalize rounded-md border border-transparen bg-subcolor2  px-4 py-1 text-[0.79rem] font-medium text-white hover:bg-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    onClick={() => approveMessageRequest(request?.requested_by)}
+                  >
+                    reject
+                  </button>
+                  </div>
                 </div>
               ))
             ) : (

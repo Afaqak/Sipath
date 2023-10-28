@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 //message
 export const createMessage = createAsyncThunk(
   'message/createMessage',
@@ -17,11 +18,16 @@ export const createMessage = createAsyncThunk(
 //get Messages of the conversation
 export const approveMessage = createAsyncThunk('message/approveMessage', async () => {});
 
-export const getMessagesByConversationId = createAsyncThunk('message/getMessages', async (id) => {
+export const getMessagesByConversationId = createAsyncThunk('message/getMessages', async ({id,token}) => {
+  const privateAxios=useAxiosPrivate()
   try {
-    const response = await axios.get(`/messages/conversations/${id}`);
+    const response = await privateAxios.get(`/chats/${id}/messages`,{
+      headers:{
+        Authorization:`Bearer ${token}`
+      }
+    });
     console.log(response);
-    return response.data;
+    return response.data?.messages;
   } catch (err) {
     throw err;
   }

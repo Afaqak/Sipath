@@ -4,6 +4,11 @@ import { getMessagesByConversationId } from './messageThunk';
 const messageSlice = createSlice({
   name: 'conversations',
   initialState: { messages: [], isLoading: false, error: null },
+  reducers:{
+    insertMessage(state,action){
+      state.messages.push(action.payload)
+    }
+  },
   extraReducers(builder) {
     builder
       .addCase(createMessage.pending, (state) => {
@@ -30,5 +35,7 @@ const messageSlice = createSlice({
       });
   },
 });
+
+export const {insertMessage} = messageSlice.actions
 
 export default messageSlice.reducer;

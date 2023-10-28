@@ -98,12 +98,12 @@ export const OnBoardingProcess = () => {
     if (file.type.startsWith('image/')) {
       image.src = URL.createObjectURL(file);
       image.onload = () => {
-        if (image.width <= 140 && image.height <= 140) {
-          setSelectedImage(file);
-          console.log(image.width, image.height);
-        } else {
-          errorToast('Image must be of size 140x140');
-        }
+        setSelectedImage(file);
+        // if (image.width <= 400 && image.height <= 400) {
+        //   console.log(image.width, image.height);
+        // } else {
+        //   errorToast('Image must be of size 140x140');
+        // }
       };
     } else {
       errorToast('Please upload an image file.');
@@ -265,7 +265,7 @@ export const OnBoardingProcess = () => {
                       <img
                         src={URL.createObjectURL(selectedImage)}
                         alt="account"
-                        className="h-20 w-20 rounded-full"
+                        className="h-20 w-20 rounded-full object-contain"
                       />
                     ) : (
                       <img

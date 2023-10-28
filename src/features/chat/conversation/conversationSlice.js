@@ -16,7 +16,7 @@ const conversationSlice = createSlice({
       })
       .addCase(fetchConversations.fulfilled, (state, action) => {
         state.loading = false;
-        state.conversations = action.payload.conversations;
+        state.conversations = action.payload?.userChats;
       })
       .addCase(fetchConversations.rejected, (state, action) => {
         state.loading = false;

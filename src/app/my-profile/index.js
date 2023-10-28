@@ -19,7 +19,6 @@ import {
   VideoItem,
   BookSkeleton,
 } from '@/components';
-
 import { UniversalTab } from '@/components';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,8 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
+import { ChatRequestModal } from '@/components/chat/chatRequestModal';
+
 const tabs = [
   { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
   { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },

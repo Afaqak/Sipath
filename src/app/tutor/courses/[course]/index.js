@@ -23,6 +23,7 @@ const CoursePage = ({ session }) => {
   const [buttonStates, setButtonStates] = useState({});
   const [loadingStates, setLoadingStates] = useState([]);
   const [course, setCourse] = useState({});
+  console.log(user,course?.tutor_id ,"{}")
   console.log(videosBySection);
   useEffect(() => {
     const fetchSections = async () => {
