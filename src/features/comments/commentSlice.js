@@ -27,6 +27,10 @@ const commentsSlice = createSlice({
     resetComments(state) {
       state.primaryComments = [];
     },
+    setReplyComments(state, action) {
+      const { commentId, replies } = action.payload;
+      state.commentReplies[commentId] = replies;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -95,6 +99,6 @@ const commentsSlice = createSlice({
   },
 });
 
-export const { setComments, resetComments } = commentsSlice.actions;
+export const { setComments, resetComments, setReplyComments } = commentsSlice.actions;
 
 export default commentsSlice.reducer;
