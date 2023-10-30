@@ -2,12 +2,12 @@ import axios from 'axios';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: process.env.BACKEND_URL || 'http://localhost:4000',
   withCredentials: true,
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: process.env.BACKEND_URL || 'http://localhost:4000',
   headers: {
     'Content-Type': 'application/json',
   },
