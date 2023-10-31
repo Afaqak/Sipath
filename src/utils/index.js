@@ -2,12 +2,12 @@ import axios from 'axios';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const instance = axios.create({
-  baseURL: process.env.BACKEND_URL || 'http://localhost:4000',
+  baseURL: process.env.BACKEND_URL || 'http://backend.sipath.com',
   withCredentials: true,
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: process.env.BACKEND_URL || 'http://localhost:4000',
+  baseURL: process.env.BACKEND_URL || 'http://backend.sipath.com',
   headers: {
     'Content-Type': 'application/json',
   },
