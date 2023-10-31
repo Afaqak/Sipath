@@ -18,7 +18,7 @@ export default function RootLayout({ children, props }) {
               <Navbar />
               {children}
             </AuthProvider>
-            <Toaster />
+            <Toaster containerStyle={{zIndex:9999999}}/>
           </main>
         </Provider>
       </body>

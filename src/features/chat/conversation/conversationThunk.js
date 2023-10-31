@@ -10,7 +10,8 @@ export const fetchConversations = createAsyncThunk(
         Authorization:`Bearer ${token}`
         }
       });
-      console.log(response.data?.userChats)
+      console.log(response.data)
+      console.log(response.data)
 
       return response.data;
     } catch (err) {

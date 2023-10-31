@@ -16,7 +16,7 @@ export const createMessage = createAsyncThunk(
 );
 
 //get Messages of the conversation
-export const approveMessage = createAsyncThunk('message/approveMessage', async () => {});
+export const approveMessage = createAsyncThunk('message/approveMessage', async (_,{dispatch}) => {});
 
 export const getMessagesByConversationId = createAsyncThunk('message/getMessages', async ({id,token}) => {
   const privateAxios=useAxiosPrivate()
@@ -26,7 +26,9 @@ export const getMessagesByConversationId = createAsyncThunk('message/getMessages
         Authorization:`Bearer ${token}`
       }
     });
-    console.log(response);
+    console.log(response);  
+
+    
     return response.data?.messages;
   } catch (err) {
     throw err;

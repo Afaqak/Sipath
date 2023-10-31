@@ -126,7 +126,7 @@ console.log( {
 
           <div
             ref={chatContainerRef}
-            className="h-[70vh] py-4  flex flex-col gap-2 overflow-y-scroll scroll-mb-2"
+            className="h-[70vh] py-6 flex flex-col gap-2 overflow-y-scroll scroll-mb-2"
           >
             {messages?.map((message) => (
               <div
@@ -137,7 +137,7 @@ console.log( {
                   {formattedTime(message?.createdAt)}
                 </p>
                 <div
-                   className={`p-4 ml-2 text-sm text-white w-fit rounded-t-[13.976px]  rounded-b-[13.976px] rounded-l-[13.976px] ${
+                   className={`p-3 ml-2 text-sm text-white w-fit rounded-t-[13.976px]  rounded-b-[13.976px] rounded-l-[13.976px] ${
                     isMessageFromSender(message)
                       ? 'rounded-b-[13.976px] rounded-l-[13.976px] bg-[#203A60BD]'
                       : 'rounded-r-[13.976px] bg-[#1F8E2A]'

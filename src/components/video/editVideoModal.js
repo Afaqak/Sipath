@@ -24,7 +24,7 @@ export function VideoEditModal({
     description: video?.description,
   };
   const { data: user } = useSession();
-  console.log(user?.token, 'from edit videoModal');
+  
   const [quiz, setQuiz] = useState(null);
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
@@ -57,7 +57,7 @@ export function VideoEditModal({
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        console.log(response.data);
+     
       } else {
         const updatedSections = { ...videosBySection };
         const response = await axios.delete(
@@ -69,7 +69,6 @@ export function VideoEditModal({
           }
         );
 
-        console.log(response);
         const indexToDelete = updatedSections[sectionId].findIndex((v) => v.id === video.id);
 
         if (indexToDelete !== -1) {
@@ -77,8 +76,7 @@ export function VideoEditModal({
         }
         setVideosBySection(updatedSections);
 
-        console.log(response.data);
-        console.log(updatedSections);
+        
       }
     } catch (err) {
       console.log(err);
@@ -86,8 +84,6 @@ export function VideoEditModal({
   };
 
   const handleSubmit = async () => {
-    console.log(sectionId, courseId);
-    console.log(quiz, subject, duration, body, videoFile, thumbnail);
 
     let updatedData = {};
     const updatedSections = { ...videosBySection };
@@ -114,7 +110,7 @@ export function VideoEditModal({
             },
           });
 
-          console.log(response.data, '{data}');
+          
 
           setVideos(response.data.updatedVideo);
         } else {
@@ -130,12 +126,11 @@ export function VideoEditModal({
           updatedSections[sectionId] = updatedSections[sectionId].map((video) =>
             video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
           );
-          console.log(response.data);
+          
           setVideosBySection(updatedSections);
 
           setVideosBySection(updatedSections);
 
-          console.log(response.data.updatedVideo, 'updated', videosBySection);
         }
         successToast('Video updated Sucessfully!', '#1850BC');
       } else {
@@ -153,10 +148,10 @@ export function VideoEditModal({
           },
         });
         if (response.status === 200) {
-          console.log('Video uploaded successfully:', response.data);
+     
           successToast('Video uploaded Sucessfully!', '#1850BC');
           const videoId = response.data?.video?.id;
-          console.log(videoId, 'video_id');
+          
           const addVideoResponse = await axios.post(
             `/courses/${courseId}/section/${sectionId}/videos`,
             { video_id: videoId },
@@ -168,18 +163,18 @@ export function VideoEditModal({
           );
 
           if (addVideoResponse.status === 200) {
-            console.log('Video added to section successfully:', addVideoResponse.data);
+           
             successToast('Video Added to Section!', '#1850BC');
             const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`, {
               headers: {
                 Authorization: `Bearer ${user?.token}`,
               },
             });
-            console.log(response.data);
+         
             const updatedVideosBySection = { ...videosBySection };
             updatedVideosBySection[sectionId] = response.data.videos;
             setVideosBySection(updatedVideosBySection);
-            console.log(updatedVideosBySection, 'uvbs');
+          
           } else {
             console.error('Error adding video to section:', addVideoResponse.statusText);
           }

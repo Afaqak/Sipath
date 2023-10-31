@@ -30,6 +30,7 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
+import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
 const tabs = [
   { key: 'myvideos', label: 'Videos', icon: '/svgs/Play.svg' },
   { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
@@ -45,6 +46,7 @@ export const MyProfile = ({ user, session }) => {
   const axios=useAxiosPrivate()
   const [active, setActive] = useState(tabs[0].key);
   const [openChat,setOpenChat]=useState(false)
+  const [openAppointment,setOpenAppointment]=useState(false)
   console.log(user?.user);
 
   const handleMessageRequest=async (message,onClose)=>{
@@ -72,7 +74,7 @@ export const MyProfile = ({ user, session }) => {
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
         <Profile isActon={false} type={'userprofile'} session={session} user={user?.user} />
         <div className="flex justify-between gap-2 mt-4">
-          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
+          <button onClick={()=>setOpenAppointment(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
             <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
             <span className="md:block hidden">Book Appointment</span>
           </button>
@@ -115,6 +117,7 @@ export const MyProfile = ({ user, session }) => {
         {active === 'mylearning' && <MyCourses token={session?.token} />}
       </div>
       <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat}/>
+      <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} userId={user?.user?.id}/>
     </>
   );
 };

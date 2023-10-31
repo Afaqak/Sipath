@@ -8,6 +8,7 @@ import messageRequestReducer from '../features/chat/requests/messageRequestSlice
 import comments from '../features/comments/commentSlice';
 import booksReducer from '../features/book/bookSlice';
 import quizesReducer from '../features/quiz/quizSlice';
+import appointmentSlice from '@/features/appointments/appointmentSlice';
 
 const rootReducer = combineReducers({
   userAuth: authReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   comments,
   books: booksReducer,
   quizzes: quizesReducer,
+  appointments:appointmentSlice
 });
 
 export const store = configureStore({

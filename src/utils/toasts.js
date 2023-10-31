@@ -15,6 +15,7 @@ export const successToast = (text, color = '#1850BC') =>
       color: 'white',
       borderRadius: '30px',
       background: color,
+      zIndex:100000,
     },
     iconTheme: {
       color: 'white',

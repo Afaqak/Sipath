@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchMessageRequests, approveRequest } from './messageRequestThunk';
+import { fetchMessageRequests, approveRequest, rejectRequest } from './messageRequestThunk';
 const messageRequestSlice = createSlice({
   name: 'messageRequest',
   initialState: { messageRequests: [], loading: false, error: null },
@@ -19,11 +19,28 @@ const messageRequestSlice = createSlice({
       .addCase(approveRequest.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(approveRequest.fulfilled, (state) => {
-        state.loading = false;
+      .addCase(approveRequest.fulfilled, (state,action) => {
+        let requests=[...state.messageRequests]
+        console.log(requests,"{requests}",action.payload)
+        const filteredRequests=requests.filter(req=>req?.id!==action.payload?.id)
+        console.log(requests,"{requests after filter}")
+        state.messageRequests=filteredRequests
+        state.loading = false;  
         state.error = null;
       })
       .addCase(approveRequest.rejected, (state, action) => {
+        state.error = action.error;
+      }).addCase(rejectRequest.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(rejectRequest.fulfilled, (state,action) => {
+        let requests=[...state.messageRequests]
+        const filteredRequests=requests.filter(req=>req?.id!==action.payload?.id)
+        state.messageRequests=filteredRequests
+        state.loading = false;  
+        state.error = null;
+      })
+      .addCase(rejectRequest.rejected, (state, action) => {
         state.error = action.error;
       });
   },

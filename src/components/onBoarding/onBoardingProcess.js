@@ -1,11 +1,10 @@
 'use client';
 import React, { useState, useRef, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';

@@ -1,6 +1,6 @@
 import React, { useEffect, Fragment, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMessageRequests, approveRequest } from '@/features/chat/requests/messageRequestThunk';
+import { fetchMessageRequests, approveRequest ,rejectRequest} from '@/features/chat/requests/messageRequestThunk';
 
 import {
   Dialog,
@@ -35,6 +35,14 @@ export function RequestModal({ isOpen, setIsOpen,token }) {
     }
   };
 
+
+  const rejectMessageRequest=(id)=>{
+    try {
+      dispatch(rejectRequest({id,token}));
+    } catch (err) {
+      throw err;
+    }
+  }
   
 
   function closeModal() {
@@ -71,7 +79,7 @@ export function RequestModal({ isOpen, setIsOpen,token }) {
                   <button
                     type="button"
                     className="inline-flex justify-center capitalize rounded-md border border-transparen bg-subcolor2  px-4 py-1 text-[0.79rem] font-medium text-white hover:bg-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={() => approveMessageRequest(request?.requested_by)}
+                    onClick={() => rejectMessageRequest(request?.id)}
                   >
                     reject
                   </button>
