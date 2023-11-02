@@ -51,6 +51,7 @@ export const Navbar = () => {
     { href: '/experts', label: 'Experts' },
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
+    { href: '/courses', label: 'Courses' },
   ];
 
   return (

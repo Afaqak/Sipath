@@ -35,32 +35,37 @@ export const VideoComments = () => {
     }, 1000);
   });
 
-  const debouncedFetchComments = useMemo(
-    () =>
-      debounce(async () => {
-        try {
-          setLoading(true);
-          await delay;
-          dispatch(resetComments());
-          dispatch(
-            fetchPrimaryComments({
-              videoId: id,
-              axios,
-            })
-          );
-        } catch (err) {
-          console.log(err);
-        } finally {
-          setLoading(false);
-        }
-      }, 300),
-    [id]
-  );
+  // const debouncedFetchComments = useMemo(
+  //   () =>
+  //     debounce(async () => {
+  //       try {
+  //         setLoading(true);
+  //         await delay;
+  //         dispatch(resetComments());
+  //         dispatch(
+  //           fetchPrimaryComments({
+  //             videoId: id,
+  //             axios,
+  //           })
+  //         );
+  //       } catch (err) {
+  //         console.log(err);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }, 300),
+  //   [id]
+  // );
 
   useEffect(() => {
     console.count('run');
-    debouncedFetchComments();
-  }, [debouncedFetchComments]);
+    dispatch(
+      fetchPrimaryComments({
+        videoId: id,
+        axios,
+      })
+    );
+  }, [id]);
   const LoadingSkeletons = () => (
     <div className="py-8 grid  gap-4">
       {[...Array(3)].map((_, idx) => (

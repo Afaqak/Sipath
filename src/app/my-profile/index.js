@@ -30,18 +30,29 @@ import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
 import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 
-const tabs = [
-  { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
-  { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
-  { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
-  { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
-  { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
-  { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
-  { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
-];
 
 export const MyProfile = ({ session }) => {
-  const [active, setActive] = useState(tabs[0].key);
+  const isTutor=session?.user?.isTutor
+  const tutorTabs = [
+    { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
+    { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
+    { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
+    { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
+    { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
+  ];
+  
+  const userTabs=[
+    { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
+    { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
+    { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
+    { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
+  ];
+  const tabsToShow=isTutor?tutorTabs:userTabs
+  const [active, setActive] = useState(tabsToShow[0].key);
+
   const { data: user } = useSession();
   console.log(session, 'session');
   return (
@@ -52,7 +63,7 @@ export const MyProfile = ({ session }) => {
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}
-          tabs={tabs}
+          tabs={tabsToShow}
           setActive={setActive}
         />
 
@@ -74,9 +85,9 @@ export const MyProfile = ({ session }) => {
         {active === 'books' && <Mybooks token={session?.token} />}
         {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
-        {active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
+        { active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
         {active === 'myaccount' && <MyAccount />}
-        {active === 'mylearning' && <MyCourses session={session} />}
+        { active === 'mylearning' && <MyCourses session={session} />}
       </div>
     </>
   );

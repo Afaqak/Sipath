@@ -411,3 +411,7 @@ input::-webkit-inner-spin-button {
 .text-format {
   display: flex;
 }
+
+video{
+  aspect-ratio: '16/9';
+}

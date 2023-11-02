@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
@@ -8,8 +8,7 @@ import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { VideoEditModal } from '@/components/video/editVideoModal';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 
@@ -17,14 +16,16 @@ const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
   const router = useRouter();
-  const { data: user } = useSession();
+  const [enrollmentModal, setEnrollmentModal] = useState(false)
+  const [unEnrollmentModal, seUnEnrollmentModal] = useState(false)
   const [sections, setSections] = useState([]);
   const [videosBySection, setVideosBySection] = useState({});
   const [buttonStates, setButtonStates] = useState({});
   const [loadingStates, setLoadingStates] = useState([]);
   const [course, setCourse] = useState({});
-  console.log(user,course?.tutor_id ,"{}")
-  console.log(videosBySection);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrollments,setEnrollments]=useState([])
+  const [enrollmentId,setEnrollmentId]=useState(0)
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {
@@ -32,7 +33,6 @@ const CoursePage = ({ session }) => {
           Authorization: `Bearer ${session?.token}`,
         },
       });
-      console.log(response.data);
       setSections(response.data.sections);
       setCourse(response.data.course);
       setLoadingStates(new Array(response.data.sections.length).fill(false));
@@ -40,8 +40,31 @@ const CoursePage = ({ session }) => {
     };
     fetchSections();
   }, []);
-  console.log(loadingStates, 'lS');
-  console.log(sections, 'sections');
+
+  useEffect(() => {
+    if (course?.id) {
+      fetchUserEnrollments();
+    }
+  }, [course?.id]);
+
+  const fetchUserEnrollments = async () => {
+
+    try {
+      const response = await axios.get('/courses/enrollments', {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      });
+      const enrollments = response.data.enrollments;
+      setEnrollments(enrollments)
+      const isEnrolledInCourse = enrollments.some((enrollment) => enrollment?.course?.id === course.id);
+      setIsEnrolled(isEnrolledInCourse);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
 
   const toggleButton = (sectionId) => {
     setButtonStates((prevState) => ({
@@ -65,7 +88,7 @@ const CoursePage = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-        console.log(response.data);
+
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
@@ -85,99 +108,128 @@ const CoursePage = ({ session }) => {
     }
   };
 
+  console.log(session,"tutor_id",course)
+
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-      <div className="flex justify-between mb-8 items-center">
-        <div className="flex gap-2">
-          <h1 className="text-4xl capitalize font-semibold">{course?.name}</h1>
-        </div>
-        {
-          <div className="flex gap-2">
-            {user?.tutor?.tutor_id === course?.tutor_id && (
-              <Button
-                onClick={() => router.push(`/tutor/courses/${params?.course}/edit`)}
-                variant="outline"
-                className="flex gap-2 transform active:-translate-y-1 border-black items-center"
-              >
-                <Icons.edit className="w-4 h-4 stroke-[#616161]" />
-                Edit Course
-              </Button>
-            )}
-            <Button
-              onClick={() => router.push(`/courses/${params?.course}?id=${sections[0]?.videos[0]}`)}
-              variant="outline"
-              className="flex gap-2 transform active:-translate-y-1 border-subcolor2 items-center"
-            >
-              <Icons.edit className="w-4 h-4 stroke-[#616161]" />
-              View Course
-            </Button>
-          </div>
-        }
-      </div>
-      <div className="rounded-md">
-        {course.thumbnail && (
-          <Image
-            src={course?.thumbnail}
-            width={500}
-            height={500}
-            className="mb-4 rounded-md"
-            alt="course-thumbnail"
-          />
-        )}
-      </div>
-      {sections &&
-        sections.map((section, sectionIndex) => (
-          <div className="" key={section.id}>
-            <header
-              onClick={() => handleDisplayVideos(section?.id)}
-              className={`cursor-pointer flex flex-col lg:flex-row justify-between border bg-white p-4 shadow-md ${
-                buttonStates[section?.id] ? 'mb-2 ' : ''
-              }`}
-            >
-              <div className="mb-2 flex justify-between w-full items-center lg:mb-0">
-                <div className="flex gap-4 ">
-                  <Icons.expantArrow
-                    className={`w-[20px] h-[20px] transform transition-all duration-300 ease-in-out ${
-                      buttonStates[section?.id] ? ' rotate-180' : 'rotate-0'
-                    }`}
-                  />
-                  <h2 className="font-semibold text-[1.04rem] ">
-                    {`Section ${sectionIndex + 1} : ${section?.name}`}
-                  </h2>
-                </div>
-                <p className="text-sm text-gray-600">Duration: 10:00</p>
-              </div>
-            </header>
+      {course.id ? ( // Check if the course data is available
+        <>
+          <div className="flex justify-between mb-8 items-center">
+            <div className="flex gap-2">
+              <h1 className="text-4xl capitalize font-semibold">{course?.name}</h1>
+            </div>
+            {
+              <div className="flex gap-2">
+                {session?.tutor?.tutor_id === course?.tutor_id && (
+                  <Button
+                    onClick={() => router.push(`/tutor/courses/${params?.course}/edit`)}
+                    variant="outline"
+                    className="flex gap-2 transform active:-translate-y-1 border-black items-center"
+                  >
+                    <Icons.edit className="w-4 h-4 stroke-black" />
+                    Edit Course
+                  </Button>
+                )}
+                {!(session?.tutor?.tutor_id === course?.tutor_id) ? (
+                  isEnrolled ? (
+                    <Button
+                      onClick={() => {
+                        const enrollment = enrollments.find((enrollment) => enrollment.course.id === course.id);
+                        if (enrollment) {
+                        
+                        setEnrollmentId(enrollment.id);
+                        }
+                        seUnEnrollmentModal(true)}}
+                      variant="outline"
+                      className="flex gap-2 transform active:-translate-y-1 bg-main border-main text-white items-center"
+                    >
+                      Enrolled
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                      setEnrollmentModal(true)}}
+                      variant="outline"
+                      className="flex gap-2 transform active:-translate-y-1 bg-subcolor border-subcolor text-white items-center"
+                    >
+                      Enroll in Course
+                    </Button>
+                  )
+                ) : null}
 
-            {buttonStates[section?.id] ? (
-              loadingStates[section?.id] ? (
-                <div className={` ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}>
-                  <LoadingSkeletons times={3} />
-                </div>
-              ) : (
-                <div
-                  className={`grid md:grid-cols-2 lg:grid-cols-3 gap-4 ${
-                    buttonStates[section?.id] ? 'mb-2 ' : ''
-                  }`}
-                >
-                  {videosBySection[section?.id] &&
-                    videosBySection[section?.id]?.map((video, videoIndex) => {
-                      return (
-                        <VideoItem
-                          setVideosBySection={setVideosBySection}
-                          sectionId={section?.id}
-                          courseId={params?.course}
-                          key={video?.id}
-                          video={video}
-                          videosBySection={videosBySection}
-                        />
-                      );
-                    })}
-                </div>
-              )
-            ) : null}
+
+              </div>
+            }
           </div>
-        ))}
+          <div className="rounded-md">
+            {course.thumbnail && (
+              <Image
+                src={course?.thumbnail}
+                width={500}
+                height={500}
+                className="mb-4 rounded-md"
+                alt="course-thumbnail"
+              />
+            )}
+          </div>
+          {sections &&
+            sections.map((section, sectionIndex) => (
+              <div className="" key={section.id}>
+                <header
+                  onClick={() => handleDisplayVideos(section?.id)}
+                  className={`cursor-pointer flex flex-col lg:flex-row justify-between border bg-white p-4 shadow-md ${buttonStates[section?.id] ? 'mb-2 ' : ''
+                    }`}
+                >
+                  <div className="mb-2 flex justify-between w-full items-center lg:mb-0">
+                    <div className="flex gap-4 ">
+                      <Icons.expantArrow
+                        className={`w-[20px] h-[20px] transform transition-all duration-300 ease-in-out ${buttonStates[section?.id] ? ' rotate-180' : 'rotate-0'
+                          }`}
+                      />
+                      <h2 className="font-semibold text-[1.04rem] ">
+                        {`Section ${sectionIndex + 1} : ${section?.name}`}
+                      </h2>
+                    </div>
+                    <p className="text-sm text-gray-600">Duration: 10:00</p>
+                  </div>
+                </header>
+
+                {buttonStates[section?.id] ? (
+                  loadingStates[section?.id] ? (
+                    <div className={` ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}>
+                      <LoadingSkeletons times={3} />
+                    </div>
+                  ) : (
+                    <div
+                      className={`grid md:grid-cols-2 lg:grid-cols-3 gap-4 ${buttonStates[section?.id] ? 'mb-2 ' : ''
+                        }`}
+                    >
+                      {videosBySection[section?.id] &&
+                        videosBySection[section?.id]?.map((video, videoIndex) => {
+                          return (
+                            <VideoItem
+
+                              setVideosBySection={setVideosBySection}
+                              sectionId={section?.id}
+                              courseId={params?.course}
+                              key={video?.id}
+                              video={video}
+                              videosBySection={videosBySection}
+                            />
+                          );
+                        })}
+                    </div>
+                  )
+                ) : null}
+              </div>
+            ))}
+            <CourseUnEnrollmentModal enrollmentId={enrollmentId} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={unEnrollmentModal} setIsOpen={seUnEnrollmentModal}/>
+          <CourseEnrollmentModal setEnrollments={setEnrollments} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={enrollmentModal} setIsOpen={setEnrollmentModal} />
+        </>) : <div className='min-h-[60vh] flex items-center justify-center'>
+        <div className='animate-spin'>
+          <Icons.Loader2 width="36" height="36" className="stroke-black w-6 h-6" />
+        </div>
+      </div>}
     </div>
   );
 };
@@ -197,7 +249,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         `/courses/${courseId}/sections/${sectionId}/videos/${video?.id}`
       );
       errorToast('Video Deleted Successfully');
-      console.log(response, 'response delete video');
+
       if (response.status === 200) {
         const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
         console.log(response.data);
@@ -209,7 +261,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
       console.log(err);
     }
   };
-  console.log(video, 'video');
+
   return (
     <div className="h-[20rem] relative block w-full p-4 bg-white shadow-md rounded-md">
       {video?.live && (
@@ -224,7 +276,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           {video?.price}$
         </span>
       )}
-      <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
+      <div className="relative cursor-pointer">
         <Icons.play />
         {video?.thumbnail ? (
           <Image
@@ -237,53 +289,20 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
         ) : (
           <div className="rounded-md object-cover w-full h-[11.2rem]"></div>
         )}
-      </Link>
+      </div>
       <div className="mt-3 flex gap-2 w-full">
         <UserAvatar user={{ image: user?.profile_image }} />
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
-            <Link
-              href={`/videos/watch?id=${video?.id}`}
-              className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
+            <div
+
+              className="text-[1.10rem]  font-[550] mb-[0.20rem]  "
             >
               <span className="line-clamp-2">
-                {/* {video?.title} */}
                 {video?.title}
               </span>
-            </Link>
-            <div className="relative">
-              <div className="cursor-pointer">
-                <Icons.elipsis
-                  onClick={() => setToggleMenu(!toggleMenu)}
-                  className="h-[1.25rem] text-gray-500 w-[1.25rem] "
-                />
-              </div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: toggleMenu ? 1 : 0, y: toggleMenu ? 0 : 10 }}
-                transition={{ type: 'spring', stiffness: 100 }}
-                className="bg-white rounded-md shadow-md w-28 absolute border top-8 right-0"
-              >
-                <motion.ul className="flex flex-col divide-y cursor-pointer text-sm">
-                  <motion.li>
-                    <p
-                      className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                      onClick={() => setOpen(true)}
-                    >
-                      <Icons.edit className="h-4 w-4 stroke-[#616161]" />
-                      Edit
-                    </p>
-                  </motion.li>
-                  <motion.li
-                    onClick={() => setDeleteOpen(true)}
-                    className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                  >
-                    <Icons.trash className="h-4 w-4 " />
-                    Delete
-                  </motion.li>
-                </motion.ul>
-              </motion.div>
             </div>
+
           </div>
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>authors</span>
@@ -302,22 +321,163 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           </div>
         </div>
       </div>
-      <DeleteModal
-        text={video?.title}
-        onDeleteSubmit={onDeleteSubmit}
-        isOpen={deletOpen}
-        setIsOpen={setDeleteOpen}
-      />
-      <VideoEditModal
-        videosBySection={videosBySection}
-        setVideosBySection={setVideosBySection}
-        courseId={courseId}
-        sectionId={sectionId}
-        video={video}
-        isEdit={true}
-        isOpen={open}
-        setIsOpen={setOpen}
-      />
+
     </div>
   );
 };
+
+
+export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled ,setEnrollments}) {
+  const [loading, setLoading] = useState(false)
+  const ref = useRef(null)
+  const axios = useAxiosPrivate()
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  useOutsideClick(ref, () => closeModal());
+
+  const handleCourseEnrollment = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.post(`/courses/${courseId}/enroll`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const enrollmentsResponse = await axios.get('/courses/enrollments', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setEnrollments(enrollmentsResponse.data?.enrollments)
+      const isEnrolledInCourse = enrollmentsResponse.data?.enrollments.some((enrollment) => enrollment?.course?.id === courseId);
+
+      closeModal()
+      setIsEnrolled(isEnrolledInCourse)
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  return (
+    <div
+      className={`fixed inset-0 overflow-y-auto z-[100000] transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+    >
+      <div className="flex items-center justify-center h-screen relative pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity">
+          <div className="absolute inset-0 bg-gray-100" />
+        </div>
+        <div
+          ref={ref}
+          className={`inline-block z-[5000] absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 align-bottom bg-white rounded-lg p-4 text-left shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full ${isOpen ? 'scale-100' : 'scale-90'
+            }`}
+        >
+          <h2 className="text-xl font-semibold mb-4">Enrollment</h2>
+          <div className="sm:flex sm:items-start">
+            <div className="mt-3 text-center sm:mt-0 sm:text-left">
+              <p>Do you really want to enroll in this course?</p>
+            </div>
+          </div>
+          <div className="mt-4 sm:mt-3 w-full flex gap-2 justify-end ">
+            <Button className="bg-black" onClick={closeModal}>
+              Close
+            </Button>
+            <Button onClick={handleCourseEnrollment} className="bg-main flex gap-2 items-center text-white">
+              {
+                loading &&
+                <div className='animate-spin'>
+                  <Icons.Loader2 height="22" width="22" className="stroke-white" />
+                </div>
+              } Enroll
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled,enrollmentId }) {
+  const [loading, setLoading] = useState(false)
+  const ref = useRef(null)
+  const axios = useAxiosPrivate()
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  useOutsideClick(ref, () => closeModal());
+
+  const handleCourseEnrollment = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.delete(`/courses/enrollments/unenroll/${enrollmentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const enrollmentsResponse = await axios.get('/courses/enrollments', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+
+      const isEnrolledInCourse = enrollmentsResponse.data.enrollments.some((enrollment) => enrollment?.course?.id === courseId);
+      closeModal()
+      setIsEnrolled(isEnrolledInCourse)
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  return (
+    <div
+      className={`fixed inset-0 overflow-y-auto z-[100000] transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+    >
+      <div className="flex items-center justify-center relative h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity">
+          <div className="absolute inset-0 bg-gray-100" />
+        </div>
+        <div
+          ref={ref}
+          className={`inline-block z-[5000] align-bottom absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2   bg-white rounded-lg p-4 text-left shadow-xl transform transition-all  sm:align-middle sm:max-w-lg sm:w-full ${isOpen ? 'scale-100' : 'scale-90'
+            }`}
+        >
+          <h2 className="text-xl font-semibold mb-4">Un-Enrollment</h2>
+          <div className="sm:flex sm:items-start">
+            <div className="mt-3 text-center sm:mt-0 sm:text-left">
+              <p>Do you really want to Un-Enroll from this course?</p>
+            </div>
+          </div>
+          <div className="mt-4 sm:mt-3 w-full flex gap-2 justify-end ">
+            <Button className="bg-black" onClick={closeModal}>
+              Close
+            </Button>
+            <Button onClick={handleCourseEnrollment} className="bg-subcolor2 flex gap-2 items-center text-white">
+              {
+                loading &&
+                <div className='animate-spin'>
+                  <Icons.Loader2 height="22" width="22" className="stroke-white" />
+                </div>
+              } Un-Enroll
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+

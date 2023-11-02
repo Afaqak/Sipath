@@ -418,32 +418,17 @@ const VideoUpload = () => {
         formDataToSend.append('duration', video.duration);
 
         if (videoType === 'premium' && price > 0) {
-          formData.append('price', price);
+          formDataToSend.append('price', price);
         }
-
         video.loading = true;
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          signal: abortSignal,
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-
-            video.uploadProgress = progress;
-            const updatedSectionsClone = [...updatedSections];
-            updatedSectionsClone[sectionIndex] = {
-              ...updatedSectionsClone[sectionIndex],
-              videos: [...updatedSectionsClone[sectionIndex].videos],
-            };
-            setSections(updatedSectionsClone);
-          },
-        };
-
         try {
-          const response = await axios.post('/upload/video', formDataToSend, config);
+          const response = await axios.post('/upload/video', formDataToSend, {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+            signal:abortSignal
+          });
           if (response.status === 200) {
             console.log('Video uploaded successfully:', response.data);
 
@@ -474,7 +459,6 @@ const VideoUpload = () => {
       console.error('Error uploading videos:', error.message);
     }
   };
-  console.log(price);
 
   return (
     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
