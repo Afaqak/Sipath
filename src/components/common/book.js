@@ -9,11 +9,14 @@ import { EditBookModal } from '../tutors/editBookModal';
 import { DeleteModal } from './deleteModal';
 import { successToast, errorToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { Icons } from '../icons';
+import { useRouter } from 'next/navigation';
 export const Book = ({ book, isProfile }) => {
   const axios = useAxiosPrivate();
   const { data: user } = useSession();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(null);
+  const router = useRouter()
   console.log(rating, book?.rating, book?.id, '{ratings}');
 
   const setAssetRating = async (newRating) => {
@@ -59,9 +62,8 @@ export const Book = ({ book, isProfile }) => {
         />
       </div>
       <div
-        className={`flex justify-between  h-full flex-col lg:w-full ${
-          isProfile ? 'md:w-full' : 'md:w-90%'
-        }`}
+        className={`flex justify-between  h-full flex-col lg:w-full ${isProfile ? 'md:w-full' : 'md:w-90%'
+          }`}
       >
         {/*title and rating*/}
         <div>
@@ -92,10 +94,11 @@ export const Book = ({ book, isProfile }) => {
         {isProfile ? (
           <div className="flex gap-4 w-full">
             <Button
+              onClick={() => router.push(`/book/view-book/${book?.id}`)}
               variant="outline"
-              className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
+              className="font-semibold bg-white text-subcolor3 justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor3"
             >
-              <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
+              <Image width={20} height={20} alt="bag" className='mt-1' src={'/svgs/visibility.svg'} />
 
               <span>View Book</span>
             </Button>
@@ -104,7 +107,7 @@ export const Book = ({ book, isProfile }) => {
               variant="outline"
               className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
             >
-              <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
+              <Icons.edit2 className="stroke-subcolor h-5 w-5" />
 
               <span>Edit Book</span>
             </Button>

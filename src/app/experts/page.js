@@ -1,45 +1,41 @@
+'use client'
+import { useEffect, useState } from 'react';
 import { ContentContainer, ExpertsComponent } from '@/components';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import React from 'react';
-const dataExpert = [
-  {
-    accountName: 'John Doe',
-    followers: '24k',
-    rating: '4.7',
-    imageUrl: '/professor/prof-1.jpg',
-    description:
-      'Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet consectetur.',
-  },
-  {
-    accountName: 'Jane Smith',
-    followers: '18k',
-    rating: '4.5',
-    imageUrl: '/professor/prof-2.jpg',
-    description:
-      'Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet consectetur.',
-  },
-  {
-    accountName: 'Michael Johnson',
-    followers: '32k',
-    rating: '4.9',
-    imageUrl: '/professor/prof-3.jpg',
-    description:
-      'Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet consectetur.',
-  },
-  {
-    accountName: 'Sarah Williams',
-    followers: '14k',
-    rating: '4.3',
-    imageUrl: '/professor/prof-4.jpg',
-    description:
-      'Lorem ipsum dolor sit amet consectetur. Id massa et fermentum. Lorem ipsum dolor sit amet consectetur.',
-  },
-];
+
 
 const ExpertsPage = () => {
+  const axios = useAxiosPrivate()
+  const [experts,setExperts]=useState([])
+  const fetchAllExperts = async () => {
+    try {
+      const response = await axios.get(`/users/experts?type=all`)
+      console.log(response.data)
+      setExperts(response?.data)
+      
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  // const fetchTopRatedExperts = async () => {
+  //   try {
+  //     const response = await axios.get(`/users/experts?type=topRated`)
+  //     console.log(response.data)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
+  useEffect(() => {
+    fetchAllExperts()
+  }, [])
+  // useEffect(() => {
+  //   fetchTopRatedExperts()
+  // }, [])
   return (
     <ContentContainer>
-      <ExpertsComponent title="Most Followed" data={dataExpert} />
-      <ExpertsComponent title="Top Rated" data={dataExpert} />
+      <ExpertsComponent title="Most Followed" data={experts} />
+      {/*<ExpertsComponent title="Top Rated" data={dataExpert} /> */}
     </ContentContainer>
   );
 };

@@ -4,11 +4,15 @@ import { getMessagesByConversationId } from './messageThunk';
 const messageSlice = createSlice({
   name: 'conversations',
   initialState: { messages: [], isLoading: false, error: null },
-  reducers:{
-    insertMessage(state,action){
+  reducers: {
+    insertMessage(state, action) {
       state.messages.push(action.payload)
+    },
+    clearChat(state) {
+      state.messages = []
     }
   },
+
   extraReducers(builder) {
     builder
       .addCase(createMessage.pending, (state) => {
@@ -27,7 +31,7 @@ const messageSlice = createSlice({
       })
       .addCase(getMessagesByConversationId.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.messages = action.payload;
+        state.messages = [...state?.messages, ...action?.payload];
       })
       .addCase(getMessagesByConversationId.rejected, (state, action) => {
         state.isLoading = false;
@@ -36,6 +40,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const {insertMessage} = messageSlice.actions
+export const { insertMessage ,clearChat} = messageSlice.actions
 
 export default messageSlice.reducer;

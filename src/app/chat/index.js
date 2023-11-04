@@ -9,6 +9,7 @@ import { getMessagesByConversationId } from '@/features/chat/message/messageThun
 import { RequestModal } from '@/components/chat/requestModal';
 import { socket } from '@/socket';
 import { AppointmentsModal } from '@/components/appointment/appointmentsModal';
+import { clearChat } from '@/features/chat/message/messageSlice';
 
 const Chat = ({session}) => {
   const dispatch = useDispatch();
@@ -21,13 +22,12 @@ const Chat = ({session}) => {
     dispatch(fetchConversations({token:session?.token}));
   }, []);
   const handleUserClick = (conversation) => {
-    console.log(conversation,"{clicked useR}")
     setSelectedUser(conversation);
     socket.emit('join-chat',conversation?.id)
+    dispatch(clearChat())
     dispatch(getMessagesByConversationId({token:session?.token,id:conversation?.id}));
 
   };
-  console.log(conversations,"{covno}")
 
   function openRequestModal() {
     setRequestModalOpen(true);
@@ -71,7 +71,7 @@ const Chat = ({session}) => {
       <div
         className={`col-span-1 w-[75%] md:col-span-3 bg-white ${selectedUser ? 'block' : 'hidden'}`}
       >
-        {selectedUser && <ChatScreen conversation={selectedUser}/>}
+        {selectedUser && <ChatScreen session={session} conversation={selectedUser}/>}
       </div>
       <RequestModal token={session?.token} isOpen={requestModalOpen} setIsOpen={setRequestModalOpen} />
       <AppointmentsModal token={session?.token} isOpen={appointmentModalOpen} setIsOpen={setAppointmentModalOpen} />

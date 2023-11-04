@@ -1,30 +1,21 @@
 'use client';
 import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType } from '@/components';
+import axios from '../../../utils/index'
 import { motion } from 'framer-motion';
-import { ClipLoader } from 'react-spinners';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
+import { SubjectDropDown } from '@/components/common/subjectDropdown';
 
 const VideoUpload = () => {
   const { data: user } = useSession();
-  console.log('token from vidup', user?.token);
-  const axios = useAxiosPrivate();
+
+  const privateAxios = useAxiosPrivate();
   const [videoType, setVideoType] = useState('free');
   const [courseTopic, setCourseTopic] = useState('');
   const [courseId, setCourseId] = useState(null);
@@ -34,6 +25,15 @@ const VideoUpload = () => {
   const [courseThumbnail, setCourseThumbnail] = useState(null);
   const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const response = await axios.get('/categories')
+      setCategories(response?.data)
+    }
+    fetchCategories()
+  }, [])
 
   function cancelUpload() {
     abortController.abort();
@@ -59,13 +59,15 @@ const VideoUpload = () => {
       },
     ],
   };
+
+
   const [sections, setSections] = useState([initialState]);
   console.log(sections);
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].title = title;
     setSections(updatedSections);
-    console.log(sections[sectionIndex].title);
+   
   };
 
   const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
@@ -232,6 +234,37 @@ const VideoUpload = () => {
     setSections(updatedSections);
   };
 
+  const resetState = () => {
+    const initialState = {
+      id: 'section-1',
+      title: '',
+      videos: [
+        {
+          id: uuidv4(),
+          formData: {
+            title: '',
+            description: '',
+          },
+          subject: 0,
+          thumbnail: null,
+          video: null,
+          duration: 0,
+          loading: false,
+          uploadProgress: 0,
+          quiz: null,
+          quiz_solution: null,
+          
+        },
+      ],
+    };
+    setCourseId(0)
+    setCourseTopic('')
+    setCourseThumbnail(null)
+    setSectionIds([])
+    setPrice(0)
+    setSections([initialState]);
+  };
+
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
     let sId = sectionIds.slice();
@@ -246,7 +279,10 @@ const VideoUpload = () => {
       const courseForm = new FormData();
       courseForm.append('name', courseTopic);
       courseForm.append('thumbnail', courseThumbnail);
-      const { data } = await axios.post('/courses', courseForm, {
+      if (price && price > 0) {
+        courseForm.append('price', price);
+      }
+      const { data } = await privateAxios.post('/courses', courseForm, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${user?.token}`,
@@ -266,7 +302,7 @@ const VideoUpload = () => {
         return;
       }
 
-      const { data } = await axios.post(
+      const { data } = await privateAxios.post(
         `/courses/${cId}/section`,
         {
           name: sections[sectionIndex].title,
@@ -311,7 +347,8 @@ const VideoUpload = () => {
         formDataToSend.append('description', video.formData.description);
         formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration.toString());
-
+        // formData.append('quiz', video?.quiz)
+        // formData.append('quiz_solution', video?.quiz_solution);
         video.loading = true;
 
         const config = {
@@ -322,10 +359,9 @@ const VideoUpload = () => {
           signal: abortSignal,
           onUploadProgress: (progressEvent) => {
             if (video.loading) {
+              const { loaded, total } = progressEvent;
               const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              console.log(progress, 'progress');
               const updatedSectionsClone = [...updatedSections];
-
               const videoIndex = updatedSectionsClone[sectionIndex].videos.findIndex(
                 (v) => v === video
               );
@@ -342,19 +378,15 @@ const VideoUpload = () => {
         };
 
         try {
-          const response = await axios.post('/upload/video', formDataToSend, config);
+          const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
             console.log('Video uploaded successfully:', response.data);
-
-            video.loading = false;
-            video.uploadProgress = 0;
-
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
 
             const videoId = response.data?.video?.id;
             console.log(videoId, 'video_id');
-            const addVideoResponse = await axios.post(
+            const addVideoResponse = await privateAxios.post(
               `/courses/${cId}/section/${sId[sectionIndex]}/videos`,
               { video_id: videoId },
               {
@@ -377,6 +409,11 @@ const VideoUpload = () => {
         } catch (error) {
           console.error('Error uploading video:', error);
           video.loading = false;
+        } finally {
+          video.loading = false
+          video.progress = 0
+          setSections([...updatedSections]);
+
         }
       }
 
@@ -403,6 +440,12 @@ const VideoUpload = () => {
           !video.duration ||
           !video.thumbnail
         ) {
+          console.log(video.video,
+            video.formData.title,
+            video.formData.description,
+            video.subject,
+            video.duration,
+            video.thumbnail, "{options for video}")
           errorToast('Please fill in all required fields for the video', '#fb3c22');
 
           return;
@@ -415,40 +458,70 @@ const VideoUpload = () => {
         formDataToSend.append('title', video.formData.title);
         formDataToSend.append('description', video.formData.description);
         formDataToSend.append('subject', video.subject);
-        formDataToSend.append('duration', video.duration);
+        formDataToSend.append('duration', video.duration)
+
+
+          ;
 
         if (videoType === 'premium' && price > 0) {
           formDataToSend.append('price', price);
         }
         video.loading = true;
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+          signal: abortSignal,
+          onUploadProgress: (progressEvent) => {
+            if (video.loading) {
+              const { loaded, total } = progressEvent;
+              console.log(loaded, total, "{progress}")
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              console.log(progress, 'progress');
+              const updatedSectionsClone = [...updatedSections];
+
+              const videoIndex = updatedSectionsClone[sectionIndex].videos.findIndex(
+                (v) => v === video
+              );
+              if (videoIndex !== -1) {
+                updatedSectionsClone[sectionIndex] = {
+                  ...updatedSectionsClone[sectionIndex],
+                  videos: [...updatedSectionsClone[sectionIndex].videos],
+                };
+                updatedSectionsClone[sectionIndex].videos[videoIndex].uploadProgress = progress;
+                setSections(updatedSectionsClone);
+              }
+            }
+          },
+        };
+
+
         try {
-          const response = await axios.post('/upload/video', formDataToSend, {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-              'Content-Type': 'multipart/form-data',
-            },
-            signal:abortSignal
-          });
+          const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
             console.log('Video uploaded successfully:', response.data);
 
             successToast('Video uploaded successfully!');
-            video.loading = false;
-            video.uploadProgress = 0;
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
             const videoId = response.data?.video?.id;
             console.log(videoId, 'video_id');
           } else {
             console.error('Error uploading video:', response);
-            video.loading = false;
+
+
           }
         } catch (error) {
           console.error('Error uploading video:', error);
           errorToast('Error uploading video!');
-          video.loading = false;
+
         } finally {
           video.loading = false;
+          video.progress = 0
+          setSections([...updatedSections]);
+
         }
       }
 
@@ -466,18 +539,25 @@ const VideoUpload = () => {
         <Button
           type="button"
           onClick={() => setSelectedTab('individual')}
-          className="text-lg"
+          className="text-base"
           variant={selectedTab === 'individual' ? 'default' : 'outline'}
         >
           Individual
         </Button>
         <Button
           type="button"
-          className="text-lg"
+          className="text-base"
           onClick={() => setSelectedTab('premium')}
           variant={selectedTab === 'premium' ? 'default' : 'outline'}
         >
           Course
+        </Button>
+        <Button
+          type="button"
+          onClick={resetState}
+          className="bg-red-500 rounded-md text-base py-1 text-white"
+        >
+          Reset
         </Button>
       </div>
 
@@ -541,6 +621,9 @@ const VideoUpload = () => {
                                         duration={
                                           sections[sectionIndex].videos[videoIndex].duration
                                         }
+                                        subject={
+                                          sections[sectionIndex].videos[videoIndex].subject
+                                        }
                                         formData={
                                           sections[sectionIndex].videos[videoIndex].formData
                                         }
@@ -578,6 +661,7 @@ const VideoUpload = () => {
                                         onUpdateLoading={(loading) =>
                                           handleUpdateLoading(sectionIndex, videoIndex, loading)
                                         }
+                                        categories={categories}
                                         onUpdateUploadProgress={(progress) =>
                                           handleUpdateUploadProgress(
                                             sectionIndex,
@@ -649,9 +733,11 @@ const VideoBody = ({
   uploadProgress,
   onUpdateSubject,
   selectedTab,
+  categories,
   onUpdateQuiz,
   onUpdateQuizSolution,
   quizSolution,
+  subject,
   quiz,
 }) => {
   const handleFieldChange = (e) => {
@@ -661,7 +747,7 @@ const VideoBody = ({
   const handleThumbnail = (thumb) => {
     onUpdateThumbnail(thumb);
   };
-
+  console.log(loading, "{loading}")
   return (
     <motion.div className="relative">
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
@@ -674,12 +760,12 @@ const VideoBody = ({
           </div>
         </div>
       )}
-      <form className="p-4 flex flex-col relative bg-white mb-4 shadow-lg w-full rounded-md justify-between">
+      <form className="p-4 flex flex-col relative bg-white outline-none mb-4 shadow-lg w-full rounded-md justify-between">
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
             <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
-              <ClipLoader color="black" />
-              {/* <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
+              {/* <span className='animate-spin'><Icons.Loader2 stroke="black" width="34" height="34"/></span> */}
+              <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
                 <motion.span
                   initial={{ scale: 0.5 }}
                   animate={{ scale: 1 }}
@@ -697,7 +783,7 @@ const VideoBody = ({
                     <motion.div>{`${uploadProgress}%`}</motion.div>
                   )}
                 </motion.span>
-              </motion.div> */}
+              </motion.div>
 
               {/* <div className="w-52 h-1 bg-white shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md relative">
                 <motion.div
@@ -721,7 +807,7 @@ const VideoBody = ({
         )}
 
         <div className="flex flex-col lg:flex-row justify-between gap-8">
-          <div className="flex gap-8">
+          <div className="flex lg:flex-row flex-col text-sm gap-8">
             <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
               <div className="flex flex-col">
                 <label className="text-sm">Video title</label>
@@ -750,8 +836,10 @@ const VideoBody = ({
               </div>
             </div>
             <QuizUploadColumn
+              categories={categories}
               quiz={quiz}
               quizSolution={quizSolution}
+              subject={subject}
               setQuiz={onUpdateQuiz}
               setQuizSolution={onUpdateQuizSolution}
               onChange={onUpdateSubject}
@@ -769,27 +857,14 @@ const VideoBody = ({
   );
 };
 
-const QuizUploadColumn = ({ onChange, setQuiz, quiz, quizSolution, setQuizSolution }) => {
-  console.log(quizSolution);
+const QuizUploadColumn = ({ onChange, setQuiz, quiz, categories, quizSolution, setQuizSolution, subject }) => {
+
   return (
-    <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
+    <div className="flex flex-col justify-between mb-4 lg:mb-0 uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Subject</label>
-        <Select onValueChange={onChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select a Subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Subjects</SelectLabel>
-              <SelectItem value="1">English</SelectItem>
-              <SelectItem value="2">Chemistry</SelectItem>
-              <SelectItem value="3">Physics</SelectItem>
-              <SelectItem value="4">Science</SelectItem>
-              <SelectItem value="5">Maths</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+
+        <SubjectDropDown options={categories} selectedValue={subject} onValueChange={onChange} placeholder={"subject"} />
       </div>
       <div className="flex flex-col">
         <label className="text-sm">Upload Quiz</label>
@@ -895,7 +970,7 @@ const CourseTopic = ({
 }) => {
   console.log(courseId, 'courseid');
   return (
-    <div className="flex flex-row items-center gap-4 text-[#616161] font-light">
+    <div className="flex md:flex-row flex-col md:items-center gap-4 text-[#616161] font-light">
       <label className="text-sm uppercase text-[#616161] font-light">COURSE TITLE</label>
       <input
         disabled={courseId ? true : false}
@@ -915,3 +990,9 @@ const CourseTopic = ({
     </div>
   );
 };
+
+
+
+
+
+

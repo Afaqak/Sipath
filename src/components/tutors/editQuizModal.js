@@ -15,7 +15,7 @@ export const EditQuizModal = ({ isOpen, setIsOpen, quiz }) => {
   const dispatch = useDispatch();
   const { data: user } = useSession();
   const [quizTitle, setQuizTitle] = useState(quiz?.title || '');
-  const [subject, setSubject] = useState(quiz?.subject?.toString());
+  const [subject, setSubject] = useState(quiz?.subject);
   const [quizSolutionFiles, setQuizSolutionFiles] = useState(null);
   const [quizFile, setQuizFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(quiz?.thumbnail);

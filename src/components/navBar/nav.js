@@ -97,7 +97,7 @@ export const Navbar = () => {
           >
             {user?.user ? (
               <>
-                <Icons.message className="w-6 h-6" onClick={() => router.push('/chat')} />
+                <Icons.message className="w-6 h-6 hover:scale-95 transition-all duration-300 ease-in-out" onClick={() => router.push('/chat')} />
                 <Icons.bell />
 
                 <div className="relative">
@@ -120,6 +120,12 @@ export const Navbar = () => {
                         className="bg-white rounded-md shadow-md w-32 absolute border top-10 right-0"
                       >
                         <motion.ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
+                        <motion.li
+                            className="flex items-center font-semibold gap-6  py-1 px-2 uppercase"
+                          >
+                          
+                            {user?.user?.display_name}
+                          </motion.li> 
                           <motion.li
                             onClick={() => {
                               router.push('/my-profile');

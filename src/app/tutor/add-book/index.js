@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import { VideoUploadType, NewBookBodyColumn, UploadBookColumn, CoverPreview } from '@/components';
+import { VideoUploadType, NewBookBodyColumn, UploadBookColumn, CoverPreview, Icons } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast, errorToast } from '@/utils/toasts';
@@ -21,7 +21,6 @@ const AddBook = () => {
   const [subject, setSubject] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
 
-  console.log(subject, bookTitle, bookDescription, thumbnail, isDownloadable);
 
   const onSuccess = () => {
     successToast('Book Uploaded Successfully!');
@@ -65,32 +64,35 @@ const AddBook = () => {
   };
 
   return (
-    <div className="relative w-[90%] mt-16 md:w-fit mx-auto">
+    <div className="relative w-[90%] my-16 md:w-fit mx-auto">
       <VideoUploadType type={type} setType={setType} setPrice={setPrice} />
       <form onSubmit={onSubmit}>
-        <div className=" bg-white mt-4 flex md:flex-row flex-col uppercase gap-6 p-4 rounded-md shadow-md">
+        <div className=" bg-white mt-4 relative p-4 rounded-md shadow-md">
+          <h1 className="text-2xl font-semibold mb-4 border-b pb-2">New Book</h1>
           {loading && (
             <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
               <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
-                <ClipLoader color="black" />
+                <span className='animate-spin'><Icons.Loader2 stroke="black" height="34" width="34" /></span>
               </div>
             </div>
           )}
-          <NewBookBodyColumn
-            bookTitle={bookTitle}
-            setBookTitle={(e) => setBookTitle(e.target.value)}
-            bookDescription={bookDescription}
-            setBookDescription={(e) => setBookDescription(e.target.value)}
-          />
-          <UploadBookColumn
-            isDownloadable={isDownloadable}
-            subject={subject}
-            setSubject={setSubject}
-            setIsDownloadable={setIsDownloadable}
-            bookFile={book}
-            setBookFile={setBook}
-          />
-          <CoverPreview thumbnail={thumbnail} setThumbnail={setThumbnail} />
+          <div className='flex md:flex-row flex-col uppercase gap-6'>
+            <NewBookBodyColumn
+              bookTitle={bookTitle}
+              setBookTitle={(e) => setBookTitle(e.target.value)}
+              bookDescription={bookDescription}
+              setBookDescription={(e) => setBookDescription(e.target.value)}
+            />
+            <UploadBookColumn
+              isDownloadable={isDownloadable}
+              subject={subject}
+              setSubject={setSubject}
+              setIsDownloadable={setIsDownloadable}
+              bookFile={book}
+              setBookFile={setBook}
+            />
+            <CoverPreview thumbnail={thumbnail} setThumbnail={setThumbnail} />
+          </div>
         </div>
         <div className="flex justify-end">
           <button

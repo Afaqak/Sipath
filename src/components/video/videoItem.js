@@ -9,7 +9,6 @@ import { motion } from 'framer-motion';
 import { VideoEditModal } from './editVideoModal';
 import { DeleteModal } from '../common/deleteModal';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
-import { useSession } from 'next-auth/react';
 
 export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [open, setOpen] = useState(false);
@@ -21,9 +20,9 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   useOutsideClick(ref, () => setToggleMenu(false));
   return (
     <div
-      className={`h-[20rem] ${
+      className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[23rem] ${
         isEdit && 'border-2 border-subcolor'
-      } relative block w-full p-4 bg-white shadow-md rounded-md`}
+      } relative block w-full p-4 bg-white shadow-lg rounded-md border`}
     >
       {video?.live && (
         <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">

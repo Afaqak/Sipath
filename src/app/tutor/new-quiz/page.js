@@ -15,6 +15,7 @@ const NewQuiz = () => {
   const [quizFile, setQuizFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const { data: user } = useSession();
 
   const onSuccess = () => {
@@ -63,7 +64,7 @@ const NewQuiz = () => {
     const formData = new FormData();
     formData.append('title', quizTitle);
     formData.append('quiz', quizFile);
-    formData.append('quiz_solutin', quizSolutionFiles);
+    formData.append('quiz_solution', quizSolutionFiles);
     formData.append('thumbnail', thumbnailFile);
     formData.append('subject', selectedSubject);
 
@@ -78,7 +79,9 @@ const NewQuiz = () => {
 
   return (
     <div className="relative w-[90%] lg:w-[60%] mx-auto">
+      
       <div className=" mt-16 bg-white flex uppercase flex-col gap-4 p-4 rounded-md shadow-md">
+      <h1 className="text-2xl font-semibold mb-4 border-b pb-2">New Quiz</h1>
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
             <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">

@@ -9,9 +9,14 @@ export const useOutsideClick = (ref, callback) => {
           !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('rc-time-picker'));
         const isNotDatePicker =
           !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('react-datepicker'));
+        const isNotSelectedSubject =
+          !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('selectedSubject'));
+        
+        const isNotSelectedSubjectDropdown =
+          !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('subject-dropdown'));
         
 
-        if (isOutsideClick && isNotTimePicker && isNotDatePicker) {
+        if (isOutsideClick && isNotTimePicker && isNotDatePicker && isNotSelectedSubject && isNotSelectedSubjectDropdown) {
           callback();
         }
       }

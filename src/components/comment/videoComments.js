@@ -58,7 +58,7 @@ export const VideoComments = () => {
   // );
 
   useEffect(() => {
-    console.count('run');
+    dispatch(resetComments())
     dispatch(
       fetchPrimaryComments({
         videoId: id,
@@ -97,7 +97,6 @@ export const VideoComments = () => {
         `/assets/video/${id}/comments?limit=${newLimit}&set=0&order=desc`
       );
 
-      console.log(response.data, '{load more}');
       dispatch(setComments(response.data.comments));
       setLimit(newLimit);
     } catch (err) {

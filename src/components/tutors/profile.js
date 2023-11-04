@@ -12,6 +12,7 @@ import { errorToast, successToast } from '@/utils/toasts';
 
 export const Profile = ({ type, user, isActon = true, session, setUser }) => {
   const axios = useAxiosPrivate();
+  
   const [rating, setRating] = useState(false);
 
   const [loading, setLoading] = useState(false);

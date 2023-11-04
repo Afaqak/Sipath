@@ -3,31 +3,19 @@ import { VideoInfo, CommentsSection } from '@/components';
 import ContentPlayer from '../../../components/podcast/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { resetComments, setComments } from '@/features/comments/commentSlice';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useDispatch } from 'react-redux';
+import Link from 'next/link';
 
 const WatchVideo = ({ session }) => {
-  const [primaryComments] = useState([]);
   const [video, setVideo] = useState({});
   const dispatch = useDispatch();
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
-  useEffect(() => {
-    console.count('times');
-    dispatch(resetComments());
-    async function getComments() {
-      const response = await axios.get(`/assets/video/${id}/comments?limit=10&set=0&order=desc`);
-      console.log(response.data, 'from video');
-
-      dispatch(setComments(response.data.comments));
-    }
-    getComments();
-  }, []);
-  
 
   useEffect(() => {
     const getVideo = async function () {
@@ -49,7 +37,7 @@ const WatchVideo = ({ session }) => {
           <ContentPlayer noPremium={true} videoKey={video?.asset?.asset_key} token={session?.token} />
           <VideoInfo type={'solovideo'} video={video} setVideo={setVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
-            <CommentsSection primaryComments={primaryComments} />
+            <CommentsSection />
           </div>
         </div>
 
@@ -65,12 +53,13 @@ const ListSection = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const params = useSearchParams();
-  const id = params.get('id');
+  const axios=useAxiosPrivate()
+
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('/assets/videos');
+        const response = await axios.get('/assets/videos?type=all');
         setVideos(response.data);
       } catch (err) {
         console.log(err);
@@ -81,22 +70,25 @@ const ListSection = () => {
     fetchVideos();
   }, []);
 
-  console.log(videos, '{videos}');
+  console.log(videos, '{videos from all}');
   return (
     <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
       {videos.map((video, index) => {
         return <NextVideo video={video} key={index} />;
       })}
 
-      <div className="lg:hidden my-8">{/* <CommentsSection /> */}</div>
+      <div className="lg:hidden my-8"><CommentsSection /></div>
     </div>
   );
 };
 
 let NextVideo = ({ video }) => {
+  const dispatch=useDispatch()
+  const params=useSearchParams()
+  const id = params.get('id');
   return (
-    <div>
-      <div className="p-3 flex gap-4 bg-white rounded-md shadow-md mb-4">
+    <Link  className='block' href={`/videos/watch?id=${video?.id}`}>
+      <div  className={`p-3 flex gap-4 bg-white rounded-md shadow-md mb-4 ${+video?.id===+id && "bg-stone-100"}`}>
         <div>
           <Image
             src={video?.thumbnail}
@@ -117,6 +109,6 @@ let NextVideo = ({ video }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

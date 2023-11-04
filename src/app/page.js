@@ -1,108 +1,108 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories } from '@/components';
-import { withPrivateRoute } from '@/components/privateRoute';
+import React, { useEffect, useRef, useState } from 'react';
+import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from '@/components';
+import axios from '../utils/index'
+import { ExpertSkeleton } from '@/utils/skeletons';
 
-const comments = [
-  {
-    id: 1,
-    avatar: '/new videos/demo-3.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message: 'Hello! how are you?',
-  },
-  {
-    id: 2,
-    avatar: '/new videos/demo-2.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 3,
-
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 4,
-    avatar: '/new videos/demo-3.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-  {
-    id: 5,
-    avatar: '/demo-5.jpg',
-    title: 'Video title goes here',
-    sender: 'User',
-    message:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    replies: [
-      {
-        id: 1,
-        sender: 'Bot',
-        message: 'Sure, go ahead! lorem ipsum dolor sit amet consectetur ',
-      },
-    ],
-  },
-];
 
 const Home = () => {
-  // console.log(data?.user, 'session');
+
+  const [videos, setVideos] = useState([])
+  const [newVideos, setNewVideos] = useState([])
+  const [videos_set_one, setVideos_set_one] = useState([])
+  const [videos_set_two, setVideos_set_two] = useState([])
+  const [videos_set_three, setVideos_set_three] = useState([])
+  const [premiumVideos, setPremiumVideos] = useState([])
+  const [experts, setExperts] = useState([])
+  const [categories, setCategories] = useState([])
+
+  const premiumVideosRef = useRef(null);
+  const videosSetTwoRef = useRef(null);
+  console.log(experts, "{experts before fetched}")
+  const fetchVideos = async (query, setData) => {
+    console.log(query)
+    try {
+      const response = await axios.get(`/assets/videos?${query}`);
+      setData([...response.data]);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  console.log(videos_set_two, "{videoset2}")
+
+  const fetchExperts = async () => {
+
+    try {
+      const response = await axios.get(`/users/experts?type=all`);
+      setExperts(response.data);
+
+    } catch (err) {
+      console.log(err);
+    }
+
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/categories')
+      setCategories(response?.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  useEffect(() => {
+
+    fetchVideos('type=all&limit=3', setVideos);
+    fetchVideos('type=new', setNewVideos);
+    fetchVideos('type=all&limit=3', setVideos_set_one);
+    fetchVideos('type=premium', setPremiumVideos);
+    fetchVideos('type=all&limit=3&set=1', setVideos_set_two);
+    fetchExperts()
+    fetchCategories()
+
+    return () => {
+
+    };
+  }, []);
+
 
   return (
     <div className="">
-      <div className="w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <VideoFeed comments={comments.slice(1, 2)} />
-        <VideoFeed comments={comments.slice(1, 2)} />
-        <VideoFeed comments={comments.slice(1, 2)} />
+      <div className="w-[90%] mx-auto" >
+        <Video videos={videos} />
       </div>
-      <NewVideos />
-      <div className="w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <VideoFeed comments={comments.slice(3, 4)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
+      {newVideos?.length > 0 &&
+        <NewVideos data={newVideos} />
+      }
+      <div className="w-[90%] mx-auto ">
+        <Video videos={videos_set_one} />
       </div>
-      <PremiumVideos />
-      <div className="w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <VideoFeed comments={comments.slice(1, 2)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
+      <div ref={premiumVideosRef}>
+        {premiumVideos?.length > 0 && <PremiumVideos data={premiumVideos} />}
       </div>
-      <Experts />
-      <div className="w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <VideoFeed comments={comments.slice(3, 4)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
-        <VideoFeed comments={comments.slice(3, 4)} />
+      <div ref={videosSetTwoRef} className="w-[90%] mx-auto ">
+        <Video videos={videos_set_two} />
       </div>
-      <Categories />
+      <div >
+        {!experts ? <ExpertSkeleton times={3} /> : <Experts data={experts} />}
+      </div>
+      {
+        categories.length > 0 &&
+
+        <Categories data={categories} />
+      }
     </div>
   );
 };
 
-export default withPrivateRoute(Home);
+export default Home;
+
+let emptyArray=[]
+if (emptyArray) {
+  console.log("An empty array is truthy.");
+} else {
+  console.log("An empty array is falsy.");
+}

@@ -70,7 +70,6 @@ export const CommentsSection = () => {
       </div>
       <div className="bg-white p-4 rounded-md shadow-md">
         <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} />
-
         <VideoComments />
       </div>
     </div>

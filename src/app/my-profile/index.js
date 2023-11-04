@@ -279,7 +279,7 @@ const MyVideos = ({ userId, token }) => {
           </button>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-3 gap-14 mt-4">
         {videos.map((video, index) => (
           <VideoItem
             video={video}

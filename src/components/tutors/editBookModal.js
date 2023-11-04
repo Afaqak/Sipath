@@ -28,9 +28,12 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
   const [bookTitle, setBookTitle] = useState(book?.title);
   const [isDownloadable, setIsDownloadable] = useState(false);
   const [bookDescription, setBookDescription] = useState(book?.description);
-  const [subject, setSubject] = useState(book?.subject?.toString());
+  const [subject, setSubject] = useState(book?.subject);
   const [thumbnail, setThumbnail] = useState(null);
 
+
+
+  
   const onDeleteSuccess = () => {
     successToast('Book deleted!');
   };

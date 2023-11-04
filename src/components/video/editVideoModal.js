@@ -209,7 +209,7 @@ export function VideoEditModal({
 
   return (
     <>
-      <Dialog className="bg-gray-100 bg-opacity-100" open={isOpen} onOpenChange={openModal}>
+      <Dialog className="bg-opacity-100" open={isOpen} onOpenChange={openModal}>
         <DialogContent className="w-full bg-white shadow-lg">
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             <div className="flex gap-8">

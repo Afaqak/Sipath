@@ -257,7 +257,7 @@ const MyVideos = ({ userId }) => {
 
   return (
     <div className=" py-8">
-      <div className="grid grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-3 gap-y-4 gap-x-14 mt-4">
         {videos.map((video, index) => (
           <VideoItem video={video} isEdit={isEdit} key={index} />
         ))}

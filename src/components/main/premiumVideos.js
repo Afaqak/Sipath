@@ -49,7 +49,7 @@ const premiumVideos = [
   },
 ];
 
-export const PremiumVideos = () => {
+export const PremiumVideos = ({data}) => {
   return (
     <div className="bg-[#FFD654] my-8">
       <div className="py-8 overflow-visible justify-between items-center relative w-[90%] mx-auto">
@@ -64,7 +64,7 @@ export const PremiumVideos = () => {
           <h2 className="text-3xl">Premium </h2>
         </div>
         <div className="md:-ml-1">
-          <Carousel items={premiumVideos} contentComponent={VideoItem} />
+          <Carousel items={data} contentComponent={VideoItem} />
         </div>
       </div>
     </div>

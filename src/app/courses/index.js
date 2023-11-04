@@ -20,16 +20,17 @@ export default CoursePage
 const MyCourses = ({ session }) => {
     const [courses, setCourses] = useState([]);
     const [enrollments, setEnrollments] = useState([])
+    const [limit, setLimit] = useState(10)
     const axios = useAxiosPrivate();
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get('/courses/all', {
+                const response = await axios.get(`/courses/all?limit=${limit}`, {
                     headers: {
                         Authorization: `Bearer ${session?.token}`,
                     },
                 });
-                
+
                 const enrollmentsResponse = await axios.get('/courses/enrollments', {
                     headers: {
                         Authorization: `Bearer ${session?.token}`,
@@ -43,22 +44,45 @@ const MyCourses = ({ session }) => {
             }
         };
         fetchCourses();
-    }, []);
+    }, [limit]);
+
+    const loadMore = () => {
+
+        setLimit(limit + 10)
+    }
+
     return (
-        <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
-            {courses.map((course) => (
-                <CourseCard enrollments={enrollments} session={session} key={course?.id} course={course} />
-            ))}
+        <div>
+            <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
+                {courses.map((course) => (
+                    <CourseCard enrollments={enrollments} session={session} key={course?.id} course={course} />
+                ))}
+
+            </div>
+            <div>
+                {
+                    courses?.length > 0 &&
+                    <div className="text-center w-full">
+                        <div className="flex justify-center flex-col items-center mt-8">
+                            <button onClick={loadMore} className="bg-gray-100 px-4 py-2 rounded-md text-black font-semibold">
+                                Load More
+                            </button>
+                            <Image src="/svgs/expand_more.svg" alt="expand_more" width={15} height={15} />
+                        </div>
+                    </div>
+                }
+
+            </div>
         </div>
     );
 };
 
-const CourseCard = ({ course, session ,enrollments}) => {
+const CourseCard = ({ course, session, enrollments }) => {
     const isEnrolled = enrollments.some(
-    (enrollment) => enrollment?.course?.id === course.id
-  );
-  console.log(isEnrolled,"{isEnrolled}")
-    const href = isEnrolled ? `/courses/${course.id}` :`/tutor/courses/${course?.id}`;
+        (enrollment) => enrollment?.course?.id === course.id
+    );
+    console.log(isEnrolled, "{isEnrolled}")
+    const href = isEnrolled ? `/courses/${course.id}` : `/tutor/courses/${course?.id}`;
     return (
         <Link
             href={href}

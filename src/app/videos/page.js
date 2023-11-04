@@ -9,7 +9,12 @@ const Videos = async () => {
   // }
 
   // return <VideoGallery videos={getVideos.data} />;
-  return <VideoGallery />;
+  return(
+  <>
+  <VideoGallery customQuery={'type=new'} title={'New Uploads'} />;
+  <VideoGallery customQuery={'type=popular'} title={'Popular Videos'} />;
+  </>
+  )
 };
 
 export default Videos;

@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { useEffect, useState, useCallback } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 const PlaylistVideo = ({ session }) => {
   const params = useParams();
@@ -52,7 +53,7 @@ const PlaylistVideo = ({ session }) => {
           },
         });
         const updatedVideosBySection = { ...videosBySection };
-        updatedVideosBySection[sectionId] = response.data.videos;
+        updatedVideosBySection[sectionId] = response.data?.videos;
         setVideosBySection(updatedVideosBySection);
         toggleButton(sectionId);
       } else {
@@ -132,9 +133,10 @@ const PlaylistVideo = ({ session }) => {
 
   return (
     <>
-
-
       <div className="">
+        <div className='px-8 w-full flex justify-end mt-4'>
+        <Button onClick={()=>router.push(`/tutor/courses/${params?.course}`)} className="">Set Enrollment</Button>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-8">
           <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
             <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
