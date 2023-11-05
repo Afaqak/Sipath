@@ -7,83 +7,116 @@ import {
 } from '@/components';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import moment from 'moment';
 import { Button } from '@/components/ui/button';
-import { useForm, Controller } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { successToast } from '@/utils/toasts';
+import { SubjectDropDown } from '@/components/common/subjectDropdown';
+import { validateInput } from '@/utils';
 
 const NewPodcast = () => {
   const { data: user } = useSession();
   const [scheduleType, setScheduleType] = useState('Go Live');
+  const [client, setClient] = useState(false)
   const axios = useAxiosPrivate();
   const [podcastType, setPodcastType] = useState('free');
+  const [description, setDescription] = useState('')
+  const [title, setTitle] = useState('')
+  const [subject, setSubject] = useState('')
   const [file, setFile] = useState(null);
   const [price, setPrice] = useState(0);
-  const router = useRouter();
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const [time, setTime] = useState(null)
+  const [date, setDate] = useState(null)
 
-  const onPodcastSubmit = async (body) => {
-    console.log(body, 'body', file);
+  const router = useRouter();
+  console.log(moment(time).format('hh:mm A'),
+    moment(date).format('YYYY-MM-DD'))
+
+  useEffect(() => {
+    setClient(true)
+  }, [])
+
+
+
+  const onPodcastSubmit = async (e) => {
+    e.preventDefault()
     try {
-      const formData = new FormData();
-      formData.append('title', body.title);
-      formData.append('description', body.description);
-      formData.append('subject', body.subject);
-      formData.append('thumbnail', file);
-      if (scheduleType === 'Go Live') {
-        formData.append('live', true);
+      const fields = [
+        { label: 'title', value: title },
+        { label: 'description', value: description },
+        {
+          label: 'subject', value: subject
+        },
+        {
+          label: 'thumbnail', value: file
+        }
+
+      ]
+
+      if (!validateInput(fields)) {
+        return
       }
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('subject', subject);
+      formData.append('thumbnail', file);
       if (podcastType === 'premium' && price > 0) {
         formData.append('price', price);
       }
-      console.log('submit');
+      if (scheduleType === 'Schedule' && date && time) {
+        let formattedTime = moment(time).format('hh:mm:ss A')
+        let formattedDate = moment(date).format('YYYY-MM-DD')
+        let formattedAiringTime = `${formattedDate}T${formattedTime}`
+        console.log(formattedAiringTime, "formatedd")
+        formData.append('airing_time', formattedAiringTime);
+      }
+
+
       const response = await axios.post(`/podcasts`, formData, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      successToast('Joining Podcast!');
-
       console.log(response.data, 'res');
-      router.push(`/podcast/live?room=${response.data?.podcast?.room_id}&tutorId=${user.user?.id}`);
+      successToast('Podcast Scheduled!');
+
+      if (scheduleType === 'Go Live') {
+        successToast('Joining Podcast!');
+        router.push(`/podcast/live?room=${response.data?.podcast?.room_id}&id=${response?.data?.podcast?.id}`);
+      }
     } catch (err) {
       console.error(err);
     }
   };
+  if (!client) {
+    return <div></div>
+  }
 
   return (
     <div className="relative mx-auto flex gap-4 justify-center  flex-col px-4 my-16">
       <form
-        onSubmit={handleSubmit(onPodcastSubmit)}
+        onSubmit={onPodcastSubmit}
         className="flex gap-4 lg:flex-row w-fit lg:w-auto flex-col lg:items-start justify-center"
       >
         <div className="lg:w-fit ">
-          <VideoUploadType setPrice={setPrice} type={podcastType} setType={setPodcastType} />
-          <VideoInfoForm file={file} setFile={setFile} errors={errors} control={control} />
+          <VideoUploadType
+
+            setPrice={setPrice} type={podcastType} setType={setPodcastType} />
+          <VideoInfoForm
+            setDescription={setDescription} description={description}
+            title={title} setTitle={setTitle}
+            setSubject={setSubject} subject={subject}
+            file={file} setFile={setFile} />
         </div>
 
         <div className="md:w-fit w-full">
           <ScheduleType scheduleType={scheduleType} setScheduleType={setScheduleType} />
-          <VideoSchedule scheduleType={scheduleType} setScheduleType={setScheduleType} />
+          <VideoSchedule setDate={setDate} setTime={setTime} time={time} scheduleType={scheduleType} setScheduleType={setScheduleType} />
           <div className="flex justify-end">
             <Button
               type="submit"
@@ -100,7 +133,7 @@ const NewPodcast = () => {
 
 export default NewPodcast;
 
-const VideoInfoForm = ({ control, errors, setFile, file }) => {
+const VideoInfoForm = ({ title, setTitle, description, setDescription, setFile, file, subject, setSubject }) => {
   const [ticketType, setTicketType] = useState('unlimited');
 
   return (
@@ -108,79 +141,36 @@ const VideoInfoForm = ({ control, errors, setFile, file }) => {
       <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
         <div className="flex flex-col">
           <label className="text-[#616161] font-light">PODCAST TITLE</label>
-          <Controller
+
+          <input
+            onChange={(e) => setTitle(e.target.value)}
             name="title"
-            control={control}
-            defaultValue=""
-            rules={{ required: 'Book title is required' }}
-            render={({ field }) => (
-              <input
-                {...field}
-                name="title"
-                placeholder="Enter title..."
-                className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none ${
-                  errors.bookTitle ? 'border-red-500' : ''
-                }`}
-                type="text"
-              />
-            )}
+            value={title}
+            placeholder="Enter title..."
+            className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none `}
+            type="text"
           />
-          {errors.bookTitle && (
-            <span className="text-red-500 text-sm mt-1 lowercase">{errors.bookTitle.message}</span>
-          )}
+
+
         </div>
         <div className="flex flex-col">
           <label className="text-[#616161] font-light">Podcast Description</label>
-          <Controller
-            name="description"
-            control={control}
-            defaultValue=""
-            rules={{ required: 'Book title is required' }}
-            render={({ field }) => (
-              <input
-                {...field}
-                placeholder="Enter title..."
-                className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none ${
-                  errors.title ? 'border-red-500' : ''
-                }`}
-                type="text"
-              />
-            )}
+
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter Description..."
+            className={`shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none`}
+            type="text"
           />
-          {errors.bookTitle && (
-            <span className="text-red-500 text-sm mt-1 lowercase">{errors.bookTitle.message}</span>
-          )}
+
+
         </div>
       </div>
       <div className="flex flex-col justify-between gap-6">
         <div className="flex flex-col">
           <label className="text-sm text-[#616161] font-light">SUBJECT</label>
-          <Controller
-            name="subject"
-            control={control}
-            defaultValue=""
-            rules={{ required: 'Subject is required' }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a Subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Subjects</SelectLabel>
-                    <SelectItem value="1">English</SelectItem>
-                    <SelectItem value="2">Chemistry</SelectItem>
-                    <SelectItem value="3">Physics</SelectItem>
-                    <SelectItem value="4">Science</SelectItem>
-                    <SelectItem value="5">Maths</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.subject && (
-            <span className="text-red-500 text-sm mt-1 lowercase">{errors.subject.message}</span>
-          )}
+          <SubjectDropDown onValueChange={setSubject} selectedValue={subject} />
         </div>
 
         <div>
@@ -236,7 +226,7 @@ const VideoInfoForm = ({ control, errors, setFile, file }) => {
   );
 };
 
-const VideoSchedule = ({ scheduleType, setScheduleType }) => {
+const VideoSchedule = ({ scheduleType, setScheduleType, setTime, setDate, time }) => {
   return (
     <div className={`bg-white relative rounded-md shadow-md p-[0.30rem]`}>
       {scheduleType === 'Go Live' && (
@@ -244,46 +234,54 @@ const VideoSchedule = ({ scheduleType, setScheduleType }) => {
           <p>Stream will begin shortly</p>
         </div>
       )}
-      <TimeSlot scheduleType={scheduleType} />
+      <TimeSlot setTime={setTime} time={time} setDate={setDate} scheduleType={scheduleType} />
     </div>
   );
 };
 
-const ScheduleType = ({ setScheduleType, scheduleType }) => {
-  const handleUpload = (isTranslated) => {
-    if (isTranslated) {
-      setScheduleType('Go Live');
-    } else {
-      setScheduleType('Schedule');
-    }
-  };
+const ScheduleType = ({ setScheduleType }) => {
+  const [translate, setTranslate] = useState(false)
 
   return (
     <div className="flex items-center gap-4 mb-4">
       <p>GO LIVE</p>
       <div className="flex gap-2 items-center">
-        <TranslationToggleButton
-          color={'#FB3C22'}
-          image={'/svgs/calendar_white.svg'}
-          onClick={handleUpload}
-        />
+
+        <button
+          onClick={() => {
+            let newTranslate = !translate
+            setScheduleType(newTranslate ? 'Schedule' : 'Go Live');
+            setTranslate(newTranslate);
+          }}
+          type="button"
+          className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none `}
+        >
+          <div
+            style={{ backgroundColor: '#FB3C22' }}
+            className={`w-6 h-6 relative rounded-full transition duration-300 transform p-1 ${translate ? 'translate-x-full' : "-translate-x-2"}`}
+          >
+            <img src={'/svgs/calendar_white.svg'} className="h-4 w-4" alt="Icon" />
+          </div>
+        </button>
       </div>
       <span>SCHEDULE</span>
     </div>
   );
 };
 
-const TimeSlot = () => {
-  const [time, setTime] = useState(null);
+const TimeSlot = ({ setTime, setDate, time }) => {
 
   const handleTimeChange = (newTime) => {
     setTime(newTime);
+  };
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
   };
 
   return (
     <div>
       <div className="flex md:flex-row flex-col md:items-center pb-2 px-2 justify-between md:pb-0">
-        <CalendarComponent noRound={true} />
+        <CalendarComponent noRound={true} handleDateChange={handleDateChange} />
         <div className=" md:block flex px-4 justify-between">
           <div className="flex flex-col">
             <label className="font-thin">TIME:</label>
@@ -291,7 +289,6 @@ const TimeSlot = () => {
               showSecond={false}
               format="hh:mm A"
               use12Hours
-              clearIcon={true}
               inputReadOnly
               className="mt-1 px-4 py-2 w-full focus:outline-none border rounded-md bg-gray-50"
               placeholder="Select time"

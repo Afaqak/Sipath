@@ -6,7 +6,6 @@ import {
   Icons
 } from '@/components';
 import ContentPLayer from '../../../components/podcast/reactPlayer';
-import Image from 'next/image';
 import { useEffect, useState, useCallback } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -78,7 +77,12 @@ const PlaylistVideo = ({ session }) => {
 
         const enrollments = enrollmentsResponse.data?.enrollments;
         setEnrollments(enrollments)
-        console.log(enrollments, 'Enrollments');
+        const isEnrolled = enrollments.some((enrollment) =>+enrollment?.course?.id === +params?.course);
+        if (!isEnrolled) {
+          router.back(); 
+          return;
+        }
+      
 
         fetchSections();
       } catch (err) {

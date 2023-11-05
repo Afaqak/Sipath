@@ -2,7 +2,7 @@
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { useState, useRef ,useEffect} from "react";
 import axios from '../../utils/index'
-export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder }) => {
+export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Select Subject"}) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([])
   console.log(selectedValue,'sv')

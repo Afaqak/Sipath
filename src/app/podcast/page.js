@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { ContentContainer, ArchivedPodcast, UpcomingPodcast } from '@/components';
+import { ContentContainer, ArchivedPodcast, UpcomingPodcast ,formatTimeAgo} from '@/components';
 import axios from '../../utils/index';
 import { useSession } from 'next-auth/react';
 import { Icons } from '@/components';
@@ -8,40 +8,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const thumbnails = [
-  '/new videos/demo-7.jpg',
-  '/new videos/demo-9.jpg',
-  '/new videos/demo-10.jpg',
-  '/new videos/demo-11.jpg',
-  '/new videos/demo-8.png',
-];
 
-const formatTimeAgo = (timestamp) => {
-  const now = new Date();
-  const createdAt = new Date(timestamp);
-
-  const timeDiff = now - createdAt;
-  const seconds = Math.floor(timeDiff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
-
-  if (months > 0) {
-    return `${months} month${months > 1 ? 's' : ''} ago`;
-  } else if (weeks > 0) {
-    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
-  } else if (days > 0) {
-    return `${days} day${days > 1 ? 's' : ''} ago`;
-  } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  } else if (minutes > 0) {
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-  } else {
-    return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-  }
-};
 
 const PodcastPage = () => {
   const [activeButton, setActiveButton] = useState('live');
@@ -54,7 +21,7 @@ const PodcastPage = () => {
   useEffect(() => {
     const fetchPodcasts = async () => {
       try {
-        const response = await axios.get('/podcasts');
+        const response = await axios.get('/podcasts?type=all');
 
         setPodcasts(response.data);
         console.log(response.data);
@@ -138,7 +105,7 @@ const PodcastVideos = ({ podcasts }) => {
 const PodcastItem = ({ podcast }) => {
   return (
     <Link
-      href={`/podcast/live?room=${podcast?.room_id}&listener=true`}
+      href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
       className=" h-[18.6rem] relative block mb-6 w-ful p-4 bg-white shadow-md rounded-md"
     >
       {podcast?.live && (
