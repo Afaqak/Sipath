@@ -47,10 +47,9 @@ export const MyProfile = ({ user, session }) => {
   const [active, setActive] = useState(tabs[0].key);
   const [openChat,setOpenChat]=useState(false)
   const [openAppointment,setOpenAppointment]=useState(false)
-  console.log(user?.user);
 
   const handleMessageRequest=async (message,onClose)=>{
-    console.log(message,"{message}")
+   
     if(!message) return
     try { 
       const response=await axios.post(`chats/request/${user?.user?.id}`,{
@@ -99,8 +98,8 @@ export const MyProfile = ({ user, session }) => {
             <Video videos={courses} />
           </motion.div>
         )} */}
-
-        {/* {active === 'quiz' && (
+{/* 
+        {active === 'quiz' && (
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )} */}
         {/* {active === 'podcast' && (
@@ -133,7 +132,7 @@ const MyCourses = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data.courses);
+       
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -191,11 +190,11 @@ const CourseCard = ({ course }) => {
   );
 };
 
-const MyQuizzes = ({ tutorId, token }) => {
+const MyQuizzes = ({  token }) => {
   const axios = useAxiosPrivate();
   const dispatch = useDispatch();
   const quizes = useSelector((state) => state?.quizzes?.quizzes);
-  const [isEdit, setIsEdit] = useState(false);
+
   useEffect(() => {
     const fetchQuizes = async () => {
       try {
@@ -204,7 +203,7 @@ const MyQuizzes = ({ tutorId, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+      
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -216,25 +215,9 @@ const MyQuizzes = ({ tutorId, token }) => {
   return (
     <div className="w-[90%] mx-auto mt-10">
       <div className="flex justify-end w-full">
-        <button
-          type="button"
-          onClick={() => setIsEdit(!isEdit)}
-          className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
-        >
-          <div
-            className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-              isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-            }`}
-          >
-            {isEdit ? (
-              <Icons.cross className=" stroke-white h-2 w-2" />
-            ) : (
-              <Icons.editPencil className=" stroke-white h-3 w-3" />
-            )}
-          </div>
-        </button>
+      
       </div>
-      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
+      {quizes && quizes.map((quiz, index) => <Quiz  key={index} quiz={quiz} />)}
     </div>
   );
 };
@@ -242,7 +225,7 @@ const MyQuizzes = ({ tutorId, token }) => {
 const MyVideos = ({ userId }) => {
   const axios = useAxiosPrivate();
   const [videos, setVideos] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+
   useEffect(() => {
     const fetchTutorVideos = async () => {
       try {
@@ -259,7 +242,7 @@ const MyVideos = ({ userId }) => {
     <div className=" py-8">
       <div className="grid grid-cols-3 gap-y-4 gap-x-14 mt-4">
         {videos.map((video, index) => (
-          <VideoItem video={video} isEdit={isEdit} key={index} />
+          <VideoItem video={video}  key={index} />
         ))}
       </div>
     </div>
@@ -275,7 +258,7 @@ const Mybooks = ({ id }) => {
       try {
         setLoading(false);
         const response = await axios.get(`/assets/books/user/${id}`);
-        console.log(response.data, 'books');
+      
         setBooks(response.data);
       } catch (err) {
         console.log(err);
@@ -284,7 +267,7 @@ const Mybooks = ({ id }) => {
     fetchBooks();
   }, []);
 
-  console.log(books, 'books');
+
   return (
     <div>
       {loading ? (

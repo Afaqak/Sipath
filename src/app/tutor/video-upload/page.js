@@ -3,14 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { FileInput, VideoUploadType } from '@/components';
+import { FileInput, VideoUploadType,SubjectDropDown } from '@/components';
 import axios from '../../../utils/index'
 import { motion } from 'framer-motion';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
-import { SubjectDropDown } from '@/components/common/subjectDropdown';
 
 const VideoUpload = () => {
   const { data: user } = useSession();
@@ -62,7 +61,7 @@ const VideoUpload = () => {
 
 
   const [sections, setSections] = useState([initialState]);
-  console.log(sections);
+ 
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].title = title;
@@ -72,20 +71,20 @@ const VideoUpload = () => {
 
   const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
     e.preventDefault();
-    console.log(e);
+    
     const { name, value } = e.target;
     const updatedSections = [...sections];
     const videoFormData = { ...updatedSections[sectionIndex].videos[videoIndex].formData };
     videoFormData[name] = value;
     updatedSections[sectionIndex].videos[videoIndex].formData = videoFormData;
     setSections(updatedSections);
-    console.log(sections);
+    
   };
 
   const handleUpdateThumbnail = (sectionIndex, videoIndex, thumbnail) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].videos[videoIndex].thumbnail = thumbnail;
-    console.log(sections[sectionIndex]);
+    
     setSections(updatedSections);
   };
 
@@ -108,12 +107,12 @@ const VideoUpload = () => {
 
   const handleUpdateDuration = (sectionIndex, videoIndex, duration) => {
     const updatedSections = [...sections];
-    console.log(duration, 'dr');
+
     updatedSections[sectionIndex].videos[videoIndex].duration = duration;
     setSections(updatedSections);
   };
   const handleUpdateSubject = (sectionIndex, videoIndex, subject) => {
-    console.log(subject, 'subject');
+ 
     const updatedSections = [...sections];
     updatedSections[sectionIndex].videos[videoIndex].subject = subject;
     setSections(updatedSections);
@@ -142,11 +141,11 @@ const VideoUpload = () => {
       }
       return section;
     });
-    console.log(updatedSections, 'updated');
+   
 
     setSections(updatedSections);
   };
-  console.log();
+
   const handleAddSection = (videoId) => {
     const sectionContainingVideo = sections.find((section) =>
       section.videos.some((video) => video.id === videoId)
@@ -268,7 +267,7 @@ const VideoUpload = () => {
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
     let sId = sectionIds.slice();
-    console.log(sId, 'sid', sectionIds);
+  
 
     if (!courseId) {
       if (!courseTopic || !courseThumbnail) {
@@ -380,12 +379,12 @@ const VideoUpload = () => {
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
-            console.log('Video uploaded successfully:', response.data);
+           
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
 
             const videoId = response.data?.video?.id;
-            console.log(videoId, 'video_id');
+       
             const addVideoResponse = await privateAxios.post(
               `/courses/${cId}/section/${sId[sectionIndex]}/videos`,
               { video_id: videoId },
@@ -397,10 +396,10 @@ const VideoUpload = () => {
             );
 
             if (addVideoResponse.status === 200) {
-              console.log('Video added to section successfully:', addVideoResponse.data);
+             
               successToast('Video Added to Section!', '#1850BC');
             } else {
-              console.error('Error adding video to section:', addVideoResponse.statusText);
+              
             }
           } else {
             console.error('Error uploading video:', response.statusText);
@@ -430,7 +429,7 @@ const VideoUpload = () => {
 
     try {
       const videosToUpload = [...updatedSections[sectionIndex].videos];
-      console.log(videosToUpload);
+
       async function uploadVideo(video) {
         if (
           !video.video ||
@@ -440,17 +439,11 @@ const VideoUpload = () => {
           !video.duration ||
           !video.thumbnail
         ) {
-          console.log(video.video,
-            video.formData.title,
-            video.formData.description,
-            video.subject,
-            video.duration,
-            video.thumbnail, "{options for video}")
-          errorToast('Please fill in all required fields for the video', '#fb3c22');
+                   errorToast('Please fill in all required fields for the video', '#fb3c22');
 
           return;
         }
-        console.log(video?.duration);
+     
         const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
         const formDataToSend = new FormData();
         formDataToSend.append('video', video.video);
@@ -477,9 +470,9 @@ const VideoUpload = () => {
           onUploadProgress: (progressEvent) => {
             if (video.loading) {
               const { loaded, total } = progressEvent;
-              console.log(loaded, total, "{progress}")
+           
               const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              console.log(progress, 'progress');
+          
               const updatedSectionsClone = [...updatedSections];
 
               const videoIndex = updatedSectionsClone[sectionIndex].videos.findIndex(
@@ -501,13 +494,12 @@ const VideoUpload = () => {
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
-            console.log('Video uploaded successfully:', response.data);
-
+            
             successToast('Video uploaded successfully!');
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
             const videoId = response.data?.video?.id;
-            console.log(videoId, 'video_id');
+        
           } else {
             console.error('Error uploading video:', response);
 
@@ -747,7 +739,7 @@ const VideoBody = ({
   const handleThumbnail = (thumb) => {
     onUpdateThumbnail(thumb);
   };
-  console.log(loading, "{loading}")
+
   return (
     <motion.div className="relative">
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
@@ -968,7 +960,7 @@ const CourseTopic = ({
   coursethumbnail,
   setCourseThumbnail,
 }) => {
-  console.log(courseId, 'courseid');
+
   return (
     <div className="flex md:flex-row flex-col md:items-center gap-4 text-[#616161] font-light">
       <label className="text-sm uppercase text-[#616161] font-light">COURSE TITLE</label>

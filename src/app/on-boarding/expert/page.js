@@ -17,12 +17,12 @@ const OnBoardingExpert = () => {
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])
   const [availability, setAvailability] = useState([]);
-  console.log(expertise)
+
   useEffect(() => {
     async function fetchCategories() {
       try {
         const response = await axios.get('/categories');
-        console.log(response.data);
+      
         setCategories(response.data);
       } catch (err) {
         console.error(err);
@@ -69,7 +69,7 @@ const OnBoardingExpert = () => {
       });
 
       if (response.data) {
-        console.log(response.data, 'expert');
+       
         const newSession = {
           ...user,
           user: {
@@ -159,7 +159,7 @@ export const MultipleExpertiseModal = ({ isOpen, onClose, setExpertise, expertis
     async function fetchCategories() {
       try {
         const response = await axios.get('/categories');
-        console.log(response.data);
+
         setCategories(response.data);
       } catch (err) {
         console.error(err);

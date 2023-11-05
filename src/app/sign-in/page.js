@@ -37,7 +37,7 @@ const SignUp = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  console.log(formData, 'formdata');
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
@@ -67,7 +67,7 @@ const SignUp = () => {
     try {
       setLoading(true);
       await signIn(provider, { redirect: false }, { prompt: 'login' }).then((data) => {
-        console.log(provider, data);
+      
       });
     } catch (error) {
       errorToast('An error occurred!', '#fb3c22');

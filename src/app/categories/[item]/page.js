@@ -31,7 +31,7 @@ const Page = ({ params }) => {
   const fetchVideosOfCategory=async ()=>{
     try{
       const response=await axios.get(`/categories/${category}/content?type=videos`)
-      console.log(response?.data,"V")
+     
       setVideos(response?.data)
     }catch(err){
       console.log(err)
@@ -41,7 +41,7 @@ const Page = ({ params }) => {
     try{
       const response=await axios.get(`/categories/${category}/content?type=premium`)
       setPremiumVideos(response?.data)
-      console.log(response?.data,"PM")
+     
     }catch(err){
       console.log(err)
     }
@@ -51,7 +51,7 @@ const Page = ({ params }) => {
     try{
       const response=await axios.get(`/categories/${category}/content?type=tutors`)
       setExperts(response?.data)
-      console.log(response?.data,"CE")
+    
     }catch(err){
       console.log(err)
     }

@@ -28,8 +28,8 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
   useOutsideClick(ref, () => setOpen(false))
 
   return (
-    <div ref={ref}  className="relative subject-dropdown">
-      <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
+    <div ref={ref}  className="relative subject-dropdown w-48">
+      <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)]  py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
           
         <li className="relative group cursor-pointer ">
           <span

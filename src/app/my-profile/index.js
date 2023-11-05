@@ -54,7 +54,7 @@ export const MyProfile = ({ session }) => {
   const [active, setActive] = useState(tabsToShow[0].key);
 
   const { data: user } = useSession();
-  console.log(session, 'session');
+ 
   return (
     <>
       <div className="mt-0.5"></div>
@@ -104,7 +104,7 @@ const MyCourses = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-        console.log(response.data.courses);
+       
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -122,7 +122,7 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session }) => {
-  console.log(session, '{my-profile}');
+
   return (
     <Link
       href={`/tutor/courses/${course?.id}`}
@@ -176,7 +176,7 @@ const MyQuizzes = ({ tutorId, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+       
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -232,17 +232,16 @@ const MyVideos = ({ userId, token }) => {
     };
     fetchTutorVideos();
   }, []);
-  console.log(videos, '{videos}');
 
   const handleSetUpdateVideos = (updatedVideo) => {
-    console.log(updatedVideo, '{from setVideo}');
+  
     setVideos((prev) =>
       prev.map((video) => (video?.id === updatedVideo?.id ? { ...updatedVideo } : video))
     );
   };
   const setDeletedVideo = async (id) => {
     try {
-      console.log(id, '{id}');
+     
       const response = await axios.delete(`/assets/videos/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -310,7 +309,7 @@ const Mybooks = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data, 'books');
+   
         dispatch(setBooks(response.data));
       } catch (err) {
         console.log(err);
@@ -319,7 +318,7 @@ const Mybooks = ({ token }) => {
     fetchBooks();
   }, []);
 
-  console.log(books, 'books');
+
   return (
     <div>
       <div className="flex w-full justify-end">

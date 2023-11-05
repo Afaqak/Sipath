@@ -23,7 +23,6 @@ const PlaylistVideo = ({ session }) => {
   const [videosBySection, setVideosBySection] = useState({});
   const [videoId] = useState({});
   const axios = useAxiosPrivate();
-  console.log(videosBySection)
 
   const createQueryString = useCallback(
     (name, value) => {
@@ -101,12 +100,10 @@ const PlaylistVideo = ({ session }) => {
         });
 
         setSections(sectionsResponse.data.sections);
-        console.log(sectionsResponse.data?.sections, "{before}");
-
+     
         if (sectionsResponse.data?.sections.length > 0) {
           const firstSectionId = sectionsResponse?.data?.sections[0]?.id;
-          console.log(firstSectionId, "{firstSID}");
-
+        
           const firstSectionResponse = await axios.get(
             `/courses/${params?.course}/sections/${firstSectionId}`,
             {
@@ -115,7 +112,7 @@ const PlaylistVideo = ({ session }) => {
               },
             }
           );
-          console.log(firstSectionResponse.data?.videos, "{all videos}")
+         
           const updatedVideosBySection = { ...videosBySection };
           updatedVideosBySection[firstSectionId] = firstSectionResponse.data.videos;
           setVideosBySection(updatedVideosBySection);

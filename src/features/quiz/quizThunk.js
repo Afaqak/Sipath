@@ -5,7 +5,7 @@ export const createQuiz = createAsyncThunk(
   'quizzes/createQuiz',
   async ({ data, token, onSuccess, onError }, { rejectWithValue }) => {
     const axios = useAxiosPrivate();
-    console.log(token, onSuccess);
+ 
     try {
       const response = await axios.post(`/upload/quiz`, data, {
         headers: {

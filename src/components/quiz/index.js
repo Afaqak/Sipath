@@ -1,7 +1,6 @@
-import { FileInput } from '@/components';
+import { FileInput,SubjectDropDown } from '@/components';
 import React, { useEffect, useState } from 'react';
 
-import { SubjectDropDown } from '../common/subjectDropdown';
 
 export const NewQuizBodyRow = ({
   quizTitle,

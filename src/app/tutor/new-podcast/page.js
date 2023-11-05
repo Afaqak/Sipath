@@ -2,6 +2,7 @@
 import {
   CalendarComponent,
   FileInput,
+  SubjectDropDown,
   TranslationToggleButton,
   VideoUploadType,
 } from '@/components';
@@ -14,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { successToast } from '@/utils/toasts';
-import { SubjectDropDown } from '@/components/common/subjectDropdown';
+
 import { validateInput } from '@/utils';
 
 const NewPodcast = () => {
@@ -32,8 +33,7 @@ const NewPodcast = () => {
   const [date, setDate] = useState(null)
 
   const router = useRouter();
-  console.log(moment(time).format('hh:mm A'),
-    moment(date).format('YYYY-MM-DD'))
+
 
   useEffect(() => {
     setClient(true)
@@ -71,7 +71,7 @@ const NewPodcast = () => {
         let formattedTime = moment(time).format('hh:mm:ss A')
         let formattedDate = moment(date).format('YYYY-MM-DD')
         let formattedAiringTime = `${formattedDate}T${formattedTime}`
-        console.log(formattedAiringTime, "formatedd")
+      
         formData.append('airing_time', formattedAiringTime);
       }
 
@@ -82,7 +82,7 @@ const NewPodcast = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response.data, 'res');
+     
       successToast('Podcast Scheduled!');
 
       if (scheduleType === 'Go Live') {
@@ -170,7 +170,7 @@ const VideoInfoForm = ({ title, setTitle, description, setDescription, setFile, 
       <div className="flex flex-col justify-between gap-6">
         <div className="flex flex-col">
           <label className="text-sm text-[#616161] font-light">SUBJECT</label>
-          <SubjectDropDown onValueChange={setSubject} selectedValue={subject} />
+          <SubjectDropDown onValueChange={setSubject} selectedValue={subject}/>
         </div>
 
         <div>

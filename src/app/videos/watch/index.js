@@ -25,7 +25,7 @@ const WatchVideo = ({ session }) => {
         },
       });
       setVideo(response.data);
-      console.log(response.data, '{video}');
+      
     };
     getVideo();
   }, []);

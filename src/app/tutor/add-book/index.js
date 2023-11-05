@@ -64,7 +64,7 @@ const AddBook = () => {
   };
 
   return (
-    <div className="relative w-[90%] my-16 md:w-fit mx-auto">
+    <div className="w-[90%] my-16 md:w-fit mx-auto">
       <VideoUploadType type={type} setType={setType} setPrice={setPrice} />
       <form onSubmit={onSubmit}>
         <div className=" bg-white mt-4 relative p-4 rounded-md shadow-md">

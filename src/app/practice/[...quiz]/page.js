@@ -11,7 +11,7 @@ const QuizesPage = () => {
   useEffect(() => {
     const fetchQuizFromCategory = async () => {
       const response = await axios.get(`/categories/${categoryId}/content?type=quizzes`)
-      console.log(response.data, "{quizdata}")
+      
       setQuizzes(response?.data)
     }
     fetchQuizFromCategory()

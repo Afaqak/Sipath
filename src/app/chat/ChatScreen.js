@@ -24,7 +24,7 @@ const ChatScreen = ({ conversation, session }) => {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    console.log("run")
+ 
     setSet(0);
     setHasMoreMessages(true)
   }, [conversation]);
@@ -32,19 +32,14 @@ const ChatScreen = ({ conversation, session }) => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (!text) return;
-    console.log({
-      text,
-      sender: user?.user.id,
-      reply_to: user?.user?.id === conversation?.member_1 ? conversation?.member_2 : conversation?.member_1,
-      chat_id: conversation?.id,
-    })
+   
     socket.emit('send-message', {
       text,
       sender: user?.user?.id,
       reply_to: user?.id === conversation?.member_1 ? conversation?.member_2 : conversation.member_1,
       chat_id: conversation?.id,
     });
-    console.log("here")
+
     setText('');
   };
 
@@ -68,13 +63,13 @@ const ChatScreen = ({ conversation, session }) => {
   const handleScroll = debounce(() => {
     if (chatContainerRef.current.scrollTop === 0 && hasMoreMessages && !loading) {
       loadMoreMessages();
-      console.log("Hit the top");
+     
     }
   }, 200);
   const loadMoreMessages = () => {
     const setToGet = set + 10;
     setLoading(true);
-    console.log(setToGet)
+    
 
     dispatch(getMessagesByConversationId({
       token: session?.token, id: conversation?.id, set: setToGet, checkLength: (data) => {
@@ -103,7 +98,7 @@ const ChatScreen = ({ conversation, session }) => {
 
   useEffect(() => {
     socket.on('message-recieved', ({ message, sender, chat_id, reply_to }) => {
-      console.log(message, sender, chat_id, reply_to, "checking")
+     
       const newMessage = {
         id: Date.now(),
         createdAt: new Date(),

@@ -11,6 +11,14 @@ import Image from 'next/image';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
@@ -24,8 +32,8 @@ const CoursePage = ({ session }) => {
   const [loadingStates, setLoadingStates] = useState([]);
   const [course, setCourse] = useState({});
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [enrollments,setEnrollments]=useState([])
-  const [enrollmentId,setEnrollmentId]=useState(0)
+  const [enrollments, setEnrollments] = useState([])
+  const [enrollmentId, setEnrollmentId] = useState(0)
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {
@@ -91,6 +99,7 @@ const CoursePage = ({ session }) => {
 
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
+        
         setVideosBySection(updatedVideosBySection);
       } else {
         toggleButton(sectionId);
@@ -108,7 +117,6 @@ const CoursePage = ({ session }) => {
     }
   };
 
-  console.log(session,"tutor_id",course)
 
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
@@ -136,10 +144,11 @@ const CoursePage = ({ session }) => {
                       onClick={() => {
                         const enrollment = enrollments.find((enrollment) => enrollment.course.id === course.id);
                         if (enrollment) {
-                        
-                        setEnrollmentId(enrollment.id);
+
+                          setEnrollmentId(enrollment.id);
                         }
-                        seUnEnrollmentModal(true)}}
+                        seUnEnrollmentModal(true)
+                      }}
                       variant="outline"
                       className="flex gap-2 transform active:-translate-y-1 bg-main border-main text-white items-center"
                     >
@@ -148,7 +157,8 @@ const CoursePage = ({ session }) => {
                   ) : (
                     <Button
                       onClick={() => {
-                      setEnrollmentModal(true)}}
+                        setEnrollmentModal(true)
+                      }}
                       variant="outline"
                       className="flex gap-2 transform active:-translate-y-1 bg-subcolor border-subcolor text-white items-center"
                     >
@@ -223,7 +233,7 @@ const CoursePage = ({ session }) => {
                 ) : null}
               </div>
             ))}
-            <CourseUnEnrollmentModal enrollmentId={enrollmentId} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={unEnrollmentModal} setIsOpen={seUnEnrollmentModal}/>
+          <CourseUnEnrollmentModal enrollmentId={enrollmentId} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={unEnrollmentModal} setIsOpen={seUnEnrollmentModal} />
           <CourseEnrollmentModal setEnrollments={setEnrollments} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={enrollmentModal} setIsOpen={setEnrollmentModal} />
         </>) : <div className='min-h-[60vh] flex items-center justify-center'>
         <div className='animate-spin'>
@@ -252,7 +262,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
 
       if (response.status === 200) {
         const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
-        console.log(response.data);
+   
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
@@ -327,7 +337,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
 };
 
 
-export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled ,setEnrollments}) {
+export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled, setEnrollments }) {
   const [loading, setLoading] = useState(false)
   const ref = useRef(null)
   const axios = useAxiosPrivate()
@@ -335,8 +345,6 @@ export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setI
   function closeModal() {
     setIsOpen(false);
   }
-
-  useOutsideClick(ref, () => closeModal());
 
   const handleCourseEnrollment = async () => {
     try {
@@ -366,53 +374,47 @@ export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setI
   }
 
 
+  function openModal() {
+    setIsOpen(!isOpen);
+  }
+
   return (
-    <div
-      className={`fixed inset-0 overflow-y-auto z-[100000] transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-    >
-      <div className="flex items-center justify-center h-screen relative pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity">
-          <div className="absolute inset-0 bg-gray-100" />
-        </div>
-        <div
-          ref={ref}
-          className={`inline-block z-[5000] absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 align-bottom bg-white rounded-lg p-4 text-left shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full ${isOpen ? 'scale-100' : 'scale-90'
-            }`}
-        >
-          <h2 className="text-xl font-semibold mb-4">Enrollment</h2>
-          <div className="sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              <p>Do you really want to enroll in this course?</p>
-            </div>
-          </div>
-          <div className="mt-4 sm:mt-3 w-full flex gap-2 justify-end ">
-            <Button className="bg-black" onClick={closeModal}>
-              Close
-            </Button>
-            <Button onClick={handleCourseEnrollment} className="bg-main flex gap-2 items-center text-white">
-              {
-                loading &&
-                <div className='animate-spin'>
-                  <Icons.Loader2 height="22" width="22" className="stroke-white" />
-                </div>
-              } Enroll
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Dialog open={isOpen} onOpenChange={openModal}>
+      <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
+        <DialogHeader>
+          <DialogTitle>Enroll!</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+
+          <p>Do you really want to enroll in this course?</p>
+
+        </DialogDescription>
+        <DialogFooter>
+          <Button className="bg-black" onClick={closeModal}>
+            Close
+          </Button>
+          <Button onClick={handleCourseEnrollment} className="bg-main flex gap-2 items-center text-white">
+            {
+              loading &&
+
+              <div className='animate-spin'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+              </div>
+            } Enroll
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
   );
 }
-export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled,enrollmentId }) {
+export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled, enrollmentId }) {
   const [loading, setLoading] = useState(false)
-  const ref = useRef(null)
+
   const axios = useAxiosPrivate()
   function closeModal() {
     setIsOpen(false);
   }
-
-  useOutsideClick(ref, () => closeModal());
 
   const handleCourseEnrollment = async () => {
     try {
@@ -439,44 +441,38 @@ export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, se
       setLoading(false)
     }
   }
+  function openModal() {
+    setIsOpen(!isOpen);
+  }
 
 
   return (
-    <div
-      className={`fixed inset-0 overflow-y-auto z-[100000] transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-    >
-      <div className="flex items-center justify-center relative h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity">
-          <div className="absolute inset-0 bg-gray-100" />
-        </div>
-        <div
-          ref={ref}
-          className={`inline-block z-[5000] align-bottom absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2   bg-white rounded-lg p-4 text-left shadow-xl transform transition-all  sm:align-middle sm:max-w-lg sm:w-full ${isOpen ? 'scale-100' : 'scale-90'
-            }`}
-        >
-          <h2 className="text-xl font-semibold mb-4">Un-Enrollment</h2>
-          <div className="sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              <p>Do you really want to Un-Enroll from this course?</p>
-            </div>
-          </div>
-          <div className="mt-4 sm:mt-3 w-full flex gap-2 justify-end ">
-            <Button className="bg-black" onClick={closeModal}>
-              Close
-            </Button>
-            <Button onClick={handleCourseEnrollment} className="bg-subcolor2 flex gap-2 items-center text-white">
-              {
-                loading &&
-                <div className='animate-spin'>
-                  <Icons.Loader2 height="22" width="22" className="stroke-white" />
-                </div>
-              } Un-Enroll
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Dialog open={isOpen} onOpenChange={openModal}>
+      <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
+        <DialogHeader>
+          <DialogTitle>Un-Enroll!</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+
+          <p>Do you really want to un-enroll from this course?</p>
+
+        </DialogDescription>
+        <DialogFooter>
+          <Button className="bg-black" onClick={closeModal}>
+            Close
+          </Button>
+          <Button onClick={handleCourseEnrollment} className="bg-subcolor2 flex gap-2 items-center text-white">
+            {
+              loading &&
+
+              <div className='animate-spin'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+              </div>
+            } Un-Enroll
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

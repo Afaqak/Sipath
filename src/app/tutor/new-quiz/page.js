@@ -71,7 +71,6 @@ const NewQuiz = () => {
     try {
       dispatch(createQuiz({ token: user?.token, data: formData, onSuccess, onError }));
 
-      console.log(response.data);
     } catch (err) {
     } finally {
     }

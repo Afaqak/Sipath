@@ -15,7 +15,7 @@ const CategoriesPage = () => {
     
       try {
         const response = await axios.get('/categories');
-        console.log(response.data)
+     
         setCategoriesData(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);

@@ -81,7 +81,6 @@ const CourseCard = ({ course, session, enrollments }) => {
     const isEnrolled = enrollments.some(
         (enrollment) => enrollment?.course?.id === course.id
     );
-    console.log(isEnrolled, "{isEnrolled}")
     const href = isEnrolled ? `/courses/${course.id}` : `/tutor/courses/${course?.id}`;
     return (
         <Link

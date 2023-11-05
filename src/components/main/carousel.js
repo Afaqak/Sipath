@@ -34,10 +34,10 @@ export function Carousel({ items, contentComponent }) {
       className="mySwiper"
     >
       {
-      items.map((item) => (
+      items.map((item,index) => (
         <SwiperSlide
           className={`carousel-slide ${contentComponent === ExpertItem ? 'lg:ml-14 ' : ''}`}
-          key={item.id}
+          key={index}
         >
           
           {

@@ -11,7 +11,6 @@ const Home = () => {
   const [newVideos, setNewVideos] = useState([])
   const [videos_set_one, setVideos_set_one] = useState([])
   const [videos_set_two, setVideos_set_two] = useState([])
-  const [videos_set_three, setVideos_set_three] = useState([])
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
   const [categories, setCategories] = useState([])
@@ -87,7 +86,7 @@ const Home = () => {
         <Video videos={videos_set_two} />
       </div>
       <div >
-        {!experts ? <ExpertSkeleton times={3} /> : <Experts data={experts} />}
+        {experts && <Experts data={experts} />}
       </div>
       {
         categories.length > 0 &&
@@ -100,9 +99,3 @@ const Home = () => {
 
 export default Home;
 
-let emptyArray=[]
-if (emptyArray) {
-  console.log("An empty array is truthy.");
-} else {
-  console.log("An empty array is falsy.");
-}

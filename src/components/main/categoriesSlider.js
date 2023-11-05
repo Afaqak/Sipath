@@ -29,7 +29,9 @@ export function CategoriesSlider({ data:category }) {
     >
       {
         category.length > 0 && category?.map(data => (
-                <SwiperSlide className="customCatSlide">
+                <SwiperSlide
+                key={data?.id}
+                className="customCatSlide">
           <Link
             key={data.id}
             href={`/categories/${data.category.toLowerCase()}?id=${data?.id}`}
