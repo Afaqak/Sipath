@@ -21,9 +21,9 @@ const messageRequestSlice = createSlice({
       })
       .addCase(approveRequest.fulfilled, (state,action) => {
         let requests=[...state.messageRequests]
-        console.log(requests,"{requests}",action.payload)
+    
         const filteredRequests=requests.filter(req=>req?.id!==action.payload?.id)
-        console.log(requests,"{requests after filter}")
+     
         state.messageRequests=filteredRequests
         state.loading = false;  
         state.error = null;

@@ -106,12 +106,12 @@ export const VideoComments = () => {
 
   const handleFetchReplies = async (commentId) => {
     const newLimit = repliesLimit + 10;
-    console.log(newLimit, '{newLimit}');
+    
     try {
       const response = await axios.get(
         `/assets/video/${id}/comments/${commentId}?limit=${newLimit}`
       );
-      console.log(response.data, '{replies fetch}');
+     
       dispatch(setReplyComments({ commentId, replies: response.data?.comments }));
       setRepliesLimit(newLimit);
     } catch (error) {

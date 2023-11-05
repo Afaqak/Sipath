@@ -20,7 +20,7 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        console.log(credentials);
+        
         if (!credentials.email || !credentials.password) return;
 
         const response = await axios.post('/auth/login', {
@@ -29,7 +29,7 @@ export const authOptions = {
         });
 
         if (response.data.user) {
-          console.log(response?.data?.token, 'token');
+         
           return {
             user: response.data.user,
             token: response.data.token,
@@ -46,30 +46,27 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user, trigger, session, account }) {
-      console.log(account, 'account');
+      
       if (trigger === 'update') {
         return { ...token, ...session.user };
       }
 
       const providerName = account?.provider;
 
-      console.log(session, user, 'here in jwt');
+     
       if (providerName === 'facebook') {
         const { data } = await axios.post('/auth/oauth', { id: token?.sub });
-        console.log(data);
+     
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
         token.tutor = data.tutor;
         token.user = data.user;
       } else if (providerName === 'google') {
-        console.log('email from google', token);
-
-        console.log('token.sub', token.sub, token);
+      
+        
         const { data } = await axios.post('/auth/oauth', { id: token?.sub, email: token.email });
         token.isUpdated = true;
-
-        console.log(data, 'data');
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;

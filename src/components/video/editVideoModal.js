@@ -95,7 +95,7 @@ export function VideoEditModal({
       }
     }
     if (!isEdit) {
-      console.log(isEdit);
+     
       if (!thumbnail || !duration || !videoFile || !body.description || !body.title || !duration) {
         return errorToast('Some fields are Missing!');
       }

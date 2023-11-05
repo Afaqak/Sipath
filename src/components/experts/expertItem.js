@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import UserAvatar from '../common/userAvatar';
 export const ExpertItem = ({ item}) => {
-  console.log(item,"{item}")
+
   return (
     <>
 

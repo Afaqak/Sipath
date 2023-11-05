@@ -6,8 +6,7 @@ import { Icon } from '@radix-ui/react-select';
 import { Icons } from '../icons';
 
 export const FileInput = ({ file, setFile, disabled = false }) => {
-  console.log(file);
-  // console.log(file);
+
   const inputRef = useRef(null);
 
   const handleChooseFile = () => {

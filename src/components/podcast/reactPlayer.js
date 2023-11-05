@@ -19,7 +19,7 @@ class NextButton extends videojs.getComponent('Button') {
   }
 
   handleClick(event) {
-    console.log(event, 'e');
+   
   }
 }
 
@@ -55,8 +55,7 @@ const ContentPlayer = ({ noPremium, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response?.data?.asset?.asset_key)
-        console.log(response.data, "thum")
+   
         setVideo(response.data)
         videoJsOptions.sources = [
           {
@@ -71,7 +70,7 @@ const ContentPlayer = ({ noPremium, token }) => {
           const controlBar = player.getChild('controlBar');
 
           if (!player.getChild('controlBar').getChild('NextButton')) {
-            console.log(player.getChild('controlBar').getChild('NextButton'), '{find}');
+          
             const nextButton = controlBar.addChild('NextButton', {}, 1);
             controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
           }

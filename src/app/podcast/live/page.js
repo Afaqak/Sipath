@@ -42,11 +42,11 @@ const LivePremium = () => {
   const initializeSocket = () => {
     socket.connect();
     socket.on('connect', () => {
-      console.log('Socket connected');
+
     });
 
     socket.on('chat-message', (message) => {
-      console.log('Received chat messsage:', message);
+      
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -135,7 +135,7 @@ const LivePremium = () => {
   }, []);
   
  
-console.log(user?.user?.isTutor , +user?.tutor?.tutor_id === +podcast?.tutor_id,"data")
+
   const createVideoElement = (stream) => {
     const video = document.createElement('video');
     video.muted = true;
@@ -157,13 +157,13 @@ console.log(user?.user?.isTutor , +user?.tutor?.tutor_id === +podcast?.tutor_id,
   const toggleVideoMute = () => {
     setVideoMuted(!videoMuted);
     localStream.getVideoTracks()[0].enabled = videoMuted;
-    console.log('Video muted:', videoMuted);
+  
   };
 
   const toggleAudioMute = () => {
     setAudioMuted(!audioMuted);
     localStream.getAudioTracks()[0].enabled = audioMuted;
-    console.log('Audio muted:', audioMuted);
+   
   };
 
   const sendMessage = (e) => {

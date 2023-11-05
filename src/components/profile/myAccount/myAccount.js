@@ -40,7 +40,6 @@ export const MyAccount = () => {
       [name]: value,
     }));
   };
-  console.log(user, '{user data}');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,16 +75,13 @@ export const MyAccount = () => {
             user: { ...userResponse.data?.user },
           },
         };
-        console.log(newSession, '{new session}');
-        console.log(userResponse.data, '{new data after user}');
 
         if (
           user?.user?.isTutor &&
           formData.hourlyRate &&
           +user?.tutor.hourly_rate !== +formData.hourlyRate
         ) {
-          console.log('here', +formData.hourlyRate, +user?.tutor.hourly_rate);
-
+    
           const tutorResponse = await axios.patch(
             '/users/profile/tutor',
             {
@@ -102,7 +98,7 @@ export const MyAccount = () => {
             ...user.tutor,
             ...tutorResponse.data.tutor,
           };
-          console.log(tutorResponse.data, '{new data after tutor}');
+        
         }
 
         await update(newSession);

@@ -4,7 +4,7 @@ import UserAvatar from '../common/userAvatar';
 
 export const LiveMessages = ({ messages }) => {
   const messagesContainerRef = useRef(null);
-  console.log(messages);
+
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;

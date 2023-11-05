@@ -17,7 +17,6 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  console.log(user, 'user');
 
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
@@ -30,7 +29,6 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
       const isFollowing = user?.followers?.some(
         (follower) => follower.follower === session?.user?.id && follower.following === user?.id
       );
-      console.log(isFollowing, '{handle follow user}', user);
 
       if (isFollowing) {
         setLoading(true);
@@ -49,7 +47,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
         );
         window.location.reload();
         errorToast('Unfollowed the User!');
-        console.log(response.data);
+       
       } else {
         setLoading(true);
         const response = await axios.post(
@@ -65,7 +63,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
         );
         window.location.reload();
         successToast('Followed the User!');
-        console.log(response.data);
+   
         router.refresh();
       }
     } catch (err) {
@@ -91,7 +89,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
 
       setUser(response.data.asset);
       successToast('User Rated!');
-      console.log(response, '{rated user}');
+     
     } catch (err) {
       errorToast("Error! Can't rate the User");
       console.error(err);

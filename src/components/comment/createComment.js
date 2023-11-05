@@ -19,7 +19,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const quillRef = useRef();
   const handleChange = (editor) => {
     setText(editor);
-    console.log(editor);
+
   };
 
   const quillImageCallback = async () => {
@@ -30,7 +30,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
 
     input.onchange = async () => {
       const file = input.files ? input.files[0] : null;
-      console.log(file);
+
     };
   };
 
@@ -51,7 +51,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   );
 
   function selectLocalImage() {
-    console.log('custom image handler');
+  
     const editor = quillRef.current.getEditor();
 
     const input = document.createElement('input');
@@ -61,7 +61,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
 
     input.onchange = async () => {
       const file = input.files[0];
-      console.log(file, 'from quil');
+     
       if (file) {
         setFile(file);
 

@@ -18,7 +18,7 @@ export const QuizUploadColumn = ({
   quizSolution,
   setQuizSolution,
 }) => {
-  console.log(quizSolution);
+ 
   return (
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">

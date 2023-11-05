@@ -52,8 +52,7 @@ const commentsSlice = createSlice({
       })
       .addCase(fetchPrimaryComments.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(state.primaryComments, action.payload);
-
+     
         // Otherwise, append new comments as before.
         const existingIds = state.primaryComments.map((comment) => comment.id);
         const newData = action.payload.filter((comment) => !existingIds.includes(comment.id));
@@ -83,10 +82,10 @@ const commentsSlice = createSlice({
       })
       .addCase(createReplyToComment.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(typeof action.payload, action.payload);
+     
         const { reply_to } = action.payload;
         if (!state.commentReplies[reply_to]) {
-          console.log(reply_to, 'new reply');
+     
           state.commentReplies[reply_to] = [action.payload];
         } else {
           state.commentReplies[reply_to].push(action.payload);

@@ -14,7 +14,7 @@ export const onBoardUser = createAsyncThunk(
         },
       });
       onSuccess();
-      console.log(response.data, 'data');
+   
       update(response.data);
 
       return response.data;
@@ -31,7 +31,7 @@ export const onBoardTutor = createAsyncThunk(
   async ({ formData, onSuccess, axios }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/onboard/tutor', formData);
-      console.log(response.data);
+ 
       onSuccess();
       return response.data;
     } catch (error) {

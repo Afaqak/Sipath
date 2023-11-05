@@ -9,7 +9,7 @@ export const Quiz = ({ quiz, isEdit }) => {
   const { data: user } = useSession();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  console.log(isEdit);
+
   return (
     <div
       className={`${isEdit && 'border-subcolor border-2'

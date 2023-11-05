@@ -16,7 +16,7 @@ import { UpdateBook, deleteBook } from '@/features/book/bookThunk';
 import { Button } from '../ui/button';
 
 export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
-  console.log(book, '{book from modal}');
+
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const dispatch = useDispatch();
   const { data: user } = useSession();
@@ -68,7 +68,7 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('running');
+  
     try {
       setLoading(true);
 
@@ -80,14 +80,13 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
         book: cbook,
         price: price > 0 ? price : null,
       };
-      console.log(data);
+
       const filteredData = Object.fromEntries(
         Object.entries(data).filter(
           ([key, value]) => value !== undefined && value !== null && value !== ''
         )
       );
 
-      console.log(filteredData, 'filtered Data');
 
       dispatch(
         UpdateBook({

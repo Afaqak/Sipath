@@ -15,7 +15,6 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const ref = useRef();
-  console.log(video['user.profile_image'], video, 'video');
 
   useOutsideClick(ref, () => setToggleMenu(false));
   return (

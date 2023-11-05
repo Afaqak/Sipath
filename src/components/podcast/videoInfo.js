@@ -57,13 +57,11 @@ const TagsAndDescription = ({ description, createdAt }) => {
 export const VideoInfo = ({ token, type,video,setVideo }) => {
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-  console.log(token, '${videoInfo');
 
   const searchParams = useSearchParams()
   const id = searchParams.get('id');
 
-  console.log(video, id, '{vidoeInfor}');
- 
+
   const setAssetRating = async (newRating) => {
     let assetId;
     try {
@@ -85,7 +83,7 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
         }
       );
       setVideo(response?.asset);
-      console.log(response.data);
+  
       successToast('You have rated the Video!');
     } catch (error) {
       errorToast('Error Occured while setting the rating!');

@@ -6,7 +6,7 @@ import { VideoItem, ExpertItem } from '@/components';
 import 'swiper/css';
 import 'swiper/css/pagination';
 export function Carousel({ items, contentComponent }) {
-  console.log(items,"{items carsou}")
+
   return (
     <Swiper
       pagination={{

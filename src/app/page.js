@@ -17,9 +17,9 @@ const Home = () => {
 
   const premiumVideosRef = useRef(null);
   const videosSetTwoRef = useRef(null);
-  console.log(experts, "{experts before fetched}")
+
   const fetchVideos = async (query, setData) => {
-    console.log(query)
+   
     try {
       const response = await axios.get(`/assets/videos?${query}`);
       setData([...response.data]);
@@ -29,7 +29,6 @@ const Home = () => {
     }
   };
 
-  console.log(videos_set_two, "{videoset2}")
 
   const fetchExperts = async () => {
 

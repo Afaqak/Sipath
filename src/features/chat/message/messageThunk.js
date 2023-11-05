@@ -7,7 +7,7 @@ export const createMessage = createAsyncThunk(
   async (data, { dispatch }) => {
     try {
       const response = await axios.post('/messages', data);
-      console.log(response.data, 'responsed message');
+   
       return response?.data?.message;
     } catch (err) {
       throw err;
@@ -26,8 +26,7 @@ export const getMessagesByConversationId = createAsyncThunk('message/getMessages
         Authorization:`Bearer ${token}`
       }
     });
-    console.log(response.data.messages,"message");  
-    
+
     if(checkLength && typeof checkLength==='function'){
       checkLength(response?.data?.messages)
 

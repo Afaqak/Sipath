@@ -17,10 +17,9 @@ export const Book = ({ book, isProfile }) => {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(null);
   const router = useRouter()
-  console.log(rating, book?.rating, book?.id, '{ratings}');
 
   const setAssetRating = async (newRating) => {
-    console.log(newRating, '{newRating}');
+   
     try {
       const response = await axios.post(
         `/rate/${book?.id}?type=book`,
@@ -34,7 +33,7 @@ export const Book = ({ book, isProfile }) => {
         }
       );
       // setVideo(response.data?.asset);
-      console.log(response.data, response.status);
+  
       successToast('You have rated the Video!');
     } catch (error) {
       errorToast('Error Occured while setting the rating!');

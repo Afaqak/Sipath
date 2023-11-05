@@ -11,7 +11,7 @@ import { Button } from '../ui/button';
 export const EditQuizModal = ({ isOpen, setIsOpen, quiz }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
-  console.log(quiz);
+
   const dispatch = useDispatch();
   const { data: user } = useSession();
   const [quizTitle, setQuizTitle] = useState(quiz?.title || '');
@@ -23,7 +23,7 @@ export const EditQuizModal = ({ isOpen, setIsOpen, quiz }) => {
 
   useEffect(() => {
     if (quiz) {
-      console.log(quiz, 'eddec');
+   
       setQuizTitle(quiz.title || '');
       setSubject(quiz.subject?.toString() || '');
       setThumbnailFile(quiz.thumbnail || null);
@@ -31,7 +31,7 @@ export const EditQuizModal = ({ isOpen, setIsOpen, quiz }) => {
   }, []);
 
   function closeModal() {
-    console.log('close');
+  
     setIsOpen(false);
     setOpenDeleteModal(false);
   }
@@ -77,7 +77,7 @@ export const EditQuizModal = ({ isOpen, setIsOpen, quiz }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('running');
+   
     try {
       setLoading(true);
       const formData = new FormData();

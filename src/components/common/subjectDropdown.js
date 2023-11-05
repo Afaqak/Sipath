@@ -5,10 +5,10 @@ import axios from '../../utils/index'
 export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Select Subject"}) => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([])
-  console.log(selectedValue,'sv')
+
   const ref = useRef(null)
   const toggleDropdown = () => {
-    console.log("clicking",open)
+   
     setOpen(!open);
   };
   useEffect(() => {
@@ -23,7 +23,6 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
     fetchCategories()
   }, [])
 
-  console.log(categories,"categories")
 
   useOutsideClick(ref, () => setOpen(false))
 

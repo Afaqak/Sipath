@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 export const TranslationToggleButton = ({ onClick, color, image }) => {
   const [translated, setTranslated] = useState(false);
-  console.log(translated);
+
   const handleButtonClick = () => {
     setTranslated(!translated);
     onClick(!translated);

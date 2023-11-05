@@ -17,7 +17,7 @@ const ChatScreen = ({ conversation, session }) => {
   const messages = useSelector((state) => state.messages.messages);
   const { data: user } = useSession();
   const chatContainerRef = useRef(null);
-  console.log(messages, "{messages from chatscreen}")
+
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [set, setSet] = useState(0)
@@ -108,7 +108,7 @@ const ChatScreen = ({ conversation, session }) => {
         reply_to
 
       };
-      console.log("here")
+   
       dispatch(insertMessage(newMessage));
     });
 

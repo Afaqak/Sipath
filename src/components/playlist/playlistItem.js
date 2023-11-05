@@ -15,7 +15,7 @@ export const PlaylistItem = ({ title, duration, setVideoId, id, token, enrollmen
 
   useEffect(() => {
     const enrollment = enrollments.find((enrollment) => enrollment.course_id === +courseId);
-    console.log(enrollment,"From Item")
+
     if (enrollment) {
     
       setIsChecked(enrollment.completed_videos.includes(id));
@@ -31,9 +31,7 @@ export const PlaylistItem = ({ title, duration, setVideoId, id, token, enrollmen
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.updated, "from checked", e.target.checked);
-
- 
+   
       setEnrollments((prevEnrollments) => {
         return prevEnrollments.map((enrollment) => {
           if (+enrollment.course_id === +courseId) {

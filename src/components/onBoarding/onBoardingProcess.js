@@ -40,7 +40,7 @@ export const OnBoardingProcess = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log(data);
+
 
     const interests = [1, 2, 3, 4];
 
@@ -73,7 +73,7 @@ export const OnBoardingProcess = () => {
         Authorization: `Bearer ${user?.token}`,
       },
     });
-    console.log(response.data, 'onboard');
+  
     if (response.data) {
       const newSession = {
         ...user,
@@ -93,7 +93,7 @@ export const OnBoardingProcess = () => {
       return;
     }
     const image = new Image();
-    console.log(file.type);
+  
     if (file.type.startsWith('image/')) {
       image.src = URL.createObjectURL(file);
       image.onload = () => {

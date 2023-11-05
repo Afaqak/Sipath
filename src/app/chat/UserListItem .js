@@ -3,9 +3,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import UserAvatar from '@/components/common/userAvatar';
 const UserListItem = ({ user, conversation, isSelected, onClick }) => {
-  console.log( conversation)
+
   const member_2=user?.id=== conversation?.chat_member_2?.id?conversation?.chat_member_1:conversation?.chat_member_2
-  console.log(member_2)
+ 
   return (
     <div
       className={`p-3  cursor-pointer border relative 
