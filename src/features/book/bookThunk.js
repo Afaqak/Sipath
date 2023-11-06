@@ -5,7 +5,7 @@ export const createBook = createAsyncThunk(
   'books/createBook',
   async ({ formData, token, onSuccess, isDownloadable, onError }, { rejectWithValue }) => {
     const axios = useAxiosPrivate();
-    console.log(token, onSuccess);
+
     try {
       const response = await axios.post(`/upload/book?isDownloadable=${isDownloadable}`, formData, {
         headers: {
@@ -38,14 +38,13 @@ export const fetchTutorBooks = createAsyncThunk(
 export const fetchBooks = createAsyncThunk('books/fetchBooks', async ({ token, tutorId }) => {
   try {
     const axios = useAxiosPrivate();
-    console.log(token);
+   
     const response = await axios.get(`/assets/books/tutor/${tutorId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
-
+  
     return response.data;
   } catch {
     throw new Error();
@@ -62,8 +61,7 @@ export const UpdateBook = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data, 'response from update');
-
+   
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
 
       return response.data.updatedBook;

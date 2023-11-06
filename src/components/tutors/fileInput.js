@@ -6,8 +6,7 @@ import { Icon } from '@radix-ui/react-select';
 import { Icons } from '../icons';
 
 export const FileInput = ({ file, setFile, disabled = false }) => {
-  console.log(file);
-  // console.log(file);
+
   const inputRef = useRef(null);
 
   const handleChooseFile = () => {
@@ -29,7 +28,7 @@ export const FileInput = ({ file, setFile, disabled = false }) => {
         onChange={handleFileChange}
       />
 
-      <div className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)]  text-ellipsis z-[20] truncate  w-48 py-1 rounded-md px-2 placeholder:text-sm border-none focus:outline-none">
+      <div className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)]  text-ellipsis z-[20] truncate  lg:w-48 py-1 rounded-md px-2 placeholder:text-sm border-none focus:outline-none">
         {!file ? (
           <span
             className="font-semibold flex gap-2 whitespace-nowrap left-[2%] bg-[#D9D9D9] text-black text-sm cursor-pointer px-4 py-[0.12rem] rounded-md"

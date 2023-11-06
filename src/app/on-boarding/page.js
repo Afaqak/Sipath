@@ -10,7 +10,7 @@ export async function getCurrentUser() {
 const onBoarding = async () => {
   const getUser = await getCurrentUser();
   console.log(getUser, 'user');
-  return <OnBoardingProcess />;
+  return <OnBoardingProcess  />;
 };
 
 export default onBoarding;

@@ -54,30 +54,14 @@ const TagsAndDescription = ({ description, createdAt }) => {
   );
 };
 
-export const VideoInfo = ({ token, type }) => {
+export const VideoInfo = ({ token, type,video,setVideo }) => {
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-  console.log(token, '${videoInfo');
 
-  const searchParams = useSearchParams();
-  const [video, setVideo] = useState({});
+  const searchParams = useSearchParams()
   const id = searchParams.get('id');
 
-  console.log(video, id, '{vidoeInfor}');
-  useEffect(() => {
-    const fetchVideoInfo = async () => {
-      try {
-        const response = await axios.get(`/assets/video/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(response.data, '${video');
-        setVideo(response.data);
-      } catch (err) {}
-    };
-    fetchVideoInfo();
-  }, [id]);
+
   const setAssetRating = async (newRating) => {
     let assetId;
     try {
@@ -98,8 +82,8 @@ export const VideoInfo = ({ token, type }) => {
           },
         }
       );
-      setVideo(response.data?.asset);
-      console.log(response.data);
+      setVideo(response?.asset);
+  
       successToast('You have rated the Video!');
     } catch (error) {
       errorToast('Error Occured while setting the rating!');
@@ -114,7 +98,7 @@ export const VideoInfo = ({ token, type }) => {
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
-          <h1 className="font-semibold text-lg mb-1">{video?.title}</h1>
+          <h1 className="font-semibold text-lg mb-1">{video?.asset?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
             <ProfileInfo />
             <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
@@ -124,8 +108,8 @@ export const VideoInfo = ({ token, type }) => {
         </div>
         <div className="">
           <div className="flex items-center gap-3 justify-end">
-            <Stars rating={rating} initialRating={video?.rating} setRating={handleRatingChange} />{' '}
-            <Ratings rating={video?.rating} />
+            <Stars rating={rating} initialRating={video?.asset?.rating} setRating={handleRatingChange} />{' '}
+            <Ratings rating={video?.asset?.rating} />
           </div>
           <div className="flex gap-3 md:mt-2 mt-3 justify-end md:justify-start">
             <ActionButton icon={<Icons.share />} text="Share" />
@@ -139,7 +123,7 @@ export const VideoInfo = ({ token, type }) => {
           </div>
         </div>
       </div>
-      <TagsAndDescription description={video?.description} createdAt={video?.createdAt} />
+      <TagsAndDescription description={video.asset?.description} createdAt={video.asset?.createdAt} />
     </div>
   );
 };

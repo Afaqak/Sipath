@@ -1,7 +1,21 @@
+'use client'
 import React from 'react';
 import { Quiz } from '@/components';
-
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import axios from '../../../utils/index';
 const QuizesPage = () => {
+  const categoryParams = useSearchParams()
+  const categoryId = categoryParams.get('id')
+  const [quizzes, setQuizzes] = useState([])
+  useEffect(() => {
+    const fetchQuizFromCategory = async () => {
+      const response = await axios.get(`/categories/${categoryId}/content?type=quizzes`)
+      
+      setQuizzes(response?.data)
+    }
+    fetchQuizFromCategory()
+  }, [])
   return (
     <div className="lg:w-[70%] w-[85%]  mx-auto py-8">
       <div className="flex">
@@ -27,9 +41,10 @@ const QuizesPage = () => {
           </svg>
         </div>
       </div>
-      <Quiz />
-      <Quiz />
-      <Quiz />
+      {quizzes?.map((quiz, ind) => (
+
+        <Quiz key={ind} quiz={quiz} />
+      ))}
     </div>
   );
 };

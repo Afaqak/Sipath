@@ -16,6 +16,7 @@ export const LoadingSkeletons = ({ times }) => (
   </div>
 );
 
+
 export const BookSkeleton = ({ times }) => (
   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
     {[...Array(times)].map((_, idx) => (
@@ -35,6 +36,25 @@ export const BookSkeleton = ({ times }) => (
             <Skeleton className="h-4 w-[100px]" />
             <Skeleton className="h-4 w-[100px]" />
           </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+
+
+export const ExpertSkeleton = ({ times }) => (
+  <div className="grid w-[90%] mx-auto md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    {[...Array(times)].map((_, idx) => (
+      <div key={idx} className="bg-white flex gap-2 rounded-md p-4 shadow-md">
+        <div className="flex items-center">
+          <Skeleton className="h-16 w-16 rounded-full" />
+        </div>
+        <div className="flex gap-3 flex-col w-full">
+          <Skeleton className="h-4 w-[150px]" />
+          <Skeleton className="h-4 w-[200px]" />
+          <Skeleton className="h-4 w-[250px]" />
         </div>
       </div>
     ))}

@@ -1,46 +1,45 @@
+
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-export const ExpertItem = ({ expert }) => {
-  const router = useRouter();
+import UserAvatar from '../common/userAvatar';
+export const ExpertItem = ({ item}) => {
+
   return (
-    <div
-      onClick={() => router.push('/tutor')}
-      className="relative mb-6  flex flex-col items-center w-[19rem] min-h-[10rem] lg:h-[10rem] py-6 px-4 lg:w-[22rem] bg-white shadow-md rounded-sm"
-    >
-      <div className="lg:absolute relative top-4 lg:-left-14 w-[8rem] h-[8rem] lg:w-[7rem] lg:h-[7rem] rounded-full">
-        <Image
-          alt="demo image"
-          className="rounded-full w-full h-full object-cover"
-          src={expert.imageUrl}
-          width={200}
-          height={200}
-        />
-        <button className="absolute -bottom-2 right-4 lg:right-3 font-semibold bg-blue-500 text-white rounded-full px-6 py-1 flex justify-center items-center">
-          Follow
-        </button>
-      </div>
-      <div className="bg-gray-200 mt-10 w-full lg:hidden h-[1px]"></div>
-      <div className="lg:ml-12 mt-4 lg:mt-0">
-        <div className="mb-2">
-          <div>
-            <div className="flex justify-between lg:justify-normal lg:gap-3 items-center">
-              <h1 className="text-xl font-normal uppercase">{expert.accountName}</h1>
-              <h2 className="font-extrabold text-sm gap-1 flex items-center">
-                4.7{' '}
-                <span>
-                  <Image alt="star" src="/svgs/star.png" width={20} height={20} />
-                </span>
-              </h2>
-            </div>
-            <div className="text-[0.8rem] flex items-center lg:justify-normal lg:gap-4 justify-between">
-              <p className="font-medium text-[#616161]">{expert.followers} followers</p>
-              <p className="text-main font-medium">Maths-Chemistry-Physics</p>
+    <>
+
+      <div className={`relative mb-6 flex flex-col items-center h-fit lg:h-40 py-6 px-4 w-[22rem] bg-white shadow-md rounded-sm mt-6 md:mt-2`}>
+        <div className="lg:absolute relative mb-6 lg:mb-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:-left-16 w-[8rem] lg:w-[7rem] rounded-full">
+          <UserAvatar className="h-28 w-28" user={{ image: item && item['user.profile_image'] }} />
+        </div>
+        <div className="bg-gray-200 w-full lg:hidden h-[1px]"></div>
+        <div className="lg:ml-12 mt-4 lg:mt-0">
+          <div className="mb-2">
+            <div>
+              <div className="flex justify-between lg:justify-normal lg:gap-3 items-center">
+                <h1 className="text-xl font-normal uppercase">{item && item["user.display_name"]}</h1>
+                <h2 className="font-extrabold text-sm gap-1 flex items-center">
+                  4.7{' '}
+                  <span>
+                    <Image src="/svgs/star.png" alt="star" width={20} height={20} />
+                  </span>
+                </h2>
+              </div>
+              <div className="text-[0.8rem] flex items-center lg:justify-normal lg:gap-4 justify-between">
+                <p className="font-medium text-[#616161]">{item && item["user.follower_count"]} followers</p>
+                <p className="text-main font-medium">
+                  {item && item?.expertiseCategories?.join('-')}
+                </p>
+              </div>
             </div>
           </div>
+          <p className="break-all font-light text-gray-400 line-clamp-3 text-sm">{item && item['user.bio']}</p>
         </div>
-        <p className="break-all font-light text-gray-400 text-sm">{expert.description}</p>
       </div>
-    </div>
+
+
+
+    </>
+
   );
 };

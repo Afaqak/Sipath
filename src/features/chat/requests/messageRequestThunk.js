@@ -1,13 +1,20 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../../utils/index';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { insertConversation } from '../conversation/conversationSlice';
 
 export const fetchMessageRequests = createAsyncThunk(
   'messageRequests/fetchMessageRequests',
-  async (id) => {
+  async ({token}) => {
+    const privateAxios=useAxiosPrivate()
+   
     try {
-      const response = await axios.get(`/messages/requests/${id}`);
-      console.log(response);
-      return response.data;
+      const response = await privateAxios.get(`/chats/requests`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
+    
+      return response.data?.chatRequests;
     } catch (err) {
       throw err;
     }
@@ -16,12 +23,45 @@ export const fetchMessageRequests = createAsyncThunk(
 
 export const approveRequest = createAsyncThunk(
   'messageRequests/approveMessageRequests',
-  async ({ userId, id }, { dispatch }) => {
+  async ({id,token }, { dispatch }) => {
+    const privateAxios=useAxiosPrivate()
+    
     try {
-      const response = await axios.post(`/messages/approve/${id}`);
-      console.log(response);
-      dispatch(fetchMessageRequests(userId));
-      return response.data;
+      const response = await privateAxios.patch(`/chats/requests/${id}`,{
+        decision: "accept",
+      },{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
+
+      dispatch(insertConversation(response.data?.chat))
+  
+      // dispatch(fetchMessageRequests({}));
+      return response.data.updatedRequest;
+    } catch (err) {
+      throw err;
+    }
+  }
+);
+
+
+export const rejectRequest = createAsyncThunk(
+  'messageRequests/rejectMessageRequests',
+  async ({id,token }, { dispatch }) => {
+    const privateAxios=useAxiosPrivate()
+   
+    try {
+      const response = await privateAxios.patch(`/chats/requests/${id}`,{
+        decision: "deny",
+      },{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
+  
+      // dispatch(fetchMessageRequests({}));
+      return response.data.updatedRequest;
     } catch (err) {
       throw err;
     }

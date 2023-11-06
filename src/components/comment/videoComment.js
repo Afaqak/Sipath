@@ -32,7 +32,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const searchParams = useSearchParams();
   const [text, setText] = useState('');
   const id = searchParams.get('id');
-
+console.log(comment)
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const [file, setFile] = useState(null);

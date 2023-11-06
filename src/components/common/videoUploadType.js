@@ -2,7 +2,7 @@ import { TranslationToggleButton } from '@/components';
 
 export const VideoUploadType = ({ type, setType, setPrice }) => {
   const setUpload = (isTranslated) => {
-    console.log(isTranslated, 'from videouptype');
+
     if (isTranslated) {
       setType('premium');
     } else {

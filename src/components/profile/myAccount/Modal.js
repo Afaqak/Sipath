@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 export const Modal = ({ isOpen, onClose, handleModalSubmit, modalType }) => {
   const [inputValue, setInputValue] = useState('');
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     handleModalSubmit(inputValue);

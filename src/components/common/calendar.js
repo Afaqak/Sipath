@@ -117,9 +117,9 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
         </div>
       </div>
       <div className="grid grid-cols-7 gap-2 cursor-pointer">
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((dayName) => (
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((dayName,idx) => (
           <div
-            key={dayName}
+            key={idx}
             className="font-semibold text-gray-400 text-[0.67rem] text-center py-2"
           >
             {dayName}
@@ -127,7 +127,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
         ))}
         {days.map((day, idx) => (
           <div
-            key={Math.random() * 100000}
+            key={idx}
             className={`py-1 ease-in-out ${
               day
                 ? isCurrentDate(day)

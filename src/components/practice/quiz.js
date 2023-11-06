@@ -9,12 +9,11 @@ export const Quiz = ({ quiz, isEdit }) => {
   const { data: user } = useSession();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  console.log(isEdit);
+
   return (
     <div
-      className={`${
-        isEdit && 'border-subcolor border-2'
-      } mt-4 flex md:flex-row border flex-col md:items-center -z-10 justify-between bg-white rounded-lg shadow-lg`}
+      className={`${isEdit && 'border-subcolor border-2'
+        } mt-4 flex md:flex-row border flex-col md:items-center -z-10 justify-between bg-white rounded-lg shadow-lg`}
     >
       <div className="flex md:flex-row  relative md:max-w-[20%] items-center flex-col">
         <div className="h-44 md:h-28 w-44 rounded-lg">
@@ -67,7 +66,7 @@ export const Quiz = ({ quiz, isEdit }) => {
               >
                 View Quiz
               </Button>
-              <Button variant="outline" className=" text-subcolor bg-white border-subcolor">
+              <Button onClick={() => router.push(`/practice/view-quiz-solution/${quiz?.id}`)} variant="outline" className=" text-subcolor bg-white border-subcolor">
                 View Solutions
               </Button>
             </div>

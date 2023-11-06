@@ -6,6 +6,7 @@ import { VideoItem, ExpertItem } from '@/components';
 import 'swiper/css';
 import 'swiper/css/pagination';
 export function Carousel({ items, contentComponent }) {
+
   return (
     <Swiper
       pagination={{
@@ -32,12 +33,15 @@ export function Carousel({ items, contentComponent }) {
       }}
       className="mySwiper"
     >
-      {items.map((item) => (
+      {
+      items.map((item,index) => (
         <SwiperSlide
           className={`carousel-slide ${contentComponent === ExpertItem ? 'lg:ml-14 ' : ''}`}
-          key={item.id}
+          key={index}
         >
-          {React.createElement(contentComponent, {
+          
+          {
+          React.createElement(contentComponent, {
             ...getContentProps(contentComponent, item),
           })}
         </SwiperSlide>
@@ -50,7 +54,7 @@ function getContentProps(contentComponent, item) {
   if (contentComponent === VideoItem) {
     return { video: item };
   } else if (contentComponent === ExpertItem) {
-    return { expert: item };
+    return { item };
   }
 
   return {};

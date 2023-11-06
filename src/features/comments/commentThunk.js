@@ -5,7 +5,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 export const createComment = createAsyncThunk(
   'comments/createComment',
   async ({ videoId, data, onSuccess, token }) => {
-    console.log(data, 'dispatch');
+  
     try {
       const response = await axios.post(`/assets/video/${videoId}/comments`, data, {
         headers: {
@@ -17,8 +17,7 @@ export const createComment = createAsyncThunk(
         onSuccess();
       }
 
-      console.log(response.data, 'data');
-
+   
       return response.data;
     } catch (error) {
       throw new Error();
@@ -34,7 +33,7 @@ export const fetchPrimaryComments = createAsyncThunk(
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
-      console.log(response.data?.comments, '{newly fetched}');
+    
       return response.data?.comments;
     } catch (error) {
       throw new Error();
@@ -52,7 +51,7 @@ export const fetchCommentReplies = createAsyncThunk(
       );
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data);
-        console.log('here');
+      
       }
 
       return { commentId, replies: response.data?.comments };
@@ -66,7 +65,6 @@ export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
   async ({ videoId, commentId, data, token }) => {
     const axios = useAxiosPrivate();
-    console.log(videoId, commentId, data, token, 'crtc');
 
     try {
       const response = await axios.post(`assets/video/${videoId}/comments/${commentId}`, data, {
@@ -74,7 +72,7 @@ export const createReplyToComment = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
+   
       return response.data.comment;
     } catch (error) {
       throw new Error();

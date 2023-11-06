@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { PlaylistItem } from '@/components';
 import { motion, AnimatePresence } from 'framer-motion';
 
+
 export const PlaylistSection = ({
   sectionTitle,
+  token,
   sectionDuration,
   videos,
   index,
   onClick,
   setVideoId,
+  enrollments,
+  setEnrollments,
   isButtonToggled,
 }) => {
+
   return (
     <motion.div className="rounded-md bg-white p-4 mb-4 shadow-md">
       <header onClick={onClick} className="cursor-pointer">
@@ -23,12 +28,14 @@ export const PlaylistSection = ({
             {videos &&
               videos?.map((item) => (
                 <PlaylistItem
+                  enrollments={enrollments}
+                  setEnrollments={setEnrollments}
                   id={item?.id}
+                  token={token}
                   setVideoId={setVideoId}
                   key={item?.id}
                   title={item?.title}
                   duration={item?.subject}
-                  isChecked={true}
                 />
               ))}
           </motion.ul>

@@ -1,11 +1,10 @@
 'use client';
 import React, { useState, useRef, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
@@ -41,7 +40,7 @@ export const OnBoardingProcess = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log(data);
+
 
     const interests = [1, 2, 3, 4];
 
@@ -74,7 +73,7 @@ export const OnBoardingProcess = () => {
         Authorization: `Bearer ${user?.token}`,
       },
     });
-    console.log(response.data, 'onboard');
+  
     if (response.data) {
       const newSession = {
         ...user,
@@ -94,16 +93,16 @@ export const OnBoardingProcess = () => {
       return;
     }
     const image = new Image();
-    console.log(file.type);
+  
     if (file.type.startsWith('image/')) {
       image.src = URL.createObjectURL(file);
       image.onload = () => {
-        if (image.width <= 140 && image.height <= 140) {
-          setSelectedImage(file);
-          console.log(image.width, image.height);
-        } else {
-          errorToast('Image must be of size 140x140');
-        }
+        setSelectedImage(file);
+        // if (image.width <= 400 && image.height <= 400) {
+        //   console.log(image.width, image.height);
+        // } else {
+        //   errorToast('Image must be of size 140x140');
+        // }
       };
     } else {
       errorToast('Please upload an image file.');
@@ -265,7 +264,7 @@ export const OnBoardingProcess = () => {
                       <img
                         src={URL.createObjectURL(selectedImage)}
                         alt="account"
-                        className="h-20 w-20 rounded-full"
+                        className="h-20 w-20 rounded-full object-contain"
                       />
                     ) : (
                       <img

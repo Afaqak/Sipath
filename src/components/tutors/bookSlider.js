@@ -12,7 +12,6 @@ export function BookSlider() {
   const axios = useAxiosPrivate();
   const [books, setBooks] = useState([]);
   const { data: user } = useSession();
-  console.log(user?.tutor?.tutor_id);
 
   useEffect(() => {
     const fetchBooks = async () => {

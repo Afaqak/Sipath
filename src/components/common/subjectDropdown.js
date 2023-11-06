@@ -1,70 +1,71 @@
-'use client';
-import React, { useRef, useEffect } from 'react';
 
-export const SubjectDropdown = ({ dropDown, setDropDown }) => {
-  const dropdownRef = useRef(null);
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { useState, useRef ,useEffect} from "react";
+import axios from '../../utils/index'
+export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Select Subject"}) => {
+  const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState([])
 
+  const ref = useRef(null)
+  const toggleDropdown = () => {
+   
+    setOpen(!open);
+  };
   useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropDown(false); // Close the dropdown when clicking outside
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
+      } catch (err) {
+        console.log(err)
       }
-    };
+    }
+    fetchCategories()
+  }, [])
 
-    window.addEventListener('click', handleOutsideClick);
 
-    return () => {
-      window.removeEventListener('click', handleOutsideClick);
-    };
-  }, [setDropDown]);
+  useOutsideClick(ref, () => setOpen(false))
 
   return (
-    <div ref={dropdownRef}>
-      <button
-        onClick={() => setDropDown(!dropDown)}
-        id="dropdownHoverButton"
-        className="text-[#616161] relative py-[0.35rem]  justify-between shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] focus:outline-none font-medium  rounded-md text-sm px-3 text-center inline-flex items-center w-full md:w-48"
-        type="button"
-      >
-        Select Subject
-        <svg
-          className="w-2.5 h-2.5 ml-2.5"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 10 6"
-        >
-          <path
-            stroke="currentColor"
-            fill="black"
-            strokeLinecapsss="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m1 1 4 4 4-4"
-          />
-        </svg>
-        {dropDown && (
-          <div
-            id="dropdownHover"
-            className="z-10 absolute top-9 left-0 w-full bg-white divide-y divide-gray-100 rounded-lg shadow  dark:bg-gray-700"
+    <div ref={ref}  className="relative subject-dropdown w-48">
+      <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)]  py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
+          
+        <li className="relative group cursor-pointer ">
+          <span
+            className="block leading-5 text-gray-700 px-3"
+            onClick={toggleDropdown}
           >
-            <ul
-              className="py-2 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownHoverButton"
-            >
-              <li className="block px-4 py-2 hover:bg-gray-100">Physics</li>
-              <li className="block px-4 py-2 hover:bg-gray-100 ">Chemistry</li>
-              <li className="block px-4 py-2 hover:bg-gray-100 ">Mathematics</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">Psychology</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">Coding</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">Art</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">Biology</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">English</li>
-              <li className="block px-4 py-2 hover:bg-gray-100">Literature</li>
+            {selectedValue ? categories?.find((option) => option?.id === selectedValue)?.category : placeholder}
+          </span>
+          {open && (
+            <ul className="absolute  border rounded border-gray-300 z-[99999999] bg-white shadow-md w-64 py-1 mt-1">
+              <li
+                className="block py-2 px-2 leading-5 text-gray-700 hover:bg-indigo-100 cursor-pointer"
+                onClick={() => {
+                  toggleDropdown();
+                  onValueChange('');
+                }}
+              >
+                {placeholder}
+              </li>
+              <div className='grid grid-cols-2 divide-x'>
+                {categories.map((option) => (
+                  <li
+                    key={option.id}
+                    className="block py-2 px-2 w-full leading-5 text-gray-700 hover:bg-indigo-100 cursor-pointer"
+                    onClick={() => {
+                      toggleDropdown();
+                      onValueChange(option.id);
+                    }}
+                  >
+                    {option.category}
+                  </li>
+                ))}
+              </div>
             </ul>
-          </div>
-        )}
-      </button>
+          )}
+        </li>
+      </ul>
     </div>
   );
 };

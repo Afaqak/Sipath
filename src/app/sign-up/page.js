@@ -23,13 +23,13 @@ const SignUp = () => {
   const [formData, setFormData] = useState(initialData);
 
   useEffect(() => {
-    console.log(user);
+
     if (user && user?.isNewUser) {
       successToast('Signing You Up!', '#1C8827');
 
       router.push('/on-boarding');
     } else if (user?.user && !user?.isNewUser) {
-      console.log('here');
+    
       successToast('Signing You In!', '#1850BC');
 
       if (!active) {
@@ -44,7 +44,7 @@ const SignUp = () => {
     try {
       setLoading(true);
       await signIn(provider, { redirect: false }, { prompt: 'login' }).then((data) => {
-        console.log(data, 'provider');
+       
       });
     } catch (error) {
       errorToast('An error occured!', '#fb3c22');
@@ -71,13 +71,13 @@ const SignUp = () => {
       const user = { email: formData.email, password: formData.password };
 
       const response = await axios.post('/auth/signup', user);
-      console.log(response, 'response');
+     
       await signIn('credentials', {
         email: formData.email,
         password: formData.password,
         redirect: false,
       }).then((data) => {
-        console.log('provider', data);
+      
         successToast('Signing You Up!', '#1C8827');
         setActive(true);
         router.push('/on-boarding');
@@ -142,7 +142,7 @@ const SignUp = () => {
             disabled={loading}
             className="w-full gap-2 bg-black flex items-center justify-center"
             onClick={() => {
-              console.log('clicked');
+           
               handleSignUpWithProvider('google');
             }}
           >

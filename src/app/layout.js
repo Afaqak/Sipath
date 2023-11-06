@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { Roboto } from 'next/font/google';
 
 export default function RootLayout({ children, props }) {
-  console.log('{page props}', props);
+
   return (
     <html lang="en">
       <body>
@@ -18,7 +18,7 @@ export default function RootLayout({ children, props }) {
               <Navbar />
               {children}
             </AuthProvider>
-            <Toaster />
+            <Toaster containerStyle={{zIndex:9999999}}/>
           </main>
         </Provider>
       </body>

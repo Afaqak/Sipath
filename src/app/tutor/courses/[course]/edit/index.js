@@ -78,7 +78,7 @@ const EditPage = ({ session }) => {
         }
       );
 
-      console.log(response.data, response.status, '{Section}');
+     
       successToast('Section Added Successfully!', '#1850BC');
       setSections((prev) => [...prev, response.data.section]);
     } catch (err) {
@@ -103,7 +103,7 @@ const EditPage = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-        console.log(response.data);
+      
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
@@ -135,7 +135,7 @@ const EditPage = ({ session }) => {
         setOpen(false);
         router.push('/my-profile');
       }
-      console.log(response.data);
+  
     } catch (err) {
       console.log(err);
       errorToast('An error occured!', '#fb3c22');
@@ -156,7 +156,7 @@ const EditPage = ({ session }) => {
         },
         { headers: { Authorization: `Bearer ${session?.token}` } }
       );
-      console.log(response.data);
+ 
       successToast('Course Updated!');
       setEditMode(false);
       setCourseName('');
@@ -180,7 +180,7 @@ const EditPage = ({ session }) => {
         },
         { headers: { Authorization: `Bearer ${session?.token}` } }
       );
-      console.log(response.data);
+   
       successToast('Course Price Updated!');
       setEditPriceMode(false);
       setCoursePrice('');
@@ -197,18 +197,6 @@ const EditPage = ({ session }) => {
     const sourceSectionId = result.source.droppableId;
     const destinationSectionId = result.destination.droppableId;
     const videoId = result.draggableId;
-    console.log(
-      'Video ID:',
-      videoId,
-      'Source Section:',
-      sourceSectionId,
-      'Destination Section:',
-      destinationSectionId,
-      'Source Index:',
-      result.source.index,
-      'Destination Index:',
-      result.destination.index
-    );
 
     if (sourceSectionId === destinationSectionId) {
       const sectionVideos = videosBySection[sourceSectionId];
@@ -219,7 +207,7 @@ const EditPage = ({ session }) => {
         [sourceSectionId]: sectionVideos,
       });
     } else {
-      console.log('here');
+   
       const response = await axios.patch(
         `/courses/${course?.id}/sections/${sourceSectionId}/videos`,
         {
@@ -232,8 +220,9 @@ const EditPage = ({ session }) => {
         }
       );
       if (response.status === 200) {
+      
         const sectionResponse = await axios.post(
-          `/courses/${course?.id}/sections/${destinationSectionId}/videos`,
+          `/courses/${course?.id}/section/${destinationSectionId}/videos`,
           {
             video_id: videoId,
           },
@@ -243,7 +232,7 @@ const EditPage = ({ session }) => {
             },
           }
         );
-        console.log(response.data, 'while drag', sectionResponse.data);
+      
       }
 
       const sourceSectionVideos = videosBySection[sourceSectionId];
@@ -515,7 +504,7 @@ function EditPageHeader({
         setSections(response.data?.sections);
       }
       errorToast('Section Deleted');
-      console.log(response.data);
+
     } catch (err) {
       console.log(err);
       errorToast('An error occured!');
@@ -547,7 +536,7 @@ function EditPageHeader({
         setSections(response.data?.sections);
       }
       successToast('Section Updated!', '#1850BC');
-      console.log(response.data);
+   
       section.name = response.data?.section?.name;
     } catch (err) {
       console.log(err);
@@ -649,7 +638,6 @@ export const VideoItem = ({
   const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const axios = useAxiosPrivate();
-  console.log(video, '{videoItem}');
 
   const onDeleteSubmit = async (e) => {
     e.preventDefault();
@@ -663,14 +651,14 @@ export const VideoItem = ({
         }
       );
       errorToast('Video Deleted Successfully');
-      console.log(response, 'response delete video');
+ 
       if (response.status === 200) {
         const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+      
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
 

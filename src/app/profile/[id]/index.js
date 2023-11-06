@@ -6,6 +6,7 @@ import { formatTimeAgo } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 import {
   Quiz,
   Video,
@@ -29,6 +30,7 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
+import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
 const tabs = [
   { key: 'myvideos', label: 'Videos', icon: '/svgs/Play.svg' },
   { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
@@ -37,22 +39,47 @@ const tabs = [
   { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
 ];
 
+
+
+
 export const MyProfile = ({ user, session }) => {
+  const axios=useAxiosPrivate()
   const [active, setActive] = useState(tabs[0].key);
-  console.log(user?.user);
+  const [openChat,setOpenChat]=useState(false)
+  const [openAppointment,setOpenAppointment]=useState(false)
+
+  const handleMessageRequest=async (message,onClose)=>{
+   
+    if(!message) return
+    try { 
+      const response=await axios.post(`chats/request/${user?.user?.id}`,{
+        message
+      },{
+        headers:{
+          Authorization:`Bearer ${session?.token}`
+        }
+      })
+      onClose()
+        
+    } catch (error) {
+      
+    }
+  }
+
+
   return (
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
         <Profile isActon={false} type={'userprofile'} session={session} user={user?.user} />
         <div className="flex justify-between gap-2 mt-4">
-          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
+          <button onClick={()=>setOpenAppointment(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
             <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
             <span className="md:block hidden">Book Appointment</span>
           </button>
-          <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
+          <button onClick={()=>setOpenChat(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
             <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
-            <span className="md:block hidden">Message Expert</span>
+            <span className="md:block hidden" >Message Expert</span>
           </button>
           <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor">
             <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
@@ -71,8 +98,8 @@ export const MyProfile = ({ user, session }) => {
             <Video videos={courses} />
           </motion.div>
         )} */}
-
-        {/* {active === 'quiz' && (
+{/* 
+        {active === 'quiz' && (
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )} */}
         {/* {active === 'podcast' && (
@@ -88,6 +115,8 @@ export const MyProfile = ({ user, session }) => {
         {/* {active === 'myaccount' && <MyAccount />} */}
         {active === 'mylearning' && <MyCourses token={session?.token} />}
       </div>
+      <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat}/>
+      <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} userId={user?.user?.id}/>
     </>
   );
 };
@@ -103,7 +132,7 @@ const MyCourses = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data.courses);
+       
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -161,11 +190,11 @@ const CourseCard = ({ course }) => {
   );
 };
 
-const MyQuizzes = ({ tutorId, token }) => {
+const MyQuizzes = ({  token }) => {
   const axios = useAxiosPrivate();
   const dispatch = useDispatch();
   const quizes = useSelector((state) => state?.quizzes?.quizzes);
-  const [isEdit, setIsEdit] = useState(false);
+
   useEffect(() => {
     const fetchQuizes = async () => {
       try {
@@ -174,7 +203,7 @@ const MyQuizzes = ({ tutorId, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+      
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -186,25 +215,9 @@ const MyQuizzes = ({ tutorId, token }) => {
   return (
     <div className="w-[90%] mx-auto mt-10">
       <div className="flex justify-end w-full">
-        <button
-          type="button"
-          onClick={() => setIsEdit(!isEdit)}
-          className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
-        >
-          <div
-            className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-              isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-            }`}
-          >
-            {isEdit ? (
-              <Icons.cross className=" stroke-white h-2 w-2" />
-            ) : (
-              <Icons.editPencil className=" stroke-white h-3 w-3" />
-            )}
-          </div>
-        </button>
+      
       </div>
-      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
+      {quizes && quizes.map((quiz, index) => <Quiz  key={index} quiz={quiz} />)}
     </div>
   );
 };
@@ -212,7 +225,7 @@ const MyQuizzes = ({ tutorId, token }) => {
 const MyVideos = ({ userId }) => {
   const axios = useAxiosPrivate();
   const [videos, setVideos] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+
   useEffect(() => {
     const fetchTutorVideos = async () => {
       try {
@@ -227,9 +240,9 @@ const MyVideos = ({ userId }) => {
 
   return (
     <div className=" py-8">
-      <div className="grid grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-3 gap-y-4 gap-x-14 mt-4">
         {videos.map((video, index) => (
-          <VideoItem video={video} isEdit={isEdit} key={index} />
+          <VideoItem video={video}  key={index} />
         ))}
       </div>
     </div>
@@ -245,7 +258,7 @@ const Mybooks = ({ id }) => {
       try {
         setLoading(false);
         const response = await axios.get(`/assets/books/user/${id}`);
-        console.log(response.data, 'books');
+      
         setBooks(response.data);
       } catch (err) {
         console.log(err);
@@ -254,7 +267,7 @@ const Mybooks = ({ id }) => {
     fetchBooks();
   }, []);
 
-  console.log(books, 'books');
+
   return (
     <div>
       {loading ? (

@@ -8,14 +8,15 @@ import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
 import { errorToast } from '@/utils/toasts';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 const LivePremium = () => {
-  const params = useSearchParams();
-  const tutorId = params.get('tutorId');
+  const params = useSearchParams()
   const room = params.get('room');
-  const listener = params.get('listener');
+  const id=params.get('id')
   const { data: user } = useSession();
   const videoContainerRef = useRef(null);
+  const axios=useAxiosPrivate()
   const router = useRouter();
   const [peer, setPeer] = useState(null);
   const [localStream, setLocalStream] = useState(null);
@@ -23,6 +24,7 @@ const LivePremium = () => {
   const [newMessage, setNewMessage] = useState('');
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
+  const [podcast,setPodcast]=useState({})
 
   const endCall = () => {
     if (peer) {
@@ -37,67 +39,14 @@ const LivePremium = () => {
     socket.emit('end-call', { room });
   };
 
-  useEffect(() => {
-    initializeSocket();
-  }, []);
-  console.log(user?.user?.id === +tutorId, tutorId, user?.user?.id, 'user');
-
-  useEffect(() => {
-    import('peerjs').then((module) => {
-      const Peer = module.default;
-      if (!listener && user?.user?.isTutor && user?.user?.id === +tutorId) {
-        const peer = new Peer(room);
-        const constraints = {
-          video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
-          audio: true,
-        };
-
-        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-          setLocalStream(stream);
-          createVideoElement(stream);
-
-          peer.on('connection', (conn) => {
-            conn.on('open', () => {
-              peer.call(conn.peer, stream);
-            });
-          });
-
-          socket.emit('broadcaster-connected', { id: tutorId, room });
-        });
-      } else {
-        const peer = new Peer();
-        setPeer(peer);
-
-        peer.on('call', (call) => {
-          call.on('stream', (remoteStream) => {
-            setLocalStream(remoteStream);
-            createVideoElement(remoteStream);
-          });
-          call.answer(null);
-        });
-
-        peer.on('open', () => {
-          peer.connect(room);
-          socket.emit('listener-connected', { id: peer.id, room });
-          socket.emit('chat-message', { room, message: `${user?.user?.display_name} joined!` });
-        });
-      }
-    });
-    return () => {
-      if (peer) {
-        peer.destroy();
-      }
-    };
-  }, []);
-
   const initializeSocket = () => {
     socket.connect();
     socket.on('connect', () => {
-      console.log('Socket connected');
+
     });
 
     socket.on('chat-message', (message) => {
-      console.log('Received chat messsage:', message);
+      
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -106,6 +55,86 @@ const LivePremium = () => {
       router.push('/podcast');
     });
   };
+
+  useEffect(() => {
+    initializeSocket();
+  }, []);
+ 
+  
+
+  useEffect(() => {
+    const initializePeer = async (podcastData) => {
+      try {
+        const module = await import('peerjs');
+        const Peer = module.default;
+        const tutorId = podcastData.tutor_id;
+  
+        if (user?.user?.isTutor && +user?.tutor?.tutor_id === +podcastData?.tutor_id) {
+          const peer = new Peer(room);
+          const constraints = {
+            video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
+            audio: true,
+          };
+  
+          navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+            setLocalStream(stream);
+            createVideoElement(stream);
+  
+            peer.on('connection', (conn) => {
+              conn.on('open', () => {
+                peer.call(conn.peer, stream);
+              });
+            });
+  
+            socket.emit('broadcaster-connected', { id: tutorId, room });
+          });
+        } else {
+          const peer = new Peer();
+          setPeer(peer);
+  
+          peer.on('call', (call) => {
+            call.on('stream', (remoteStream) => {
+              setLocalStream(remoteStream);
+              createVideoElement(remoteStream);
+            });
+            call.answer(null);
+          });
+  
+          peer.on('open', () => {
+            peer.connect(room);
+            socket.emit('listener-connected', { id: peer.id, room });
+            socket.emit('chat-message', { room, message: `${user?.user?.display_name} joined!` });
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing Peer:', error);
+      }
+    };
+  
+    const fetchPodcast = async () => {
+      try {
+        const response = await axios.get(`/podcasts/${id}`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`
+          }
+        });
+        setPodcast(response?.data?.podcast)
+        initializePeer(response.data.podcast);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
+    fetchPodcast();
+  
+    return () => {
+      if (peer) {
+        peer.destroy();
+      }
+    };
+  }, []);
+  
+ 
 
   const createVideoElement = (stream) => {
     const video = document.createElement('video');
@@ -118,21 +147,23 @@ const LivePremium = () => {
 
     video.addEventListener('loadedmetadata', () => {
       video.play();
+      if( videoContainerRef?.current){
       videoContainerRef.current.innerHTML = '';
       videoContainerRef.current.appendChild(video);
+      }
     });
   };
 
   const toggleVideoMute = () => {
     setVideoMuted(!videoMuted);
     localStream.getVideoTracks()[0].enabled = videoMuted;
-    console.log('Video muted:', videoMuted);
+  
   };
 
   const toggleAudioMute = () => {
     setAudioMuted(!audioMuted);
     localStream.getAudioTracks()[0].enabled = audioMuted;
-    console.log('Audio muted:', audioMuted);
+   
   };
 
   const sendMessage = (e) => {
@@ -160,7 +191,7 @@ const LivePremium = () => {
       <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
         <div className={`group w-full lg:h-[75vh] group relative`}>
           <div ref={videoContainerRef} id="video-container" className={`lg:h-[75vh]`}></div>
-          {listener && user?.user?.isTutor ? null : (
+          {!(+user?.tutor?.tutor_id === +podcast?.tutor_id)  ? null : (
             <div
               style={controlsStyles}
               className=" transition-all z-[8000] duration-300 ease-in-out"

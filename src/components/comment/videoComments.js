@@ -35,32 +35,37 @@ export const VideoComments = () => {
     }, 1000);
   });
 
-  const debouncedFetchComments = useMemo(
-    () =>
-      debounce(async () => {
-        try {
-          setLoading(true);
-          await delay;
-          dispatch(resetComments());
-          dispatch(
-            fetchPrimaryComments({
-              videoId: id,
-              axios,
-            })
-          );
-        } catch (err) {
-          console.log(err);
-        } finally {
-          setLoading(false);
-        }
-      }, 300),
-    [id]
-  );
+  // const debouncedFetchComments = useMemo(
+  //   () =>
+  //     debounce(async () => {
+  //       try {
+  //         setLoading(true);
+  //         await delay;
+  //         dispatch(resetComments());
+  //         dispatch(
+  //           fetchPrimaryComments({
+  //             videoId: id,
+  //             axios,
+  //           })
+  //         );
+  //       } catch (err) {
+  //         console.log(err);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }, 300),
+  //   [id]
+  // );
 
   useEffect(() => {
-    console.count('run');
-    debouncedFetchComments();
-  }, [debouncedFetchComments]);
+    dispatch(resetComments())
+    dispatch(
+      fetchPrimaryComments({
+        videoId: id,
+        axios,
+      })
+    );
+  }, [id]);
   const LoadingSkeletons = () => (
     <div className="py-8 grid  gap-4">
       {[...Array(3)].map((_, idx) => (
@@ -92,7 +97,6 @@ export const VideoComments = () => {
         `/assets/video/${id}/comments?limit=${newLimit}&set=0&order=desc`
       );
 
-      console.log(response.data, '{load more}');
       dispatch(setComments(response.data.comments));
       setLimit(newLimit);
     } catch (err) {
@@ -102,12 +106,12 @@ export const VideoComments = () => {
 
   const handleFetchReplies = async (commentId) => {
     const newLimit = repliesLimit + 10;
-    console.log(newLimit, '{newLimit}');
+    
     try {
       const response = await axios.get(
         `/assets/video/${id}/comments/${commentId}?limit=${newLimit}`
       );
-      console.log(response.data, '{replies fetch}');
+     
       dispatch(setReplyComments({ commentId, replies: response.data?.comments }));
       setRepliesLimit(newLimit);
     } catch (error) {

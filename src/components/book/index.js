@@ -1,21 +1,15 @@
 import { FileInput } from '@/components';
-import { useState, useRef } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
+import { useState, useRef ,useEffect} from 'react';
+import { SubjectDropDown } from '@/components'
+import axios from '../../utils/index'
 export const NewBookBodyColumn = ({
   bookTitle,
   bookDescription,
   setBookDescription,
   setBookTitle,
 }) => {
+
+
   return (
     <div className="flex flex-col gap-4 text-sm">
       <div className="flex flex-col">
@@ -101,27 +95,15 @@ export const UploadBookColumn = ({
   setIsDownloadable,
   subject,
   setSubject,
+
 }) => {
+
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col">
+      <div className="flex flex-col text-sm">
         <label className="text-sm text-[#616161] font-light">SUBJECT</label>
-
-        <Select onValueChange={setSubject} defaultValue={subject}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a Subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Subjects</SelectLabel>
-              <SelectItem value="1">English</SelectItem>
-              <SelectItem value="2">Chemistry</SelectItem>
-              <SelectItem value="3">Physics</SelectItem>
-              <SelectItem value="4">Science</SelectItem>
-              <SelectItem value="5">Maths</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <SubjectDropDown selectedValue={subject} onValueChange={setSubject} placeholder={"Select Subject"}/>
       </div>
       <div className="flex flex-col text-sm text-[#616161] font-light">
         <label className="">UPLOAD BOOK FILE</label>

@@ -2,12 +2,27 @@
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import axios from '../../../utils/index'
 export const MyAccountInfo = ({ setEdit }) => {
+  const [categories, setCategories] = useState([])
   const {
-    data: { user, tutor },
+    data: user,
   } = useSession();
+  if (!user) {
+    return <div>Loading or error message...</div>;
+  }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await axios.get('/categories')
+      setCategories(response?.data)
+    }
+    fetchCategories()
+  }, [])
+
+  let userExpertise = user?.tutor?.expertise && categories.filter(cat => cat?.id === user?.tutor?.expertise.find((exp) => +exp === +cat?.id))
+  console.log(userExpertise, "expe")
   return (
     <div>
       <div className="flex gap-4 flex-col mt-8">
@@ -15,19 +30,19 @@ export const MyAccountInfo = ({ setEdit }) => {
           <div className="grid-cols-2 md:grid-cols-3 lg:grid-cols-1 grid  gap-4 lg:w-[25%]">
             <div>
               <label className="text-sm font-thin">First Name</label>
-              <h2 className=" text-lg">{user?.first_name}</h2>
+              <h2 className=" text-lg">{user?.user?.first_name}</h2>
             </div>
             <div>
               <label className="text-sm font-thin">Last Name</label>
-              <h2 className=" text-lg">{user?.last_name}</h2>
+              <h2 className=" text-lg">{user?.user?.last_name}</h2>
             </div>
             <div>
               <label className="text-sm font-thin">Account Name</label>
-              <h2 className=" text-lg">{user?.display_name}</h2>
+              <h2 className=" text-lg">{user?.user?.display_name}</h2>
             </div>
             <div>
               <label className="text-sm font-thin">Email Address</label>
-              <h2 className=" text-lg">{user?.email}</h2>
+              <h2 className=" text-lg">{user?.user?.email}</h2>
             </div>
             <div>
               <label className="text-sm font-thin">Phone Number</label>
@@ -40,18 +55,29 @@ export const MyAccountInfo = ({ setEdit }) => {
           </div>
 
           <div className="lg:w-1/3 grid grid-cols-3 lg:grid-cols-1 border-l border-[#D9D9D9] pl-6 md:pl-10 gap-6">
-            <div className="">
-              <label className="text-sm font-thin">Hourly Rate</label>
-              <h2 className=" text-lg">{tutor?.hourly_rate}$</h2>
-            </div>
-            <div>
-              <label className="text-sm font-thin">Expertise</label>
-              <ul className=" list-disc">
-                <li>MATH</li>
-                <li>PHYSICS</li>
-                <li>CHEMISTRY</li>
-              </ul>
-            </div>
+            {
+              user?.tutor?.hourly_rate && user?.tutor?.hourly_rate > 0 &&
+              <div className="">
+
+                < label className="text-sm font-thin">Hourly Rate</label>
+                <h2 className=" text-lg">{user?.tutor?.hourly_rate}$</h2>
+
+              </div>
+            }
+            {
+              user?.tutor &&
+              <div>
+                <label className="text-sm font-thin">Expertise</label>
+                <ul className=" list-disc">
+                  {userExpertise && userExpertise?.map((exp) => (
+                    <div key={exp?.id}>
+                      {exp?.category}
+                    </div>
+                  ))}
+
+                </ul>
+              </div>
+            }
             <div>
               <label className="text-sm font-thin">Interests</label>
               <ul className=" list-disc">
@@ -65,7 +91,7 @@ export const MyAccountInfo = ({ setEdit }) => {
           <div className="flex flex-col gap-8 border-l border-[#D9D9D9] pl-6 md:pl-10 lg:w-2/5 ">
             <div>
               <label className="text-sm font-thin">Bio</label>
-              <p className="text-lg">{user?.bio}</p>
+              <p className="text-lg">{user?.tutor?.bio}</p>
             </div>
             <div className="flex flex-col gap-1 w-full">
               <div className="flex justify-between">
@@ -121,6 +147,6 @@ export const MyAccountInfo = ({ setEdit }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };

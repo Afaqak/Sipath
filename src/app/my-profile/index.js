@@ -19,7 +19,6 @@ import {
   VideoItem,
   BookSkeleton,
 } from '@/components';
-
 import { UniversalTab } from '@/components';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
@@ -29,20 +28,33 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
-const tabs = [
-  { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
-  { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
-  { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
-  { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
-  { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
-  { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
-  { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
-];
+import { ChatRequestModal } from '@/components/chat/chatRequestModal';
+
 
 export const MyProfile = ({ session }) => {
-  const [active, setActive] = useState(tabs[0].key);
+  const isTutor=session?.user?.isTutor
+  const tutorTabs = [
+    { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
+    { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
+    { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
+    { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
+    { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
+  ];
+  
+  const userTabs=[
+    { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
+    { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
+    { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
+    { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
+  ];
+  const tabsToShow=isTutor?tutorTabs:userTabs
+  const [active, setActive] = useState(tabsToShow[0].key);
+
   const { data: user } = useSession();
-  console.log(session, 'session');
+ 
   return (
     <>
       <div className="mt-0.5"></div>
@@ -51,7 +63,7 @@ export const MyProfile = ({ session }) => {
         <UniversalTab
           tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}
-          tabs={tabs}
+          tabs={tabsToShow}
           setActive={setActive}
         />
 
@@ -73,9 +85,9 @@ export const MyProfile = ({ session }) => {
         {active === 'books' && <Mybooks token={session?.token} />}
         {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
-        {active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
+        { active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
         {active === 'myaccount' && <MyAccount />}
-        {active === 'mylearning' && <MyCourses session={session} />}
+        { active === 'mylearning' && <MyCourses session={session} />}
       </div>
     </>
   );
@@ -92,7 +104,7 @@ const MyCourses = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-        console.log(response.data.courses);
+       
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -110,7 +122,7 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session }) => {
-  console.log(session, '{my-profile}');
+
   return (
     <Link
       href={`/tutor/courses/${course?.id}`}
@@ -164,7 +176,7 @@ const MyQuizzes = ({ tutorId, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data);
+       
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -220,17 +232,16 @@ const MyVideos = ({ userId, token }) => {
     };
     fetchTutorVideos();
   }, []);
-  console.log(videos, '{videos}');
 
   const handleSetUpdateVideos = (updatedVideo) => {
-    console.log(updatedVideo, '{from setVideo}');
+  
     setVideos((prev) =>
       prev.map((video) => (video?.id === updatedVideo?.id ? { ...updatedVideo } : video))
     );
   };
   const setDeletedVideo = async (id) => {
     try {
-      console.log(id, '{id}');
+     
       const response = await axios.delete(`/assets/videos/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -267,7 +278,7 @@ const MyVideos = ({ userId, token }) => {
           </button>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-3 gap-14 mt-4">
         {videos.map((video, index) => (
           <VideoItem
             video={video}
@@ -298,7 +309,7 @@ const Mybooks = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data, 'books');
+   
         dispatch(setBooks(response.data));
       } catch (err) {
         console.log(err);
@@ -307,7 +318,7 @@ const Mybooks = ({ token }) => {
     fetchBooks();
   }, []);
 
-  console.log(books, 'books');
+
   return (
     <div>
       <div className="flex w-full justify-end">

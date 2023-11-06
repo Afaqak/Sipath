@@ -31,7 +31,7 @@ export { LiveMessages } from './podcast/liveMessages';
 export { VideoInfo } from './podcast/videoInfo';
 export { Stars } from './common/5star';
 export { CreateComment } from './comment/createComment';
-export { SubjectDropdown } from './common/subjectDropdown';
+export { SubjectDropDown } from './common/subjectDropdown';
 export { VideoUploadType } from './common/videoUploadType';
 export { PodcastSlider } from './tutors/podcastSlider';
 export { ContentContainer } from './common/UI';

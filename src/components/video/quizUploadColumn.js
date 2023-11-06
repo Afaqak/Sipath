@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { FileInput } from '../tutors/fileInput';
+import { SubjectDropDown } from '../common/subjectDropdown';
 export const QuizUploadColumn = ({
   onChange,
   subject,
@@ -17,26 +18,13 @@ export const QuizUploadColumn = ({
   quizSolution,
   setQuizSolution,
 }) => {
-  console.log(quizSolution);
+ 
   return (
     <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
       <div className="flex flex-col">
         <label className="text-sm">Subject</label>
-        <Select onValueChange={onChange} value={subject?.toString()}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select a Subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Subjects</SelectLabel>
-              <SelectItem value="1">English</SelectItem>
-              <SelectItem value="2">Chemistry</SelectItem>
-              <SelectItem value="3">Physics</SelectItem>
-              <SelectItem value="4">Science</SelectItem>
-              <SelectItem value="5">Maths</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <SubjectDropDown onValueChange={onChange} placeholder={"Select Subject"} selectedValue={subject}/>
+       
       </div>
       <div className="flex flex-col">
         <label className="text-sm">Upload Quiz</label>

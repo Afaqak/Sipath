@@ -99,7 +99,7 @@ export const Tutor = () => {
   const [active, setActive] = useState(tabs[0].key);
   const [donate, setDonate] = useState(false);
   const { data: user } = useSession();
-  console.log(user, 'tutor');
+ 
   const [appointment, setAppointment] = useState(false);
   return (
     <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
@@ -192,11 +192,12 @@ const MyCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       const response = await axios.get('/courses');
-      console.log(response.data.courses);
+    
       setCourses(response.data.courses);
     };
     fetchCourses();
   }, []);
+ 
   return (
     <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
       {courses.map((course) => (
@@ -246,14 +247,14 @@ const CourseCard = ({ course }) => {
 const MyQuizzes = ({ tutorId }) => {
   const axios = useAxiosPrivate();
   const [quizes, setQuizes] = useState([]);
-  console.log(tutorId);
+  
   const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
     const fetchQuizes = async () => {
       try {
         const response = await axios.get(`/assets/quizzes/tutor/${tutorId}`);
-        console.log(response.data);
+    
         setQuizes(response.data);
       } catch (err) {
         console.error(err);

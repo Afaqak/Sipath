@@ -5,7 +5,7 @@ export const createQuiz = createAsyncThunk(
   'quizzes/createQuiz',
   async ({ data, token, onSuccess, onError }, { rejectWithValue }) => {
     const axios = useAxiosPrivate();
-    console.log(token, onSuccess);
+ 
     try {
       const response = await axios.post(`/upload/quiz`, data, {
         headers: {
@@ -39,7 +39,7 @@ export const fetchQuizzes = createAsyncThunk('quizzes/fetchQuizzes', async ({ tu
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response.data);
+
   return response.data;
 });
 
@@ -54,8 +54,7 @@ export const UpdateQuiz = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response.data, 'response from update');
-
+ 
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
 
       return response.data.updatedQuiz;

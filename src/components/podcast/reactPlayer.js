@@ -4,6 +4,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import videojs from 'video.js';
+import { Icons } from '../icons';
 
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';
@@ -18,7 +19,7 @@ class NextButton extends videojs.getComponent('Button') {
   }
 
   handleClick(event) {
-    console.log(event, 'e');
+   
   }
 }
 
@@ -27,17 +28,15 @@ videojs.registerComponent('NextButton', NextButton);
 const ContentPlayer = ({ noPremium, token }) => {
   const searchParams = useSearchParams();
   const axios = useAxiosPrivate();
+  const videoId = searchParams.get('id')
   const playerRef = useRef(null);
-
-  const videoId = searchParams.get('id');
   const [isClient, setIsClient] = useState(false);
-  const [videoBlob, setVideoBlob] = useState(null);
-  const { data: user } = useSession();
+  const [video, setVideo] = useState({})
+
 
   const videoJsOptions = {
-    autoplay: true,
     controls: true,
-    width: 775,
+    width: '100%',
     height: 400,
     responsive: true,
     fill: true,
@@ -45,52 +44,57 @@ const ContentPlayer = ({ noPremium, token }) => {
   };
 
   useEffect(() => {
+
     setIsClient(true);
 
     const fetchVideoData = async () => {
+    
       try {
-        const response = await axios.get(`/assets/video/stream/${videoId}`, {
-          responseType: 'arraybuffer',
+        const response = await axios.get(`/assets/video/${videoId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-        setVideoBlob(videoBlob);
-
+   
+        setVideo(response.data)
         videoJsOptions.sources = [
           {
-            src: URL.createObjectURL(videoBlob),
+            src: `https://d8eq391ms9r5i.cloudfront.net/${response?.data?.asset?.asset_key}`,
             type: 'video/mp4',
           },
         ];
 
         if (playerRef.current) {
           const player = videojs(playerRef.current, videoJsOptions);
-          player.play();
+
           const controlBar = player.getChild('controlBar');
 
           if (!player.getChild('controlBar').getChild('NextButton')) {
-            console.log(player.getChild('controlBar').getChild('NextButton'), '{find}');
+          
             const nextButton = controlBar.addChild('NextButton', {}, 1);
             controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
           }
+          player.src(videoJsOptions.sources);
+          player.poster(response?.data?.asset?.thumbnail)
+
         }
       } catch (error) {
         console.error('Error fetching video data:', error);
       }
+     
     };
 
     fetchVideoData();
-  }, [videoId, token]);
+  }, [videoId]);
+
 
   return (
-    <div>
-      {isClient && (
-        <div className="aspect-video">
-          <video ref={playerRef} className="video-js vjs-theme-fantasy " />
-        </div>
-      )}
+    <div className='aspect-video relative border bg-black'>
+    
+      <div className="aspect-video">
+        <video poster={video?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
+      </div>
+
     </div>
   );
 };

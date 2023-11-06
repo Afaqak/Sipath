@@ -1,14 +1,6 @@
-import { FileInput } from '@/components';
-import React from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { FileInput,SubjectDropDown } from '@/components';
+import React, { useEffect, useState } from 'react';
+
 
 export const NewQuizBodyRow = ({
   quizTitle,
@@ -16,13 +8,14 @@ export const NewQuizBodyRow = ({
   selectedSubject,
   setSelectedSubject,
 }) => {
+
   return (
-    <div className="flex gap-4 text-[#616161] font-light">
+    <div className="flex flex-col md:flex-row gap-4 text-[#616161] font-light text-sm">
       <div className="flex flex-col">
         <label className="text-sm font-light">Quiz title</label>
         <input
           placeholder="ENTER TITLE"
-          className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] w-48 rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
+          className="shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] text-sm w-48 rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
           type="text"
           value={quizTitle}
           onChange={(e) => setQuizTitle(e.target.value)}
@@ -30,21 +23,7 @@ export const NewQuizBodyRow = ({
       </div>
       <div className="flex flex-col">
         <label className="text-sm text-[#616161] font-light">Subject</label>
-        <Select onValueChange={setSelectedSubject} defaultValue={selectedSubject}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a Subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Subjects</SelectLabel>
-              <SelectItem value="1">English</SelectItem>
-              <SelectItem value="2">Chemistry</SelectItem>
-              <SelectItem value="3">Physics</SelectItem>
-              <SelectItem value="4">Science</SelectItem>
-              <SelectItem value="5">Maths</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <SubjectDropDown  selectedValue={+selectedSubject} placeholder={"Select Subject"} onValueChange={setSelectedSubject}/>
       </div>
     </div>
   );
@@ -59,7 +38,7 @@ export const UploadQuizRow = ({
   setQuizFile,
 }) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 flex-col md:flex-row">
       <div className="flex flex-col">
         <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
         <FileInput setFile={setQuizFile} file={quizFile} />
