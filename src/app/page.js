@@ -85,11 +85,10 @@ const Home = () => {
         <Video videos={videos_set_two} />
       </div>
       <div >
-        {experts && <Experts data={experts} />}
+        {experts.length>0 && <Experts data={experts} />}
       </div>
       {
         categories.length > 0 &&
-
         <Categories data={categories} />
       }
     </div>
