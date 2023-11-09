@@ -5,7 +5,7 @@ import UserAvatar from '@/components/common/userAvatar';
 const UserListItem = ({ user, conversation, isSelected, onClick }) => {
 
   const member_2=user?.id=== conversation?.chat_member_2?.id?conversation?.chat_member_1:conversation?.chat_member_2
- 
+  console.log(conversation,"conversation")
   return (
     <div
       className={`p-3  cursor-pointer border relative 

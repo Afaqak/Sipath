@@ -275,9 +275,7 @@ export const OnBoardingProcess = () => {
                         alt="account"
                       />
                     )}
-                    <p className="w-1/2 text-[0.78rem] text-[#616161]">
-                      File must be min. 140x140px
-                    </p>
+                   
                   </div>
                   <button
                     type="button"

@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/authentication/passwordInput';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';

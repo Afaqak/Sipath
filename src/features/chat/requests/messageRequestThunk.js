@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { insertConversation } from '../conversation/conversationSlice';
+import { fetchConversations } from '../conversation/conversationThunk';
 
 export const fetchMessageRequests = createAsyncThunk(
   'messageRequests/fetchMessageRequests',
@@ -35,9 +36,9 @@ export const approveRequest = createAsyncThunk(
         }
       });
 
-      dispatch(insertConversation(response.data?.chat))
-  
-      // dispatch(fetchMessageRequests({}));
+      // dispatch(insertConversation(response.data?.chat))
+      dispatch(fetchConversations({token}))
+      dispatch(fetchMessageRequests({}));
       return response.data.updatedRequest;
     } catch (err) {
       throw err;

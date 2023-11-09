@@ -34,7 +34,7 @@ console.log(message)
           <div className="mt-4">
             <input
               type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
+              className="w-full border border-gray-300 p-2 shadow-[inset_2px_2px_7px_rgba(0,0,0,0.1)] focus:outline-none rounded-md"
               placeholder="Type your message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -43,7 +43,7 @@ console.log(message)
               onClick={()=>handleSubmit(message,closeModal)}
               type="button"
               className="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              // onClick={sendMessageRequest}
+            
             >
               Send Request
             </button>

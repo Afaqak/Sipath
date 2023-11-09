@@ -30,9 +30,10 @@ const MyCourses = ({ session }) => {
                         Authorization: `Bearer ${session?.token}`,
                     },
                 });
-
+                
                 const enrollmentsResponse = await axios.get('/courses/enrollments', {
                     headers: {
+                        
                         Authorization: `Bearer ${session?.token}`,
                     },
                 });
