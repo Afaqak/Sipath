@@ -2,14 +2,13 @@ import axios from 'axios';
 import { errorToast } from './toasts';
 
 const instance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  baseURL: process.env.BACKEND_URL || 'http://backend.sipath.com',
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL ,
   withCredentials: true,
 });
 
 export const axiosPrivate = axios.create({
 
-  baseURL: process.env.BACKEND_URL || 'http://backend.sipath.com',
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL ,
   headers: {
     'Content-Type': 'application/json',
   },

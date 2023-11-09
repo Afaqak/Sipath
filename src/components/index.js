@@ -69,7 +69,6 @@ export { LoadingSkeletons } from '@/utils/skeletons';
 export { VideoandThumbnail } from './video/videoAndThumbnail';
 export { QuizUploadColumn } from './video/quizUploadColumn';
 export { DeleteModal } from './common/deleteModal';
-export { SectionAddModal } from './video/sectionAddModal';
 export { NewBookBodyColumn } from './book';
 export { CoverPreview } from './book';
 export { UploadBookColumn } from './book';

@@ -3,6 +3,7 @@ import { Icons } from '../icons';
 
 export const Stars = ({ rating, setRating, initialRating }) => {
   const [hover, setHover] = useState(null);
+  console.log(initialRating,"initital",rating,setRating)
   
   return (
     <div className="flex items-center">
@@ -18,7 +19,7 @@ export const Stars = ({ rating, setRating, initialRating }) => {
             onMouseLeave={() => setHover(null)}
           >
             <Icons.stars
-              fill={currentRating <= (hover || rating || initialRating) ? '#f6ab0e' : null}
+              fill={currentRating <= (hover || rating || +initialRating) ? '#f6ab0e' : null}
             />
           </div>
         );

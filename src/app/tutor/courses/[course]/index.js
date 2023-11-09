@@ -1,14 +1,12 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import { DeleteModal, LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
-import { errorToast, successToast } from '@/utils/toasts';
+import {  LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
+import { errorToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
-import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import {
@@ -475,5 +473,6 @@ export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, se
     </Dialog>
   );
 }
+
 
 

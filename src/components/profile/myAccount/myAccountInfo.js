@@ -2,10 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import axios from '../../../utils/index'
-export const MyAccountInfo = ({ setEdit }) => {
-  const [categories, setCategories] = useState([])
+
+export const MyAccountInfo = ({ setEdit ,categories}) => {
+ 
   const {
     data: user,
   } = useSession();
@@ -13,16 +12,8 @@ export const MyAccountInfo = ({ setEdit }) => {
     return <div>Loading or error message...</div>;
   }
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await axios.get('/categories')
-      setCategories(response?.data)
-    }
-    fetchCategories()
-  }, [])
 
-  let userExpertise = user?.tutor?.expertise && categories.filter(cat => cat?.id === user?.tutor?.expertise.find((exp) => +exp === +cat?.id))
-  console.log(userExpertise, "expe")
+ 
   return (
     <div>
       <div className="flex gap-4 flex-col mt-8">
@@ -69,11 +60,14 @@ export const MyAccountInfo = ({ setEdit }) => {
               <div>
                 <label className="text-sm font-thin">Expertise</label>
                 <ul className=" list-disc">
-                  {userExpertise && userExpertise?.map((exp) => (
-                    <div key={exp?.id}>
-                      {exp?.category}
+                {
+                  user?.tutor && user?.tutor?.expertise?.map((exp) => (
+                      <div key={exp}>
+                      
+                      { categories[exp-1]?.category}
                     </div>
-                  ))}
+                     ))
+                  }
 
                 </ul>
               </div>

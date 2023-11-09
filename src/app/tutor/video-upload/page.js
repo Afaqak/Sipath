@@ -3,13 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { FileInput, VideoUploadType,SubjectDropDown } from '@/components';
+import { FileInput, VideoUploadType, SubjectDropDown } from '@/components';
 import axios from '../../../utils/index'
 import { motion } from 'framer-motion';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
+import { Icons } from '@/components';
+
 
 const VideoUpload = () => {
   const { data: user } = useSession();
@@ -61,30 +63,30 @@ const VideoUpload = () => {
 
 
   const [sections, setSections] = useState([initialState]);
- 
+
   const handleTitleUpdate = (sectionIndex, title) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].title = title;
     setSections(updatedSections);
-   
+
   };
 
   const handleUpdateFormData = (sectionIndex, videoIndex, e) => {
     e.preventDefault();
-    
+
     const { name, value } = e.target;
     const updatedSections = [...sections];
     const videoFormData = { ...updatedSections[sectionIndex].videos[videoIndex].formData };
     videoFormData[name] = value;
     updatedSections[sectionIndex].videos[videoIndex].formData = videoFormData;
     setSections(updatedSections);
-    
+
   };
 
   const handleUpdateThumbnail = (sectionIndex, videoIndex, thumbnail) => {
     const updatedSections = [...sections];
     updatedSections[sectionIndex].videos[videoIndex].thumbnail = thumbnail;
-    
+
     setSections(updatedSections);
   };
 
@@ -112,7 +114,7 @@ const VideoUpload = () => {
     setSections(updatedSections);
   };
   const handleUpdateSubject = (sectionIndex, videoIndex, subject) => {
- 
+
     const updatedSections = [...sections];
     updatedSections[sectionIndex].videos[videoIndex].subject = subject;
     setSections(updatedSections);
@@ -141,7 +143,7 @@ const VideoUpload = () => {
       }
       return section;
     });
-   
+
 
     setSections(updatedSections);
   };
@@ -252,7 +254,7 @@ const VideoUpload = () => {
           uploadProgress: 0,
           quiz: null,
           quiz_solution: null,
-          
+
         },
       ],
     };
@@ -267,7 +269,7 @@ const VideoUpload = () => {
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
     let sId = sectionIds.slice();
-  
+
 
     if (!courseId) {
       if (!courseTopic || !courseThumbnail) {
@@ -379,12 +381,12 @@ const VideoUpload = () => {
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
-           
+
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
 
             const videoId = response.data?.video?.id;
-       
+
             const addVideoResponse = await privateAxios.post(
               `/courses/${cId}/section/${sId[sectionIndex]}/videos`,
               { video_id: videoId },
@@ -396,10 +398,10 @@ const VideoUpload = () => {
             );
 
             if (addVideoResponse.status === 200) {
-             
+
               successToast('Video Added to Section!', '#1850BC');
             } else {
-              
+
             }
           } else {
             console.error('Error uploading video:', response.statusText);
@@ -439,11 +441,11 @@ const VideoUpload = () => {
           !video.duration ||
           !video.thumbnail
         ) {
-                   errorToast('Please fill in all required fields for the video', '#fb3c22');
+          errorToast('Please fill in all required fields for the video', '#fb3c22');
 
           return;
         }
-     
+
         const indexOfVid = sections[sectionIndex].videos.findIndex((v) => v === video);
         const formDataToSend = new FormData();
         formDataToSend.append('video', video.video);
@@ -470,9 +472,9 @@ const VideoUpload = () => {
           onUploadProgress: (progressEvent) => {
             if (video.loading) {
               const { loaded, total } = progressEvent;
-           
+
               const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          
+
               const updatedSectionsClone = [...updatedSections];
 
               const videoIndex = updatedSectionsClone[sectionIndex].videos.findIndex(
@@ -494,12 +496,12 @@ const VideoUpload = () => {
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
           if (response.status === 200) {
-            
+
             successToast('Video uploaded successfully!');
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
             setSections([...updatedSections]);
             const videoId = response.data?.video?.id;
-        
+
           } else {
             console.error('Error uploading video:', response);
 
@@ -524,7 +526,11 @@ const VideoUpload = () => {
       console.error('Error uploading videos:', error.message);
     }
   };
-
+  const handleRemoveVideo = (sectionIndex, videoIndex) => {
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].videos = updatedSections[sectionIndex].videos.filter((_, index) => index !== videoIndex);
+    setSections(updatedSections);
+  };
   return (
     <div className="relative w-[90%] lg:w-4/6 mx-auto mt-16">
       <div className="flex w-full gap-2 justify-end mb-4">
@@ -566,147 +572,135 @@ const VideoUpload = () => {
         )}
       </div>
       <div className="flex flex-col gap-4">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable type="group" droppableId="videoBodies" direction="vertical">
-            {(provided) => (
-              <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
-                {sections.map(({ id, videos }, sectionIndex) => (
-                  <Draggable key={id} draggableId={id} index={sectionIndex}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        key={id}
-                        className={`relative ${sectionIndex > 0 ? 'mt-24' : '0'}`}
-                      >
-                        {id && selectedTab === 'premium' && (
-                          <SectionTitle
-                            onTitleUpdate={(title) => handleTitleUpdate(sectionIndex, title)}
-                          />
-                        )}
-                        <Droppable droppableId={id} direction="vertical">
-                          {(provided) => (
-                            <div
-                              className="flex flex-col "
-                              {...provided.droppableProps}
-                              ref={provided.innerRef}
-                            >
-                              {videos?.map((video, videoIndex) => (
-                                <Draggable
-                                  key={`${id}-${video.id}`}
-                                  draggableId={`${id}-${video.id}`}
-                                  index={videoIndex}
-                                >
-                                  {(videoProvided) => (
-                                    <div
-                                      ref={videoProvided.innerRef}
-                                      {...videoProvided.draggableProps}
-                                      {...videoProvided.dragHandleProps}
-                                      className="relative"
-                                    >
-                                      <VideoBody
-                                        thumbnail={
-                                          sections[sectionIndex].videos[videoIndex].thumbnail
-                                        }
-                                        video={sections[sectionIndex].videos[videoIndex].video}
-                                        duration={
-                                          sections[sectionIndex].videos[videoIndex].duration
-                                        }
-                                        subject={
-                                          sections[sectionIndex].videos[videoIndex].subject
-                                        }
-                                        formData={
-                                          sections[sectionIndex].videos[videoIndex].formData
-                                        }
-                                        loading={sections[sectionIndex].videos[videoIndex].loading}
-                                        uploadProgress={
-                                          sections[sectionIndex].videos[videoIndex].uploadProgress
-                                        }
-                                        quiz={sections[sectionIndex].videos[videoIndex].quiz}
-                                        quizSolution={
-                                          sections[sectionIndex].videos[videoIndex].quiz_solution
-                                        }
-                                        cancelUpload={cancelUpload}
-                                        onUpdateFormData={(e) => {
-                                          e.preventDefault();
-                                          handleUpdateFormData(sectionIndex, videoIndex, e);
-                                        }}
-                                        onUpdateThumbnail={(thumbnail) =>
-                                          handleUpdateThumbnail(sectionIndex, videoIndex, thumbnail)
-                                        }
-                                        onUpdateSubject={(subject) =>
-                                          handleUpdateSubject(sectionIndex, videoIndex, subject)
-                                        }
-                                        onUpdateQuiz={(quiz) =>
-                                          handleQuizUpload(sectionIndex, videoIndex, quiz)
-                                        }
-                                        onUpdateVideo={(video) =>
-                                          handleUpdateVideo(sectionIndex, videoIndex, video)
-                                        }
-                                        onUpdateQuizSolution={(quizSolution) =>
-                                          handleQuizSolution(sectionIndex, videoIndex, quizSolution)
-                                        }
-                                        onUpdateDuration={(duration) =>
-                                          handleUpdateDuration(sectionIndex, videoIndex, duration)
-                                        }
-                                        onUpdateLoading={(loading) =>
-                                          handleUpdateLoading(sectionIndex, videoIndex, loading)
-                                        }
-                                        categories={categories}
-                                        onUpdateUploadProgress={(progress) =>
-                                          handleUpdateUploadProgress(
-                                            sectionIndex,
-                                            videoIndex,
-                                            progress
-                                          )
-                                        }
-                                        sections={sections}
-                                        title={id}
-                                        onClick={() => handleAddSection(video.id)}
-                                        selectedTab={selectedTab}
-                                      />
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                        <div className="flex justify-end">
-                          <Button
-                            type="button"
-                            onClick={
-                              selectedTab === 'premium'
-                                ? () => handleCourseUpload(sectionIndex)
-                                : () => onIndividualVideoSubmit(sectionIndex)
-                            }
-                            className="bg-black rounded-md text-base mt-4 py-1 text-white"
-                          >
-                            Publish Section
-                          </Button>
-                        </div>
-                        <button
-                          onClick={() => handleAddVideoBody(id)}
-                          className="text-white mt-5 w-full  self-center flex justify-center items-center"
-                        >
-                          <Image
-                            src={'/svgs/add_video.svg'}
-                            alt="add_video"
-                            width={35}
-                            height={35}
-                          />
-                        </button>
-                      </div>
-                    )}
-                  </Draggable>
+
+        <div className="pb-16" >
+          {sections.map(({ id, videos }, sectionIndex) => (
+
+            <div
+
+              key={id}
+              className={`relative ${sectionIndex > 0 ? 'mt-24' : '0'}`}
+            >
+              {id && selectedTab === 'premium' && (
+                <SectionTitle
+                  onTitleUpdate={(title) => handleTitleUpdate(sectionIndex, title)}
+                />
+              )}
+
+
+              <div
+                className="flex flex-col "
+
+              >
+                {videos?.map((video, videoIndex) => (
+
+                  <div
+
+                    className="relative"
+                  >
+                    <VideoBody
+                      thumbnail={
+                        sections[sectionIndex].videos[videoIndex].thumbnail
+                      }
+                      video={sections[sectionIndex].videos[videoIndex].video}
+                      duration={
+                        sections[sectionIndex].videos[videoIndex].duration
+                      }
+                      subject={
+                        sections[sectionIndex].videos[videoIndex].subject
+                      }
+                      formData={
+                        sections[sectionIndex].videos[videoIndex].formData
+                      }
+                      loading={sections[sectionIndex].videos[videoIndex].loading}
+                      uploadProgress={
+                        sections[sectionIndex].videos[videoIndex].uploadProgress
+                      }
+                      quiz={sections[sectionIndex].videos[videoIndex].quiz}
+                      quizSolution={
+                        sections[sectionIndex].videos[videoIndex].quiz_solution
+                      }
+                      cancelUpload={cancelUpload}
+                      onUpdateFormData={(e) => {
+                        e.preventDefault();
+                        handleUpdateFormData(sectionIndex, videoIndex, e);
+                      }}
+                      onUpdateThumbnail={(thumbnail) =>
+                        handleUpdateThumbnail(sectionIndex, videoIndex, thumbnail)
+                      }
+                      onUpdateSubject={(subject) =>
+                        handleUpdateSubject(sectionIndex, videoIndex, subject)
+                      }
+                      onUpdateQuiz={(quiz) =>
+                        handleQuizUpload(sectionIndex, videoIndex, quiz)
+                      }
+                      onUpdateVideo={(video) =>
+                        handleUpdateVideo(sectionIndex, videoIndex, video)
+                      }
+                      onUpdateQuizSolution={(quizSolution) =>
+                        handleQuizSolution(sectionIndex, videoIndex, quizSolution)
+                      }
+                      onUpdateDuration={(duration) =>
+                        handleUpdateDuration(sectionIndex, videoIndex, duration)
+                      }
+                      onUpdateLoading={(loading) =>
+                        handleUpdateLoading(sectionIndex, videoIndex, loading)
+                      }
+                      categories={categories}
+                      onUpdateUploadProgress={(progress) =>
+                        handleUpdateUploadProgress(
+                          sectionIndex,
+                          videoIndex,
+                          progress
+                        )
+                      }
+                      removeVideo={() =>
+                        handleRemoveVideo(sectionIndex, videoIndex)
+                      }
+
+                      sections={sections}
+                      title={id}
+                      onClick={() => handleAddSection(video.id)}
+                      selectedTab={selectedTab}
+                    />
+                  </div>
+
                 ))}
-                {provided.placeholder}
+
               </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+
+
+
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  onClick={
+                    selectedTab === 'premium'
+                      ? () => handleCourseUpload(sectionIndex)
+                      : () => onIndividualVideoSubmit(sectionIndex)
+                  }
+                  className="bg-black rounded-md text-base mt-4 py-1 text-white"
+                >
+                  Publish Section
+                </Button>
+              </div>
+              <button
+                onClick={() => handleAddVideoBody(id)}
+                className="text-white mt-5 w-full  self-center flex justify-center items-center"
+              >
+                <Image
+                  src={'/svgs/add_video.svg'}
+                  alt="add_video"
+                  width={35}
+                  height={35}
+                />
+              </button>
+            </div>
+
+          ))}
+
+        </div>
+
       </div>
     </div>
   );
@@ -731,6 +725,7 @@ const VideoBody = ({
   quizSolution,
   subject,
   quiz,
+  removeVideo
 }) => {
   const handleFieldChange = (e) => {
     onUpdateFormData(e);
@@ -753,6 +748,9 @@ const VideoBody = ({
         </div>
       )}
       <form className="p-4 flex flex-col relative bg-white outline-none mb-4 shadow-lg w-full rounded-md justify-between">
+        <div className='flex justify-end'>
+          <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} />
+        </div>
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
             <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
@@ -885,7 +883,7 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
       const video = document.createElement('video');
 
       video.onloadedmetadata = () => {
-        const duration = video.duration;
+        const duration = Math.floor(video.duration);
         setDuration(duration);
         setVideoUrl(video.src);
       };

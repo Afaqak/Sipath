@@ -22,17 +22,6 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
 
   };
 
-  const quillImageCallback = async () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files ? input.files[0] : null;
-
-    };
-  };
 
   const modules = useMemo(
     () => ({

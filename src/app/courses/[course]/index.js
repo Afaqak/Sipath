@@ -20,6 +20,8 @@ const PlaylistVideo = ({ session }) => {
   const [buttonStates, setButtonStates] = useState({});
   const [enrollments, setEnrollments] = useState([])
   const [sectionLoading, setSectionLoading] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
   const [videosBySection, setVideosBySection] = useState({});
   const [videoId] = useState({});
   const axios = useAxiosPrivate();
@@ -31,7 +33,7 @@ const PlaylistVideo = ({ session }) => {
 
       return params.toString();
     },
-    [videoId]
+    []
   );
 
   const toggleButton = (sectionId) => {
@@ -130,6 +132,27 @@ const PlaylistVideo = ({ session }) => {
 
   }, []);
 
+  useEffect(() => {
+ 
+    const fetchVideoData = async (videoId) => {
+      try {
+        const response = await axios.get(`/assets/video/${videoId}`, {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        });
+       
+        setSelectedVideo(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    const videoIdFromParams = searchParams.get('id')
+
+    if (videoIdFromParams) {
+      fetchVideoData(videoIdFromParams);
+    }
+  }, [searchParams, session?.token]);
 
 
   return (
@@ -140,9 +163,8 @@ const PlaylistVideo = ({ session }) => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-8">
           <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-            <ContentPLayer id={videoId?.id} noPremium={true} token={session?.token} />
-            <VideoInfo video={videoId} token={session?.token} />
-            {/* Render the Comments component for large screens */}
+            <ContentPLayer noPremium={true} token={session?.token} />
+            <VideoInfo setSelectedVideo={setSelectedVideo} selectedVideo={selectedVideo} token={session?.token} />
             <div className="hidden lg:block">
               {' '}
               <CommentsSection />

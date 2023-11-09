@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 
 const WatchVideo = ({ session }) => {
-  const [video, setVideo] = useState({});
+  const [selectedVideo, setSelectedVideo] = useState({});
   const dispatch = useDispatch();
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
@@ -24,18 +24,20 @@ const WatchVideo = ({ session }) => {
           Authorization: `Bearer ${session.token}`,
         },
       });
-      setVideo(response.data);
+      console.log(response?.data,"video")
+      setSelectedVideo(response.data);
       
     };
     getVideo();
-  }, []);
+  }, [id]);
+  
 
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} videoKey={video?.asset?.asset_key} token={session?.token} />
-          <VideoInfo type={'solovideo'} video={video} setVideo={setVideo} token={session?.token} />
+          <ContentPlayer noPremium={true} token={session?.token} />
+          <VideoInfo type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentsSection />
           </div>

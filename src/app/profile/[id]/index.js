@@ -35,7 +35,6 @@ const tabs = [
   { key: 'myvideos', label: 'Videos', icon: '/svgs/Play.svg' },
   { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
   { key: 'quiz', label: 'Quizzes', icon: '/svgs/quiz.svg' },
-  { key: 'mylearning', label: 'Learning', icon: '/svgs/book.svg' },
   { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
 ];
 
@@ -43,26 +42,26 @@ const tabs = [
 
 
 export const MyProfile = ({ user, session }) => {
-  const axios=useAxiosPrivate()
+  const axios = useAxiosPrivate()
   const [active, setActive] = useState(tabs[0].key);
-  const [openChat,setOpenChat]=useState(false)
-  const [openAppointment,setOpenAppointment]=useState(false)
+  const [openChat, setOpenChat] = useState(false)
+  const [openAppointment, setOpenAppointment] = useState(false)
+  console.log(user,"{userprofile}")
+  const handleMessageRequest = async (message, onClose) => {
 
-  const handleMessageRequest=async (message,onClose)=>{
-   
-    if(!message) return
-    try { 
-      const response=await axios.post(`chats/request/${user?.user?.id}`,{
+    if (!message) return
+    try {
+      const response = await axios.post(`chats/request/${user?.user?.id}`, {
         message
-      },{
-        headers:{
-          Authorization:`Bearer ${session?.token}`
+      }, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`
         }
       })
       onClose()
-        
+
     } catch (error) {
-      
+
     }
   }
 
@@ -71,15 +70,20 @@ export const MyProfile = ({ user, session }) => {
     <>
       <div className="mt-0.5"></div>
       <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-        <Profile isActon={false} type={'userprofile'} session={session} user={user?.user} />
+        <Profile isActon={false} type={'userprofile'} session={session} tutor={user?.tutor} user={user?.user} />
         <div className="flex justify-between gap-2 mt-4">
-          <button onClick={()=>setOpenAppointment(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
-            <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
-            <span className="md:block hidden">Book Appointment</span>
-          </button>
-          <button onClick={()=>setOpenChat(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
+          {
+            user?.user?.isTutor &&
+
+            <button onClick={() => setOpenAppointment(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
+              <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
+              <span className="md:block hidden">
+                Book Appointment</span>
+            </button>
+          }
+          <button onClick={() => setOpenChat(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
             <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
-            <span className="md:block hidden" >Message Expert</span>
+            <span className="md:block hidden" >{user?.user?.isTutor? "Message Expert" : "Message User"}</span>
           </button>
           <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor">
             <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
@@ -87,7 +91,7 @@ export const MyProfile = ({ user, session }) => {
           </button>
         </div>
         <UniversalTab
-          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-5'}
+          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
           active={active}
           tabs={tabs}
           setActive={setActive}
@@ -98,7 +102,7 @@ export const MyProfile = ({ user, session }) => {
             <Video videos={courses} />
           </motion.div>
         )} */}
-{/* 
+        {/* 
         {active === 'quiz' && (
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )} */}
@@ -112,11 +116,10 @@ export const MyProfile = ({ user, session }) => {
 
         {/* {active === 'income' && <MyIncome />} */}
         {active === 'myvideos' && <MyVideos userId={user?.user?.id} />}
-        {/* {active === 'myaccount' && <MyAccount />} */}
-        {active === 'mylearning' && <MyCourses token={session?.token} />}
+        
       </div>
-      <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat}/>
-      <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} userId={user?.user?.id}/>
+      <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat} />
+      <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} userId={user?.user?.id} />
     </>
   );
 };
@@ -132,7 +135,7 @@ const MyCourses = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-       
+
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -190,7 +193,7 @@ const CourseCard = ({ course }) => {
   );
 };
 
-const MyQuizzes = ({  token }) => {
+const MyQuizzes = ({ token }) => {
   const axios = useAxiosPrivate();
   const dispatch = useDispatch();
   const quizes = useSelector((state) => state?.quizzes?.quizzes);
@@ -203,7 +206,7 @@ const MyQuizzes = ({  token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-      
+
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -215,9 +218,9 @@ const MyQuizzes = ({  token }) => {
   return (
     <div className="w-[90%] mx-auto mt-10">
       <div className="flex justify-end w-full">
-      
+
       </div>
-      {quizes && quizes.map((quiz, index) => <Quiz  key={index} quiz={quiz} />)}
+      {quizes && quizes.map((quiz, index) => <Quiz key={index} quiz={quiz} />)}
     </div>
   );
 };
@@ -242,7 +245,7 @@ const MyVideos = ({ userId }) => {
     <div className=" py-8">
       <div className="grid grid-cols-3 gap-y-4 gap-x-14 mt-4">
         {videos.map((video, index) => (
-          <VideoItem video={video}  key={index} />
+          <VideoItem video={video} key={index} />
         ))}
       </div>
     </div>
@@ -258,7 +261,7 @@ const Mybooks = ({ id }) => {
       try {
         setLoading(false);
         const response = await axios.get(`/assets/books/user/${id}`);
-      
+
         setBooks(response.data);
       } catch (err) {
         console.log(err);
