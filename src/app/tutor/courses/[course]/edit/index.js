@@ -234,6 +234,10 @@ const EditPage = ({ session }) => {
         );
       
       }
+      if(response?.status===200){
+        successToast('Video Moved!')
+      }
+      
 
       const sourceSectionVideos = videosBySection[sourceSectionId];
       const destinationSectionVideos = videosBySection[destinationSectionId];

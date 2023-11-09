@@ -53,7 +53,7 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
               href={`/videos/watch?id=${video?.id}`}
               className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
             >
-              <span className="line-clamp-2">
+              <span className="line-clamp-2 hover:underline">
                 {/* {video?.title} */}
                 {video?.title}
               </span>

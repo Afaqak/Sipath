@@ -6,9 +6,9 @@ import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useSearchParams } from 'next/navigation';
 
-const ProfileInfo = () => {
+const ProfileInfo = ({ author, followers }) => {
   return (
-    <div className="text-gray-600 flex items-center gap-2">
+    <div className="text-gray-600 flex  gap-2">
       <Image
         src="/demo-4.jpg"
         className="tutor-img w-[2.4rem] object-cover"
@@ -17,8 +17,8 @@ const ProfileInfo = () => {
         alt="demo-4"
       />
       <div className="flex flex-col">
-        <span>Account Name</span>
-        <span className="text-[0.75rem]">12k followers</span>
+        <span>{author}</span>
+        <span className="text-[0.75rem]">{followers}</span>
       </div>
     </div>
   );
@@ -54,13 +54,16 @@ const TagsAndDescription = ({ description, createdAt }) => {
   );
 };
 
-export const VideoInfo = ({ token, type,video,setVideo }) => {
+export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
 
   const searchParams = useSearchParams()
   const id = searchParams.get('id');
-
+  console.log(selectedVideo, "{from info}")
+  useEffect(() => {
+    setRating(0)
+  }, [id])
 
   const setAssetRating = async (newRating) => {
     let assetId;
@@ -68,7 +71,7 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
       if (type === 'solovideo') {
         assetId = id;
       } else {
-        assetId = video?.id;
+        assetId = selectedVideo?.asset?.id;
       }
 
       const response = await axios.post(
@@ -82,8 +85,11 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
           },
         }
       );
-      setVideo(response?.asset);
-  
+
+      setSelectedVideo(prev => {
+        return { ...prev, asset: response?.data?.asset }
+      });
+
       successToast('You have rated the Video!');
     } catch (error) {
       errorToast('Error Occured while setting the rating!');
@@ -98,9 +104,9 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
-          <h1 className="font-semibold text-lg mb-1">{video?.asset?.title}</h1>
+          <h1 className="font-semibold text-lg mb-1">{selectedVideo?.asset?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
-            <ProfileInfo />
+            <ProfileInfo author={selectedVideo?.display_name} followers={selectedVideo?.follower_count} />
             <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
               Follow
             </button>
@@ -108,8 +114,8 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
         </div>
         <div className="">
           <div className="flex items-center gap-3 justify-end">
-            <Stars rating={rating} initialRating={video?.asset?.rating} setRating={handleRatingChange} />{' '}
-            <Ratings rating={video?.asset?.rating} />
+            <Stars rating={rating} initialRating={selectedVideo?.asset?.rating} setRating={handleRatingChange} />{' '}
+            <Ratings rating={selectedVideo?.asset?.rating} />
           </div>
           <div className="flex gap-3 md:mt-2 mt-3 justify-end md:justify-start">
             <ActionButton icon={<Icons.share />} text="Share" />
@@ -123,7 +129,7 @@ export const VideoInfo = ({ token, type,video,setVideo }) => {
           </div>
         </div>
       </div>
-      <TagsAndDescription description={video.asset?.description} createdAt={video.asset?.createdAt} />
+      <TagsAndDescription description={selectedVideo?.asset?.description} createdAt={selectedVideo?.asset?.createdAt} />
     </div>
   );
 };

@@ -109,9 +109,8 @@ export function VideoEditModal({
               Authorization: `Bearer ${user?.token}`,
             },
           });
-
           
-
+    
           setVideos(response.data.updatedVideo);
         } else {
           const response = await axios.patch(

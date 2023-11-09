@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useCallback, useRef } from 'react';
 import { Skeleton } from '../ui/skeleton';
-import { debounce } from 'lodash';
 import { CreateComment, Icons, formatTimeAgo } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
@@ -32,7 +31,6 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const searchParams = useSearchParams();
   const [text, setText] = useState('');
   const id = searchParams.get('id');
-console.log(comment)
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const [file, setFile] = useState(null);
@@ -52,7 +50,7 @@ console.log(comment)
       const formdata = new FormData();
       formdata.append(
         'comment',
-        `<div class="flex gap-1"><span class="font-bold">${comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id===comment?.author_id?user?.user?.display_name:comment?.user?.display_name}</span> ${textWithoutImages}</div}`
       );
       formdata.append('image', file);
 
@@ -89,6 +87,7 @@ console.log(comment)
       setLoadingReplies(false);
     }
   };
+  console.log(comment)
   const handleIsReplying = () => setIsReplying(!isReplying);
   return (
     <div className="flex flex-col mb-4">
@@ -96,7 +95,7 @@ console.log(comment)
         <Link className="block" href={`/profile/${comment?.author_id}`}>
           <UserAvatar
             user={{
-              image: comment.user?.profile_image,
+              image:comment?.author_id===user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
               name: comment?.user?.display_name || comment?.user?.first_name,
             }}
             className="h-8 w-8"

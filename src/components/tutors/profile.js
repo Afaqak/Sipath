@@ -3,39 +3,47 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
-import { Icons, Stars } from '@/components';
+import { FileInput, Icons, Stars } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useRouter } from 'next/navigation';
+import axios from '../../utils/index'
 import { errorToast, successToast } from '@/utils/toasts';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-export const Profile = ({ type, user, isActon = true, session, setUser }) => {
-  const axios = useAxiosPrivate();
-  
-  const [rating, setRating] = useState(false);
-
+export const Profile = ({ type, user, isActon = true, session }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const privateAxios = useAxiosPrivate();
+  const [rating, setRating] = useState(null);
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
   const closeActions = () => {
     setShowActions(false);
   };
 
+
   const handleFollowUser = async () => {
+
     try {
       const isFollowing = user?.followers?.some(
         (follower) => follower.follower === session?.user?.id && follower.following === user?.id
       );
-
+    
       if (isFollowing) {
         setLoading(true);
 
-        const response = await axios.delete(
+        await privateAxios.delete(
           '/users/unfollow',
-
           {
             headers: {
               Authorization: `Bearer ${session?.token}`,
@@ -46,11 +54,10 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
           }
         );
         window.location.reload();
-        errorToast('Unfollowed the User!');
-       
+
       } else {
         setLoading(true);
-        const response = await axios.post(
+        await privateAxios.post(
           '/users/follow',
           {
             user_id: user?.id,
@@ -62,9 +69,6 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
           }
         );
         window.location.reload();
-        successToast('Followed the User!');
-   
-        router.refresh();
       }
     } catch (err) {
       errorToast('Error Occured!');
@@ -74,8 +78,9 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
   };
 
   const setAssetRating = async (newRating) => {
+
     try {
-      const response = await axios.post(
+      await privateAxios.post(
         `/rate/${user?.id}?type=user`,
         {
           rating: newRating,
@@ -87,9 +92,9 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
         }
       );
 
-      setUser(response.data.asset);
-      successToast('User Rated!');
-     
+      window.location.reload()
+
+
     } catch (err) {
       errorToast("Error! Can't rate the User");
       console.error(err);
@@ -97,6 +102,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
   };
 
   const handleRatingChange = (newRating) => {
+
     setRating(newRating);
     setAssetRating(newRating);
   };
@@ -105,6 +111,20 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
   const isFollowing = user?.followers?.some(
     (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
+
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
@@ -114,9 +134,8 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
         />
         {type === 'userprofile' && (
           <button
-            className={`font-bold  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${
-              isFollowing ? 'bg-main' : 'bg-[#FBA422]'
-            } `}
+            className={`font-bold  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
+              } `}
             disabled={loading}
             onClick={handleFollowUser}
             style={{
@@ -136,6 +155,11 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
             )}
           </button>
         )}
+        {!type==='userprofile' &&
+        <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-4 right-16 flex items-center justify-center'>
+          <Icons.edit className=" stroke-subcolor h-4 w-4" />
+        </div>
+}
       </div>
 
       <div className="col-span-3 w-full">
@@ -144,6 +168,9 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
           <div className="flex gap-12">
             <div className="">
               <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
+                <li className="text-[0.75rem]">
+                  <Stars initialRating={user?.rating} setRating={handleRatingChange} rating={rating} />
+                </li>
                 <li className="text-[0.75rem]">
                   <span className="font-semibold text-[0.85rem]">{user?.follower_count}</span>{' '}
                   Followers
@@ -166,14 +193,21 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
                 </div>
               </ul>
             </div>
-            <div className="text-[#616161] font-light">
-              <h1>EXPERTISE</h1>
-              <ul className="text-sm whitespace-nowrap list-disc list-inside font-semibold text-[0.7rem]">
-                <li>Maths</li>
-                <li>Physics</li>
-                <li>Chemistry</li>
-              </ul>
-            </div>
+            {
+              user?.isTutor &&
+              <div>
+                <label className="text-sm font-thin">Expertise</label>
+                <ul className=" list-disc">
+                  {
+                    session?.tutor && session?.tutor?.expertise?.map((exp) => (
+                      <div key={exp}>
+                        {categories[exp - 1]?.category}
+                      </div>
+                    ))
+                  }
+                </ul>
+              </div>
+            }
           </div>
           <div className="text-[#616161] font-light col-span-2">
             <div className="">
@@ -205,6 +239,7 @@ export const Profile = ({ type, user, isActon = true, session, setUser }) => {
           </AnimatePresence>
         </div>
       )}
+      <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
     </div>
   );
 };
@@ -275,4 +310,55 @@ const ActionButtons = () => {
       ))}
     </div>
   );
-};
+}
+
+
+
+function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
+  const [image, setImage] = useState(null);
+  const privateAxios = useAxiosPrivate()
+  const closeDialog = () => {
+    setIsOpen(false);
+  };
+  async function handleImageSubmit() {
+    console.log('click')
+    const formDataToSend = new FormData()
+    formDataToSend.append('profile_image', image)
+    try {
+     
+      if (image) {
+        const userResponse = await privateAxios.patch('/users/profile',formDataToSend, {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        });
+      
+        session.user = userResponse.data?.user
+        successToast("Updated Profile Pic!")
+        closeDialog()
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen} className="profile-modal">
+    <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
+      <DialogHeader className="text-xl font-semibold py-4 border-b">Update Profile Picture</DialogHeader>
+      <DialogDescription className="p-4">
+        {image && (
+          <div className="text-center mb-4">
+            <UserAvatar className="w-20 h-20 mb-2" user={{ image: URL.createObjectURL(image) }} />
+          </div>
+        )}
+        <FileInput file={image} setFile={setImage} />
+      </DialogDescription>
+      <DialogFooter className="flex justify-end p-4">
+        <Button variant="outline" onClick={closeDialog}>Cancel</Button>
+        <Button className=" px-4 py-2 rounded" onClick={handleImageSubmit}>Update</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+  );
+}

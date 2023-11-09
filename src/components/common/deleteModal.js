@@ -32,7 +32,6 @@ export function DeleteModal({ isOpen, setIsOpen, onDeleteSubmit, text }) {
             This action cannot be undone. Are you sure you want to delete{' '}
             <span className="font-bold">{text}</span> ?
           </DialogDescription>
-
           <DialogFooter>
             <div className="mt-4 flex gap-2">
               <Button className="bg-black" onClick={closeModal}>

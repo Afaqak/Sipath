@@ -20,7 +20,7 @@ import {
   BookSkeleton,
 } from '@/components';
 import { UniversalTab } from '@/components';
-import { signOut, useSession } from 'next-auth/react';
+import {  useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -28,33 +28,33 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setQuizes } from '@/features/quiz/quizSlice';
-import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 
 
 export const MyProfile = ({ session }) => {
-  const isTutor=session?.user?.isTutor
+  const isTutor = session?.user?.isTutor
+
   const tutorTabs = [
     { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
     { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
     { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
-    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
+    { key: 'mycourses', label: 'My Course', icon: '/svgs/book.svg' },
     { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
     { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
     { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
   ];
-  
-  const userTabs=[
+
+  const userTabs = [
     { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
     { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
     { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
     { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
     { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
   ];
-  const tabsToShow=isTutor?tutorTabs:userTabs
+  const tabsToShow = isTutor ? tutorTabs : userTabs
   const [active, setActive] = useState(tabsToShow[0].key);
-
   const { data: user } = useSession();
- 
   return (
     <>
       <div className="mt-0.5"></div>
@@ -76,6 +76,9 @@ export const MyProfile = ({ session }) => {
         {active === 'quiz' && (
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )}
+        {active === 'mylearning' && (
+          <MyLearning session={session}/>
+        )}
         {active === 'podcast' && (
           <div>
             <PodcastSlider videos={courses} />
@@ -85,9 +88,9 @@ export const MyProfile = ({ session }) => {
         {active === 'books' && <Mybooks token={session?.token} />}
         {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
-        { active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
-        {active === 'myaccount' && <MyAccount />}
-        { active === 'mylearning' && <MyCourses session={session} />}
+        {active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
+        {active === 'myaccount' && <MyAccount session={session}/>}
+        {active === 'mycourses' && <MyCourses session={session} />}
       </div>
     </>
   );
@@ -104,7 +107,7 @@ const MyCourses = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-       
+
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -120,12 +123,40 @@ const MyCourses = ({ session }) => {
     </div>
   );
 };
+const MyLearning = ({ session }) => {
+  const [courses, setCourses] = useState([]);
+  const axios = useAxiosPrivate();
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('/courses/enrollments', {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        });
 
-const CourseCard = ({ course, session }) => {
+        setCourses(response.data.enrollments);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCourses();
+  }, []);
+  return (
+    <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
 
+      {courses.map((course) => (
+        <CourseCard session={session} key={course?.id} course={course.course} type='learning' />
+      ))}
+    </div>
+  );
+};
+
+const CourseCard = ({ course, session ,type="course"}) => {
+  const newHref=type==='learning'?`/courses/${course?.id}`:`/tutor/courses/${course?.id}`
   return (
     <Link
-      href={`/tutor/courses/${course?.id}`}
+      href={newHref}
       className=" h-[20rem] relative block mb-6 w-full p-4 bg-white shadow-md rounded-md"
     >
       {course?.price && course?.price > 0 && (
@@ -151,7 +182,7 @@ const CourseCard = ({ course, session }) => {
         <div>
           <h1 className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</h1>
           <div className="flex items-center text-sm gap-2 text-gray-700">
-            <span>authors</span>
+            <span>{session?.user?.display_name}</span>
           </div>
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{formatTimeAgo(course.createdAt)}</span>
@@ -176,7 +207,7 @@ const MyQuizzes = ({ tutorId, token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-       
+
         dispatch(setQuizes(response?.data));
       } catch (err) {
         console.error(err);
@@ -195,9 +226,8 @@ const MyQuizzes = ({ tutorId, token }) => {
             className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
           >
             <div
-              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-                isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-              }`}
+              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
+                }`}
             >
               {isEdit ? (
                 <Icons.cross className=" stroke-white h-2 w-2" />
@@ -208,7 +238,7 @@ const MyQuizzes = ({ tutorId, token }) => {
           </button>
         )}
       </div>
-      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
+      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit}   key={index} quiz={quiz} />)}
     </div>
   );
 };
@@ -234,14 +264,14 @@ const MyVideos = ({ userId, token }) => {
   }, []);
 
   const handleSetUpdateVideos = (updatedVideo) => {
-  
+
     setVideos((prev) =>
       prev.map((video) => (video?.id === updatedVideo?.id ? { ...updatedVideo } : video))
     );
   };
   const setDeletedVideo = async (id) => {
     try {
-     
+
       const response = await axios.delete(`/assets/videos/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -265,9 +295,8 @@ const MyVideos = ({ userId, token }) => {
             className={`w-10 h-4 rounded-2xl bg-white flex shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] items-center transition duration-300 focus:outline-none text-subcolor`}
           >
             <div
-              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${
-                isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
-              }`}
+              className={`w-6 h-6 relative rounded-full flex items-center justify-center  transition duration-300 transform p-1 ${isEdit ? 'translate-x-full  bg-subcolor3' : ' -translate-x-2 bg-subcolor'
+                }`}
             >
               {isEdit ? (
                 <Icons.cross className=" stroke-white h-2 w-2" />
@@ -309,7 +338,7 @@ const Mybooks = ({ token }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-   
+
         dispatch(setBooks(response.data));
       } catch (err) {
         console.log(err);

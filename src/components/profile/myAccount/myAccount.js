@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SocialMediaField, InputField, Modal, TextareaField, MyAccountInfo } from '@/components';
 import { useSession } from 'next-auth/react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
-export const MyAccount = () => {
+export const MyAccount = ({ session }) => {
   const axios = useAxiosPrivate();
   const [interests, setInterests] = useState([]);
   const [expertise, setExpertise] = useState([]);
@@ -12,6 +12,7 @@ export const MyAccount = () => {
   const { data: user, update } = useSession();
   const [modelOpen, setModalOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [categories, setCategories] = useState([])
 
   const [formData, setFormData] = useState({
     firstName: user?.user?.first_name || '',
@@ -27,6 +28,20 @@ export const MyAccount = () => {
     facebook: '',
     linkedIn: '',
   });
+
+  const handleExpertise = (experty) => {
+    const expertiseIndex = expertise.findIndex((exp) => exp.id === experty.id);
+
+    if (expertiseIndex === -1) {
+      setExpertise([...expertise, { id: experty.id, experty: experty.category }]);
+    } else {
+
+      const updatedExpertise = [...expertise];
+      updatedExpertise.splice(expertiseIndex, 1);
+      setExpertise(updatedExpertise);
+    }
+  };
+
 
   const setModalOpenAndType = (type) => {
     setModalType(type);
@@ -53,6 +68,7 @@ export const MyAccount = () => {
         email: formData.emailAddress,
       };
 
+
       let hasUserData = false;
 
       for (const field in formFields) {
@@ -73,20 +89,26 @@ export const MyAccount = () => {
           ...user,
           user: {
             user: { ...userResponse.data?.user },
+
           },
+
         };
+        session.user = userResponse.data?.user
 
         if (
-          user?.user?.isTutor &&
-          formData.hourlyRate &&
-          +user?.tutor.hourly_rate !== +formData.hourlyRate
+          user?.user?.isTutor && (formData.hourlyRate || (expertise && expertise?.length > 0))
         ) {
-    
+          const tutorData = {}
+          if (formData.hourlyRate) {
+            tutorData.hourly_rate = formData.hourlyRate
+          }
+          if (expertise.length > 0) {
+            tutorData.expertise = expertise?.map(exp => exp?.id)
+          }
+
           const tutorResponse = await axios.patch(
             '/users/profile/tutor',
-            {
-              hourly_rate: formData.hourlyRate,
-            },
+            tutorData,
             {
               headers: {
                 Authorization: `Bearer ${user?.token}`,
@@ -98,7 +120,8 @@ export const MyAccount = () => {
             ...user.tutor,
             ...tutorResponse.data.tutor,
           };
-        
+          session.tutor = tutorResponse.data.tutor
+
         }
 
         await update(newSession);
@@ -121,10 +144,23 @@ export const MyAccount = () => {
     setModalOpen(false);
   };
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
+
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   return (
     <div>
       {!edit ? (
-        <MyAccountInfo setEdit={setEdit} />
+        <MyAccountInfo setEdit={setEdit} categories={categories} />
       ) : (
         <form onSubmit={handleSubmit} className="flex gap-4 flex-col mt-8">
           <div className="flex lg:flex-row flex-col gap-8 w-full">
@@ -187,36 +223,27 @@ export const MyAccount = () => {
               )}
               <div className="flex flex-col gap-10 ">
                 {user && user?.user?.isTutor && (
+
                   <div className="flex flex-col">
-                    <div className="flex gap-1">
-                      <label className="text-sm text-[#616161] font-thin">Expertise</label>
-                      <Image
-                        onClick={() => setModalOpenAndType('expertise')}
-                        src={'/svgs/add_box.svg'}
-                        className="cursor-pointer"
-                        alt="add Interest"
-                        width={20}
-                        height={20}
-                      />
+                    <div className="flex gap-1 relative">
+                      <label className="text-[#616161] font-thin text-sm">Update EXPERTISE</label>
+
+
                     </div>
-                    <div className=" flex gap-1 flex-wrap mt-4">
-                      {expertise.map((item, ind) => (
+                    <div className=" flex gap-1 flex-wrap mt-1 w-[80%]">
+                      {categories.map((item, ind) => (
                         <span
-                          className="flex gap-1 bg-[#D9D9D9] px-2 py-[0.15rem] text-sm rounded-lg items-center"
                           key={ind}
+                          onClick={() => handleExpertise(item, ind)}
+                          className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${expertise.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
+                            }`}
                         >
-                          <Image
-                            src={'/svgs/close.svg'}
-                            width={15}
-                            height={15}
-                            alt="close"
-                            className="cursor-pointer self-end"
-                          />
-                          {item}{' '}
+                          {item.category}{' '}
                         </span>
                       ))}
                     </div>
                   </div>
+
                 )}
                 <div className="flex  flex-col">
                   <div className="flex gap-1">
