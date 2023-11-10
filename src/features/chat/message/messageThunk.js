@@ -32,7 +32,7 @@ export const getMessagesByConversationId = createAsyncThunk('message/getMessages
 
     }
     
-    return response.data?.messages;
+    return response.data?.messages.reverse();
   } catch (err) {
     throw err;
   }

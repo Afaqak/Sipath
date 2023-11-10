@@ -236,6 +236,7 @@ const VideoUpload = () => {
   };
 
   const resetState = () => {
+    console.log("clicked")
     const initialState = {
       id: 'section-1',
       title: '',
@@ -264,7 +265,10 @@ const VideoUpload = () => {
     setSectionIds([])
     setPrice(0)
     setSections([initialState]);
+    console.log(sections, "{init}")
   };
+
+  console.log(sections, "{sections}")
 
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
@@ -542,14 +546,16 @@ const VideoUpload = () => {
         >
           Individual
         </Button>
-        <Button
-          type="button"
-          className="text-base"
-          onClick={() => setSelectedTab('premium')}
-          variant={selectedTab === 'premium' ? 'default' : 'outline'}
-        >
-          Course
-        </Button>
+        {user?.user?.isTutor &&
+          <Button
+            type="button"
+            className="text-base"
+            onClick={() => setSelectedTab('premium')}
+            variant={selectedTab === 'premium' ? 'default' : 'outline'}
+          >
+            Course
+          </Button>
+        }
         <Button
           type="button"
           onClick={resetState}
@@ -714,9 +720,11 @@ const VideoBody = ({
   onUpdateVideo,
   onUpdateDuration,
   cancelUpload,
+  video,
   thumbnail,
   loading,
   uploadProgress,
+  formData,
   onUpdateSubject,
   selectedTab,
   categories,
@@ -740,16 +748,22 @@ const VideoBody = ({
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       {selectedTab === 'premium' && (
         <div>
-          <div className="absolute -top-2 -right-14 flex gap-1">
+          <div className="absolute top-[0.76rem] -right-14 flex gap-1">
             {' '}
+
             <Icons.addTitle className="w-6 h-6" onClick={onClick} />
             <Icons.info className="w-[1.45rem] h-[1.42rem]" onClick={onClick} />
+
           </div>
         </div>
       )}
       <form className="p-4 flex flex-col relative bg-white outline-none mb-4 shadow-lg w-full rounded-md justify-between">
         <div className='flex justify-end'>
-          <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} />
+          <div onClick={removeVideo} className=' h-5 w-fit rounded-full bg-subcolor2 mb-4'>
+           <Icons.minus stroke="white" className="w-5 cursor-pointer h-5"/>
+          </div>
+          {/* 
+          <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} /> */}
         </div>
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
@@ -774,17 +788,6 @@ const VideoBody = ({
                   )}
                 </motion.span>
               </motion.div>
-
-              {/* <div className="w-52 h-1 bg-white shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md relative">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${uploadProgress}%` }}
-                  transition={{ duration: 0.5 }}
-                  className="h-full bg-gray-500 rounded-md"
-                  style={{ width: `${uploadProgress}%` }}
-                ></motion.div>
-              </div> */}
-
               <button
                 type="button"
                 onClick={cancelUpload}
@@ -807,6 +810,7 @@ const VideoBody = ({
                     handleFieldChange(e);
                   }}
                   name="title"
+                  value={formData?.title}
                   placeholder="Enter title..."
                   className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
                   type="text"
@@ -817,6 +821,7 @@ const VideoBody = ({
                 <textarea
                   onChange={handleFieldChange}
                   name="description"
+                  value={formData?.description}
                   rows={4}
                   cols={4}
                   typeof="text"
@@ -837,6 +842,7 @@ const VideoBody = ({
           </div>
           <VideoandThumbnail
             thumbnail={thumbnail}
+            video={video}
             setDuration={onUpdateDuration}
             setVideo={onUpdateVideo}
             setThumbnail={handleThumbnail}
@@ -868,7 +874,7 @@ const QuizUploadColumn = ({ onChange, setQuiz, quiz, categories, quizSolution, s
   );
 };
 
-const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) => {
+const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration, video }) => {
   const [videoUrl, setVideoUrl] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -880,22 +886,51 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
     const file = event.target.files[0];
     setVideo(file);
     if (file) {
-      const video = document.createElement('video');
+      const newVideo = document.createElement('video');
 
-      video.onloadedmetadata = () => {
-        const duration = Math.floor(video.duration);
+      newVideo.onloadedmetadata = () => {
+        const duration = Math.floor(newVideo.duration);
         setDuration(duration);
-        setVideoUrl(video.src);
+        setVideoUrl(newVideo.src);
       };
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        video.src = URL.createObjectURL(file);
+        newVideo.src = URL.createObjectURL(file);
       };
 
       reader.readAsDataURL(file);
     }
   };
+
+  const handleClearVideo = (event) => {
+    event.stopPropagation();
+
+    // Set video to null and reset videoUrl
+    setVideo(null);
+    setDuration(null);
+    setVideoUrl(null);
+  };
+
+ 
+  useEffect(() => {
+    if (video) {
+      const loadedVideo = document.createElement('video');
+
+      loadedVideo.onloadedmetadata = () => {
+        const duration = Math.floor(loadedVideo.duration);
+        setDuration(duration);
+        setVideoUrl(loadedVideo.src);
+      };
+
+      loadedVideo.src = URL.createObjectURL(video);
+    }
+    else{
+      setVideoUrl(null)
+      setVideo(null)
+    }
+  }, [video]);
+
   return (
     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
       <div
@@ -903,10 +938,17 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
         className="lg:h-28 h-36 flex items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full bg-[#D9D9D9]"
       >
         {videoUrl ? (
-          <video controls className="w-full h-full rounded-md object-contain">
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <>
+            <div className='w-full h-full rounded-md flex gap-2 object-contain relative'>
+              <button onClick={handleClearVideo} className="pl-2 z-[20000] absolute left-0">
+                Clear
+              </button>
+              <video controls className="w-full h-full rounded-md object-contain">
+                <source src={videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </>
         ) : (
           <>
             <div className="flex gap-2">
@@ -930,6 +972,7 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
     </div>
   );
 };
+
 
 const SectionTitle = ({ onTitleUpdate }) => {
   return (

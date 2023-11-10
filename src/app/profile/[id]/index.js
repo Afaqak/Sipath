@@ -51,7 +51,7 @@ export const MyProfile = ({ user, session }) => {
 
     if (!message) return
     try {
-      const response = await axios.post(`chats/request/${user?.user?.id}`, {
+        await axios.post(`chats/request/${user?.user?.id}`, {
         message
       }, {
         headers: {

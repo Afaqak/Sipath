@@ -38,7 +38,7 @@ export const MyProfile = ({ session }) => {
     { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
     { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
     { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
-    { key: 'mycourses', label: 'My Course', icon: '/svgs/book.svg' },
+    { key: 'mycourses', label: 'My Courses', icon: '/svgs/book.svg' },
     { key: 'calendar', label: 'My Calendar', icon: '/svgs/book.svg' },
     { key: 'income', label: 'My Income', icon: '/svgs/book.svg' },
     { key: 'myaccount', label: 'My Account', icon: '/svgs/book.svg' },
@@ -107,7 +107,7 @@ const MyCourses = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-
+        console.log(response?.data?.courses,"{courses}")
         setCourses(response.data.courses);
       } catch (err) {
         console.log(err);
@@ -355,7 +355,7 @@ const Mybooks = ({ token }) => {
           onClick={() => router.push('tutor/add-book')}
           variant="outline"
           type="button"
-          className={`rounded-2xl text-white bg-subcolor flex gap-2 items-center justify-center shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] `}
+          className={`rounded-2xl mt-4 text-white bg-subcolor flex gap-2 items-center justify-center shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] `}
         >
           <span>+</span> Add Book
         </Button>
@@ -363,7 +363,7 @@ const Mybooks = ({ token }) => {
       {loading ? (
         <BookSkeleton times={6} />
       ) : (
-        <div className="grid mt-8 gap-4 grid-cols-1 lg:grid-cols-2">
+        <div className="grid mt-6 gap-4 grid-cols-1 lg:grid-cols-2">
           {books &&
             books?.map((book, index) => (
               <Book setBooks={setBooks} isProfile={true} book={book} key={index} />

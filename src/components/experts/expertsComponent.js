@@ -4,7 +4,6 @@ import UserAvatar from '../common/userAvatar';
 import { useRouter } from 'next/navigation';
 
 export const ExpertsComponent = ({ title, data }) => {
-  console.log(data[0]?.user)
   const router=useRouter()
   return (
     <>
@@ -24,7 +23,7 @@ export const ExpertsComponent = ({ title, data }) => {
                       <div className="flex justify-between lg:justify-normal lg:gap-3">
                         <h1 className="text-xl font-normal uppercase">{item["user.display_name"]}</h1>
                         <h2 className="font-extrabold text-sm gap-1 flex items-center">
-                          4.7{' '}
+                          {item["user.rating"] }{' '}
                           <span>
                             <Image src="/svgs/star.png" alt="star" width={20} height={20} />
                           </span>

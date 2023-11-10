@@ -36,7 +36,6 @@ const ChatScreen = ({ conversation, session }) => {
     socket.emit('send-message', {
       text,
       sender: user?.user?.id,
-      reply_to: user?.id === conversation?.member_1 ? conversation?.member_2 : conversation.member_1,
       chat_id: conversation?.id,
     });
 
@@ -105,8 +104,6 @@ const ChatScreen = ({ conversation, session }) => {
         message,
         sender,
         chat_id,
-        reply_to
-
       };
       
       console.log(newMessage,'nM')

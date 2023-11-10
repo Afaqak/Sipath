@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from '@/components';
 import axios from '../utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
+import { useSession } from 'next-auth/react';
 
 
 const Home = () => {
@@ -14,6 +15,7 @@ const Home = () => {
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
   const [categories, setCategories] = useState([])
+  const {data:user}=useSession()
 
   const premiumVideosRef = useRef(null);
   const videosSetTwoRef = useRef(null);

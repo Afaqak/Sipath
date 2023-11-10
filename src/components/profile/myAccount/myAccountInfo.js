@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
-export const MyAccountInfo = ({ setEdit ,categories}) => {
- 
+export const MyAccountInfo = ({ setEdit, categories }) => {
+
   const {
     data: user,
   } = useSession();
@@ -13,7 +13,7 @@ export const MyAccountInfo = ({ setEdit ,categories}) => {
   }
 
 
- 
+
   return (
     <div>
       <div className="flex gap-4 flex-col mt-8">
@@ -60,13 +60,13 @@ export const MyAccountInfo = ({ setEdit ,categories}) => {
               <div>
                 <label className="text-sm font-thin">Expertise</label>
                 <ul className=" list-disc">
-                {
-                  user?.tutor && user?.tutor?.expertise?.map((exp) => (
-                      <div key={exp}>
-                      
-                      { categories[exp-1]?.category}
-                    </div>
-                     ))
+                  {
+                    user?.tutor && user?.tutor?.expertise?.map((exp) => (
+                      <li key={exp}>
+
+                        {categories[exp - 1]?.category}
+                      </li>
+                    ))
                   }
 
                 </ul>
@@ -75,9 +75,13 @@ export const MyAccountInfo = ({ setEdit ,categories}) => {
             <div>
               <label className="text-sm font-thin">Interests</label>
               <ul className=" list-disc">
-                <li>MATH</li>
-                <li>PHYSICS</li>
-                <li>CHEMISTRY</li>
+                {
+                  user?.user && user?.user?.interests?.map((exp) => (
+                    <li key={exp}>
+                      {categories[exp - 1]?.category}
+                    </li>
+                  ))
+                }
               </ul>
             </div>
           </div>
@@ -85,7 +89,7 @@ export const MyAccountInfo = ({ setEdit ,categories}) => {
           <div className="flex flex-col gap-8 border-l border-[#D9D9D9] pl-6 md:pl-10 lg:w-2/5 ">
             <div>
               <label className="text-sm font-thin">Bio</label>
-              <p className="text-lg">{user?.tutor?.bio}</p>
+              <p className="text-lg">{user?.user?.bio}</p>
             </div>
             <div className="flex flex-col gap-1 w-full">
               <div className="flex justify-between">
