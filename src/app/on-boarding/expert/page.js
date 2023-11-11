@@ -6,32 +6,29 @@ import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
-import { useSelector } from 'react-redux';
-import { selectCategories } from '@/features/categories/categorySlice';
-
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession();
   const axios = useAxiosPrivate();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const categories=useSelector(selectCategories)
-  // const [categories, setCategories] = useState([]);
+ 
+  const [categories, setCategories] = useState([]);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])
   const [availability, setAvailability] = useState([]);
 
-  // useEffect(() => {
-  //   async function fetchCategories() {
-  //     try {
-  //       const response = await axios.get('/categories');
-  //       console.log(response?.data)
-  //       setCategories(response.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-  //   fetchCategories();
-  // }, []);
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await axios.get('/categories');
+
+        setCategories(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
 
 
