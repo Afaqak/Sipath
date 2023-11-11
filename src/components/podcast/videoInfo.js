@@ -5,17 +5,12 @@ import { Icons, formatTimeAgo } from '..';
 import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useSearchParams } from 'next/navigation';
+import UserAvatar from '../common/userAvatar';
 
-const ProfileInfo = ({ author, followers }) => {
+const ProfileInfo = ({ author, followers,profile_image }) => {
   return (
     <div className="text-gray-600 flex  gap-2">
-      <Image
-        src="/demo-4.jpg"
-        className="tutor-img w-[2.4rem] object-cover"
-        width={100}
-        height={50}
-        alt="demo-4"
-      />
+      <UserAvatar user={{image:profile_image,name:author}}/>
       <div className="flex flex-col">
         <span>{author}</span>
         <span className="text-[0.75rem]">{followers}</span>
@@ -47,7 +42,7 @@ const TagsAndDescription = ({ description, createdAt }) => {
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span> #loremipsum #lorem
+        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span> 
       </div>
       <p>{description}</p>
     </div>
@@ -106,7 +101,7 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
         <div className="mb-2">
           <h1 className="font-semibold text-lg mb-1">{selectedVideo?.asset?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
-            <ProfileInfo author={selectedVideo?.display_name} followers={selectedVideo?.follower_count} />
+            <ProfileInfo profile_image={selectedVideo?.profile_image} author={selectedVideo?.display_name} followers={selectedVideo?.follower_count} />
             <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
               Follow
             </button>

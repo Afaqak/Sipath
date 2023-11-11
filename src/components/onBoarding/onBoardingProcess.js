@@ -1,30 +1,36 @@
 'use client';
-import React, { useState, useRef, forwardRef } from 'react';
+import React, { useState, useRef, forwardRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Modal } from '@/components';
+import { Icons, Modal } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-
+import { Button } from '../ui/button';
+import axios from '@/utils/index'
+import { selectCategories } from '@/features/categories/categorySlice';
+import { useSelector } from 'react-redux';
 export const OnBoardingProcess = () => {
+  const categories=useSelector(selectCategories)
   const { data: user, update } = useSession();
-  const axios = useAxiosPrivate();
+  const privateAxios = useAxiosPrivate();
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
   const [modelOpen, setModalOpen] = useState(false);
+  // const [categories, setCategories] = useState([])
   const [selectedImage, setSelectedImage] = useState(null);
   const {
     register,
-    watch,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm();
   const [buttonType, setButtonType] = useState('');
+  const [loadingAsUser, setLoadingAsUser] = useState(false);
+  const [loadingAsExpert, setLoadingAsExpert] = useState(false);
 
   const handleContinueAsUser = () => {
     setButtonType('asUser');
@@ -40,10 +46,12 @@ export const OnBoardingProcess = () => {
   };
 
   const onSubmit = async (data) => {
-
-
-    const interests = [1, 2, 3, 4];
-
+    console.log("submit")
+    if (buttonType === "asUser") {
+      setLoadingAsUser(true)
+    } else {
+      setLoadingAsExpert(true)
+    }
     const formData = new FormData();
 
     formData.append('first_name', data.firstName);
@@ -53,37 +61,52 @@ export const OnBoardingProcess = () => {
     formData.append('bio', data.bio);
     formData.append('display_name', data.displayName);
     formData.append('profile_image', selectedImage);
-    for (var i = 0; i < interests.length; i++) {
-      formData.append('interests[]', interests[i]);
+    if(interests.length>0){
+      const updatedInterests=interests?.map(exp => exp?.id)
+      for (var i = 0; i < interests.length; i++) {
+        formData.append('interests[]', updatedInterests[i]);
+      }
     }
 
     function onSuccess() {
       if (buttonType === 'asUser') {
         successToast('Profile Created!');
+
         router.push('/');
+
       } else {
         successToast('Profile Created!\nTime to become an expert!');
         router.push('/on-boarding/expert');
+
+
       }
     }
-
-    const response = await axios.post('onboard/user', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${user?.token}`,
-      },
-    });
-  
-    if (response.data) {
-      const newSession = {
-        ...user,
-        user: {
-          ...user.user,
-          user: response.data?.user,
+    try {
+      const response = await privateAxios.post('onboard/user', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user?.token}`,
         },
-      };
-      await update(newSession);
-      onSuccess();
+      });
+
+      if (response.data) {
+        const newSession = {
+          ...user,
+          user: {
+            ...user.user,
+            user: response.data?.user,
+          },
+        };
+        await update(newSession);
+        onSuccess();
+      }
+  
+    } catch (err) {
+      console.log(err)
+    }
+    finally {
+      setLoadingAsExpert(false)
+      setLoadingAsUser(false)
     }
   };
 
@@ -93,7 +116,7 @@ export const OnBoardingProcess = () => {
       return;
     }
     const image = new Image();
-  
+
     if (file.type.startsWith('image/')) {
       image.src = URL.createObjectURL(file);
       image.onload = () => {
@@ -106,6 +129,31 @@ export const OnBoardingProcess = () => {
       };
     } else {
       errorToast('Please upload an image file.');
+    }
+
+  };
+
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
+  const handleInterests = (interest) => {
+    const InterestIndex = interests.findIndex((int) => int.id === interest.id);
+
+    if (InterestIndex === -1) {
+      setInterests([...interests, { id: interest.id, experty: interest.category }]);
+    } else {
+
+      const updatedInterest = [...interests];
+      updatedInterest.splice(InterestIndex, 1);
+      setInterests(updatedInterest)
     }
   };
 
@@ -164,7 +212,7 @@ export const OnBoardingProcess = () => {
                       </span>
                     )}
                   </div>
-                  <div className="mt-4 flex flex-col gap-2">
+                  <div className="mt-4 flex flex-col gap-2 ">
                     <label className="font-thin mb-1 uppercase text-sm">Date of Birth</label>
                     <Controller
                       name="birthday"
@@ -214,29 +262,17 @@ export const OnBoardingProcess = () => {
                 <div className="mt-7">
                   <div className="flex gap-1 mb-2">
                     <label className="text-sm text-[#616161] font-thin">INTERESTS</label>
-                    <img
-                      onClick={() => setModalOpen(true)}
-                      src={'/svgs/add_box.svg'}
-                      className="cursor-pointer"
-                      alt="add Interest"
-                      width={20}
-                      height={20}
-                    />
                   </div>
                   <div className="flex gap-1 flex-wrap">
-                    {interests.map((item, ind) => (
+                    {categories.map((item, ind) => (
                       <span
-                        className="flex gap-1 bg-[#D9D9D9] px-2 py-[0.15rem] text-sm rounded-lg items-center"
                         key={ind}
+                        onClick={() => handleInterests(item, ind)}
+                        className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${interests.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
+                          }`}
+                      
                       >
-                        <img
-                          src={'/svgs/close.svg'}
-                          width={15}
-                          height={15}
-                          alt="close"
-                          className="cursor-pointer self-end"
-                        />
-                        {item}{' '}
+                        {item.category}{' '}
                       </span>
                     ))}
                   </div>
@@ -275,7 +311,7 @@ export const OnBoardingProcess = () => {
                         alt="account"
                       />
                     )}
-                   
+
                   </div>
                   <button
                     type="button"
@@ -298,21 +334,27 @@ export const OnBoardingProcess = () => {
               </div>
             </div>
           </div>
-          <div className="w-full flex gap-2 ">
-            <button
+          <div className="w-full flex gap-2 mt-4">
+            <Button
               onClick={handleContinueAsUser}
               type="submit"
-              className="text-main w-full py-1 text-center border-2 border-main font-medium rounded-md"
+              variant="outline"
+              disabled={loadingAsExpert || loadingAsUser}
+              className="text-main w-full py-1 flex gap-2 border-main"
             >
+              {loadingAsUser && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="#1850BC" className="w-4 h-4" /></span>}
               Continue As User
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleContinueAsExpert}
               type="submit"
-              className="text-black text-center py-1 w-full border-2 border-black font-medium rounded-md"
+              disabled={loadingAsExpert || loadingAsUser}
+              variant="outline"
+              className="text-black py-1 w-full flex gap-2 border-black"
             >
+              {loadingAsExpert && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="black" className="w-4 h-4" /></span>}
               Continue as an Expert
-            </button>
+            </Button>
           </div>
         </form>
         <Modal

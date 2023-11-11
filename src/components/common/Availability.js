@@ -53,7 +53,7 @@ export const AvailableDays = ({ setAvailability }) => {
       schedule[day].forEach((slot) => {
         if (slot.from && slot.until) {
           availability.push({
-            day: day.toLowerCase(),
+            day: day?.toLowerCase(),
             from: slot.from.format('HH:mm'),
             to: slot.until.format('HH:mm'),
           });

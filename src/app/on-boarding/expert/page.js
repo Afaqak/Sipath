@@ -1,33 +1,37 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import {AvailableDays } from '@/components';
+import { AvailableDays, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { Button } from '@/components/ui/button';
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
+
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession();
   const axios = useAxiosPrivate();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [modelOpen, setModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const categories=useSelector(selectCategories)
+  // const [categories, setCategories] = useState([]);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])
   const [availability, setAvailability] = useState([]);
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await axios.get('/categories');
-      
-        setCategories(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchCategories();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     try {
+  //       const response = await axios.get('/categories');
+  //       console.log(response?.data)
+  //       setCategories(response.data);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   }
+  //   fetchCategories();
+  // }, []);
 
 
 
@@ -60,26 +64,25 @@ const OnBoardingExpert = () => {
         availability,
       };
 
-      console.log(formData,"{before submission}")
+      console.log(formData, "{before submission}")
 
-      // const response = await axios.post('/onboard/tutor', formData, {
-      //   headers: {
-      //     Authorization: `Bearer ${user?.token}`,
-      //   },
-      // });
+      const response = await axios.post('/onboard/tutor', formData, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
-      // if (response.data) {
-       
-      //   const newSession = {
-      //     ...user,
-      //     user: {
-      //       ...user.user,
-      //       user: { isTutor: true, ...response.data },
-      //     },
-      //   };
-      //   await update(newSession);
-      //   onSuccess();
-      // }
+      if (response.data) {
+        console.log(response?.data, "{onboarding tutor}")
+        const newSession = {
+          user: {
+            user: response?.data.user,
+            tutor: response?.data.tutor
+          },
+        };
+        await update(newSession);
+        onSuccess();
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -116,7 +119,7 @@ const OnBoardingExpert = () => {
                 <div className=" flex gap-1 flex-wrap mt-1 w-[65%]">
                   {categories.map((item, ind) => (
                     <span
-                      onClick={() => handleExpertise(item, ind)} 
+                      onClick={() => handleExpertise(item, ind)}
                       className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${expertise.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
                         }`}
                     >
@@ -132,14 +135,16 @@ const OnBoardingExpert = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <button
+            <Button
               type="submit"
+              variant="outline"
               disabled={loading}
-              className={`flex items-center rounded-md px-8 py-1 gap-2 ${loading ? 'bg-black text-white' : 'border-2 border-black text-black'
+              className={`flex items-center border-black rounded-md px-8 py-1 gap-2 
                 }`}
             >
+              {loading && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="black" className="w-4 h-4" /></span>}
               Complete
-            </button>
+            </Button>
           </div>
         </form>
 
@@ -149,52 +154,5 @@ const OnBoardingExpert = () => {
 };
 
 export default OnBoardingExpert;
-
-
-export const MultipleExpertiseModal = ({ isOpen, onClose, setExpertise, expertise }) => {
-  const axios = useAxiosPrivate();
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await axios.get('/categories');
-
-        setCategories(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchCategories();
-  }, []);
-
-  return (
-    <div>
-      <ul
-        className={`transition-opacity ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'} absolute top-4 left-0 options grid grid-cols-2 z-10 mt-2 w-56 bg-white border border-gray-300  rounded-md shadow-md`}
-      >
-        {categories.map((option) => (
-          <li
-            onClick={() => {
-              const expertiseId = option?.id;
-              const expertiseCategory = option?.category;
-              const isExpertiseSelected = expertise.some((exp) => exp.id === expertiseId);
-
-              if (!isExpertiseSelected) {
-                setExpertise([...expertise, { id: expertiseId, experty: expertiseCategory }]);
-              }
-            }}
-            key={option.id}
-            className={`py-2 px-4 selectedSubject cursor-pointer shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] ${expertise.some((exp) => exp.id === option.id) ? 'bg-main text-white' : ''
-              }`}
-          >
-            {option.category}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
 
 

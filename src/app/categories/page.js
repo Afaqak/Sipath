@@ -5,25 +5,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ContentContainer } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 const CategoriesPage = () => {
-  const [categoriesData, setCategoriesData] = useState([]);
+  const categoriesData=useSelector(selectCategories)
+  // const [categoriesData, setCategoriesData] = useState([]);
 
-  const axios=useAxiosPrivate()
-  useEffect(() => {
-    const fetchCategories = async () => {
+  // const axios=useAxiosPrivate()
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
     
-      try {
-        const response = await axios.get('/categories');
+  //     try {
+  //       const response = await axios.get('/categories');
      
-        setCategoriesData(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+  //       setCategoriesData(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   };
 
-    fetchCategories();
-  }, []);
+  //   fetchCategories();
+  // }, []);
 
   return (
     
@@ -33,12 +35,12 @@ const CategoriesPage = () => {
         {categoriesData.map((data) => (
           <Link
             key={data.id}
-            href={`/categories/${data.category.toLowerCase()}?id=${data?.id}`}
+            href={`/categories/${data.category?.toLowerCase()}?id=${data?.id}`}
             className="flex flex-col items-center justify-center shadow-lg mb-2 p-4 rounded-md bg-white h-44"
           >
             <Image
               className="w-24 h-20 object-contain"
-              src={`/svgs/${data.category.toLowerCase()}.svg`}
+              src={`/svgs/${data.category?.toLowerCase()}.svg`}
               width={80}
               height={80}
               alt={data.category}

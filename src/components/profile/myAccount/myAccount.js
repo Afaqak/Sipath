@@ -4,15 +4,20 @@ import { SocialMediaField, InputField, Modal, TextareaField, MyAccountInfo } fro
 import { useSession } from 'next-auth/react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
+import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 export const MyAccount = ({ session }) => {
   const axios = useAxiosPrivate();
+  const categories=useSelector(selectCategories)
   const [interests, setInterests] = useState([]);
   const [expertise, setExpertise] = useState([]);
+  // const [interests, setInterests] = useState([]);
   const [modalType, setModalType] = useState('');
   const { data: user, update } = useSession();
   const [modelOpen, setModalOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
 
   const [formData, setFormData] = useState({
     firstName: user?.user?.first_name || '',
@@ -35,18 +40,25 @@ export const MyAccount = ({ session }) => {
     if (expertiseIndex === -1) {
       setExpertise([...expertise, { id: experty.id, experty: experty.category }]);
     } else {
-
       const updatedExpertise = [...expertise];
       updatedExpertise.splice(expertiseIndex, 1);
       setExpertise(updatedExpertise);
     }
   };
+  const handleInterests = (interest) => {
+    const InterestIndex = interests.findIndex((int) => int.id === interest.id);
 
+    if (InterestIndex === -1) {
+      setInterests([...interests, { id: interest.id, experty: interest.category }]);
+    } else {
 
-  const setModalOpenAndType = (type) => {
-    setModalType(type);
-    setModalOpen(true);
+      const updatedInterest = [...interests];
+      updatedInterest.splice(InterestIndex, 1);
+      setInterests(updatedInterest)
+    }
   };
+
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -78,6 +90,16 @@ export const MyAccount = ({ session }) => {
         }
       }
 
+      if (interests.length > 0) {
+        const updatedInterests = interests?.map(exp => exp?.id)
+        console.log(updatedInterests,"update int")
+        for (var i = 0; i < interests.length; i++) {
+          formDataToSend.append('interests[]', updatedInterests[i]);
+        }
+      }
+      // console.log(session)
+      // console.log(formDataToSend.get('interests'),"{interests}")
+
       if (hasUserData) {
         const userResponse = await axios.patch('/users/profile', formDataToSend, {
           headers: {
@@ -93,6 +115,7 @@ export const MyAccount = ({ session }) => {
           },
 
         };
+        console.log(userResponse.data?.user,"response")
         session.user = userResponse.data?.user
 
         if (
@@ -144,18 +167,18 @@ export const MyAccount = ({ session }) => {
     setModalOpen(false);
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
 
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
 
   return (
     <div>
@@ -226,7 +249,7 @@ export const MyAccount = ({ session }) => {
 
                   <div className="flex flex-col">
                     <div className="flex gap-1 relative">
-                      <label className="text-[#616161] font-thin text-sm">Update EXPERTISE</label>
+                      <label className="text-[#616161] font-thin text-sm">UPDATE EXPERTISE</label>
 
 
                     </div>
@@ -245,37 +268,27 @@ export const MyAccount = ({ session }) => {
                   </div>
 
                 )}
-                <div className="flex  flex-col">
-                  <div className="flex gap-1">
-                    <label className="text-sm text-[#616161] font-thin">Interests</label>
-                    <Image
-                      onClick={() => setModalOpenAndType('interests')}
-                      src={'/svgs/add_box.svg'}
-                      className="cursor-pointer"
-                      alt="add Interest"
-                      width={20}
-                      height={20}
-                    />
-                  </div>
 
-                  <div className="flex gap-1 mt-4 flex-wrap">
-                    {interests.map((item, ind) => (
+                <div className="flex flex-col">
+                  <div className="flex gap-1 relative">
+                    <label className="text-[#616161] font-thin text-sm">UPDATE INTERESTS</label>
+
+
+                  </div>
+                  <div className=" flex gap-1 flex-wrap mt-1 w-[80%]">
+                    {categories.map((item, ind) => (
                       <span
-                        className="flex gap-1 bg-[#D9D9D9] px-2 py-[0.15rem] text-sm rounded-lg items-center"
                         key={ind}
+                        onClick={() => handleInterests(item, ind)}
+                        className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${interests.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
+                          }`}
                       >
-                        <Image
-                          src={'/svgs/close.svg'}
-                          width={15}
-                          height={15}
-                          alt="close"
-                          className="cursor-pointer self-end"
-                        />
-                        {item}{' '}
+                        {item.category}{' '}
                       </span>
                     ))}
                   </div>
                 </div>
+
               </div>
             </div>
 
@@ -326,19 +339,27 @@ export const MyAccount = ({ session }) => {
             </div>
           </div>
           <div className="flex justify-end gap-4">
+            {
+              !session?.user?.isTutor &&
+
+              <Link href={"/on-boarding/expert"} className='px-6 text-main py-1 border-main rounded-md border-2 shadow-md'>
+                Become an Expert!
+              </Link>
+            }
             <button
               type="submit"
-              className="px-6 py-1 border-green-800 rounded-md border-2 shadow-md"
+              className="px-6 py-1 border-subcolor text-subcolor rounded-md border-2 shadow-md"
             >
               Confirm
             </button>
             <button
               type="button"
               onClick={() => setEdit(false)}
-              className="px-6 py-1 border-red-400 border-2 rounded-md shadow-md"
+              className="px-6 py-1 border-subcolor2 text-subcolor2 border-2 rounded-md shadow-md"
             >
               Cancel
             </button>
+
           </div>
         </form>
       )}

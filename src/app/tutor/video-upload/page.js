@@ -2,7 +2,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType, SubjectDropDown } from '@/components';
 import axios from '../../../utils/index'
 import { motion } from 'framer-motion';
@@ -11,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
 import { Icons } from '@/components';
-
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 
 const VideoUpload = () => {
   const { data: user } = useSession();
@@ -26,16 +26,16 @@ const VideoUpload = () => {
   const [courseThumbnail, setCourseThumbnail] = useState(null);
   const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
 
-  useEffect(() => {
-    async function fetchCategories() {
-      const response = await axios.get('/categories')
-      setCategories(response?.data)
-    }
-    fetchCategories()
-  }, [])
-
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     const response = await axios.get('/categories')
+  //     setCategories(response?.data)
+  //   }
+  //   fetchCategories()
+  // }, [])
+  const categories=useSelector(selectCategories)
   function cancelUpload() {
     abortController.abort();
   }
@@ -236,6 +236,7 @@ const VideoUpload = () => {
   };
 
   const resetState = () => {
+    console.log("clicked")
     const initialState = {
       id: 'section-1',
       title: '',
@@ -264,7 +265,10 @@ const VideoUpload = () => {
     setSectionIds([])
     setPrice(0)
     setSections([initialState]);
+    console.log(sections, "{init}")
   };
+
+  console.log(sections, "{sections}")
 
   const handleCourseUpload = async (sectionIndex) => {
     let cId = courseId;
@@ -380,6 +384,7 @@ const VideoUpload = () => {
 
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
+          console.log('videoUploaded')
           if (response.status === 200) {
 
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
@@ -455,14 +460,10 @@ const VideoUpload = () => {
         formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration)
 
-
-          ;
-
         if (videoType === 'premium' && price > 0) {
           formDataToSend.append('price', price);
         }
         video.loading = true;
-
         const config = {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -495,6 +496,7 @@ const VideoUpload = () => {
 
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
+          console.log("uploaded successfully")
           if (response.status === 200) {
 
             successToast('Video uploaded successfully!');
@@ -504,8 +506,6 @@ const VideoUpload = () => {
 
           } else {
             console.error('Error uploading video:', response);
-
-
           }
         } catch (error) {
           console.error('Error uploading video:', error);
@@ -542,14 +542,16 @@ const VideoUpload = () => {
         >
           Individual
         </Button>
-        <Button
-          type="button"
-          className="text-base"
-          onClick={() => setSelectedTab('premium')}
-          variant={selectedTab === 'premium' ? 'default' : 'outline'}
-        >
-          Course
-        </Button>
+        {user?.user?.isTutor &&
+          <Button
+            type="button"
+            className="text-base"
+            onClick={() => setSelectedTab('premium')}
+            variant={selectedTab === 'premium' ? 'default' : 'outline'}
+          >
+            Course
+          </Button>
+        }
         <Button
           type="button"
           onClick={resetState}
@@ -578,7 +580,7 @@ const VideoUpload = () => {
 
             <div
 
-              key={id}
+              key={sectionIndex}
               className={`relative ${sectionIndex > 0 ? 'mt-24' : '0'}`}
             >
               {id && selectedTab === 'premium' && (
@@ -595,7 +597,7 @@ const VideoUpload = () => {
                 {videos?.map((video, videoIndex) => (
 
                   <div
-
+                    key={videoIndex}
                     className="relative"
                   >
                     <VideoBody
@@ -714,9 +716,11 @@ const VideoBody = ({
   onUpdateVideo,
   onUpdateDuration,
   cancelUpload,
+  video,
   thumbnail,
   loading,
   uploadProgress,
+  formData,
   onUpdateSubject,
   selectedTab,
   categories,
@@ -740,16 +744,22 @@ const VideoBody = ({
       <div className="w-full h-full absolute top-0 -left-10 shadow rounded-md bg-white"></div>
       {selectedTab === 'premium' && (
         <div>
-          <div className="absolute -top-2 -right-14 flex gap-1">
+          <div className="absolute top-[0.76rem] -right-14 flex gap-1">
             {' '}
+
             <Icons.addTitle className="w-6 h-6" onClick={onClick} />
             <Icons.info className="w-[1.45rem] h-[1.42rem]" onClick={onClick} />
+
           </div>
         </div>
       )}
       <form className="p-4 flex flex-col relative bg-white outline-none mb-4 shadow-lg w-full rounded-md justify-between">
         <div className='flex justify-end'>
-          <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} />
+          <div onClick={removeVideo} className=' h-5 w-fit rounded-full bg-subcolor2 mb-4'>
+            <Icons.minus stroke="white" className="w-5 cursor-pointer h-5" />
+          </div>
+          {/* 
+          <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} /> */}
         </div>
         {loading && (
           <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
@@ -774,17 +784,6 @@ const VideoBody = ({
                   )}
                 </motion.span>
               </motion.div>
-
-              {/* <div className="w-52 h-1 bg-white shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md relative">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${uploadProgress}%` }}
-                  transition={{ duration: 0.5 }}
-                  className="h-full bg-gray-500 rounded-md"
-                  style={{ width: `${uploadProgress}%` }}
-                ></motion.div>
-              </div> */}
-
               <button
                 type="button"
                 onClick={cancelUpload}
@@ -807,6 +806,7 @@ const VideoBody = ({
                     handleFieldChange(e);
                   }}
                   name="title"
+                  value={formData?.title}
                   placeholder="Enter title..."
                   className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
                   type="text"
@@ -817,6 +817,7 @@ const VideoBody = ({
                 <textarea
                   onChange={handleFieldChange}
                   name="description"
+                  value={formData?.description}
                   rows={4}
                   cols={4}
                   typeof="text"
@@ -837,6 +838,7 @@ const VideoBody = ({
           </div>
           <VideoandThumbnail
             thumbnail={thumbnail}
+            video={video}
             setDuration={onUpdateDuration}
             setVideo={onUpdateVideo}
             setThumbnail={handleThumbnail}
@@ -868,7 +870,7 @@ const QuizUploadColumn = ({ onChange, setQuiz, quiz, categories, quizSolution, s
   );
 };
 
-const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) => {
+const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration, video }) => {
   const [videoUrl, setVideoUrl] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -878,24 +880,54 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
 
   const handleVideoSelected = (event) => {
     const file = event.target.files[0];
-    setVideo(file);
     if (file) {
-      const video = document.createElement('video');
-
-      video.onloadedmetadata = () => {
-        const duration = Math.floor(video.duration);
+      setVideo(file);
+      const newVideo = document.createElement('video');
+      newVideo.onloadedmetadata = () => {
+        const duration = Math.floor(newVideo.duration);
         setDuration(duration);
-        setVideoUrl(video.src);
       };
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        video.src = URL.createObjectURL(file);
+        newVideo.src = URL.createObjectURL(file);
+        console.log(newVideo.src)
+        setVideoUrl(newVideo.src);
       };
 
       reader.readAsDataURL(file);
     }
   };
+
+  useEffect(() => {
+    setVideoUrl(null)
+    if (video) {
+      const newVideo = document.createElement('video');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newVideo.src = URL.createObjectURL(video);
+        console.log(newVideo.src, "{from effect}")
+
+        setVideoUrl(newVideo.src);
+      };
+
+      reader.readAsDataURL(video);
+    } else {
+      setVideoUrl(null);
+      setVideo(null);
+    }
+  }, [video]);
+
+  function handleRemoveVideo(event) {
+    event.stopPropagation()
+
+    if (video) {
+      setVideoUrl(false)
+      setVideo(false)
+      setDuration(false)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
       <div
@@ -903,10 +935,17 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
         className="lg:h-28 h-36 flex items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full bg-[#D9D9D9]"
       >
         {videoUrl ? (
-          <video controls className="w-full h-full rounded-md object-contain">
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <>
+            <div className='w-full h-full rounded-md flex gap-2 object-contain '>
+              <div onClick={handleRemoveVideo} className='w-5 h-4 rounded-bl-sm z-[2000] bg-gray-200 right-[0.97rem] rounded-tr-md absolute'>
+                <div className='w-3 bg-black h-[0.14rem] absolute top-[0.38rem] left-1'></div>
+              </div>
+              <video controls className="w-full h-full rounded-md object-contain">
+                <source src={videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </>
         ) : (
           <>
             <div className="flex gap-2">
@@ -930,6 +969,8 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration }) =
     </div>
   );
 };
+
+
 
 const SectionTitle = ({ onTitleUpdate }) => {
   return (

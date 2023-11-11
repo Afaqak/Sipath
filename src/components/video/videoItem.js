@@ -15,10 +15,12 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const ref = useRef();
+  console.log(video,"{video}")
 
   useOutsideClick(ref, () => setToggleMenu(false));
   return (
     <div
+    
       className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[23rem] ${
         isEdit && 'border-2 border-subcolor'
       } relative block w-full p-4 bg-white shadow-lg rounded-md border`}
@@ -46,7 +48,7 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
         />
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} />
+       <Link className='block' href={`/profile/${video?.author_id}`}> <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} /></Link>
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link

@@ -27,7 +27,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
   const getMonthName = (date) => {
     if (typeof window !== 'undefined') {
       const options = { month: 'long' };
-      return date.toLocaleDateString(navigator.language, options);
+      return date?.toLocaleDateString(navigator.language, options);
     }
     return '';
   };

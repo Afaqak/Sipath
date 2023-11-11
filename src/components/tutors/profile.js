@@ -18,12 +18,16 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
+import { useSelector } from 'react-redux';
 
-export const Profile = ({ type, user, isActon = true, session }) => {
+import { selectCategories } from '@/features/categories/categorySlice';
+export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
   const privateAxios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
+  const categories=useSelector(selectCategories)
   const [loading, setLoading] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
@@ -31,14 +35,13 @@ export const Profile = ({ type, user, isActon = true, session }) => {
     setShowActions(false);
   };
 
-
   const handleFollowUser = async () => {
 
     try {
       const isFollowing = user?.followers?.some(
         (follower) => follower.follower === session?.user?.id && follower.following === user?.id
       );
-    
+
       if (isFollowing) {
         setLoading(true);
 
@@ -112,19 +115,20 @@ export const Profile = ({ type, user, isActon = true, session }) => {
     (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
 
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
 
+  // }, [])
+  // console.log(categories, "{categories}")
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
@@ -155,11 +159,11 @@ export const Profile = ({ type, user, isActon = true, session }) => {
             )}
           </button>
         )}
-        {!type==='userprofile' &&
-        <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-4 right-16 flex items-center justify-center'>
-          <Icons.edit className=" stroke-subcolor h-4 w-4" />
-        </div>
-}
+        {type === 'myprofile' &&
+          <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-3 right-14 flex items-center justify-center'>
+            <Icons.edit className=" stroke-subcolor h-4 w-4" />
+          </div>
+        }
       </div>
 
       <div className="col-span-3 w-full">
@@ -168,9 +172,11 @@ export const Profile = ({ type, user, isActon = true, session }) => {
           <div className="flex gap-12">
             <div className="">
               <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
-                <li className="text-[0.75rem]">
-                  <Stars initialRating={user?.rating} setRating={handleRatingChange} rating={rating} />
-                </li>
+                {type === 'userprofile' &&
+                  <li className="text-[0.75rem]">
+                    <Stars initialRating={user?.rating} setRating={handleRatingChange} rating={rating} />
+                  </li>
+                }
                 <li className="text-[0.75rem]">
                   <span className="font-semibold text-[0.85rem]">{user?.follower_count}</span>{' '}
                   Followers
@@ -178,9 +184,11 @@ export const Profile = ({ type, user, isActon = true, session }) => {
                 <li className="text-[0.75rem]">
                   <span className="font-semibold text-[0.85rem]">521</span> Following
                 </li>
+                {user?.isTutor &&
                 <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">24$/hr</span> Hourly rate
+                  <span className="font-semibold text-[0.85rem]">{(tutor?.hourly_rate ||session?.tutor?.hourly_rate )}$/hr</span> Hourly rate
                 </li>
+  }
                 {!type === 'myprofile' && (
                   <Stars
                     rating={rating}
@@ -199,7 +207,7 @@ export const Profile = ({ type, user, isActon = true, session }) => {
                 <label className="text-sm font-thin">Expertise</label>
                 <ul className=" list-disc">
                   {
-                    session?.tutor && session?.tutor?.expertise?.map((exp) => (
+                    (tutor || session?.tutor) && (tutor?.expertise || session?.tutor?.expertise).map((exp) => (
                       <div key={exp}>
                         {categories[exp - 1]?.category}
                       </div>
@@ -315,50 +323,72 @@ const ActionButtons = () => {
 
 
 function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
+  const [loading, setLoading] = useState(false)
   const [image, setImage] = useState(null);
   const privateAxios = useAxiosPrivate()
+  const { data, update } = useSession()
   const closeDialog = () => {
     setIsOpen(false);
   };
   async function handleImageSubmit() {
-    console.log('click')
+
     const formDataToSend = new FormData()
     formDataToSend.append('profile_image', image)
+
     try {
-     
+      setLoading(true)
       if (image) {
-        const userResponse = await privateAxios.patch('/users/profile',formDataToSend, {
+        const userResponse = await privateAxios.patch('/users/profile', formDataToSend, {
           headers: {
-            Authorization: `Bearer ${session?.token}`,
+            'Authorization': `Bearer ${session?.token}`,
+            'Content-Type': 'multipart/form-data',
           },
         });
-      
-        session.user = userResponse.data?.user
+
+
+        console.log(userResponse.data, "{user}")
         successToast("Updated Profile Pic!")
+        const newSession = {
+          user: {
+            user: userResponse?.data?.user,
+            tutor: data?.tutor
+          },
+        };
+        await update(newSession);
         closeDialog()
       }
     } catch (err) {
       console.log(err)
+    } finally {
+      setLoading(false)
     }
   }
 
+  // console.log("session check",session)
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen} className="profile-modal">
-    <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
-      <DialogHeader className="text-xl font-semibold py-4 border-b">Update Profile Picture</DialogHeader>
-      <DialogDescription className="p-4">
-        {image && (
-          <div className="text-center mb-4">
-            <UserAvatar className="w-20 h-20 mb-2" user={{ image: URL.createObjectURL(image) }} />
-          </div>
-        )}
-        <FileInput file={image} setFile={setImage} />
-      </DialogDescription>
-      <DialogFooter className="flex justify-end p-4">
-        <Button variant="outline" onClick={closeDialog}>Cancel</Button>
-        <Button className=" px-4 py-2 rounded" onClick={handleImageSubmit}>Update</Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
+        <DialogHeader className="text-xl font-semibold py-4 border-b">Update Profile Picture</DialogHeader>
+        <DialogDescription className="py-4">
+          {!image && (
+            <div className="text-center mb-4">
+              <UserAvatar className="w-28 h-28 mb-2" user={{ image: session?.user?.profile_image }} />
+            </div>
+          )}
+          {image && (
+            <div className="text-center mb-4">
+              <UserAvatar className="w-28 h-28 mb-2" user={{ image: URL.createObjectURL(image) }} />
+            </div>
+          )}
+          <FileInput file={image} setFile={setImage} />
+        </DialogDescription>
+        <DialogFooter className="flex justify-end p-4">
+          <Button disabled={loading} variant="outline" onClick={closeDialog}>Cancel</Button>
+          <Button disabled={loading} className=" px-4 py-2 flex gap-2 rounded" onClick={handleImageSubmit}>
+            {loading && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="white" /></span>}
+            Update</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

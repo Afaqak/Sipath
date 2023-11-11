@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchConversations } from './conversationThunk';
-import { reducer } from '@/components/hooks/use-toast';
+
 const initialState = {
   conversations: [],
   messages:[],
@@ -25,6 +25,7 @@ const conversationSlice = createSlice({
       })
       .addCase(fetchConversations.fulfilled, (state, action) => {
         state.loading = false;
+        //action.payload?.chatMessages
         state.conversations = action.payload?.userChats;
       })
       .addCase(fetchConversations.rejected, (state, action) => {

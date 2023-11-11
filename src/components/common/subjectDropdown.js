@@ -2,26 +2,29 @@
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { useState, useRef ,useEffect} from "react";
 import axios from '../../utils/index'
+import { useSelector } from "react-redux";
+import { selectCategories } from "@/features/categories/categorySlice";
 export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Select Subject"}) => {
   const [open, setOpen] = useState(false);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
+  const categories=useSelector(selectCategories)
 
   const ref = useRef(null)
   const toggleDropdown = () => {
    
     setOpen(!open);
   };
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
 
 
   useOutsideClick(ref, () => setOpen(false))
@@ -30,7 +33,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
     <div ref={ref}  className="relative subject-dropdown w-48">
       <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)]  py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
           
-        <li className="relative group cursor-pointer ">
+        <li className="relative group cursor-pointer text-sm">
           <span
             className="block leading-5 text-gray-700 px-3"
             onClick={toggleDropdown}

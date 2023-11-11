@@ -6,10 +6,11 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { socket } from '@/socket';
 import { useSession } from 'next-auth/react';
-import { insertMessage } from '@/features/chat/message/messageSlice';
+import { insertMessage, insertMessages } from '@/features/chat/message/messageSlice';
 import { Icons } from '@/components';
-import { getMessagesByConversationId } from '@/features/chat/message/messageThunk';
+import UserAvatar from '@/components/common/userAvatar';
 import { debounce } from 'lodash';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 const ChatScreen = ({ conversation, session }) => {
 
   const dispatch = useDispatch();
@@ -17,11 +18,13 @@ const ChatScreen = ({ conversation, session }) => {
   const messages = useSelector((state) => state.messages.messages);
   const { data: user } = useSession();
   const chatContainerRef = useRef(null);
-
+  const axios=useAxiosPrivate()
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [set, setSet] = useState(0)
   const inputRef = useRef(null)
+
+console.log(conversation,"{conversations}")
 
   useEffect(() => {
  
@@ -36,7 +39,6 @@ const ChatScreen = ({ conversation, session }) => {
     socket.emit('send-message', {
       text,
       sender: user?.user?.id,
-      reply_to: user?.id === conversation?.member_1 ? conversation?.member_2 : conversation.member_1,
       chat_id: conversation?.id,
     });
 
@@ -66,25 +68,28 @@ const ChatScreen = ({ conversation, session }) => {
      
     }
   }, 200);
-  const loadMoreMessages = () => {
+  const loadMoreMessages = async () => {
     const setToGet = set + 10;
     setLoading(true);
-    
+    const {data} = await axios.get(`/chats/${conversation?.id}/messages?limit=10&set=${setToGet}`,{
 
-    dispatch(getMessagesByConversationId({
-      token: session?.token, id: conversation?.id, set: setToGet, checkLength: (data) => {
-        if (data?.length > messages?.length) {
+      headers:{
+        Authorization:`Bearer ${session?.token}`
+      }
+    }); 
+
+      console.log(data?.messages)
+    dispatch
+    (insertMessages(data?.messages))
+    if (data.messages?.length > messages?.length) {
           setHasMoreMessages(true)
         } else {
           setHasMoreMessages(false)
         }
-      }
-    }))
 
     setSet(setToGet);
     setLoading(false);
   };
-
 
 
   useEffect(() => {
@@ -105,8 +110,6 @@ const ChatScreen = ({ conversation, session }) => {
         message,
         sender,
         chat_id,
-        reply_to
-
       };
       
       console.log(newMessage,'nM')
@@ -123,8 +126,8 @@ const ChatScreen = ({ conversation, session }) => {
     return message?.sender === user?.user?.id
   };
 
-
-
+  let otherUser=conversation.member_1===user?.user?.id?conversation?.chat_member_2:conversation?.chat_member_1
+  console.log(otherUser,"other")
 
 
   return (
@@ -133,7 +136,7 @@ const ChatScreen = ({ conversation, session }) => {
         <div className="">
           <div className="flex justify-between px-6 py-4 shadow-md">
             <div className="flex items-center ">
-              <Image src="/svgs/accountname.svg" width={40} height={40} alt="user" />
+            <UserAvatar user={{image:otherUser?.profile_image}}/>
               {/* <p className="ml-4">{user.accountName}</p> */}
             </div>
             <div className="flex">

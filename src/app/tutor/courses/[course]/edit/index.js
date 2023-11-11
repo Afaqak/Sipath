@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import { VideoEditModal } from '@/components/video/editVideoModal';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useRouter, useParams } from 'next/navigation';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const EditPage = ({ session }) => {
   const axios = useAxiosPrivate();
@@ -37,6 +37,7 @@ const EditPage = ({ session }) => {
   const router = useRouter();
   const [sectionName, setSectionName] = useState('');
   const [loadingStates, setLoadingStates] = useState([]);
+  const [dragLoading, setDragLoading] = useState(false)
 
   function handleEditMode() {
     setEditMode(!editMode);
@@ -78,7 +79,7 @@ const EditPage = ({ session }) => {
         }
       );
 
-     
+
       successToast('Section Added Successfully!', '#1850BC');
       setSections((prev) => [...prev, response.data.section]);
     } catch (err) {
@@ -103,7 +104,7 @@ const EditPage = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-      
+
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);
@@ -135,7 +136,7 @@ const EditPage = ({ session }) => {
         setOpen(false);
         router.push('/my-profile');
       }
-  
+
     } catch (err) {
       console.log(err);
       errorToast('An error occured!', '#fb3c22');
@@ -156,7 +157,7 @@ const EditPage = ({ session }) => {
         },
         { headers: { Authorization: `Bearer ${session?.token}` } }
       );
- 
+
       successToast('Course Updated!');
       setEditMode(false);
       setCourseName('');
@@ -180,7 +181,7 @@ const EditPage = ({ session }) => {
         },
         { headers: { Authorization: `Bearer ${session?.token}` } }
       );
-   
+
       successToast('Course Price Updated!');
       setEditPriceMode(false);
       setCoursePrice('');
@@ -197,6 +198,7 @@ const EditPage = ({ session }) => {
     const sourceSectionId = result.source.droppableId;
     const destinationSectionId = result.destination.droppableId;
     const videoId = result.draggableId;
+    console.log(sourceSectionId, destinationSectionId)
 
     if (sourceSectionId === destinationSectionId) {
       const sectionVideos = videosBySection[sourceSectionId];
@@ -207,22 +209,10 @@ const EditPage = ({ session }) => {
         [sourceSectionId]: sectionVideos,
       });
     } else {
-   
-      const response = await axios.patch(
-        `/courses/${course?.id}/sections/${sourceSectionId}/videos`,
-        {
-          video_id: videoId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${session?.token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-      
-        const sectionResponse = await axios.post(
-          `/courses/${course?.id}/section/${destinationSectionId}/videos`,
+      try {
+        setDragLoading(true)
+        const response = await axios.patch(
+          `/courses/${course?.id}/sections/${sourceSectionId}/videos`,
           {
             video_id: videoId,
           },
@@ -232,31 +222,50 @@ const EditPage = ({ session }) => {
             },
           }
         );
-      
-      }
-      if(response?.status===200){
-        successToast('Video Moved!')
-      }
-      
+        if (response.status === 200) {
 
-      const sourceSectionVideos = videosBySection[sourceSectionId];
-      const destinationSectionVideos = videosBySection[destinationSectionId];
-      const [movedVideo] = sourceSectionVideos.splice(result.source.index, 1);
-      destinationSectionVideos.splice(result.destination.index, 0, movedVideo);
+          const sectionResponse = await axios.post(
+            `/courses/${course?.id}/section/${destinationSectionId}/videos`,
+            {
+              video_id: videoId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${session?.token}`,
+              },
+            }
+          );
 
-      setVideosBySection({
-        ...videosBySection,
-        [sourceSectionId]: sourceSectionVideos,
-        [destinationSectionId]: destinationSectionVideos,
-      });
+        }
+        if (response?.status === 200) {
+          successToast('Video Moved!')
+        }
+
+
+        const sourceSectionVideos = videosBySection[sourceSectionId];
+        const destinationSectionVideos = videosBySection[destinationSectionId];
+        const [movedVideo] = sourceSectionVideos.splice(result.source.index, 1);
+        destinationSectionVideos.splice(result.destination.index, 0, movedVideo);
+
+        setVideosBySection({
+          ...videosBySection,
+          [sourceSectionId]: sourceSectionVideos,
+          [destinationSectionId]: destinationSectionVideos,
+        });
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setTimeout(()=>{setDragLoading(false)},1200)
+        
+      }
     }
   };
 
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mb-4">
         {editCoursePriceMode ? (
-          <form className="flex gap-1 items-center" onSubmit={handleCoursePriceSubmit}>
+          <form className="flex gap-1  items-center" onSubmit={handleCoursePriceSubmit}>
             {' '}
             <input
               type="number"
@@ -360,100 +369,95 @@ const EditPage = ({ session }) => {
           />
         )}
       </div>
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable type="group" droppableId="videoBodies" direction="vertical">
           {(provided) => (
-            <div className="pb-16" {...provided.droppableProps} ref={provided.innerRef}>
+            <div className="relative pb-16" {...provided.droppableProps} ref={provided.innerRef}>
+              {
+                dragLoading && (
+                  <div className='w-full absolute bg-white bg-opacity-50 top-0 left-0 h-full flex items-center z-[2000] justify-center'>
+                    <span className='animate-spin'>
+                      <Icons.Loader2 stroke="black" height="30" width="30" />
+                    </span>
+                  </div>
+                )
+              }
               {sections.map((section, sectionIndex) => (
-                <Draggable
-                  key={sectionIndex}
-                  draggableId={sectionIndex.toString()}
-                  index={sectionIndex}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.draggableProps}
-                      key={sectionIndex}
-                      className={`relative ${sectionIndex > 0 ? '' : '0'}`}
-                    >
-                      <div className="" key={section.id}>
-                        <EditPageHeader
-                          openAddVideo={openAddVideo}
-                          setOpenAddVideo={setOpenAddVideo}
-                          section={section}
-                          videosBySection={videosBySection}
-                          sectionIndex={sectionIndex}
-                          token={session?.token}
-                          setVideosBySection={setVideosBySection}
-                          handleDisplayVideos={handleDisplayVideos}
-                          buttonStates={buttonStates}
-                          setSections={setSections}
-                          courseId={params.course}
-                        />
+                <div key={section?.id} className={`relative ${sectionIndex > 0 ? '' : '0'}`}>
+                  <EditPageHeader
+                    openAddVideo={openAddVideo}
+                    setOpenAddVideo={setOpenAddVideo}
+                    section={section}
+                    videosBySection={videosBySection}
+                    sectionIndex={sectionIndex}
+                    token={session?.token}
+                    setVideosBySection={setVideosBySection}
+                    handleDisplayVideos={handleDisplayVideos}
+                    buttonStates={buttonStates}
+                    setSections={setSections}
+                    courseId={params.course}
+                  />
 
-                        <Droppable
-                          direction="horizontal"
-                          droppableId={section.id.toString()}
-                          key={section.id}
-                        >
-                          {(provided, snapshot) => (
+                  <Droppable
+                    direction="horizontal"
+                    droppableId={section.id.toString()}
+                    key={section.id}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        className={`${(videosBySection[section?.id]?.length > 0 && buttonStates[section?.id]) && 'h-[20.625rem]'} ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}
+                      >
+                        {buttonStates[section?.id] ? (
+                          loadingStates[section?.id] ? (
+                            <LoadingSkeletons times={3} />
+                          ) : (
                             <div
-                              ref={provided.innerRef}
-                              className={` ${buttonStates[section?.id] ? 'mb-2 ' : ''}`}
+                              className={`grid md:grid-cols-2 gap-4 lg:grid-cols-3 ${buttonStates[section?.id] ? 'mb-2 ' : ''
+                                }`}
                             >
-                              {buttonStates[section?.id] ? (
-                                loadingStates[section?.id] ? (
-                                  <LoadingSkeletons times={3} />
-                                ) : (
-                                  <div
-                                    className={`grid md:grid-cols-2 gap-4 lg:grid-cols-3 ${
-                                      buttonStates[section?.id] ? 'mb-2 ' : ''
-                                    }`}
+                              {videosBySection[section?.id] &&
+                                videosBySection[section?.id]?.map((video, videoIndex) => (
+                                  <Draggable
+                                    draggableId={video?.id?.toString()}
+                                    index={videosBySection[section?.id]?.findIndex((v) => v.id === video.id)}
+                                    key={video.id}
                                   >
-                                    {videosBySection[section?.id] &&
-                                      videosBySection[section?.id]?.map((video, videoIndex) => (
-                                        <Draggable
-                                          draggableId={video.id.toString()}
-                                          index={videoIndex}
-                                          key={video.id}
-                                        >
-                                          {(provided, snapshot) => (
-                                            <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
-                                            >
-                                              <VideoItem
-                                                setVideosBySection={setVideosBySection}
-                                                sectionId={section?.id}
-                                                courseId={params.course}
-                                                token={session?.token}
-                                                key={video.id}
-                                                video={video}
-                                                videosBySection={videosBySection}
-                                              />
-                                            </div>
-                                          )}
-                                        </Draggable>
-                                      ))}
-                                  </div>
-                                )
-                              ) : null}
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <VideoItem
+                                          snapshot={snapshot}
+                                          setVideosBySection={setVideosBySection}
+                                          sectionId={section?.id}
+                                          courseId={params.course}
+                                          token={session?.token}
+                                          key={video.id.toString()}
+                                          video={video}
+                                          videosBySection={videosBySection}
+                                        />
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
                             </div>
-                          )}
-                        </Droppable>
+                          )
+                        ) : null}
                       </div>
-                    </div>
-                  )}
-                </Draggable>
+                    )}
+                  </Droppable>
+                </div>
               ))}
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
+
 
       <DeleteModal
         isOpen={open}
@@ -540,7 +544,7 @@ function EditPageHeader({
         setSections(response.data?.sections);
       }
       successToast('Section Updated!', '#1850BC');
-   
+
       section.name = response.data?.section?.name;
     } catch (err) {
       console.log(err);
@@ -553,17 +557,15 @@ function EditPageHeader({
 
   return (
     <header
-      className={`cursor-pointer flex flex-col lg:flex-row justify-between border bg-white h-[10vh] px-4 shadow-md ${
-        buttonStates[section?.id] ? 'mb-2 ' : ''
-      }`}
+      className={`cursor-pointer flex flex-col lg:flex-row justify-between border bg-white h-[10vh] px-4 shadow-md ${buttonStates[section?.id] ? 'mb-2 ' : ''
+        }`}
     >
       <div className="mb-2 flex justify-between w-full items-center lg:mb-0">
         <div className="flex gap-4  ">
           <Icons.expantArrow
             onClick={() => handleDisplayVideos(section?.id)}
-            className={`w-[20px] h-[20px] transform transition-all duration-300 ease-in-out ${
-              buttonStates[section?.id] ? ' rotate-180' : 'rotate-0'
-            }`}
+            className={`w-[20px] h-[20px] transform transition-all duration-300 ease-in-out ${buttonStates[section?.id] ? ' rotate-180' : 'rotate-0'
+              }`}
           />
           {editMode ? (
             <input
@@ -632,6 +634,7 @@ function EditPageHeader({
 
 export const VideoItem = ({
   video,
+  snapshot,
   sectionId,
   token,
   courseId,
@@ -655,14 +658,14 @@ export const VideoItem = ({
         }
       );
       errorToast('Video Deleted Successfully');
- 
+
       if (response.status === 200) {
         const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-      
+
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
 
@@ -674,7 +677,7 @@ export const VideoItem = ({
   };
 
   return (
-    <div className="h-[20rem] relative block w-full p-4 bg-white shadow-md rounded-md">
+    <div className={`h-[20rem] relative block w-full p-4 shadow-md rounded-md ${snapshot?.isDragging ? "bg-blue-100" : "bg-white"}`}>
       {video?.live && (
         <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">
           <Icons.live className="w-5 h-5" />
@@ -687,7 +690,7 @@ export const VideoItem = ({
           {video?.price}$
         </span>
       )}
-      <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
+      <Link href={`/courses/${courseId}?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
         {video?.thumbnail && (
           <Image
@@ -708,7 +711,6 @@ export const VideoItem = ({
               className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
             >
               <span className="line-clamp-2">
-                {/* {video?.title} */}
                 {video?.title}
               </span>
             </Link>
