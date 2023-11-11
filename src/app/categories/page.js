@@ -5,27 +5,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ContentContainer } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useSelector } from 'react-redux';
-import { selectCategories } from '@/features/categories/categorySlice';
+
 const CategoriesPage = () => {
-  const categoriesData=useSelector(selectCategories)
-  // const [categoriesData, setCategoriesData] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
 
-  // const axios=useAxiosPrivate()
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
+  const axios=useAxiosPrivate()
+  useEffect(() => {
+    const fetchCategories = async () => {
     
-  //     try {
-  //       const response = await axios.get('/categories');
+      try {
+        const response = await axios.get('/categories');
      
-  //       setCategoriesData(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching categories:', error);
-  //     }
-  //   };
+        setCategoriesData(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-  //   fetchCategories();
-  // }, []);
+    fetchCategories();
+  }, []);
 
   return (
     

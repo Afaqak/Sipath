@@ -3,28 +3,25 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Image from 'next/image';
-import { useSelector } from 'react-redux';
-import { selectCategories } from '@/features/categories/categorySlice';
 
 const Practice = () => {
-  // const [categoriesData, setCategoriesData] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
 
-  // const axios = useAxiosPrivate()
-  const categoriesData=useSelector(selectCategories)
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
+  const axios = useAxiosPrivate()
+  useEffect(() => {
+    const fetchCategories = async () => {
 
-  //     try {
-  //       const response = await axios.get('/categories');
+      try {
+        const response = await axios.get('/categories');
      
-  //       setCategoriesData(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching categories:', error);
-  //     }
-  //   };
+        setCategoriesData(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-  //   fetchCategories();
-  // }, []);
+    fetchCategories();
+  }, []);
 
   return (
     <div className="pb-8 overflow-visible w-[90%] mx-auto relative">

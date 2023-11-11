@@ -19,15 +19,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
-import { useSelector } from 'react-redux';
 
-import { selectCategories } from '@/features/categories/categorySlice';
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
   const privateAxios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-  // const [categories, setCategories] = useState([])
-  const categories=useSelector(selectCategories)
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const actionRef = useRef();
@@ -115,20 +112,20 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
     (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
 
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await axios.get('/categories')
-  //       setCategories(response?.data)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
 
-  //     } catch (err) {
-  //       console.log(err)
-  //     }
-  //   }
-  //   fetchCategories()
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCategories()
 
-  // }, [])
-  // console.log(categories, "{categories}")
+  }, [])
+  console.log(categories, "{categories}")
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
