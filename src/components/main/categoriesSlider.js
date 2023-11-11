@@ -34,12 +34,12 @@ export function CategoriesSlider({ data:category }) {
                 className="customCatSlide">
           <Link
             key={data.id}
-            href={`/categories/${data.category.toLowerCase()}?id=${data?.id}`}
+            href={`/categories/${data.category?.toLowerCase()}?id=${data?.id}`}
             className="flex flex-col items-center justify-center shadow-lg mb-2 p-4 rounded-md bg-white h-44"
           >
             <Image
               className="w-24 h-20 object-contain"
-              src={`/svgs/${data.category.toLowerCase()}.svg`}
+              src={`/svgs/${data.category?.toLowerCase()}.svg`}
               width={80}
               height={80}
               alt={data.category}

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import {  LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
+import { LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
 import { errorToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
@@ -17,7 +17,9 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
-
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
@@ -32,6 +34,7 @@ const CoursePage = ({ session }) => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollments, setEnrollments] = useState([])
   const [enrollmentId, setEnrollmentId] = useState(0)
+  // console.log(videosBySection)
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {
@@ -97,7 +100,7 @@ const CoursePage = ({ session }) => {
 
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
-        
+
         setVideosBySection(updatedVideosBySection);
       } else {
         toggleButton(sectionId);
@@ -135,6 +138,19 @@ const CoursePage = ({ session }) => {
                     <Icons.edit className="w-4 h-4 stroke-black" />
                     Edit Course
                   </Button>
+                )}
+                {session?.tutor?.tutor_id === course?.tutor_id && (
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'outline' }),
+                      'border-subcolor2 text-subcolors '
+                    )}
+                    href={`/courses/${params?.course}`}
+                  >
+                    
+                      View Course
+                  </Link>
+                 
                 )}
                 {!(session?.tutor?.tutor_id === course?.tutor_id) ? (
                   isEnrolled ? (
@@ -260,7 +276,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
 
       if (response.status === 200) {
         const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`);
-   
+
         const updatedVideosBySection = { ...videosBySection };
         updatedVideosBySection[sectionId] = response.data.videos;
         setVideosBySection(updatedVideosBySection);

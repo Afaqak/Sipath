@@ -30,7 +30,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
     <div ref={ref}  className="relative subject-dropdown w-48">
       <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)]  py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
           
-        <li className="relative group cursor-pointer ">
+        <li className="relative group cursor-pointer text-sm">
           <span
             className="block leading-5 text-gray-700 px-3"
             onClick={toggleDropdown}

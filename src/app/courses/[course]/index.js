@@ -21,9 +21,8 @@ const PlaylistVideo = ({ session }) => {
   const [enrollments, setEnrollments] = useState([])
   const [sectionLoading, setSectionLoading] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState(null);
-
   const [videosBySection, setVideosBySection] = useState({});
-  const [videoId] = useState({});
+
   const axios = useAxiosPrivate();
 
   const createQueryString = useCallback(
@@ -69,21 +68,38 @@ const PlaylistVideo = ({ session }) => {
   useEffect(() => {
 
     const fetchEnrollments = async () => {
+
+
       try {
+        const getCourse = await axios.get("/courses", {
+          headers: {
+            Authorization: `Bearer ${session?.token}`
+          }
+        })
+        console.log(getCourse.data?.courses, "{data}")
+
         const enrollmentsResponse = await axios.get('/courses/enrollments', {
           headers: {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-
+        
         const enrollments = enrollmentsResponse.data?.enrollments;
         setEnrollments(enrollments)
-        const isEnrolled = enrollments.some((enrollment) =>+enrollment?.course?.id === +params?.course);
-        if (!isEnrolled) {
-          router.back(); 
-          return;
+        if (getCourse.data?.courses.length > 0 && getCourse?.data.courses?.some(course => +course?.id === +params?.course)) {
+          console.log("true my course")
         }
-      
+        else {
+          const isEnrolled = enrollments.some((enrollment) => +enrollment?.course?.id === +params?.course);
+          // console.log(enrollments, "{enrollments}")
+          if (!isEnrolled) {
+            router.back();
+            return;
+          }
+        }
+
+
+
 
         fetchSections();
       } catch (err) {
@@ -102,10 +118,10 @@ const PlaylistVideo = ({ session }) => {
         });
 
         setSections(sectionsResponse.data.sections);
-     
+
         if (sectionsResponse.data?.sections.length > 0) {
           const firstSectionId = sectionsResponse?.data?.sections[0]?.id;
-        
+
           const firstSectionResponse = await axios.get(
             `/courses/${params?.course}/sections/${firstSectionId}`,
             {
@@ -114,7 +130,7 @@ const PlaylistVideo = ({ session }) => {
               },
             }
           );
-         
+
           const updatedVideosBySection = { ...videosBySection };
           updatedVideosBySection[firstSectionId] = firstSectionResponse.data.videos;
           setVideosBySection(updatedVideosBySection);
@@ -133,7 +149,7 @@ const PlaylistVideo = ({ session }) => {
   }, []);
 
   useEffect(() => {
- 
+
     const fetchVideoData = async (videoId) => {
       try {
         const response = await axios.get(`/assets/video/${videoId}`, {
@@ -141,7 +157,7 @@ const PlaylistVideo = ({ session }) => {
             Authorization: `Bearer ${session?.token}`,
           },
         });
-       
+
         setSelectedVideo(response.data);
       } catch (err) {
         console.log(err);
@@ -159,7 +175,7 @@ const PlaylistVideo = ({ session }) => {
     <>
       <div className="">
         <div className='px-8 w-full flex justify-end mt-4'>
-        <Button onClick={()=>router.push(`/tutor/courses/${params?.course}`)} className="">Set Enrollment</Button>
+          <Button onClick={() => router.push(`/tutor/courses/${params?.course}`)} className="">Set Enrollment</Button>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-8">
           <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
@@ -173,32 +189,30 @@ const PlaylistVideo = ({ session }) => {
 
           <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
             <div>
+              {sectionLoading ? (<div className='min-h-[60vh] flex items-center justify-center'>
+                <div className='animate-spin'>
+                  <Icons.Loader2 stroke="black" width="36" height="36" className="stroke-black w-6 h-6" />
+                </div>
+              </div>) :
 
-              {
-                sections.length > 0 ?
-                  sections.map((section, index) => (
-                    <PlaylistSection
-                      onClick={() => handleDisplayVideos(section?.id)}
-                      index={index}
-                      token={session?.token}
-                      key={section.id}
-                      enrollments={enrollments}
-                      setEnrollments={setEnrollments}
-                      isButtonToggled={buttonStates[section.id]}
-                      toggleButton={() => toggleButton(section.id)}
-                      setVideoId={(id) => {
-                        router.push(pathname + '?' + createQueryString('id', id));
-                      }}
-                      videos={videosBySection[section?.id]}
-                      sectionTitle={section?.name}
-                      sectionDuration={section?.subject}
-                    />
-                  )) :
-                  <div className='min-h-[60vh] flex items-center justify-center'>
-                    <div className='animate-spin'>
-                      <Icons.Loader2 stroke="black" width="36" height="36" className="stroke-black w-6 h-6" />
-                    </div>
-                  </div>
+                sections.length > 0 && sections.map((section, index) => (
+                  <PlaylistSection
+                    onClick={() => handleDisplayVideos(section?.id)}
+                    index={index}
+                    token={session?.token}
+                    key={section.id}
+                    enrollments={enrollments}
+                    setEnrollments={setEnrollments}
+                    isButtonToggled={buttonStates[section.id]}
+                    toggleButton={() => toggleButton(section.id)}
+                    setVideoId={(id) => {
+                      router.push(pathname + '?' + createQueryString('id', id));
+                    }}
+                    videos={videosBySection[section?.id]}
+                    sectionTitle={section?.name}
+                    sectionDuration={section?.subject}
+                  />
+                ))
               }
             </div>
 

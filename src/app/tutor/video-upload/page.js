@@ -2,7 +2,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { FileInput, VideoUploadType, SubjectDropDown } from '@/components';
 import axios from '../../../utils/index'
 import { motion } from 'framer-motion';
@@ -384,6 +383,7 @@ const VideoUpload = () => {
 
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
+          console.log('videoUploaded')
           if (response.status === 200) {
 
             updatedSections[sectionIndex].videos.splice(indexOfVid, 1);
@@ -459,14 +459,10 @@ const VideoUpload = () => {
         formDataToSend.append('subject', video.subject);
         formDataToSend.append('duration', video.duration)
 
-
-          ;
-
         if (videoType === 'premium' && price > 0) {
           formDataToSend.append('price', price);
         }
         video.loading = true;
-
         const config = {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -499,6 +495,7 @@ const VideoUpload = () => {
 
         try {
           const response = await privateAxios.post('/upload/video', formDataToSend, config);
+          console.log("uploaded successfully")
           if (response.status === 200) {
 
             successToast('Video uploaded successfully!');
@@ -508,8 +505,6 @@ const VideoUpload = () => {
 
           } else {
             console.error('Error uploading video:', response);
-
-
           }
         } catch (error) {
           console.error('Error uploading video:', error);
@@ -584,7 +579,7 @@ const VideoUpload = () => {
 
             <div
 
-              key={id}
+              key={sectionIndex}
               className={`relative ${sectionIndex > 0 ? 'mt-24' : '0'}`}
             >
               {id && selectedTab === 'premium' && (
@@ -601,7 +596,7 @@ const VideoUpload = () => {
                 {videos?.map((video, videoIndex) => (
 
                   <div
-
+                    key={videoIndex}
                     className="relative"
                   >
                     <VideoBody
@@ -760,7 +755,7 @@ const VideoBody = ({
       <form className="p-4 flex flex-col relative bg-white outline-none mb-4 shadow-lg w-full rounded-md justify-between">
         <div className='flex justify-end'>
           <div onClick={removeVideo} className=' h-5 w-fit rounded-full bg-subcolor2 mb-4'>
-           <Icons.minus stroke="white" className="w-5 cursor-pointer h-5"/>
+            <Icons.minus stroke="white" className="w-5 cursor-pointer h-5" />
           </div>
           {/* 
           <Icons.cross className="w-3 stroke-black h-3 mb-4 cursor-pointer" onClick={removeVideo} /> */}
@@ -884,52 +879,53 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration, vid
 
   const handleVideoSelected = (event) => {
     const file = event.target.files[0];
-    setVideo(file);
     if (file) {
+      setVideo(file);
       const newVideo = document.createElement('video');
-
       newVideo.onloadedmetadata = () => {
         const duration = Math.floor(newVideo.duration);
         setDuration(duration);
-        setVideoUrl(newVideo.src);
       };
 
       const reader = new FileReader();
       reader.onloadend = () => {
         newVideo.src = URL.createObjectURL(file);
+        console.log(newVideo.src)
+        setVideoUrl(newVideo.src);
       };
 
       reader.readAsDataURL(file);
     }
   };
 
-  const handleClearVideo = (event) => {
-    event.stopPropagation();
-
-    // Set video to null and reset videoUrl
-    setVideo(null);
-    setDuration(null);
-    setVideoUrl(null);
-  };
-
- 
   useEffect(() => {
+    setVideoUrl(null)
     if (video) {
-      const loadedVideo = document.createElement('video');
+      const newVideo = document.createElement('video');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newVideo.src = URL.createObjectURL(video);
+        console.log(newVideo.src, "{from effect}")
 
-      loadedVideo.onloadedmetadata = () => {
-        const duration = Math.floor(loadedVideo.duration);
-        setDuration(duration);
-        setVideoUrl(loadedVideo.src);
+        setVideoUrl(newVideo.src);
       };
 
-      loadedVideo.src = URL.createObjectURL(video);
-    }
-    else{
-      setVideoUrl(null)
-      setVideo(null)
+      reader.readAsDataURL(video);
+    } else {
+      setVideoUrl(null);
+      setVideo(null);
     }
   }, [video]);
+
+  function handleRemoveVideo(event) {
+    event.stopPropagation()
+
+    if (video) {
+      setVideoUrl(false)
+      setVideo(false)
+      setDuration(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
@@ -939,10 +935,10 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration, vid
       >
         {videoUrl ? (
           <>
-            <div className='w-full h-full rounded-md flex gap-2 object-contain relative'>
-              <button onClick={handleClearVideo} className="pl-2 z-[20000] absolute left-0">
-                Clear
-              </button>
+            <div className='w-full h-full rounded-md flex gap-2 object-contain '>
+              <div onClick={handleRemoveVideo} className='w-5 h-4 rounded-bl-sm z-[2000] bg-gray-200 right-[0.97rem] rounded-tr-md absolute'>
+                <div className='w-3 bg-black h-[0.14rem] absolute top-[0.38rem] left-1'></div>
+              </div>
               <video controls className="w-full h-full rounded-md object-contain">
                 <source src={videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
@@ -972,6 +968,7 @@ const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDuration, vid
     </div>
   );
 };
+
 
 
 const SectionTitle = ({ onTitleUpdate }) => {

@@ -79,6 +79,7 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session, enrollments }) => {
+    
     const isEnrolled = enrollments.some(
         (enrollment) => enrollment?.course?.id === course.id
     );

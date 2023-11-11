@@ -35,7 +35,7 @@ const Practice = () => {
           >
             <Image
               className="w-24 h-20 object-contain"
-              src={`/svgs/${data.category.toLowerCase()}.svg`}
+              src={`/svgs/${data.category?.toLowerCase()}.svg`}
               width={80}
               height={80}
               alt={data.category}
