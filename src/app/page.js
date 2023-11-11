@@ -4,7 +4,8 @@ import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from 
 import axios from '../utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
 import { useSession } from 'next-auth/react';
-
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 
 const Home = () => {
 
@@ -14,7 +15,8 @@ const Home = () => {
   const [videos_set_two, setVideos_set_two] = useState([])
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
-  const [categories, setCategories] = useState([])
+  const categories=useSelector(selectCategories)
+  // const [categories, setCategories] = useState([])
   const {data:user}=useSession()
 
   const premiumVideosRef = useRef(null);
@@ -44,14 +46,14 @@ const Home = () => {
 
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get('/categories')
-      setCategories(response?.data)
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  // const fetchCategories = async () => {
+  //   try {
+  //     const response = await axios.get('/categories')
+  //     setCategories(response?.data)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
 
   useEffect(() => {
 
@@ -61,7 +63,7 @@ const Home = () => {
     fetchVideos('type=premium', setPremiumVideos);
     fetchVideos('type=all&limit=3&set=1', setVideos_set_two);
     fetchExperts()
-    fetchCategories()
+    // fetchCategories()
 
     return () => {
 

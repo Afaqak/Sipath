@@ -10,14 +10,17 @@ import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '../ui/button';
 import axios from '@/utils/index'
+import { selectCategories } from '@/features/categories/categorySlice';
+import { useSelector } from 'react-redux';
 export const OnBoardingProcess = () => {
+  const categories=useSelector(selectCategories)
   const { data: user, update } = useSession();
   const privateAxios = useAxiosPrivate();
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
   const [modelOpen, setModalOpen] = useState(false);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
   const [selectedImage, setSelectedImage] = useState(null);
   const {
     register,
@@ -130,17 +133,17 @@ export const OnBoardingProcess = () => {
 
   };
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
   const handleInterests = (interest) => {
     const InterestIndex = interests.findIndex((int) => int.id === interest.id);
 

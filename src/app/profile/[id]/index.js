@@ -46,12 +46,14 @@ export const MyProfile = ({ user, session }) => {
   const [active, setActive] = useState(tabs[0].key);
   const [openChat, setOpenChat] = useState(false)
   const [openAppointment, setOpenAppointment] = useState(false)
-  console.log(user,"{userprofile}")
+  const [loading,setLoading]=useState(false)
+  console.log(user, "{userprofile}")
   const handleMessageRequest = async (message, onClose) => {
 
     if (!message) return
     try {
-        await axios.post(`chats/request/${user?.user?.id}`, {
+      setLoading(true)
+      await axios.post(`chats/request/${user?.user?.id}`, {
         message
       }, {
         headers: {
@@ -61,7 +63,9 @@ export const MyProfile = ({ user, session }) => {
       onClose()
 
     } catch (error) {
-
+      console.log(error)
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -74,7 +78,6 @@ export const MyProfile = ({ user, session }) => {
         <div className="flex justify-between gap-2 mt-4">
           {
             user?.user?.isTutor &&
-
             <button onClick={() => setOpenAppointment(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-black">
               <Image src={'/svgs/Calendar.svg'} alt="calendart" width={20} height={20} />
               <span className="md:block hidden">
@@ -83,7 +86,7 @@ export const MyProfile = ({ user, session }) => {
           }
           <button onClick={() => setOpenChat(true)} className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-main">
             <Image src={'/svgs/messageblue.svg'} alt="calendart" width={20} height={20} />
-            <span className="md:block hidden" >{user?.user?.isTutor? "Message Expert" : "Message User"}</span>
+            <span className="md:block hidden" >{user?.user?.isTutor ? "Message Expert" : "Message User"}</span>
           </button>
           <button className="py-1 bg-white flex items-center justify-center gap-2 rounded-md w-full border-2 border-subcolor">
             <Image src={'/svgs/coins.svg'} alt="calendart" width={20} height={20} />
@@ -116,9 +119,9 @@ export const MyProfile = ({ user, session }) => {
 
         {/* {active === 'income' && <MyIncome />} */}
         {active === 'myvideos' && <MyVideos userId={user?.user?.id} />}
-        
+
       </div>
-      <ChatRequestModal handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat} />
+      <ChatRequestModal loading={loading} handleSubmit={handleMessageRequest} isOpen={openChat} setIsOpen={setOpenChat} />
       <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} userId={user?.user?.id} />
     </>
   );

@@ -1,5 +1,5 @@
 'use client';
-import { VideoInfo, CommentsSection } from '@/components';
+import { VideoInfo, CommentsSection, formatTimeAgo } from '@/components';
 import ContentPlayer from '../../../components/podcast/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -85,7 +85,7 @@ const ListSection = () => {
 };
 
 let NextVideo = ({ video }) => {
-  const dispatch=useDispatch()
+
   const params=useSearchParams()
   const id = params.get('id');
   return (
@@ -104,10 +104,10 @@ let NextVideo = ({ video }) => {
           <h1 className="font-semibold">{video?.title}</h1>
           <div>{video['user.display_name'] && video['user.display_name']}</div>
           <h2 className="font-extrabold gap-1 flex items-center">
-            4.7 <Image src="/svgs/star.png" className="" width={24} height={24} alt="star" />
+            {video?.rating} <Image src="/svgs/star.png" className="" width={24} height={24} alt="star" />
           </h2>
           <div className="font-semibold text-[#616161] text-[0.70rem] whitespace-nowrap">
-            <span>24K Views</span> . <span>2 months</span>
+            <span>{video?.views} Views</span> . <span>{formatTimeAgo(video?.createdAt)}</span>
           </div>
         </div>
       </div>

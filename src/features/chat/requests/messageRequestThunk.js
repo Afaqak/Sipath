@@ -38,7 +38,7 @@ export const approveRequest = createAsyncThunk(
 
       // dispatch(insertConversation(response.data?.chat))
       dispatch(fetchConversations({token}))
-      dispatch(fetchMessageRequests({}));
+      dispatch(fetchMessageRequests({token}));
       return response.data.updatedRequest;
     } catch (err) {
       throw err;

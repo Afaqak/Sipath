@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
 import { Icons } from '@/components';
-
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 
 const VideoUpload = () => {
   const { data: user } = useSession();
@@ -25,16 +26,16 @@ const VideoUpload = () => {
   const [courseThumbnail, setCourseThumbnail] = useState(null);
   const [price, setPrice] = useState(0);
   const abortSignal = abortController.signal;
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
 
-  useEffect(() => {
-    async function fetchCategories() {
-      const response = await axios.get('/categories')
-      setCategories(response?.data)
-    }
-    fetchCategories()
-  }, [])
-
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     const response = await axios.get('/categories')
+  //     setCategories(response?.data)
+  //   }
+  //   fetchCategories()
+  // }, [])
+  const categories=useSelector(selectCategories)
   function cancelUpload() {
     abortController.abort();
   }

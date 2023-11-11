@@ -10,6 +10,7 @@ import booksReducer from '../features/book/bookSlice';
 import quizesReducer from '../features/quiz/quizSlice';
 import appointmentSlice from '@/features/appointments/appointmentSlice';
 import courseSlice from '@/features/course/courseSlice';
+import categorySlice from '@/features/categories/categorySlice';
 
 const rootReducer = combineReducers({
   userAuth: authReducer,
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
   books: booksReducer,
   quizzes: quizesReducer,
   appointments:appointmentSlice,
-  course:courseSlice
+  course:courseSlice,
+  categories:categorySlice
 });
 
 export const store = configureStore({

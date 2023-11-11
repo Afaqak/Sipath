@@ -15,10 +15,10 @@ export const createMessage = createAsyncThunk(
   }
 );
 
-//get Messages of the conversation
+
 export const approveMessage = createAsyncThunk('message/approveMessage', async (_,{dispatch}) => {});
 
-export const getMessagesByConversationId = createAsyncThunk('message/getMessages', async ({id,token,set=0,checkLength,limit=10}) => {
+export const getMessagesByConversationId = createAsyncThunk('message/getMessages', async ({id,token,set=0,checkLength,limit=10,type}) => {
   const privateAxios=useAxiosPrivate()
   try {
     const response = await privateAxios.get(`/chats/${id}/messages?limit=${limit}&set=${set}`,{
@@ -27,11 +27,12 @@ export const getMessagesByConversationId = createAsyncThunk('message/getMessages
       }
     });
 
+    
     if(checkLength && typeof checkLength==='function'){
       checkLength(response?.data?.messages)
-
     }
     
+
     return response.data?.messages.reverse();
   } catch (err) {
     throw err;

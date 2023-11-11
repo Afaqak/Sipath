@@ -34,7 +34,7 @@ const CoursePage = ({ session }) => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollments, setEnrollments] = useState([])
   const [enrollmentId, setEnrollmentId] = useState(0)
-  // console.log(videosBySection)
+
   useEffect(() => {
     const fetchSections = async () => {
       const response = await axios.get(`/courses/${params?.course}/sections`, {

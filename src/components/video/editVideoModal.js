@@ -259,9 +259,6 @@ export function VideoEditModal({
             <div className="mt-4">
               {isEdit && (
                 <>
-                  <Button onClick={deleteVideo} variant="destructive" className=" border mr-2">
-                    Delete Forever
-                  </Button>
                   <Button
                     className="border-green-500 text-green-500"
                     variant="outline"

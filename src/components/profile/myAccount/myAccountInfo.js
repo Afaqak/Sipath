@@ -2,9 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-
-export const MyAccountInfo = ({ setEdit, categories }) => {
-
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
+export const MyAccountInfo = ({ setEdit }) => {
+  const categories=useSelector(selectCategories)
   const {
     data: user,
   } = useSession();

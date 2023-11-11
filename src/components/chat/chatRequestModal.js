@@ -8,12 +8,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
+import { Icons } from '../icons';
 
-export function ChatRequestModal({ isOpen, setIsOpen ,handleSubmit}) {
+export function ChatRequestModal({ isOpen, setIsOpen, handleSubmit, loading }) {
 
-  const [message, setMessage] = useState(''); 
-console.log(message)
-  
+  const [message, setMessage] = useState('');
 
   function closeModal() {
     setIsOpen(false);
@@ -39,19 +38,21 @@ console.log(message)
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <button
-              onClick={()=>handleSubmit(message,closeModal)}
+            <Button
+              onClick={() => handleSubmit(message, closeModal)}
               type="button"
-              className="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            
+              className="mt-2 inline-flex gap-2 justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+
             >
+                 {loading && <span className='animate-spin'><Icons.Loader2 stroke="#1e3a8a" className="" height="20" width="20" /></span>}
               Send Request
-            </button>
-          
+            </Button>
+
           </div>
           <DialogFooter>
             <div className="mt-4">
               <Button className="bg-black" onClick={closeModal}>
+             
                 Close
               </Button>
             </div>

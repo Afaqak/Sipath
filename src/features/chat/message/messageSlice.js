@@ -6,10 +6,15 @@ const messageSlice = createSlice({
   initialState: { messages: [], isLoading: false, error: null },
   reducers: {
     insertMessage(state, action) {
+   
       state.messages.push(action.payload)
     },
     clearChat(state) {
       state.messages = []
+    },
+    insertMessages(state,action){
+      // console.log(action.payload,"{payload]")
+      state.messages=[...action.payload,...state.messages]
     }
   },
 
@@ -40,6 +45,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const { insertMessage ,clearChat} = messageSlice.actions
+export const { insertMessage ,clearChat,insertMessages} = messageSlice.actions
 
 export default messageSlice.reducer;

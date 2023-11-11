@@ -5,8 +5,11 @@ import { useSession } from 'next-auth/react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import { selectCategories } from '@/features/categories/categorySlice';
 export const MyAccount = ({ session }) => {
   const axios = useAxiosPrivate();
+  const categories=useSelector(selectCategories)
   const [interests, setInterests] = useState([]);
   const [expertise, setExpertise] = useState([]);
   // const [interests, setInterests] = useState([]);
@@ -14,7 +17,7 @@ export const MyAccount = ({ session }) => {
   const { data: user, update } = useSession();
   const [modelOpen, setModalOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
 
   const [formData, setFormData] = useState({
     firstName: user?.user?.first_name || '',
@@ -164,18 +167,18 @@ export const MyAccount = ({ session }) => {
     setModalOpen(false);
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get('/categories')
+  //       setCategories(response?.data)
 
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
 
   return (
     <div>
