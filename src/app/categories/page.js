@@ -8,7 +8,6 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 const CategoriesPage = () => {
   const [categoriesData, setCategoriesData] = useState([]);
-
   const axios=useAxiosPrivate()
   useEffect(() => {
     const fetchCategories = async () => {
@@ -24,9 +23,8 @@ const CategoriesPage = () => {
 
     fetchCategories();
   }, []);
-
+  
   return (
-    
     <ContentContainer>
 
       <div className="py-8 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 cursor-pointer 2xl:grid-cols-5 gap-4">
