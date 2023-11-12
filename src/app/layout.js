@@ -4,7 +4,7 @@ export const metadata = {
   title: 'Sipath',
   description: '...',
   icons: {
-    icon: "/favicon.png",
+    icon: "/icon.ico",
   }
 }
 
