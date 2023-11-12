@@ -15,16 +15,21 @@ const Home = () => {
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
   const [categories, setCategories] = useState([])
-  const {data:user}=useSession()
+  const { data: user } = useSession()
 
   const premiumVideosRef = useRef(null);
   const videosSetTwoRef = useRef(null);
 
   const fetchVideos = async (query, setData) => {
-   
+
     try {
-      const response = await axios.get(`/assets/videos?${query}`);
-      setData([...response.data]);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/assets/videos?${query}`, {
+        cache: 'force-cache',
+        next: { revalidate: 1 }
+      });
+      const data = await response.json()
+      console.log(data)
+      setData(data);
 
     } catch (err) {
       console.log(err);
@@ -35,8 +40,10 @@ const Home = () => {
   const fetchExperts = async () => {
 
     try {
-      const response = await axios.get(`/users/experts?type=all`);
-      setExperts(response.data);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/users/experts?type=all`);
+      const data = await response.json()
+      // setCategories(data)
+      setExperts(data);
 
     } catch (err) {
       console.log(err);
@@ -46,27 +53,36 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('/categories')
-      setCategories(response?.data)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/categories`)
+      const data = await response.json()
+      setCategories(data)
     } catch (err) {
       console.log(err)
     }
   }
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchVideos('type=all&limit=3', setVideos);
+        await fetchVideos('type=new', setNewVideos);
+        await fetchVideos('type=all&limit=3', setVideos_set_one);
+        await fetchVideos('type=premium', setPremiumVideos);
+        await fetchVideos('type=all&limit=3&set=1', setVideos_set_two);
+        await fetchExperts();
+        await fetchCategories();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-    fetchVideos('type=all&limit=3', setVideos);
-    fetchVideos('type=new', setNewVideos);
-    fetchVideos('type=all&limit=3', setVideos_set_one);
-    fetchVideos('type=premium', setPremiumVideos);
-    fetchVideos('type=all&limit=3&set=1', setVideos_set_two);
-    fetchExperts()
-    fetchCategories()
+    fetchData();
 
     return () => {
-
+      // Cleanup if needed
     };
   }, []);
+
 
 
   return (
@@ -87,7 +103,7 @@ const Home = () => {
         <Video videos={videos_set_two} />
       </div>
       <div >
-        {experts.length>0 && <Experts data={experts} />}
+        {experts.length > 0 && <Experts data={experts} />}
       </div>
       {
         categories.length > 0 &&
