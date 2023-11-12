@@ -5,7 +5,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import { formatTimeAgo } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import {
   Quiz,
   Video,
@@ -68,9 +68,9 @@ export const MyProfile = ({ session }) => {
         />
 
         {active === 'courses' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div>
             <Video videos={courses} />
-          </motion.div>
+          </div>
         )}
 
         {active === 'quiz' && (

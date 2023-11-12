@@ -4,17 +4,13 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCommentReplies, fetchPrimaryComments } from '@/features/comments/commentThunk';
 import { VideoComment, RepliesList } from '@/components';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
 import { Skeleton } from '../ui/skeleton';
-import debounce from 'lodash/debounce';
+
 import { useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { selectCommentReplies, selectPrimaryComments } from '@/utils/selectors';
-import { Button } from '../ui/button';
 import { resetComments, setComments, setReplyComments } from '@/features/comments/commentSlice';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
 
 export const VideoComments = () => {
   const axios = useAxiosPrivate();
@@ -106,14 +102,14 @@ export const VideoComments = () => {
             />
             <div className="border-l ml-6 pl-4">
               {commentReplies[comment?.id] && replyView[comment?.id] && (
-                <motion.div>
+                <div>
                   <RepliesList
                     videoId={id}
                     handleFetchReplies={() => handleFetchReplies(comment?.id)}
                     comments={commentReplies[comment?.id]}
                     parentId={comment?.id}
                   />
-                </motion.div>
+                </div>
               )}
             </div>
           </div>
