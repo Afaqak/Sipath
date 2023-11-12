@@ -48,7 +48,7 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`/categories`)
+      const response = await axios.get(`/categories`)
  
       setCategories(response?.data)
     } catch (err) {
