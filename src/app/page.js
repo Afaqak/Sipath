@@ -24,7 +24,7 @@ const Home = () => {
 
     try {
       const response = await axios.get(`/assets/videos?${query}`);
-    
+
       setData(response?.data);
 
     } catch (err) {
@@ -37,7 +37,7 @@ const Home = () => {
 
     try {
       const response = await axios.get(`/users/experts?type=all`);
-   
+
       setExperts(response?.data);
 
     } catch (err) {
@@ -49,7 +49,7 @@ const Home = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`/categories`)
- 
+
       setCategories(response?.data)
     } catch (err) {
       console.log(err)
@@ -83,22 +83,30 @@ const Home = () => {
   return (
     <div className="">
       <div className="w-[90%] mx-auto" >
-        <Video videos={videos} />
+        {
+          videos?.length > 0 && <Video videos={videos} />
+        }
       </div>
       {newVideos?.length > 0 &&
         <NewVideos data={newVideos} />
       }
       <div className="w-[90%] mx-auto ">
-        <Video videos={videos_set_one} />
+        {
+          videos_set_one?.length > 0 && <Video videos={videos_set_one} />
+        }
+
       </div>
       <div ref={premiumVideosRef}>
         {premiumVideos?.length > 0 && <PremiumVideos data={premiumVideos} />}
       </div>
       <div ref={videosSetTwoRef} className="w-[90%] mx-auto ">
-        <Video videos={videos_set_two} />
+        {
+          videos_set_two?.length > 0 && <Video videos={videos_set_two} />
+        }
+
       </div>
       <div >
-        {experts.length > 0 && <Experts data={experts} />}
+        {experts?.length > 0 && <Experts data={experts} />}
       </div>
       {
         categories.length > 0 &&
