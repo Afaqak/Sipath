@@ -56,48 +56,39 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className=" fullShadow">
-        <div
-          className="
-          justify-between bg-white fullShadow h-[8vh] hidden lg:flex sticky
-        "
-        >
+      <nav className="fullShadow">
+        <div className="justify-between bg-white fullShadow h-[8vh] hidden lg:flex sticky">
           <div
             onClick={() => router.push('/')}
             className="flex items-center gap-4 bg-black rounded-r-full cursor-pointer px-4"
           >
             <Image alt="logo" className="" src="/logo.png" width={80} height={45} />
           </div>
-          <ul className="flex items-center  gap-4 ml-4 font-semibold">
+          <ul className="flex items-center gap-4 ml-4 font-semibold">
             {links.map((link) => (
               <button
                 key={link.href}
                 onClick={() => router.push(link.href)}
-                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
-                  pathname.includes(link.href)
-                    ? 'text-white'
-                    : 'text-black hover:opacity-60 transition-colors duration-300'
-                }`}
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
+                  ? 'text-white'
+                  : 'text-black hover:opacity-60 transition-colors duration-300'
+                  }`}
                 href={link.href}
               >
                 {pathname.includes(link.href) && (
-                  <motion.div
-                    style={{ borderRadius: 99999 }}
-                    transition={{ type: 'spring', duration: 0.6 }}
-                    className="absolute inset-0 bg-main"
-                    layoutId="active-pill"
-                  ></motion.div>
+                  <div className="absolute inset-0 bg-main rounded-full"></div>
                 )}
                 <span className="relative z-10">{link.label}</span>
               </button>
             ))}
           </ul>
-          <div
-            className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
-          >
+          <div className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}>
             {user?.user ? (
               <>
-                <Icons.message className="w-6 h-6 hover:scale-95 transition-all duration-300 ease-in-out" onClick={() => router.push('/chat')} />
+                <Icons.message
+                  className="w-6 h-6 hover:scale-95 transition-all duration-300 ease-in-out"
+                  onClick={() => router.push('/chat')}
+                />
                 <Icons.bell />
 
                 <div className="relative">
@@ -109,57 +100,47 @@ export const Navbar = () => {
                     }}
                     className="h-8 w-8"
                   />
-                  <AnimatePresence>
-                    {toggleMenu && (
-                      <motion.div
-                        ref={toggleRef}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                        className="bg-white rounded-md shadow-md w-32 absolute border top-10 right-0"
-                      >
-                        <motion.ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
-                        <motion.li
-                            className="flex items-center font-semibold gap-6  py-1 px-2 uppercase"
-                          >
-                          
-                            {user?.user?.display_name}
-                          </motion.li> 
-                          <motion.li
-                            onClick={() => {
-                              router.push('/my-profile');
-                              setToggleMenu(false);
-                            }}
-                            className="flex items-center  gap-6  py-1 px-2 hover:bg-[#d1d1d1]"
-                          >
-                            <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                            my profile
-                          </motion.li>
 
-                          <motion.li
-                            onClick={async () => {
-                              setToggleMenu(false);
-                              toast.error('Logging out!', {
-                                style: {
-                                  backgroundColor: '#fb3c22',
-                                  color: 'white',
-                                },
-                                icon: '⚪',
-                              });
-                              await signOut({
-                                callbackUrl: '/',
-                              }).then((res) => {});
-                            }}
-                            className="flex items-center rounded-bl-md rounded-br-md  gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                          >
-                            <Icons.logout className="h-4 w-4 " />
-                            logout
-                          </motion.li>
-                        </motion.ul>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div ref={toggleRef} className={`bg-white rounded-md shadow-md w-32 duration-200 ease-in-out absolute border top-10 right-0 
+                    transition-all ${toggleMenu ? 'opacity-100 translate-y-0 visible' : 'opacity-0 invisible translate-y-10'
+                    }
+                    `}>
+                    <ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
+                      <li className="flex items-center font-semibold gap-6 py-1 px-2 uppercase">
+                        {user?.user?.display_name}
+                      </li>
+                      <li
+                        onClick={() => {
+                          setToggleMenu(false);
+                          router.push('/my-profile');
+                        }}
+                        className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                      >
+                        <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                        my profile
+                      </li>
+                      <li
+                        onClick={async () => {
+                          setToggleMenu(false);
+                          toast.error('Logging out!', {
+                            style: {
+                              backgroundColor: '#fb3c22',
+                              color: 'white',
+                            },
+                            icon: '⚪',
+                          });
+                          await signOut({
+                            callbackUrl: '/',
+                          }).then((res) => { });
+                        }}
+                        className="flex items-center rounded-bl-md rounded-br-md gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                      >
+                        <Icons.logout className="h-4 w-4 " />
+                        logout
+                      </li>
+                    </ul>
+                  </div>
+
                 </div>
               </>
             ) : (
@@ -173,7 +154,6 @@ export const Navbar = () => {
                 >
                   Sign in
                 </Link>
-
                 <Link
                   className={cn(buttonVariants({ variant: 'outline' }), 'border-black')}
                   href="/sign-up"
@@ -186,40 +166,22 @@ export const Navbar = () => {
         </div>
       </nav>
       <nav className="mb-20 md:mb-28 lg:mb-0">
-        <div
-          className={`justify-between fixed w-full z-[3000] bg-white shadow-md text-lg h-[7vh] flex lg:hidden `}
-        >
-          <div
-            onClick={() => router.push('/')}
-            className="flex items-center gap-4 bg-black cursor-pointer rounded-r-full px-4"
-          >
+        <div className={`justify-between fixed w-full z-[3000] bg-white shadow-md text-lg h-[7vh] flex lg:hidden `}>
+          <div onClick={() => router.push('/')} className="flex items-center gap-4 bg-black cursor-pointer rounded-r-full px-4">
             <Image src="/logo.png" alt="logo" width={80} height={50} />
           </div>
 
           <div onClick={toggleNav} className="z-[1100] self-center cursor-pointer mr-4">
-            <div className="flex-col flex h-11 relative w-11 justify-center rounded-full bg-gradient-to-r ">
-              <motion.div
-                animate={nav ? { rotate: 45, y: 3 } : { rotate: 0, y: 0 }}
-                className="flex flex-col bg-bbPrimary justify-between h-1 w-7 mb-1 cursor-pointer bg-black"
-              ></motion.div>
-              <motion.div
-                animate={nav ? { rotate: -45, y: -3 } : { rotate: 0, y: 0 }}
-                className="flex flex-col bg-bbPrimary justify-between h-1 w-7 cursor-pointer bg-black"
-              ></motion.div>
+            <div className="flex-col flex h-11 relative w-11 justify-center rounded-full bg-gradient-to-r">
+              <div className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform ${nav ? 'rotate-45 translate-y-0' : ''}`}></div>
+              <div className={`flex flex-col justify-between h-1 w-6 cursor-pointer bg-black transform ${nav ? '-rotate-45 -translate-y-2' : ''}`}></div>
             </div>
           </div>
         </div>
       </nav>
-      <motion.div
-        initial={{ x: 1000 }}
-        animate={nav ? { x: 0 } : { x: 1000 }}
-        className="w-full lg:hidden flex-col items-center justify-center min-h-screen fixed z-[1500] bg-white  right-0 top-0"
-      >
-        <ul
-          className="flex gap-6 flex-col text-2xl cursor-pointer 
-      items-center justify-center h-screen px-4 uppercase font-semibold text-bbPrimary 
-      "
-        >
+
+      <div className={`w-full lg:hidden flex-col items-center justify-center min-h-screen fixed z-[1500] bg-white right-0 top-0 transition-transform duration-300 ${nav ? 'transform translate-x-0 scale-100' : 'transform scale-90 translate-x-full'}`}>
+        <ul className="flex gap-6 flex-col text-2xl cursor-pointer items-center justify-center h-screen px-4 uppercase font-semibold text-bbPrimary">
           <Link href="/videos">Videos</Link>
           <Link href="/premium">Premium</Link>
           <Link href="/podcast">Podcast</Link>
@@ -227,21 +189,16 @@ export const Navbar = () => {
           <Link href="/categories">Categories</Link>
           <Link href="/practice">Practice</Link>
           <div className="flex items-center gap-4 mr-4 mt-4 text-sm">
-            <Link
-              className="py-1 px-8  border-blue-500 text-blue-500 border-[3px] rounded-md"
-              href="/sign-in"
-            >
+            <Link className="py-1 px-8  border-blue-500 text-blue-500 border-[3px] rounded-md" href="/sign-in">
               Sign in
             </Link>
-            <Link
-              className="py-1 px-8 border-[3px] rounded-md border-black text-black"
-              href="/sign-up"
-            >
+            <Link className="py-1 px-8 border-[3px] rounded-md border-black text-black" href="/sign-up">
               Sign up
             </Link>
           </div>
         </ul>
-      </motion.div>
+      </div>
+
     </>
   );
 };

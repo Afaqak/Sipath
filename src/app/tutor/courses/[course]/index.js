@@ -139,7 +139,7 @@ const CoursePage = ({ session }) => {
                     Edit Course
                   </Button>
                 )}
-                {session?.tutor?.tutor_id === course?.tutor_id && (
+                {(session?.tutor?.tutor_id === course?.tutor_id || isEnrolled)  && (
                   <Link
                     className={cn(
                       buttonVariants({ variant: 'outline' }),

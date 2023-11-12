@@ -14,7 +14,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogDescription,
-  DialogTitle,
+
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -182,10 +182,10 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
                   <span className="font-semibold text-[0.85rem]">521</span> Following
                 </li>
                 {user?.isTutor &&
-                <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">{(tutor?.hourly_rate ||session?.tutor?.hourly_rate )}$/hr</span> Hourly rate
-                </li>
-  }
+                  <li className="text-[0.75rem]">
+                    <span className="font-semibold text-[0.85rem]">{(tutor?.hourly_rate || session?.tutor?.hourly_rate)}$/hr</span> Hourly rate
+                  </li>
+                }
                 {!type === 'myprofile' && (
                   <Stars
                     rating={rating}
@@ -228,20 +228,14 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
           className="cursor-pointer absolute top-5 right-5"
         >
           <Icons.elipsis className="h-7 transform rotate-90 text-gray-500 w-7" />
-          <AnimatePresence>
-            {showActions && (
-              <motion.div
-                ref={actionRef}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-6 right-2 bg-white shadow-md w-64 mx-auto rounded-md p-2 space-y-2"
-              >
-                <ActionButtons />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div
+            ref={actionRef}
+            className={`absolute top-6 right-2 bg-white shadow-md w-64 mx-auto rounded-md p-2 space-y-2 transition-all duration-200 ease-in-out transform ${showActions ? 'opacity-100 scale-100 visible' : 'invisible opacity-0 scale-80'
+              }`}
+          >
+            <ActionButtons />
+          </div>
+
         </div>
       )}
       <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
@@ -266,7 +260,7 @@ const actionButtonsData = [
   },
   {
     text: 'Chat',
-    href: '/tutor/video-upload',
+    href: '/chat',
     imageSrc: '/svgs/messageblack.svg',
     alt: 'message',
     bgColor: 'bg-gray-500',
