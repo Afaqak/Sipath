@@ -5,7 +5,6 @@ import { Icons } from '../icons';
 import UserAvatar from '../common/userAvatar';
 import { formatTimeAgo } from '@/utils';
 import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { VideoEditModal } from './editVideoModal';
 import { DeleteModal } from '../common/deleteModal';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
@@ -15,15 +14,14 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const ref = useRef();
-  console.log(video,"{video}")
+ 
 
   useOutsideClick(ref, () => setToggleMenu(false));
   return (
     <div
-    
-      className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[23rem] ${
-        isEdit && 'border-2 border-subcolor'
-      } relative block w-full p-4 bg-white shadow-lg rounded-md border`}
+
+      className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[23rem] ${isEdit && 'border-2 border-subcolor'
+        } relative block w-full p-4 bg-white shadow-lg rounded-md border`}
     >
       {video?.live && (
         <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">
@@ -48,7 +46,7 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
         />
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-       <Link className='block' href={`/profile/${video?.author_id}`}> <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} /></Link>
+        <Link className='block' href={`/profile/${video?.author_id}`}> <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} /></Link>
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
@@ -68,15 +66,13 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
                     className="h-[1.25rem] text-gray-500 w-[1.25rem] "
                   />
                 </div>
-                <motion.div
+                <div
                   ref={ref}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: toggleMenu ? 1 : 0, y: toggleMenu ? 0 : 10 }}
-                  transition={{ type: 'spring', stiffness: 100 }}
-                  className="bg-white rounded-md shadow-md w-28 absolute border top-8 right-0"
+                  className={`bg-white rounded-md shadow-md w-28 absolute border top-8 duration-200 ease-in-out right-0 transition-all ${toggleMenu ? 'opacity-100 translate-y-0 visible' : 'opacity-0 invisible translate-y-10'
+                    }`}
                 >
-                  <motion.ul className="flex flex-col divide-y cursor-pointer text-sm">
-                    <motion.li>
+                  <ul className="flex flex-col divide-y cursor-pointer text-sm">
+                    <li>
                       <p
                         className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
                         onClick={() => setOpen(true)}
@@ -84,16 +80,17 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
                         <Icons.edit className="h-4 w-4 stroke-[#616161]" />
                         Edit
                       </p>
-                    </motion.li>
-                    <motion.li
+                    </li>
+                    <li
                       onClick={() => setVideoDelete(true)}
                       className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
                     >
                       <Icons.trash className="h-4 w-4 " />
                       Delete
-                    </motion.li>
-                  </motion.ul>
-                </motion.div>
+                    </li>
+                  </ul>
+                </div>
+
               </div>
             )}
           </div>
