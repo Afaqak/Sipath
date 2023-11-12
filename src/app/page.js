@@ -23,13 +23,9 @@ const Home = () => {
   const fetchVideos = async (query, setData) => {
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/assets/videos?${query}`, {
-        cache: 'force-cache',
-        next: { revalidate: 1 }
-      });
-      const data = await response.json()
-      console.log(data)
-      setData(data);
+      const response = await axios.get(`/assets/videos?${query}`);
+    
+      setData(response?.data);
 
     } catch (err) {
       console.log(err);
@@ -40,10 +36,9 @@ const Home = () => {
   const fetchExperts = async () => {
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/users/experts?type=all`);
-      const data = await response.json()
-      // setCategories(data)
-      setExperts(data);
+      const response = await axios.get(`/users/experts?type=all`);
+   
+      setExperts(response?.data);
 
     } catch (err) {
       console.log(err);
@@ -53,9 +48,9 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend.sipath.com'}/categories`)
-      const data = await response.json()
-      setCategories(data)
+      const response = await axios.get(`/categories`)
+ 
+      setCategories(response?.data)
     } catch (err) {
       console.log(err)
     }

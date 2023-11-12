@@ -5,7 +5,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import { formatTimeAgo } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 import {
   Quiz,
