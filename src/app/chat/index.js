@@ -65,7 +65,7 @@ const Chat = ({ session }) => {
             ))}
             </div>
         </div>
-        <div className='bg-white w-full py-4 flex absolute bottom-0 justify-between px-4 text-left border-t-2 border-blue-600'>
+        <div onClick={()=>setAppointmentModalOpen(true)} className='bg-white cursor-pointer w-full py-4 flex absolute bottom-0 justify-between px-4 text-left border-t-2 border-blue-600'>
           {/*button for appointments*/}
           <span className=''>Appointment Requests</span> <span className='h-6 w-6 rounded-full bg-main text-white font-bold text-sm flex items-center justify-center'>{appointmentRequests?.length}</span>
         </div>

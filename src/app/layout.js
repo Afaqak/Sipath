@@ -6,7 +6,10 @@ import { store } from '@/store/store';
 import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { Roboto } from 'next/font/google';
-
+// import { Metadata } from 'next';
+export const metadata={
+  title:"Sipath"
+}
 export default function RootLayout({ children, props }) {
 
   return (
