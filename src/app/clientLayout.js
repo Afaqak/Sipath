@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 
 
-export default function ClientLayout({ children, props }) {
+export default function ClientLayout({ children }) {
   return (
     <html lang="en">
       <body>
@@ -17,7 +17,7 @@ export default function ClientLayout({ children, props }) {
               <Navbar />
               {children}
             </AuthProvider>
-            <Toaster containerStyle={{zIndex:9999999}}/>
+            <Toaster  containerStyle={{zIndex:9999999}}/>
           </main>
         </Provider>
       </body>

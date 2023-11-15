@@ -55,7 +55,7 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
 
   const searchParams = useSearchParams()
   const id = searchParams.get('id');
-  console.log(selectedVideo, "{from info}")
+
   useEffect(() => {
     setRating(0)
   }, [id])

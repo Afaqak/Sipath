@@ -43,7 +43,7 @@ export const OnBoardingProcess = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log("submit")
+
     if (buttonType === "asUser") {
       setLoadingAsUser(true)
     } else {

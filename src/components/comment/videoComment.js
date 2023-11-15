@@ -87,7 +87,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
       setLoadingReplies(false);
     }
   };
-  console.log(comment)
+
   const handleIsReplying = () => setIsReplying(!isReplying);
   return (
     <div className="flex flex-col mb-4">

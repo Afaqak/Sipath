@@ -125,7 +125,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
     fetchCategories()
 
   }, [])
-  console.log(categories, "{categories}")
+
   return (
     <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
@@ -337,7 +337,7 @@ function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
         });
 
 
-        console.log(userResponse.data, "{user}")
+      
         successToast("Updated Profile Pic!")
         const newSession = {
           user: {

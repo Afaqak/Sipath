@@ -17,7 +17,7 @@ export const VideoandThumbnail = ({ thumbnail, setThumbnail, setVideo, setDurati
       const video = document.createElement('video');
 
       video.onloadedmetadata = () => {
-        const duration = video.duration;
+        const duration = +Math.floor(video.duration);
         setDuration(duration);
         setVideoUrl(video.src);
       };

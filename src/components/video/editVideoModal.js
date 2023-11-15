@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export function VideoEditModal({
   isOpen,
@@ -29,10 +29,11 @@ export function VideoEditModal({
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
   const [subject, setSubject] = useState(video?.subject);
-  const router = useRouter();
   const [duration, setDuration] = useState(null);
   const [body, setBody] = useState(initialStates);
   const [videoFile, setVideoFile] = useState(null);
+  const [loading,setLoading]=useState(false)
+  const [progress,setProgress]=useState(0)
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -133,6 +134,7 @@ export function VideoEditModal({
         }
         successToast('Video updated Sucessfully!', '#1850BC');
       } else {
+        setLoading(true)
         const formDataToSend = new FormData();
         formDataToSend.append('video', videoFile);
         formDataToSend.append('thumbnail', thumbnail);
@@ -140,12 +142,23 @@ export function VideoEditModal({
         formDataToSend.append('description', body.description);
         formDataToSend.append('subject', subject);
         formDataToSend.append('duration', duration);
-        const response = await axios.post('/upload/video', formDataToSend, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
+
+           const config = {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${user?.token}`,
+            },
+
+            onUploadProgress: (progressEvent) => {
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              console.log(progress);
+              setProgress(progress)
+            },
+          };
+
+
+
+        const response = await axios.post('/upload/video', formDataToSend, config);
         if (response.status === 200) {
      
           successToast('Video uploaded Sucessfully!', '#1850BC');
@@ -180,36 +193,54 @@ export function VideoEditModal({
         } else {
           console.error('Error uploading video:', response.statusText);
         }
-        //   const config = {
-        //     headers: {
-        //       'Content-Type': 'multipart/form-data',
-        //     },
-
-        //     onUploadProgress: (progressEvent) => {
-        //       const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        //       console.log(progress);
-        //     },
-        //   };
-
-        //   const response = await axios.post(
-        //     `/courses/${courseId}/section/${sectionId}/videos`,
-        //     formDataToSend,
-        //     config
-        //   );
-        //   console.log(response.data);
-        // }
+    
       }
     } catch (err) {
       console.log(err);
     } finally {
+      setProgress(0)
+      setLoading(false)
       closeModal();
     }
   };
+
 
   return (
     <>
       <Dialog className="bg-opacity-100" open={isOpen} onOpenChange={openModal}>
         <DialogContent className="w-full bg-white shadow-lg">
+        {loading && (
+          <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
+            <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
+              <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
+                <motion.span
+                  initial={{ scale: 0.5 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {progress === 100 ? (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      Uploaded
+                    </motion.div>
+                  ) : (
+                    <motion.div>{`${progress}%`}</motion.div>
+                  )}
+                </motion.span>
+              </motion.div>
+              <button
+                type="button"
+                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition-colors duration-300"
+              >
+                Cancel Upload
+              </button>
+            </div>
+          </div>
+        )}
+
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             <div className="flex gap-8">
               <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">

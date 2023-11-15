@@ -1,7 +1,7 @@
 import { FileInput } from '@/components';
 import { useState, useRef ,useEffect} from 'react';
 import { SubjectDropDown } from '@/components'
-import axios from '../../utils/index'
+import axios from '@/utils/index'
 export const NewBookBodyColumn = ({
   bookTitle,
   bookDescription,
