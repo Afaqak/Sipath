@@ -89,7 +89,7 @@ export const MyAccount = ({ session }) => {
 
       if (interests.length > 0) {
         const updatedInterests = interests?.map(exp => exp?.id)
-        console.log(updatedInterests,"update int")
+      
         for (var i = 0; i < interests.length; i++) {
           formDataToSend.append('interests[]', updatedInterests[i]);
         }
@@ -112,7 +112,7 @@ export const MyAccount = ({ session }) => {
           },
 
         };
-        console.log(userResponse.data?.user,"response")
+  
         session.user = userResponse.data?.user
 
         if (

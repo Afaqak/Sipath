@@ -30,10 +30,10 @@ export const CommentsSection = () => {
   };
   const onCommentSubmit = (e) => {
     e.preventDefault();
-    console.log(text, 'comment');
+    // console.log(text, 'comment');
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
-    console.log(textWithoutImages, 'twi');
+    // console.log(textWithoutImages, 'twi');
     try {
       if (!text) return;
       const formdata = new FormData();

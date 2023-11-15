@@ -13,7 +13,7 @@ const conversationSlice = createSlice({
   initialState,
   reducers:{
     insertConversation(state,action){
-      console.log(action,"{convo}")
+
       state.conversations.push(action.payload)
     }
   },

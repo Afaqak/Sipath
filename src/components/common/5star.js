@@ -3,8 +3,7 @@ import { Icons } from '../icons';
 
 export const Stars = ({ rating, setRating, initialRating }) => {
   const [hover, setHover] = useState(null);
-  console.log(initialRating,"initital",rating,setRating)
-  
+
   return (
     <div className="flex items-center">
       {[...Array(5)].map((_, indx) => {
