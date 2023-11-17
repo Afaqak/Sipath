@@ -19,9 +19,10 @@ import {
   VideoItem,
   BookSkeleton,
   Feed,
+  DeleteFeedModal,
 } from '@/components';
 import { UniversalTab } from '@/components';
-import {  useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -78,7 +79,7 @@ export const MyProfile = ({ session }) => {
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )}
         {active === 'myfeed' && (
-          <MyFeed session={session}/>
+          <MyFeed session={session} />
         )}
         {active === 'podcast' && (
           <div>
@@ -90,7 +91,7 @@ export const MyProfile = ({ session }) => {
         {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
         {active === 'myvideos' && <MyVideos token={session?.token} userId={session?.user?.id} />}
-        {active === 'myaccount' && <MyAccount session={session}/>}
+        {active === 'myaccount' && <MyAccount session={session} />}
         {active === 'mycourses' && <MyCourses session={session} />}
       </div>
     </>
@@ -124,36 +125,78 @@ const MyCourses = ({ session }) => {
   );
 };
 const MyFeed = ({ session }) => {
+
   const [posts, setPosts] = useState([]);
   const axios = useAxiosPrivate();
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`/posts/user/${session?.user?.id}`, {
-          headers: {
-            Authorization: `Bearer ${session?.token}`,
-          },
-        });
+  const [open, setOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
 
-        setPosts(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchPosts();
+  const fetchUserPosts = async () => {
+    try {
+      const response = await axios.get(`/posts/user/${session?.user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      });
+
+      setPosts(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    fetchUserPosts();
   }, []);
+
+
+
+
+  const openDeleteModal = (id) => {
+    setOpen(true);
+  };
+
+  const handleDeletePost = async () => {
+    try {
+
+      await axios.delete(`/posts/${selectedPostId}`, {
+        headers: {
+          'Authorization': `Bearer ${session?.token}`,
+        },
+      });
+
+      fetchUserPosts()
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+
   return (
     <div className=" mx-auto flex mt-4 flex-col gap-4">
 
-      {posts.map((feed,index) => (
-        <Feed key={index} feed={feed} />
+      {posts.map((post, index) => (
+        <Feed
+          key={post?.id}
+          feed={post}
+          user={session?.user}
+          openModal={() => {
+            openDeleteModal(post.id)
+            setSelectedPostId(post?.id)
+          }
+          }
+        />
       ))}
+
+
+      <DeleteFeedModal open={open} setOpen={setOpen} onDelete={handleDeletePost} />
     </div>
   );
 };
 
-const CourseCard = ({ course, session ,type="course"}) => {
-  const newHref=type==='learning'?`/courses/${course?.id}`:`/tutor/courses/${course?.id}`
+const CourseCard = ({ course, session, type = "course" }) => {
+  const newHref = type === 'learning' ? `/courses/${course?.id}` : `/tutor/courses/${course?.id}`
   return (
     <Link
       href={newHref}
@@ -238,7 +281,7 @@ const MyQuizzes = ({ tutorId, token }) => {
           </button>
         )}
       </div>
-      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit}   key={index} quiz={quiz} />)}
+      {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
     </div>
   );
 };

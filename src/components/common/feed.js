@@ -1,18 +1,19 @@
 import React, { useState, Suspense } from 'react';
 import Image from 'next/image';
 import UserAvatar from './userAvatar';
-import { Icons, formatTimeAgo } from '..';
+import { Icons, formatTimeAgo, ProfileHoverCard } from '..';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 
-export const Feed = ({ feed }) => {
-  const [bigImage, setBigImage] = useState(feed?.attached_images.length>0 ? feed?.attached_images[0]:null);
+
+export const Feed = ({ feed, openModal, user }) => {
+
+  const [bigImage, setBigImage] = useState(feed?.attached_images?.[0] || null);
+  console.log(feed.attached_images,bigImage)
 
   const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
@@ -22,32 +23,36 @@ export const Feed = ({ feed }) => {
   return (
 
     <div className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-
-          <Link className='block' href={`/profile/${feed?.user?.id}`}><UserAvatar className="w-8 h-8" user={{ image: feed?.user?.profile_image, name: feed?.user?.display_name }} /></Link>
-          <div className="flex uppercase text-subcolor3 text-[0.7rem] flex-col">
-            <span className="">{feed?.user?.display_name}</span>
-            <span className="">{formatTimeAgo(feed.createdAt)}</span>
+      <div className="flex justify-between items-center ">
+        <ProfileHoverCard user={feed?.user} >
+          <div className='flex gap-2 '>
+            <UserAvatar className="w-8 h-8" user={{ image: feed.user?.profile_image, name: feed.user?.display_name }} />
+            <div className="flex uppercase text-subcolor3 font-medium text-[0.7rem] flex-col">
+              <span className="">{feed?.user?.display_name}</span>
+              <span className="">{formatTimeAgo(feed.createdAt)}</span>
+            </div>
           </div>
-        </div>
+        </ProfileHoverCard>
+
         <DropdownMenu className="w-14 h-14">
           <DropdownMenuTrigger className="focus:outline-none outline-none">
             <Icons.elipsis stroke="black" width="20" className="rotate-90 transform" height="20" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {/* <DropdownMenuItem>Delete</DropdownMenuItem> */}
+          <DropdownMenuContent align="end">
+            {user && +user?.id === +feed?.user?.id &&
+              <DropdownMenuItem onClick={openModal} className="flex gap-2"><Icons.trash /> Delete</DropdownMenuItem>
+            }
             {/* <DropdownMenuSeparator /> */}
             <DropdownMenuItem>Report</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
 
+      </div>
       <div
         className="mt-2 text-gray-700"
         dangerouslySetInnerHTML={{ __html: feed.text }}
       />
-      {feed ?.attached_images && feed?.attached_images?.length > 0 && (
+      {feed?.attached_images && feed?.attached_images?.length > 0 && (
         <div className="mt-4">
           <Image
             priority
@@ -81,5 +86,8 @@ export const Feed = ({ feed }) => {
 
   );
 };
+
+
+
 
 

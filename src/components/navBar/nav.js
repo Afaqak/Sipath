@@ -94,10 +94,12 @@ export const Navbar = () => {
           <div className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}>
             {user?.user ? (
               <>
-                <Icons.message
-                  className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
-                  onClick={() => router.push('/chat')}
-                />
+                <Link href={'/chat'}>
+                  <Icons.chat
+                    className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
+
+                  />
+                </Link>
 
 
                 <div className="relative">
@@ -113,7 +115,7 @@ export const Navbar = () => {
                       />
 
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent align="end">
                       <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -124,29 +126,29 @@ export const Navbar = () => {
                       >
                         <Icons.profile className="h-4 w-4 stroke-subcolor3" />
                         My-profile</DropdownMenuItem>
-                      <DropdownMenuItem  onClick={async () => {
-                          setToggleMenu(false);
-                          toast.error('Logging out!', {
-                            style: {
-                              backgroundColor: '#fb3c22',
-                              color: 'white',
-                            },
-                            icon: '⚪',
-                          });
-                          await signOut({
-                            callbackUrl: '/',
-                          }).then((res) => { });
-                        }}
+                      <DropdownMenuItem onClick={async () => {
+                        setToggleMenu(false);
+                        toast.error('Logging out!', {
+                          style: {
+                            backgroundColor: '#fb3c22',
+                            color: 'white',
+                          },
+                          icon: '⚪',
+                        });
+                        await signOut({
+                          callbackUrl: '/',
+                        }).then((res) => { });
+                      }}
                         className="flex gap-2"
                       >
                         <Icons.logout className="h-4 w-4 " />
                         logout
-                        </DropdownMenuItem>
+                      </DropdownMenuItem>
 
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                
+
                 </div>
               </>
             ) : (

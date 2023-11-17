@@ -94,7 +94,7 @@ export const MyProfile = ({ user, session }) => {
           </button>
         </div>
         <UniversalTab
-          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-5'}
+          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-6'}
           active={active}
           tabs={tabs}
           setActive={setActive}

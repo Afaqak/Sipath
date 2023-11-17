@@ -1,12 +1,11 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Icons } from '../icons';
-import UserAvatar from '../common/userAvatar';
-import { formatTimeAgo } from '@/utils';
+import UserAvatar from '@/components/common/userAvatar';
+import { ProfileHoverCard, formatTimeAgo, DeleteModal, Icons } from '@/components';
 import { useState, useRef } from 'react';
 import { VideoEditModal } from './editVideoModal';
-import { DeleteModal } from '../common/deleteModal';
+
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import {
   DropdownMenu,
@@ -45,7 +44,7 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
         <Image
-        
+
           src={video?.thumbnail}
           alt={'thumbnail'}
           width={300}
@@ -54,7 +53,17 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
         />
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-        <Link className='block' href={`/profile/${video?.author_id}`}> <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} /></Link>
+          <div>
+          <ProfileHoverCard user={{
+            display_name:video['user.display_name'],
+            profile_image:video['user.profile_image'],
+            rating:video['user.rating'],
+            isTutor:video['user.isTutor'],
+            id:video['user.id']
+          }}>
+            <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} />
+          </ProfileHoverCard>
+          </div>
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
@@ -73,11 +82,11 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
                     <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent >
-                    <DropdownMenuItem onClick={()=>setOpen(true)} className="flex gap-2">
+                    <DropdownMenuItem onClick={() => setOpen(true)} className="flex gap-2">
                       Edit <Icons.edit className="h-4 w-4 stroke-[#616161]" />
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="flex gap-2" onClick={()=>setVideoDelete(true)}>
+                    <DropdownMenuItem className="flex gap-2" onClick={() => setVideoDelete(true)}>
                       Delete<Icons.trash className="h-4 w-4 " />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -95,9 +104,9 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
             <span>&bull;</span>
             <div className="flex items-center">
               {
-              video?.rating < 1 ? '0' : video?.rating.slice(0, -1)
-            }
-       
+                video?.rating < 1 ? '0' : video?.rating.slice(0, -1)
+              }
+
               <span>
                 <Icons.rating />
               </span>

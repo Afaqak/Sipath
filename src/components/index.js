@@ -76,3 +76,5 @@ export { BookSkeleton } from '@/utils/skeletons';
 export { NewQuizBodyRow } from './quiz';
 export { UploadQuizRow } from './quiz';
 export { EditQuizModal } from './tutors/editQuizModal';
+export { ProfileHoverCard } from './common/profileHoverCard';
+export { DeleteFeedModal } from './feed/deleteFeedModal';

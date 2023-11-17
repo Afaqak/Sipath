@@ -1,6 +1,6 @@
 'use client'
 
-import { ContentContainer,formatTimeAgo } from "@/components"
+import { ContentContainer, ProfileHoverCard, formatTimeAgo } from "@/components"
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -29,10 +29,10 @@ const MyCourses = ({ session }) => {
                         Authorization: `Bearer ${session?.token}`,
                     },
                 });
-                
+
                 const enrollmentsResponse = await axios.get('/courses/enrollments', {
                     headers: {
-                        
+
                         Authorization: `Bearer ${session?.token}`,
                     },
                 });
@@ -78,14 +78,14 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session, enrollments }) => {
-    
+
     const isEnrolled = enrollments.some(
         (enrollment) => enrollment?.course?.id === course.id
     );
     const href = isEnrolled ? `/courses/${course.id}` : `/tutor/courses/${course?.id}`;
     return (
-        <Link
-            href={href}
+        <div
+
             className=" h-[20rem] relative block mb-6 w-full p-4 bg-white shadow-md rounded-md"
         >
             {course?.price && course?.price > 0 && (
@@ -107,9 +107,13 @@ const CourseCard = ({ course, session, enrollments }) => {
                 )}
             </div>
             <div className="mt-3 flex gap-2 items">
-                <UserAvatar user={{ image: course?.tutor?.user?.profile_image }} />
                 <div>
-                    <h1 className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</h1>
+                    <ProfileHoverCard user={course?.tutor?.user}>
+                        <UserAvatar user={{ image: course?.tutor?.user?.profile_image }} />
+                    </ProfileHoverCard>
+                </div>
+                <div>
+                    <Link href={href} className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</Link>
                     <div className="flex items-center text-sm gap-2 text-gray-700">
                         <span>{course?.tutor?.user?.display_name}</span>
                     </div>
@@ -118,7 +122,7 @@ const CourseCard = ({ course, session, enrollments }) => {
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

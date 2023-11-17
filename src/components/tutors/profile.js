@@ -236,7 +236,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
             <DropdownMenuTrigger>
               <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent >
+            <DropdownMenuContent align="end">
               <ActionButtons />
             </DropdownMenuContent>
           </DropdownMenu>
@@ -297,7 +297,8 @@ const ActionButtons = () => {
   return (
     <div className="grid grid-cols-2 flex-row text-sm">
       {actionButtonsData.map((button, index) => (
-        <DropdownMenuItem>        <Link
+        <DropdownMenuItem key={index}>        
+          <Link
           className={`border-2 border-${button.bgColor} w-full px-3 py-1 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent rounded`}
           href={button.href}
           key={index}
