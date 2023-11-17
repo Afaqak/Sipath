@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 
 export const Feed = ({ feed }) => {
-  const [bigImage, setBigImage] = useState(feed.attached_images.length>0 ? feed?.attached_images[0]:null);
+  const [bigImage, setBigImage] = useState(feed?.attached_images.length>0 ? feed?.attached_images[0]:null);
 
   const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
