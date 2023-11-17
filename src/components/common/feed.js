@@ -47,7 +47,7 @@ export const Feed = ({ feed }) => {
         className="mt-2 text-gray-700"
         dangerouslySetInnerHTML={{ __html: feed.text }}
       />
-      {feed ?.attached_images && feed?.attached_images.length > 0 && (
+      {feed ?.attached_images && feed?.attached_images?.length > 0 && (
         <div className="mt-4">
           <Image
             priority
@@ -58,7 +58,7 @@ export const Feed = ({ feed }) => {
             className="rounded-md w-full h-full aspect-video mb-2 border-2"
           />
           <div className="flex gap-2 pb-2 pl-[0.3rem] min-w-full overflow-x-auto">
-            {feed?.attached_images && feed?.attached_images > 0 &&
+            {feed?.attached_images && feed?.attached_images.length > 0 &&
               feed?.attached_images?.map((thumbnail, index) => (
                 <div className="relative" key={index}>
                   <img
