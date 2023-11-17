@@ -10,7 +10,7 @@ export const ExpertItem = ({ item}) => {
 
       <div className={`relative mb-6 flex flex-col items-center h-fit lg:h-40 py-6 px-4 w-[22rem] bg-white shadow-md rounded-sm mt-6 md:mt-2`}>
         <div className="lg:absolute relative mb-6 lg:mb-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:-left-16 w-[8rem] lg:w-[7rem] rounded-full">
-          <UserAvatar className="h-28 w-28" user={{ image: item && item['user.profile_image'] }} />
+          <UserAvatar className="h-28 w-28" user={{ image: item && item['user.profile_image'] ,name:item && item['user.display_name'] }} />
         </div>
         <div className="bg-gray-200 w-full lg:hidden h-[1px]"></div>
         <div className="lg:ml-12 mt-4 lg:mt-0">
@@ -19,7 +19,7 @@ export const ExpertItem = ({ item}) => {
               <div className="flex justify-between lg:justify-normal lg:gap-3 items-center">
                 <h1 className="text-xl font-normal uppercase">{item && item["user.display_name"]}</h1>
                 <h2 className="font-extrabold text-sm gap-1 flex items-center">
-                  4.7{' '}
+                {item && item["user.rating"]}
                   <span>
                     <Image src="/svgs/star.png" alt="star" width={20} height={20} />
                   </span>

@@ -1,4 +1,3 @@
-import { createMessage } from '@/features/chat/message/messageThunk';
 import moment from 'moment';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
@@ -11,6 +10,8 @@ import { Icons } from '@/components';
 import UserAvatar from '@/components/common/userAvatar';
 import { debounce } from 'lodash';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { Button } from '@/components/ui/button';
+import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
 const ChatScreen = ({ conversation, session }) => {
 
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const ChatScreen = ({ conversation, session }) => {
   const messages = useSelector((state) => state.messages.messages);
   const { data: user } = useSession();
   const chatContainerRef = useRef(null);
+  const [openAppointment, setOpenAppointment] = useState(false)
   const axios=useAxiosPrivate()
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -40,6 +42,7 @@ const ChatScreen = ({ conversation, session }) => {
       sender: user?.user?.id,
       chat_id: conversation?.id,
     });
+    console.log(text,":text")
 
     setText('');
   };
@@ -62,7 +65,7 @@ const ChatScreen = ({ conversation, session }) => {
     scrollToBottom();
   }, [messages]);
   const handleScroll = debounce(() => {
-    if (chatContainerRef.current.scrollTop === 0 && hasMoreMessages && !loading) {
+    if (messages.length>=10 && chatContainerRef.current.scrollTop === 0 && hasMoreMessages && !loading) {
       loadMoreMessages();
      
     }
@@ -78,8 +81,7 @@ const ChatScreen = ({ conversation, session }) => {
     }); 
 
   
-    dispatch
-    (insertMessages(data?.messages))
+    dispatch(insertMessages(data?.messages))
     if (data.messages?.length > messages?.length) {
           setHasMoreMessages(true)
         } else {
@@ -101,8 +103,8 @@ const ChatScreen = ({ conversation, session }) => {
 
 
   useEffect(() => {
-    socket.on('message-recieved', ({ message, sender, chat_id, reply_to }) => {
-     
+    socket.on('message-recieved', ({ text:message, sender, chat_id}) => {
+      console.log(message,":message")
       const newMessage = {
         id: Date.now(),
         createdAt: new Date(),
@@ -127,8 +129,6 @@ const ChatScreen = ({ conversation, session }) => {
 
   let otherUser=conversation.member_1===user?.user?.id?conversation?.chat_member_2:conversation?.chat_member_1
 
-
-
   return (
     <div>
       <div className="flex flex-col justify-between overflow-y-scroll">
@@ -138,7 +138,8 @@ const ChatScreen = ({ conversation, session }) => {
             <UserAvatar user={{image:otherUser?.profile_image}}/>
               {/* <p className="ml-4">{user.accountName}</p> */}
             </div>
-            <div className="flex">
+            <div className="flex items-center">
+              <Button onClick={()=>setOpenAppointment(true)} className="text-white bg-subcolor hover:bg-green-700 rounded-md">Propose Appointment</Button>
               <Image
                 className="ml-4"
                 src={'/svgs/info-icon.svg'}
@@ -212,6 +213,7 @@ const ChatScreen = ({ conversation, session }) => {
           </div>
         </div>
       </div>
+      <AppointmentRequestModal isOpen={openAppointment} setIsOpen={setOpenAppointment} chatId={conversation?.id} />
     </div>
   );
 };

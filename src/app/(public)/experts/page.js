@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { ContentContainer, ExpertsComponent } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import React from 'react';
+import { ExpertSkeleton } from '@/utils/skeletons';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const ExpertsPage = () => {
@@ -33,10 +35,13 @@ const ExpertsPage = () => {
   //   fetchTopRatedExperts()
   // }, [])
   return (
-    <ContentContainer>
-      <ExpertsComponent title="Most Followed" data={experts} />
-      {/*<ExpertsComponent title="Top Rated" data={dataExpert} /> */}
-    </ContentContainer>
+    <div className=''>
+      {
+        experts.length>0 &&
+        <ExpertsComponent title="Most Followed" data={experts} />
+
+      }
+    </div>
   );
 };
 

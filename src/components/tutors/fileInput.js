@@ -2,10 +2,9 @@
 
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import { Icon } from '@radix-ui/react-select';
 import { Icons } from '../icons';
 
-export const FileInput = ({ file, setFile, disabled = false }) => {
+export const FileInput = ({ file, setFile, disabled = false ,isMultiple=false}) => {
 
   const inputRef = useRef(null);
 
@@ -25,6 +24,7 @@ export const FileInput = ({ file, setFile, disabled = false }) => {
         type="file"
         ref={inputRef}
         className="hidden"
+        multiple={isMultiple}
         onChange={handleFileChange}
       />
 

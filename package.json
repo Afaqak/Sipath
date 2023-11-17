@@ -58,7 +58,7 @@
     "react-player": "^2.12.0",
     "react-quill": "^2.0.0",
     "react-redux": "^8.1.2",
-    "react-spinners": "^0.13.8",
+    "react-spinners": "^0.13.8",  
     "react-time-picker": "^6.5.0",
     "redux-persist": "^6.0.0",
     "reselect": "^4.1.8",

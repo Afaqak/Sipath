@@ -5,7 +5,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import { formatTimeAgo } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import { Feed } from '@/components';
 import { ChatRequestModal } from '@/components/chat/chatRequestModal';
 import {
   Quiz,
@@ -33,6 +33,7 @@ import { setQuizes } from '@/features/quiz/quizSlice';
 import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
 const tabs = [
   { key: 'myvideos', label: 'Videos', icon: '/svgs/Play.svg' },
+  { key: 'myfeed', label: 'Feed', icon: '/svgs/rocket.svg' },
   { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
   { key: 'quiz', label: 'Quizzes', icon: '/svgs/quiz.svg' },
   { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
@@ -94,7 +95,7 @@ export const MyProfile = ({ user, session }) => {
           </button>
         </div>
         <UniversalTab
-          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
+          tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-5'}
           active={active}
           tabs={tabs}
           setActive={setActive}
@@ -116,6 +117,7 @@ export const MyProfile = ({ user, session }) => {
           </div>
         )} */}
         {active === 'books' && <Mybooks id={user.user?.id} />}
+        {active === 'myfeed' && <MyFeed session={user?.user?.id} />}
 
         {/* {active === 'income' && <MyIncome />} */}
         {active === 'myvideos' && <MyVideos userId={user?.user?.id} />}
@@ -126,6 +128,36 @@ export const MyProfile = ({ user, session }) => {
     </>
   );
 };
+
+const MyFeed = ({ session }) => {
+  const [posts, setPosts] = useState([]);
+  const axios = useAxiosPrivate();
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`/posts/user/${session}`, {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        });
+
+        setPosts(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCourses();
+  }, []);
+  return (
+    <div className=" mx-auto flex mt-4 flex-col gap-4">
+
+      {posts.map((feed,index) => (
+        <Feed key={index} feed={feed} />
+      ))}
+    </div>
+  );
+};
+
 
 const MyCourses = ({ token }) => {
   const [courses, setCourses] = useState([]);
@@ -154,6 +186,9 @@ const MyCourses = ({ token }) => {
     </div>
   );
 };
+
+
+
 
 const CourseCard = ({ course }) => {
   return (

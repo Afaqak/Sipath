@@ -19,7 +19,8 @@ const Chat = ({ session }) => {
   const requests = useSelector((state) => state?.messageRequests?.messageRequests);
   const appointmentRequests = useSelector((state) => state?.appointments?.receivedAppointmentRequests);
   const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
-
+  // console.log(appointmentRequests,"{appointment Requests}")
+  // console.log(requests,"{requests}")
 
   useEffect(() => {
     dispatch(fetchConversations({ token: session?.token }));
@@ -35,9 +36,7 @@ const Chat = ({ session }) => {
   function openRequestModal() {
     setRequestModalOpen(true);
   }
-  function openAppointmentModal() {
-    setAppointmentModalOpen(true);
-  }
+
   return (
     <div className="flex overflow-scroll flex-col md:flex-row  bg-[#F2F0F0]">
       {/* Left Panel - List of Users */}

@@ -17,7 +17,7 @@ export { Video } from './video/video';
 export { Loader } from './common/loader';
 export { ExpertsComponent } from './experts/expertsComponent';
 export { ExpertItem } from './experts/expertItem';
-export { Feed } from './common/feed';
+export {Feed} from './common/feed';
 export { UpcomingPodcast } from './podcast/upcomingPodcast';
 export { PodcastFeed } from './podcast/podcastFeed';
 export { ArchivedPodcast } from './podcast/archivedPodcast';

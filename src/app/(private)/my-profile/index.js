@@ -18,6 +18,7 @@ import {
   Icons,
   VideoItem,
   BookSkeleton,
+  Feed,
 } from '@/components';
 import { UniversalTab } from '@/components';
 import {  useSession } from 'next-auth/react';
@@ -34,8 +35,8 @@ export const MyProfile = ({ session }) => {
   const isTutor = session?.user?.isTutor
 
   const tutorTabs = [
+    { key: 'myfeed', label: 'My Feed', icon: '/svgs/book.svg' },
     { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
-    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
     { key: 'books', label: 'My Books', icon: '/svgs/rocket.svg' },
     { key: 'quiz', label: 'My Quizzes', icon: '/svgs/quiz.svg' },
     { key: 'mycourses', label: 'My Courses', icon: '/svgs/book.svg' },
@@ -76,8 +77,8 @@ export const MyProfile = ({ session }) => {
         {active === 'quiz' && (
           <MyQuizzes token={session?.token} tutorId={session?.tutor?.tutor_id} />
         )}
-        {active === 'mylearning' && (
-          <MyLearning session={session}/>
+        {active === 'myfeed' && (
+          <MyFeed session={session}/>
         )}
         {active === 'podcast' && (
           <div>
@@ -122,30 +123,30 @@ const MyCourses = ({ session }) => {
     </div>
   );
 };
-const MyLearning = ({ session }) => {
-  const [courses, setCourses] = useState([]);
+const MyFeed = ({ session }) => {
+  const [posts, setPosts] = useState([]);
   const axios = useAxiosPrivate();
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchPosts = async () => {
       try {
-        const response = await axios.get('/courses/enrollments', {
+        const response = await axios.get(`/posts/user/${session?.user?.id}`, {
           headers: {
             Authorization: `Bearer ${session?.token}`,
           },
         });
 
-        setCourses(response.data.enrollments);
+        setPosts(response.data);
       } catch (err) {
         console.log(err);
       }
     };
-    fetchCourses();
+    fetchPosts();
   }, []);
   return (
-    <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
+    <div className=" mx-auto flex mt-4 flex-col gap-4">
 
-      {courses.map((course) => (
-        <CourseCard session={session} key={course?.id} course={course.course} type='learning' />
+      {posts.map((feed,index) => (
+        <Feed key={index} feed={feed} />
       ))}
     </div>
   );
@@ -306,7 +307,7 @@ const MyVideos = ({ userId, token }) => {
           </button>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-14 mt-4">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 mt-4">
         {videos.map((video, index) => (
           <VideoItem
             video={video}

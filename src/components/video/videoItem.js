@@ -8,19 +8,26 @@ import { useState, useRef } from 'react';
 import { VideoEditModal } from './editVideoModal';
 import { DeleteModal } from '../common/deleteModal';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
   const [open, setOpen] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const ref = useRef();
- 
+
 
   useOutsideClick(ref, () => setToggleMenu(false));
   return (
     <div
 
-      className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[23rem] ${isEdit && 'border-2 border-subcolor'
+      className={`h-[20rem] min-w-full md:w-[20rem] lg:w-[21.8rem] ${isEdit && 'border-2 border-subcolor'
         } relative block w-full p-4 bg-white shadow-lg rounded-md border`}
     >
       {video?.live && (
@@ -38,6 +45,7 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
         <Image
+        
           src={video?.thumbnail}
           alt={'thumbnail'}
           width={300}
@@ -59,38 +67,21 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
               </span>
             </Link>
             {isEdit && (
-              <div className="relative">
-                <div className="cursor-pointer">
-                  <Icons.elipsis
-                    onClick={() => setToggleMenu(!toggleMenu)}
-                    className="h-[1.25rem] text-gray-500 w-[1.25rem] "
-                  />
-                </div>
-                <div
-                  ref={ref}
-                  className={`bg-white rounded-md shadow-md w-28 absolute border top-8 duration-200 ease-in-out right-0 transition-all ${toggleMenu ? 'opacity-100 translate-y-0 visible' : 'opacity-0 invisible translate-y-10'
-                    }`}
-                >
-                  <ul className="flex flex-col divide-y cursor-pointer text-sm">
-                    <li>
-                      <p
-                        className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                        onClick={() => setOpen(true)}
-                      >
-                        <Icons.edit className="h-4 w-4 stroke-[#616161]" />
-                        Edit
-                      </p>
-                    </li>
-                    <li
-                      onClick={() => setVideoDelete(true)}
-                      className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
-                    >
-                      <Icons.trash className="h-4 w-4 " />
-                      Delete
-                    </li>
-                  </ul>
-                </div>
-
+              <div className=''>
+                <DropdownMenu className="cursor-pointer">
+                  <DropdownMenuTrigger>
+                    <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent >
+                    <DropdownMenuItem onClick={()=>setOpen(true)} className="flex gap-2">
+                      Edit <Icons.edit className="h-4 w-4 stroke-[#616161]" />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex gap-2" onClick={()=>setVideoDelete(true)}>
+                      Delete<Icons.trash className="h-4 w-4 " />
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             )}
           </div>
@@ -103,7 +94,10 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
             <span>{formatTimeAgo(video.createdAt)}</span>
             <span>&bull;</span>
             <div className="flex items-center">
-              {video?.rating}{' '}
+              {
+              video?.rating < 1 ? '0' : video?.rating.slice(0, -1)
+            }
+       
               <span>
                 <Icons.rating />
               </span>
