@@ -36,10 +36,9 @@ const tabs = [
   { key: 'myfeed', label: 'Feed', icon: '/svgs/rocket.svg' },
   { key: 'books', label: 'Books', icon: '/svgs/rocket.svg' },
   { key: 'quiz', label: 'Quizzes', icon: '/svgs/quiz.svg' },
+  { key: 'Course', label: 'Courses', icon: '/svgs/rocket.svg' },
   { key: 'podcast', label: 'Podcast', icon: '/svgs/podcasts.svg' },
 ];
-
-
 
 
 export const MyProfile = ({ user, session }) => {
@@ -47,7 +46,7 @@ export const MyProfile = ({ user, session }) => {
   const [active, setActive] = useState(tabs[0].key);
   const [openChat, setOpenChat] = useState(false)
   const [openAppointment, setOpenAppointment] = useState(false)
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleMessageRequest = async (message, onClose) => {
 
@@ -65,7 +64,7 @@ export const MyProfile = ({ user, session }) => {
 
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -151,7 +150,7 @@ const MyFeed = ({ session }) => {
   return (
     <div className=" mx-auto flex mt-4 flex-col gap-4">
 
-      {posts.map((feed,index) => (
+      {posts.map((feed, index) => (
         <Feed key={index} feed={feed} />
       ))}
     </div>
