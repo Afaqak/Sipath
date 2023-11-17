@@ -45,18 +45,40 @@ export const BookSkeleton = ({ times }) => (
 
 
 export const ExpertSkeleton = ({ times }) => (
-  <div className="grid w-[90%] mx-auto md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+  <div className="grid mx-auto md:grid-cols-2  gap-4 mt-4">
     {[...Array(times)].map((_, idx) => (
       <div key={idx} className="bg-white flex gap-2 rounded-md p-4 shadow-md">
         <div className="flex items-center">
-          <Skeleton className="h-16 w-16 rounded-full" />
+          <Skeleton className="h-20 w-20 rounded-full" />
         </div>
         <div className="flex gap-3 flex-col w-full">
-          <Skeleton className="h-4 w-[150px]" />
-          <Skeleton className="h-4 w-[200px]" />
-          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-6 w-[150px]" />
+          <Skeleton className="h-6 w-[200px]" />
+          <Skeleton className="h-6 w-[250px]" />
         </div>
       </div>
     ))}
   </div>
 );
+
+
+export const FeedSkeleton = ({ time }) => {
+  return (
+    <div className='flex gap-2 flex-col w-full mx-auto'>
+      {
+        [...Array(time)].map((t) => (
+          <div key={t} className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+            <div className='flex items-center gap-2'>
+              <Skeleton className="h-10 w-10 rounded-full mb-2" />
+              <Skeleton className="h-4 w-20 rounded-full mb-2" />
+              
+            </div>
+            <Skeleton className="rounded-full h-4 w-full" />
+            <Skeleton width={60} className="mt-2 aspect-video w-full" />
+            <Skeleton className="mt-4 rounded-md h-4 w-full " />
+          </div>
+        ))
+      }
+    </div>
+  );
+};

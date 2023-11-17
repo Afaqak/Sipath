@@ -12,12 +12,11 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { successToast,errorToast } from '@/utils/toasts';
 import { validateInput } from '@/utils';
 
-export function AppointmentRequestModal({ isOpen, setIsOpen,userId}) {
+export function AppointmentRequestModal({ isOpen, setIsOpen,chatId}) {
   const [fromTime, setFromTime] = useState(null);
   const [loading,setLoading]=useState(false)
   const {data:user}=useSession()
   const [untilTime, setUntilTime] = useState(null);
-  const dispatch=useDispatch()
   const [selectedDate, setSelectedDate] = useState('');
   const ref = useRef(null);
   const axios=useAxiosPrivate()
@@ -27,9 +26,6 @@ export function AppointmentRequestModal({ isOpen, setIsOpen,userId}) {
     setIsOpen(false);
   }
 
-  function openModal() {
-    setIsOpen(!isOpen);
-  }
 
   useOutsideClick(ref, () => closeModal());
 
@@ -58,7 +54,7 @@ export function AppointmentRequestModal({ isOpen, setIsOpen,userId}) {
     };
     setLoading(true)
     try{
-    const response=await axios.post(`/chats/${userId}/appointments`,request,{headers:{
+    const response=await axios.post(`/chats/${chatId}/appointments`,request,{headers:{
       Authorization:`Bearer ${user?.token}`
     }})
     console.log(response.data,"{response.data}")
@@ -69,9 +65,7 @@ export function AppointmentRequestModal({ isOpen, setIsOpen,userId}) {
   }catch(err){
     console.log(err)
   }finally{
- 
       setLoading(false)
-
   }
 }
   
@@ -175,13 +169,13 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => {
 
   return(
   <div
-    className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] w-[11rem] flex justify-between items-center rounded-md px-4 py-1 text-sm placeholder:text-sm border-none focus:outline-none"
+    className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] w-fit flex justify-between items-center rounded-md px-4 py-1 text-sm placeholder:text-sm border-none focus:outline-none"
     onClick={onClick}
   >
     {value ? (
       <span className="">{value}</span>
     ) : (
-      <label className="text-gray-400 uppercase whitespace-nowrap text-sm">Select Birthdate</label>
+      <label className="text-gray-400 uppercase whitespace-nowrap text-sm">Select Appointment Date</label>
     )}
     <span className="ml-2 mt-1">
       <svg

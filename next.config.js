@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['sipath-afaq.s3.amazonaws.com'],
+    domains: ['sipath-afaq.s3.amazonaws.com',"bit.ly"],
   },
   webpack: (config) => {
     // ignore formidable warnings

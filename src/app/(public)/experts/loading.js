@@ -1,6 +1,10 @@
 'use client'
 
-import { Loader } from "@/components"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ExpertSkeleton } from "@/utils/skeletons"
 export default function Loading() {
-    return <Loader/>
+    return (<div className="mt-4">
+        <Skeleton className={"w-[30%] h-4"}/>
+        <ExpertSkeleton times={6}/>
+    </div>)
 }

@@ -82,7 +82,8 @@ export const approveAppointmentRequest= createAsyncThunk(
 
   
     
-      // dispatch(fetchMessageRequests({}));
+      dispatch(fetchAppointments({token}));
+      console.log(response.data.appointment,"{appreq}")
       return response.data.appointment;
     } catch (err) {
       throw err;

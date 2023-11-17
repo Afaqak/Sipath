@@ -7,11 +7,10 @@ import Image from 'next/image';
 
 export const VideoGallery = ({ title, customQuery }) => {
   const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(6);
 
   const fetchVideos = async () => {
-    setLoading(true);
+  
     try {
       const queryParams = customQuery || 'type=all';
 
@@ -20,9 +19,7 @@ export const VideoGallery = ({ title, customQuery }) => {
       setVideos([...response.data]);
     } catch (err) {
       console.log(err);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const loadMore = () => {
@@ -35,7 +32,7 @@ export const VideoGallery = ({ title, customQuery }) => {
 
   return (
     <div className="pt-8 pb-8 overflow-visible relative w-[90%] mx-auto">
-      {loading && <LoadingSkeletons times={10} />}
+      
       <Video videos={videos} title={title} load={true} />
       {
         videos?.length > 0 &&

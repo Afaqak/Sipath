@@ -5,7 +5,6 @@ import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
 import { FileInput, Icons, Stars } from '@/components';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
-import { motion, AnimatePresence } from 'framer-motion';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import axios from '../../utils/index'
 import { errorToast, successToast } from '@/utils/toasts';
@@ -19,6 +18,15 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -223,20 +231,17 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
         </div>
       </div>
       {isActon && (
-        <div
-          onClick={() => setShowActions(!showActions)}
-          className="cursor-pointer absolute top-5 right-5"
-        >
-          <Icons.elipsis className="h-7 transform rotate-90 text-gray-500 w-7" />
-          <div
-            ref={actionRef}
-            className={`absolute top-6 right-2 bg-white shadow-md w-64 mx-auto rounded-md p-2 space-y-2 transition-all duration-200 ease-in-out transform ${showActions ? 'opacity-100 scale-100 visible' : 'invisible opacity-0 scale-80'
-              }`}
-          >
-            <ActionButtons />
-          </div>
-
+        <div className='absolute top-5 right-8'>
+          <DropdownMenu className="cursor-pointer">
+            <DropdownMenuTrigger>
+              <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent >
+              <ActionButtons />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+
       )}
       <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
     </div>
@@ -246,7 +251,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
 const actionButtonsData = [
   {
     text: 'New Post',
-    href: '/tutor/video-upload',
+    href: '/user/new-post',
     imageSrc: '/svgs/blueB.svg',
     alt: 'post',
     bgColor: 'bg-blue-500',
@@ -290,10 +295,10 @@ const actionButtonsData = [
 
 const ActionButtons = () => {
   return (
-    <div className="grid grid-cols-2 gap-1 flex-row text-sm">
+    <div className="grid grid-cols-2 flex-row text-sm">
       {actionButtonsData.map((button, index) => (
-        <Link
-          className={`border-2 border-${button.bgColor} w-full px-3 py-1 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent mb-1 rounded`}
+        <DropdownMenuItem>        <Link
+          className={`border-2 border-${button.bgColor} w-full px-3 py-1 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent rounded`}
           href={button.href}
           key={index}
         >
@@ -306,6 +311,8 @@ const ActionButtons = () => {
           />
           <span className="hidden md:block">{button.text}</span>
         </Link>
+        </DropdownMenuItem>
+
       ))}
     </div>
   );
@@ -337,7 +344,7 @@ function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
         });
 
 
-      
+
         successToast("Updated Profile Pic!")
         const newSession = {
           user: {
@@ -363,7 +370,7 @@ function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
         <DialogDescription className="py-4">
           {!image && (
             <div className="text-center mb-4">
-              <UserAvatar className="w-28 h-28 mb-2" user={{ image: session?.user?.profile_image }} />
+              <UserAvatar className="w-28 h-28 mb-2" user={{ image: session?.user?.profile_image, name: session?.user?.display_name }} />
             </div>
           )}
           {image && (

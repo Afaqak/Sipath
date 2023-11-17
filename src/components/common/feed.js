@@ -1,69 +1,85 @@
-import React from 'react';
+import React, { useState, Suspense } from 'react';
 import Image from 'next/image';
+import UserAvatar from './userAvatar';
+import { Icons, formatTimeAgo } from '..';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
-export const Feed = ({ avatar, sender, title, showComments, setShowComments }) => {
+export const Feed = ({ feed }) => {
+  const [bigImage, setBigImage] = useState(feed?.attached_images.length>0 ? feed?.attached_images[0]:null);
+
+  const handleThumbnailClick = (thumbnail) => {
+    setBigImage(thumbnail);
+  };
+
+
   return (
-    <div className="flex flex-col px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
-      <div className={`flex flex-col ${avatar ? 'gap-4' : 'gap-0'}`}>
-        {avatar && (
-          <div className="relative">
-            <Image
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-              src="/svgs/playarrow.svg"
-              width={40}
-              height={40}
-              alt="playarrow"
-            />
-            <Image
-              className="rounded-md object-cover w-[40rem] h-[12rem]"
-              src={avatar}
-              alt="Course-details"
-              width={400}
-              height={200}
-            />
-          </div>
-        )}
-        <div className="relative flex gap-2">
-          <Image
-            src="/demo-4.jpg"
-            className="rounded-full w-8 h-8 object-cover"
-            width={32}
-            height={32}
-            alt="demo"
-          />
-          <div>
-            <h2 className="font-semibold text-lg mb-[0.20rem] line-clamp-2">{title}</h2>
-            <div className="flex items-center text-sm gap-2 text-gray-700">
-              <span>{sender}</span>
-            </div>
-            <div className="flex items-center text-sm gap-2 text-gray-700">
-              <span>1.5M views</span>
-              <span>&bull;</span>
-              <span>2 hours ago</span>
-              <span>&bull;</span>
-              <div className="flex items-center">
-                4.7{' '}
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="orange"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="none"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </div>
+
+    <div className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+      <div className="flex justify-between">
+        <div className="flex items-center gap-2">
+
+          <Link className='block' href={`/profile/${feed?.user?.id}`}><UserAvatar className="w-8 h-8" user={{ image: feed?.user?.profile_image, name: feed?.user?.display_name }} /></Link>
+          <div className="flex uppercase text-subcolor3 text-[0.7rem] flex-col">
+            <span className="">{feed?.user?.display_name}</span>
+            <span className="">{formatTimeAgo(feed.createdAt)}</span>
           </div>
         </div>
+        <DropdownMenu className="w-14 h-14">
+          <DropdownMenuTrigger className="focus:outline-none outline-none">
+            <Icons.elipsis stroke="black" width="20" className="rotate-90 transform" height="20" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {/* <DropdownMenuItem>Delete</DropdownMenuItem> */}
+            {/* <DropdownMenuSeparator /> */}
+            <DropdownMenuItem>Report</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div
+        className="mt-2 text-gray-700"
+        dangerouslySetInnerHTML={{ __html: feed.text }}
+      />
+      {feed ?.attached_images && feed?.attached_images?.length > 0 && (
+        <div className="mt-4">
+          <Image
+            priority
+            src={bigImage}
+            alt="Big"
+            height={400}
+            width={400}
+            className="rounded-md w-full h-full aspect-video mb-2 border-2"
+          />
+          <div className="flex gap-2 pb-2 pl-[0.3rem] min-w-full overflow-x-auto">
+            {feed?.attached_images && feed?.attached_images.length > 0 &&
+              feed?.attached_images?.map((thumbnail, index) => (
+                <div className="relative" key={index}>
+                  <img
+                    key={index}
+                    src={thumbnail}
+                    alt={`Thumbnail ${index + 1}`}
+                    className={`cursor-pointer min-w-[4rem] max-w-[4rem] h-[4rem] rounded-md object-contain transform border-2 mr-2 ${bigImage && bigImage === thumbnail ? 'border-main ' : ''
+                      }`}
+                    onClick={() => handleThumbnailClick(thumbnail)}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+      <div className="flex justify-end">
+        <Image src={'/svgs/Message square.svg'} width={10} height={10} className="w-5 cursor-pointer h-5" />
       </div>
     </div>
+
   );
 };
+
+

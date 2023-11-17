@@ -19,7 +19,6 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const quillRef = useRef();
   const handleChange = (editor) => {
     setText(editor);
-
   };
 
 

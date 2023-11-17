@@ -57,9 +57,10 @@ const ContentPlayer = ({ noPremium, token }) => {
         });
    
         setVideo(response.data)
+        console.log(response?.data,"for video")
         videoJsOptions.sources = [
           {
-            src: `https://d8eq391ms9r5i.cloudfront.net/${response?.data?.asset?.asset_key}`,
+            src: response?.data?.signed_url,
             type: 'video/mp4',
           },
         ];

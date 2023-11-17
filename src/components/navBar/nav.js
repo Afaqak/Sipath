@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -11,7 +10,16 @@ import { cn } from '@/lib/utils';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
 import toast from 'react-hot-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useOutsideClick } from '@/hooks/useOutsideClick';
+
 export const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -52,6 +60,7 @@ export const Navbar = () => {
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
     { href: '/courses', label: 'Courses' },
+    { href: '/feed', label: 'Feed' },
   ];
 
   return (
@@ -86,41 +95,36 @@ export const Navbar = () => {
             {user?.user ? (
               <>
                 <Icons.message
-                  className="w-6 h-6 hover:scale-95 transition-all duration-300 ease-in-out"
+                  className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
                   onClick={() => router.push('/chat')}
                 />
-                <Icons.bell />
+
 
                 <div className="relative">
-                  <UserAvatar
-                    onClick={() => setToggleMenu(!toggleMenu)}
-                    user={{
-                      image: user.user?.profile_image,
-                      name: user.user?.first_name || user?.display_name || user?.email,
-                    }}
-                    className="h-8 w-8"
-                  />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <UserAvatar
+                        onClick={() => setToggleMenu(!toggleMenu)}
+                        user={{
+                          image: user.user?.profile_image,
+                          name: user.user?.first_name || user?.display_name || user?.email,
+                        }}
+                        className="h-7 w-7 focus:outline-none"
+                      />
 
-                  <div ref={toggleRef} className={`bg-white rounded-md shadow-md w-32 duration-200 ease-in-out absolute border top-10 right-0 
-                    transition-all ${toggleMenu ? 'opacity-100 translate-y-0 visible' : 'opacity-0 invisible translate-y-10'
-                    }
-                    `}>
-                    <ul className="flex flex-col divide-y capitalize cursor-pointer text-sm">
-                      <li className="flex items-center font-semibold gap-6 py-1 px-2 uppercase">
-                        {user?.user?.display_name}
-                      </li>
-                      <li
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
                         onClick={() => {
-                          setToggleMenu(false);
                           router.push('/my-profile');
                         }}
-                        className="flex items-center gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                        className="flex gap-2"
                       >
                         <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                        my profile
-                      </li>
-                      <li
-                        onClick={async () => {
+                        My-profile</DropdownMenuItem>
+                      <DropdownMenuItem  onClick={async () => {
                           setToggleMenu(false);
                           toast.error('Logging out!', {
                             style: {
@@ -133,14 +137,16 @@ export const Navbar = () => {
                             callbackUrl: '/',
                           }).then((res) => { });
                         }}
-                        className="flex items-center rounded-bl-md rounded-br-md gap-6 py-1 px-2 hover:bg-[#d1d1d1]"
+                        className="flex gap-2"
                       >
                         <Icons.logout className="h-4 w-4 " />
                         logout
-                      </li>
-                    </ul>
-                  </div>
+                        </DropdownMenuItem>
 
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                
                 </div>
               </>
             ) : (

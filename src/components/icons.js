@@ -1,9 +1,15 @@
 'use client';
 export const Icons = {
+  multiply:(props)=>(
+    <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 24 24" fill="none"  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  ),
   minus:(props)=>(
     <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" >
     <path strokeLinecap="round" strokeLinejoin="round" d="M18 12H6" />
   </svg>
+  ),
+  plus:(props)=>(
+    <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 24 24" fill="none"  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M5 12h14" /><path d="M12 5v14" /></svg>
   ),
   Loader2: (props) => (
     <svg
