@@ -60,6 +60,10 @@ const NewPost = () => {
       const file = selectedImages[i];
       formData.append('image', file);
     }
+    
+    for (const pair of formData.entries()) {
+        console.log(pair)
+    }
 
     try {
       setLoading(true);

@@ -55,7 +55,7 @@ export const Feed = ({ feed }) => {
             alt="Big"
             height={400}
             width={400}
-            className="rounded-md w-full h-full aspect-video mb-2 border-2"
+            className="rounded-md w-full h-full aspect-video object-contain mb-2 border-2"
           />
           <div className="flex gap-2 pb-2 pl-[0.3rem] min-w-full overflow-x-auto">
             {feed?.attached_images && feed?.attached_images.length > 0 &&
