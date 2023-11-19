@@ -95,9 +95,8 @@ export const Navbar = () => {
             {user?.user ? (
               <>
                 <Link href={'/chat'}>
-                  <Icons.chat
+                  <Icons.chatBlack
                     className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
-
                   />
                 </Link>
 

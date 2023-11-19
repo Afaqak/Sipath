@@ -43,27 +43,29 @@ export const VideoItem = ({ video, isEdit, setVideos, setDeletedVideo }) => {
       )}
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
-        <Image
+        {video?.thumbnail &&
+          <Image
 
-          src={video?.thumbnail}
-          alt={'thumbnail'}
-          width={300}
-          height={200}
-          className="rounded-md object-cover w-full h-[11.2rem]"
-        />
+            src={video?.thumbnail}
+            alt={'thumbnail'}
+            width={300}
+            height={200}
+            className="rounded-md object-cover w-full h-[11.2rem]"
+          />
+        }
       </Link>
       <div className="mt-3 flex gap-2 w-full">
-          <div>
+        <div>
           <ProfileHoverCard user={{
-            display_name:video['user.display_name'],
-            profile_image:video['user.profile_image'],
-            rating:video['user.rating'],
-            isTutor:video['user.isTutor'],
-            id:video['user.id']
+            display_name: video['user.display_name'],
+            profile_image: video['user.profile_image'],
+            rating: video['user.rating'],
+            isTutor: video['user.isTutor'],
+            id: video['user.id']
           }}>
             <UserAvatar user={{ image: video['user.profile_image'] && video['user.profile_image'] }} />
           </ProfileHoverCard>
-          </div>
+        </div>
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link

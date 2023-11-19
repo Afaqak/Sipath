@@ -11,7 +11,7 @@ const MyProfilePage = async ({ params }) => {
     } catch (err) {
       console.log(err)
     }
-  }
+}
 
   const session = await getServerSession(authOptions);
   const userData=await fetchUserProfile()

@@ -32,8 +32,7 @@ export const Book = ({ book, isProfile }) => {
           },
         }
       );
-      // setVideo(response.data?.asset);
-  
+
       successToast('You have rated the Video!');
     } catch (error) {
       errorToast('Error Occured while setting the rating!');

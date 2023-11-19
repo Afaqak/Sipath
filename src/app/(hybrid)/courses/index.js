@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import UserAvatar from "@/components/common/userAvatar"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 const CoursePage = ({ session }) => {
 
     return (<ContentContainer>
@@ -105,6 +106,9 @@ const CourseCard = ({ course, session, enrollments }) => {
                 ) : (
                     <div className="rounded-md object-cover w-full h-44"></div>
                 )}
+                {isEnrolled && <Badge className={'absolute top-3 right-3 bg-black'}>
+                    Enrolled
+                </Badge>}
             </div>
             <div className="mt-3 flex gap-2 items">
                 <div>

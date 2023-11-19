@@ -20,7 +20,7 @@ const WatchVideo = ({ session }) => {
     const getVideo = async function () {
       const response = await axios.get(`/assets/video/${id}`, {
         headers: {
-          Authorization: `Bearer ${session.token}`,
+          Authorization: `Bearer ${session?.token}`,
         },
       });
       console.log(response?.data, "video")
@@ -31,11 +31,12 @@ const WatchVideo = ({ session }) => {
   }, [id]);
 
 
+
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} token={session?.token} />
+          <ContentPlayer noPremium={true} token={session?.token} selectedVideo={selectedVideo} />
           <VideoInfo type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentsSection />
@@ -71,7 +72,6 @@ const ListSection = () => {
     fetchVideos();
   }, []);
 
-  console.log(videos, '{videos from all}');
   return (
     <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
       {videos.map((video, index) => {
@@ -91,6 +91,7 @@ let NextVideo = ({ video }) => {
     <Link className='block' href={`/videos/watch?id=${video?.id}`}>
       <div className={`p-3 flex gap-4 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
         <div>
+        {video?.thumbnail &&
           <Image
             src={video?.thumbnail}
             width={200}
@@ -98,6 +99,7 @@ let NextVideo = ({ video }) => {
             className="object-cover h-32 rounded-md"
             alt="demo-3"
           />
+        }
         </div>
         <div className="flex flex-col justify-evenly text-sm">
           <h1 className="font-semibold">{video?.title}</h1>

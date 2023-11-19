@@ -88,8 +88,13 @@ const NewPost = () => {
 
 
 
+
+  
+
+
+
   return (
-    <div className="">
+    <div className="lg:w-[60%] mx-auto md:w-[80%]">
       <div className="mt-2 bg-white flex flex-col gap-4 p-4 rounded-md shadow-md">
         {loading && (
           <div className='w-full absolute bg-white bg-opacity-50 top-0 left-0 h-full flex items-center z-[2000] justify-center'>

@@ -30,10 +30,8 @@ export const CommentsSection = () => {
   };
   const onCommentSubmit = (e) => {
     e.preventDefault();
-    // console.log(text, 'comment');
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
-    // console.log(textWithoutImages, 'twi');
     try {
       if (!text) return;
       const formdata = new FormData();
@@ -61,7 +59,7 @@ export const CommentsSection = () => {
           <DropdownMenuTrigger className="focus:outline-none outline-none">
             Sort By
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align='right'>
             <DropdownMenuItem>Newest</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Oldest</DropdownMenuItem>

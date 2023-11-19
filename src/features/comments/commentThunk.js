@@ -29,10 +29,11 @@ export const fetchPrimaryComments = createAsyncThunk(
   'comments/fetchPrimaryComments',
   async ({ videoId, limit = 10, set = 0, onSuccess }) => {
     try {
-      const response = await axios.get(`/assets/video/${videoId}/comments?limit=10&&order=desc`);
+      const response = await axios.get(`/assets/video/${videoId}/comments?limit=10&order=desc`);
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(response.data.comments);
       }
+      console.log(response?.data, "{comments}")
     
       return response.data?.comments;
     } catch (error) {

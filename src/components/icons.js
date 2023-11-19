@@ -3,6 +3,11 @@ export const Icons = {
   multiply: (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
   ),
+  empty(props) {
+    return (
+      <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg>
+    )
+  },
   minus: (props) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" >
       <path strokeLinecap="round" strokeLinejoin="round" d="M18 12H6" />
@@ -12,7 +17,7 @@ export const Icons = {
     <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M5 12h14" /><path d="M12 5v14" /></svg>
   ),
   cake: (props) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="4" r="2" /><path d="M10.2 3.2C5.5 4 2 8.1 2 13a2 2 0 0 0 4 0v-1a2 2 0 0 1 4 0v4a2 2 0 0 0 4 0v-4a2 2 0 0 1 4 0v1a2 2 0 0 0 4 0c0-4.9-3.5-9-8.2-9.8" /><path d="M3.2 14.8a9 9 0 0 0 17.6 0" /></svg>
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><circle cx="12" cy="4" r="2" /><path d="M10.2 3.2C5.5 4 2 8.1 2 13a2 2 0 0 0 4 0v-1a2 2 0 0 1 4 0v4a2 2 0 0 0 4 0v-4a2 2 0 0 1 4 0v1a2 2 0 0 0 4 0c0-4.9-3.5-9-8.2-9.8" /><path d="M3.2 14.8a9 9 0 0 0 17.6 0" /></svg>
   ),
   Loader2: (props) => (
     <svg
@@ -252,7 +257,7 @@ export const Icons = {
       </svg>
     );
   },
-  chat:(props)=>(
+  chat: (props) => (
     <svg {...props} rpl="" aria-hidden="true" fill="currentColor" height="16" icon-name="chat-outline" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
       <path d="M11.61 19.872a10.013 10.013 0 0 0 6.51-4.035A9.999 9.999 0 0 0 12.275.264c-1.28-.3-2.606-.345-3.903-.132a10.05 10.05 0 0 0-8.25 8.311 9.877 9.877 0 0 0 1.202 6.491l-1.24 4.078a.727.727 0 0 0 .178.721.72.72 0 0 0 .72.19l4.17-1.193A9.87 9.87 0 0 0 9.998 20c.54 0 1.079-.043 1.612-.128ZM1.558 18.458l1.118-3.69-.145-.24A8.647 8.647 0 0 1 1.36 8.634a8.778 8.778 0 0 1 7.21-7.27 8.765 8.765 0 0 1 8.916 3.995 8.748 8.748 0 0 1-2.849 12.09 8.763 8.763 0 0 1-3.22 1.188 8.68 8.68 0 0 1-5.862-1.118l-.232-.138-3.764 1.076ZM6.006 9a1.001 1.001 0 0 0-.708 1.707A1 1 0 1 0 6.006 9Zm4.002 0a1.001 1.001 0 0 0-.195 1.981 1 1 0 1 0 .195-1.98Zm4.003 0a1.001 1.001 0 1 0 0 2.003 1.001 1.001 0 0 0 0-2.003Z"></path>
     </svg>
@@ -277,6 +282,13 @@ export const Icons = {
       </svg>
     );
   },
+  chatBlack(props) {
+    return (
+      <svg {...props} width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd" clipRule="evenodd" d="M6 0.75C2.82436 0.75 0.25 3.32436 0.25 6.5V19.4194C0.25 20.8868 1.94738 21.7026 3.09322 20.7859L5.92069 18.5239C6.14233 18.3466 6.41772 18.25 6.70156 18.25H16C19.1756 18.25 21.75 15.6756 21.75 12.5V6.5C21.75 3.32436 19.1756 0.75 16 0.75H6ZM6.0498 10.7998C6.74016 10.7998 7.2998 10.2402 7.2998 9.5498C7.2998 8.85945 6.74016 8.2998 6.0498 8.2998C5.35945 8.2998 4.7998 8.85945 4.7998 9.5498C4.7998 10.2402 5.35945 10.7998 6.0498 10.7998ZM12.2998 9.5498C12.2998 10.2402 11.7402 10.7998 11.0498 10.7998C10.3594 10.7998 9.7998 10.2402 9.7998 9.5498C9.7998 8.85945 10.3594 8.2998 11.0498 8.2998C11.7402 8.2998 12.2998 8.85945 12.2998 9.5498ZM16.0498 10.7998C16.7402 10.7998 17.2998 10.2402 17.2998 9.5498C17.2998 8.85945 16.7402 8.2998 16.0498 8.2998C15.3594 8.2998 14.7998 8.85945 14.7998 9.5498C14.7998 10.2402 15.3594 10.7998 16.0498 10.7998Z" fill="black" />
+      </svg>
+    )
+  },
   endCall(props) {
     return (
       <svg
@@ -287,10 +299,10 @@ export const Icons = {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-phone"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="lucide lucide-phone"
       >
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
       </svg>
@@ -482,7 +494,7 @@ export const Icons = {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        class="lucide lucide-chevron-down"
+        className="lucide lucide-chevron-down"
       >
         <path d="m6 9 6 6 6-6" />
       </svg>
@@ -691,8 +703,8 @@ export const Icons = {
   },
   reject(props) {
     return (
-      <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
 
 

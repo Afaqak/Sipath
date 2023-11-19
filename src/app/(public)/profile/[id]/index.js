@@ -47,6 +47,7 @@ export const MyProfile = ({ user, session }) => {
   const [openChat, setOpenChat] = useState(false)
   const [openAppointment, setOpenAppointment] = useState(false)
   const [loading, setLoading] = useState(false)
+  console.log(user?.user,"{with followers}")
 
   const handleMessageRequest = async (message, onClose) => {
 

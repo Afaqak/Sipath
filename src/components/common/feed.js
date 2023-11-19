@@ -6,14 +6,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 
 
 export const Feed = ({ feed, openModal, user }) => {
 
   const [bigImage, setBigImage] = useState(feed?.attached_images?.[0] || null);
-  console.log(feed.attached_images,bigImage)
 
   const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
@@ -42,7 +43,7 @@ export const Feed = ({ feed, openModal, user }) => {
             {user && +user?.id === +feed?.user?.id &&
               <DropdownMenuItem onClick={openModal} className="flex gap-2"><Icons.trash /> Delete</DropdownMenuItem>
             }
-            {/* <DropdownMenuSeparator /> */}
+            <DropdownMenuSeparator />
             <DropdownMenuItem>Report</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

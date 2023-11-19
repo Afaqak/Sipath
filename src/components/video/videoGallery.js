@@ -5,33 +5,35 @@ import { Video, LoadingSkeletons } from '@/components';
 import axios from '../../utils/index';
 import Image from 'next/image';
 
-export const VideoGallery = ({ title, customQuery }) => {
-  const [videos, setVideos] = useState([]);
+export const VideoGallery = ({ title,videos, customQuery }) => {
+  // const [videos, setVideos] = useState([]);
+  console.log(videos,"{videos}")
   const [limit, setLimit] = useState(6);
 
-  const fetchVideos = async () => {
+  // const fetchVideos = async () => {
   
-    try {
-      const queryParams = customQuery || 'type=all';
+  //   try {
+  //     const queryParams = customQuery || 'type=all';
 
-      const response = await axios.get(`/assets/videos?limit=${limit}&${queryParams}`);
-      console.log(response.data)
-      setVideos([...response.data]);
-    } catch (err) {
-      console.log(err);
-    } 
-  };
+  //     const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/videos?limit=${limit}&${queryParams}`);
+  //     const response=await request.json()
+  //     console.log(response,"{rd}")
+  //     setVideos([...response]);
+  //   } catch (err) {
+  //     console.log(err);
+  //   } 
+  // };
 
   const loadMore = () => {
     setLimit(limit + 6);
   };
 
-  useEffect(() => {
-    fetchVideos();
-  }, [limit]);
+  // useEffect(() => {
+  //   fetchVideos();
+  // }, [limit]);
 
   return (
-    <div className="pt-8 pb-8 overflow-visible relative w-[90%] mx-auto">
+    <div className="pt-8 pb-2 overflow-visible relative w-[90%] mx-auto">
       
       <Video videos={videos} title={title} load={true} />
       {
