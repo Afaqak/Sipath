@@ -9,21 +9,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { usePathname } from 'next/navigation';
 
 
 
-export const Feed = ({ feed, openModal, user }) => {
+export const Feed = ({ feed, openModal, user ,type,style='md:w-[70%] w-[90%] lg:w-[50%]'}) => {
+
 
   const [bigImage, setBigImage] = useState(feed?.attached_images?.[0] || null);
-
+  const path=usePathname()
+  const setPage=path.startsWith('/profile')
   const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
   };
 
+  console.log(user,feed?.user?.id)
+
 
   return (
 
-    <div className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+    <div className={`flex flex-col ${style} mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md`}>
       <div className="flex justify-between items-center ">
         <ProfileHoverCard user={feed?.user} >
           <div className='flex gap-2 '>
@@ -34,20 +39,24 @@ export const Feed = ({ feed, openModal, user }) => {
             </div>
           </div>
         </ProfileHoverCard>
-
+        {
+          !setPage &&
+        
         <DropdownMenu className="w-14 h-14">
           <DropdownMenuTrigger className="focus:outline-none outline-none">
             <Icons.elipsis stroke="black" width="20" className="rotate-90 transform" height="20" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {user && +user?.id === +feed?.user?.id &&
+            <>
               <DropdownMenuItem onClick={openModal} className="flex gap-2"><Icons.trash /> Delete</DropdownMenuItem>
-            }
             <DropdownMenuSeparator />
+            </>
+            }
             <DropdownMenuItem>Report</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
+        }
       </div>
       <div
         className="mt-2 text-gray-700"
@@ -67,8 +76,10 @@ export const Feed = ({ feed, openModal, user }) => {
             {feed?.attached_images && feed?.attached_images.length > 0 &&
               feed?.attached_images?.map((thumbnail, index) => (
                 <div className="relative" key={index}>
-                  <img
+                  <Image
                     key={index}
+                    width={50}
+                    height={50}
                     src={thumbnail}
                     alt={`Thumbnail ${index + 1}`}
                     className={`cursor-pointer min-w-[4rem] max-w-[4rem] h-[4rem] rounded-md object-contain transform border-2 mr-2 ${bigImage && bigImage === thumbnail ? 'border-main ' : ''

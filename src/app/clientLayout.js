@@ -1,23 +1,24 @@
 'use client';
 import { Navbar } from '@/components';
-import AuthProvider from '@/components/AuthProvider.js';
+import AuthProvider from '@/components/AuthProvider';
 import './globals.css';
 import { store } from '@/store/store';
 import { Provider } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 
 
-export default function ClientLayout({ children }) {
+
+export default function ClientLayout({ children ,session}) {
   return (
     <html lang="en">
       <body>
         <Provider store={store}>
           <main className={` app overflow-x-hidden bg-gray-100 min-h-screen`}>
-            <AuthProvider>
+            <AuthProvider session={session}>
               <Navbar />
               {children}
             </AuthProvider>
-            <Toaster  containerStyle={{zIndex:9999999}}/>
+            <Toaster style={{width:"95%"}} richColors position="bottom-right" />
           </main>
         </Provider>
       </body>

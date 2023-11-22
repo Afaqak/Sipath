@@ -3,7 +3,7 @@ import React, { Suspense, useState, useRef } from 'react';
 import { VideoComments, CreateComment } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import {
 
 import { useSession } from 'next-auth/react';
 import { selectPrimaryComments } from '@/utils/selectors';
+import { warningToast } from '@/utils/toasts';
 
 export const CommentsSection = () => {
   const [file, setFile] = useState(null);
@@ -24,6 +25,7 @@ export const CommentsSection = () => {
   const id = searchParams.get('id');
   const primaryComments = useSelector(selectPrimaryComments);
   const dispatch = useDispatch();
+  const router=useRouter()
 
   const onSuccess = () => {
     setFile(null);
@@ -33,6 +35,9 @@ export const CommentsSection = () => {
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
     try {
+      if (!user?.token){
+        return warningToast("Login to Comment",()=>router.push('/sign-in'))
+      }
       if (!text) return;
       const formdata = new FormData();
       formdata.append('comment', textWithoutImages);
@@ -53,6 +58,7 @@ export const CommentsSection = () => {
   };
   return (
     <div className=" mt-8">
+      
       <div className="justify-between font-bold text-lg mb-2 flex">
         <h2>{primaryComments?.length} comments</h2>
         <DropdownMenu>
@@ -66,6 +72,7 @@ export const CommentsSection = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+  
       <div className="bg-white p-4 rounded-md shadow-md">
         <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} />
         <VideoComments />

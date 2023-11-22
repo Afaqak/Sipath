@@ -13,9 +13,8 @@ const MyProfilePage = async ({ params }) => {
     }
 }
 
-  const session = await getServerSession(authOptions);
   const userData=await fetchUserProfile()
-  return <MyProfile user={userData} session={session} />;
+  return <MyProfile user={userData} />;
 };
 
 export default MyProfilePage;

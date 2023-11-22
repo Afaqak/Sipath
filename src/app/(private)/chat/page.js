@@ -1,18 +1,38 @@
-import React from 'react';
+const { getServerSession } = require("next-auth")
+const { default: Chat } = require(".")
+const { authOptions } = require("@/app/api/auth/[...nextauth]/route")
+const { fetchConversations } = require("@/features/chat/conversation/conversationThunk")
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
-import Chat from '.';
+const ChatPage = async () => {
 
-const MyProfilePage = async () => {
-  const session = await getServerSession(authOptions);
+  const session =await getServerSession(authOptions)
 
-  if (!session) {
-    redirect('/');
+
+  async function getUserConversations() {
+
+    if (!session?.token) return 
+    try {
+   
+      const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${session?.token}`
+        }
+      })
+      const response = await request.json()
+      console.log(response?.userChats)
+      return response?.userChats
+
+    } catch (err) {
+      console.log(err)
+    }
   }
 
-  return <Chat session={session} />;
-};
-
-export default MyProfilePage;
+  const convos=await getUserConversations()
+  return (
+    <div>
+      <Chat convos={convos} />
+    </div>
+  )
+}
+export default ChatPage

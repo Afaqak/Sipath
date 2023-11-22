@@ -1,12 +1,13 @@
 'use client'
 import { useSession } from 'next-auth/react'
 import React, { useRef, useState } from 'react'
-import { FileInput, SubjectDropDown, Icons, VideoUploadType } from '@/components'
+import { FileInput, SubjectDropDown, Icons, VideoUploadType, UploadStatusDisplay } from '@/components'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { successToast } from '@/utils/toasts'
 
 
 const NewVideo = () => {
@@ -54,9 +55,8 @@ const NewVideo = () => {
             },
 
             onUploadProgress: (progressEvent) => {
-          
                     const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    console.log(progress,"{progres}",index)
+                    
                     setValue(`videoBodies[${index}].progress`, progress);
                 
             },
@@ -64,11 +64,11 @@ const NewVideo = () => {
 
 
         try {
-            const response = await axios.post('/upload/video', formDataToSend, config);
-            console.log(response.data, "{response}")
+            await axios.post('/upload/video', formDataToSend, config);
+            successToast('video uploaded!')
 
         } catch (error) {
-            console.error('Error uploading video:', error);
+           
             errorToast('Error uploading video!');
 
         } finally {
@@ -79,8 +79,6 @@ const NewVideo = () => {
     const onSubmit = async (data) => {
         try {
 
-
-            console.log(data)
             for (const [index, video] of data.videoBodies.entries()) {
                 await uploadVideo(video, index);
             }
@@ -155,39 +153,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
             />
             <div className="bg-white p-4 gap-4 relative w-full mx-auto rounded-md shadow-md">
                 {isSubmitting && (
-                    <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
-                        <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
-                         
-                            <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
-                                <motion.span
-                                    initial={{ scale: 0.5 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ duration: 0.5 }}
-                                >
-                                    {watch(`${fieldName}[${index}].progress`) === 100 ? (
-                                        <motion.div
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ duration: 0.5 }}
-                                        >
-                                            Uploaded
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div><span className={`
-                                            ${watch(`${fieldName}[${index}].progress`)==='0'?'animate-ping':''}
-                                        `}>{watch(`${fieldName}[${index}].progress`)}</span></motion.div>
-                                    )}
-                                </motion.span>
-                            </motion.div>
-                            <button
-                                type="button"
-                              
-                                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition-colors duration-300"
-                            >
-                                Cancel Upload
-                            </button>
-                        </div>
-                    </div>
+                  <UploadStatusDisplay uploadProgress={watch(`${fieldName}[${index}].progress`)}/>
                 )}
 
                 <div className='flex justify-end'>

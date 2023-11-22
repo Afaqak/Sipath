@@ -37,7 +37,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
-
+  const router = useRouter()
   const onReplySubmit = (e) => {
     e.preventDefault();
 
@@ -46,11 +46,12 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
 
+
     try {
       const formdata = new FormData();
       formdata.append(
         'comment',
-        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id===comment?.author_id?user?.user?.display_name:comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${textWithoutImages}</div}`
       );
       formdata.append('image', file);
 
@@ -88,14 +89,19 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     }
   };
 
-  const handleIsReplying = () => setIsReplying(!isReplying);
+  const handleIsReplying = () => {
+    if (!user?.token) {
+      return router.push('/sign-in')
+    }
+    setIsReplying(!isReplying)
+  };
   return (
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
         <Link className="block" href={`/profile/${comment?.author_id}`}>
           <UserAvatar
             user={{
-              image:comment?.author_id===user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
+              image: comment?.author_id === user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
               name: comment?.user?.display_name || comment?.user?.first_name,
             }}
             className="h-8 w-8"

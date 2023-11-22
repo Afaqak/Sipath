@@ -1,6 +1,9 @@
-import { FeedSkeleton } from "@/utils/skeletons"
+import { FeedSkeleton, LoadingSkeletons } from "@/utils/skeletons"
 export default function Loading(){
     return(
-        <FeedSkeleton time={4} />
+        <div className="flex flex-col gap-4">
+        <FeedSkeleton time={1} />
+        <LoadingSkeletons times={3}/>
+        </div>
     )
 }

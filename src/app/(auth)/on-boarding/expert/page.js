@@ -12,7 +12,6 @@ const OnBoardingExpert = () => {
   const axios = useAxiosPrivate();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
- 
   const [categories, setCategories] = useState([]);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])

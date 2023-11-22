@@ -9,8 +9,9 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
 import { Icons } from '../icons';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
-export function ChatRequestModal({ isOpen, setIsOpen, handleSubmit, loading }) {
+export function ChatRequestModal({ isOpen, setIsOpen, handleSubmit, loading ,checkPrevious}) {
 
   const [message, setMessage] = useState('');
 
@@ -30,6 +31,8 @@ export function ChatRequestModal({ isOpen, setIsOpen, handleSubmit, loading }) {
           <DialogHeader>
             <DialogTitle>Send a Message Request!</DialogTitle>
           </DialogHeader>
+         
+          {checkPrevious && <DialogDescription className=' bg-subcolor2 text-white font-medium rounded-md px-2 py-1'>No Previous conversations!</DialogDescription>}
           <div className="mt-4">
             <input
               type="text"

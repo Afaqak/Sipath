@@ -1,5 +1,4 @@
 import React from 'react';
-import { ContentContainer, Video } from '@/components';
 import { VideoGallery } from '@/components/video/videoGallery';
 const Premium = async () => {
   const fetchVideos = async (customQuery) => {

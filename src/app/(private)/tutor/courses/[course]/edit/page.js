@@ -6,10 +6,6 @@ import EditPage from '.';
 const MyEdit = async () => {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect('/sign-in');
-  }
-
   return <EditPage session={session} />;
 };
 

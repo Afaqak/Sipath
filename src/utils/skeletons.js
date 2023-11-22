@@ -64,7 +64,7 @@ export const ExpertSkeleton = ({ times }) => (
 
 export const FeedSkeleton = ({ time }) => {
   return (
-    <div className='flex gap-2 flex-col w-full mx-auto'>
+    <div className='flex gap-6 flex-col w-full mx-auto'>
       {
         [...Array(time)].map((t) => (
           <div key={t} className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">

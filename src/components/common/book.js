@@ -10,28 +10,63 @@ import { DeleteModal } from './deleteModal';
 import { successToast, errorToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Icons } from '../icons';
-import { useRouter } from 'next/navigation';
-export const Book = ({ book, isProfile }) => {
+import { setBooks } from '@/features/book/bookSlice';
+import { useDispatch } from 'react-redux';
+export const Book = ({ book, token,isProfile ,user}) => {
   const axios = useAxiosPrivate();
-  const { data: user } = useSession();
+  const dispatch=useDispatch()
+
+  const fetchBooks = async () => {
+    try {
+      const response = await axios.get(`/assets/books/user/${user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(setBooks([]))
+      dispatch(setBooks(response.data));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(null);
-  const router = useRouter()
+
+    const getBook=async (id)=>{
+    try {
+      const response=await  axios.get(`/assets/books/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const signedUrl = response?.data?.signed_url;
+      console.log(signedUrl)
+     
+      if(signedUrl){
+       window.open(signedUrl,'_blank')
+      }
+    }catch(err){
+     console.log(err)
+    }
+  }
 
   const setAssetRating = async (newRating) => {
    
     try {
-      const response = await axios.post(
+    await axios.post(
         `/rate/${book?.id}?type=book`,
         {
           rating: newRating,
         },
         {
           headers: {
-            Authorization: `Bearer ${user?.token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
+      fetchBooks()
 
       successToast('You have rated the Video!');
     } catch (error) {
@@ -76,13 +111,13 @@ export const Book = ({ book, isProfile }) => {
           {/*account and stars*/}
           <div className="flex justify-between">
             <div className="flex gap-1 items-center text-sm">
-              <UserAvatar className="h-8 w-8" user={{ image: user?.user?.profile_image }} />
-              {user?.user?.display_name}
+              <UserAvatar className="h-8 w-8" user={{ image: user?.profile_image }} />
+              {user?.display_name}
             </div>
             {isProfile ? (
-              ''
-            ) : (
               <Stars rating={rating} setRating={handleRatingChange} initialRating={book?.rating} />
+              ) : (
+              ''
             )}
           </div>
           <div className="text-[0.8rem] md:text-sm line-clamp-4 mb-3 mt-2">
@@ -92,8 +127,8 @@ export const Book = ({ book, isProfile }) => {
         {isProfile ? (
           <div className="flex gap-4 w-full">
             <Button
-              onClick={() => router.push(`/book/view-book/${book?.id}`)}
-              variant="outline"
+              onClick={()=>getBook(book?.id)}
+              variant='outline'
               className="font-semibold bg-white text-subcolor3 justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor3"
             >
               <Image width={20} height={20} alt="bag" className='mt-1' src={'/svgs/visibility.svg'} />
@@ -122,7 +157,7 @@ export const Book = ({ book, isProfile }) => {
         )}
       </div>
       <EditBookModal book={book} isOpen={open} setIsOpen={setOpen} />
-      <DeleteModal />
+    
     </div>
   );
 };

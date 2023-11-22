@@ -25,21 +25,20 @@ const MyCourses = ({ session }) => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get(`/courses/all?limit=${limit}`, {
-                    headers: {
-                        Authorization: `Bearer ${session?.token}`,
-                    },
-                });
+                const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/all?limit=${limit}`);
+                if (session?.token) {
+                    const enrollmentsRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/enrollments`, {
+                        headers: {
 
-                const enrollmentsResponse = await axios.get('/courses/enrollments', {
-                    headers: {
+                            Authorization: `Bearer ${session?.token}`,
+                        },
+                    });
+                    const enrollmentsResponse=await enrollmentsRequest.json()
+                    setEnrollments(enrollmentsResponse?.enrollments)
+                }
+                const response=await request.json()
 
-                        Authorization: `Bearer ${session?.token}`,
-                    },
-                });
-
-                setCourses(response.data);
-                setEnrollments(enrollmentsResponse.data?.enrollments)
+                setCourses(response);
             } catch (err) {
                 console.log(err);
             }

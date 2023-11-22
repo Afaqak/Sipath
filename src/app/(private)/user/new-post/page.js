@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Icons } from '@/components';
-import { errorToast } from '@/utils/toasts';
+import { errorToast, successToast } from '@/utils/toasts';
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import('react-quill');
@@ -75,7 +75,7 @@ const NewPost = () => {
         }
       });
 
-      console.log('Response:', response.data);
+     successToast("Uploaded Post!")
       quillRef.current.value=""
       setSelectedImages([])
       setBigImage(null)
@@ -94,7 +94,7 @@ const NewPost = () => {
 
 
   return (
-    <div className="lg:w-[60%] mx-auto md:w-[80%]">
+    <div className="lg:w-[45%] mx-auto md:w-[70%]">
       <div className="mt-2 bg-white flex flex-col gap-4 p-4 rounded-md shadow-md">
         {loading && (
           <div className='w-full absolute bg-white bg-opacity-50 top-0 left-0 h-full flex items-center z-[2000] justify-center'>

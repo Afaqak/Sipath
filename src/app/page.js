@@ -4,6 +4,7 @@ import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from 
 import axios from '@/utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
 import { useSession } from 'next-auth/react';
+import { errorToast, successToast } from '@/utils/toasts';
 
 
 const Home = () => {
@@ -15,6 +16,7 @@ const Home = () => {
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
   const [categories, setCategories] = useState([])
+
 
 
   const premiumVideosRef = useRef(null);
@@ -78,10 +80,11 @@ const Home = () => {
     };
   }, []);
 
-
+ 
 
   return (
     <div className="">
+
       <div className="w-[90%] mx-auto" >
         {
           videos?.length > 0 && <Video videos={videos} />

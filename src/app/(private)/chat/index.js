@@ -10,21 +10,35 @@ import { RequestModal } from '@/components/chat/requestModal';
 import { socket } from '@/socket';
 import { AppointmentsModal } from '@/components/appointment/appointmentsModal';
 import { clearChat } from '@/features/chat/message/messageSlice';
+import { useSession } from 'next-auth/react';
+import { setConversations } from '@/features/chat/conversation/conversationSlice';
+import { useSearchParams } from 'next/navigation';
 
-const Chat = ({ session }) => {
+const Chat = ({convos}) => {
+    const [conversations,setConversations]=useState(convos || [])
+    const searchParams=useSearchParams()
   const dispatch = useDispatch();
-  const [selectedUser, setSelectedUser] = useState(null);
-  const conversations = useSelector((state) => state?.conversations?.conversations);
+  const convoId=searchParams.get('convo_id')
+  const [selectedUser, setSelectedUser] = useState(convoId || null);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const requests = useSelector((state) => state?.messageRequests?.messageRequests);
   const appointmentRequests = useSelector((state) => state?.appointments?.receivedAppointmentRequests);
   const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
-  // console.log(appointmentRequests,"{appointment Requests}")
-  // console.log(requests,"{requests}")
+ const {data:session}=useSession()
 
-  useEffect(() => {
-    dispatch(fetchConversations({ token: session?.token }));
-  }, []);
+ useEffect(() => {
+    if (convoId && conversations) {
+      const foundConversation = conversations?.find((conversation) => +conversation?.id === +convoId);
+      if (foundConversation) {
+        setSelectedUser(foundConversation);
+        socket.emit('join-chat', foundConversation?.id);
+        dispatch(clearChat());
+        dispatch(getMessagesByConversationId({ token: session?.token, id: foundConversation?.id }));
+      }
+    }
+  }, [convoId, conversations, dispatch, session]);
+    
+
   const handleUserClick = (conversation) => {
     setSelectedUser(conversation);
     socket.emit('join-chat', conversation?.id)
@@ -74,7 +88,7 @@ const Chat = ({ session }) => {
       >
         {selectedUser && <ChatScreen session={session} conversation={selectedUser} />}
       </div>
-      <RequestModal token={session?.token} isOpen={requestModalOpen} setIsOpen={setRequestModalOpen} />
+      <RequestModal setConversations={setConversations} token={session?.token} isOpen={requestModalOpen} setIsOpen={setRequestModalOpen} />
       <AppointmentsModal token={session?.token} isOpen={appointmentModalOpen} setIsOpen={setAppointmentModalOpen} />
     </div>
   );

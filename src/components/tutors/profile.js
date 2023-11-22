@@ -1,32 +1,17 @@
 'use client';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
-import { FileInput, Icons, Stars } from '@/components';
-import { useOutsideClick } from '@/hooks/useOutsideClick';
+import { Icons, Stars } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import axios from '../../utils/index'
-import { errorToast, successToast } from '@/utils/toasts';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogDescription,
-
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useSession } from 'next-auth/react';
+import { errorToast} from '@/utils/toasts';
+import { ActionButtons,ProfilePictureUpdate } from '@/components/profile';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -34,11 +19,6 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [rating, setRating] = useState(null);
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
-  const [showActions, setShowActions] = useState(false);
-  const actionRef = useRef();
-  const closeActions = () => {
-    setShowActions(false);
-  };
 
   const handleFollowUser = async () => {
 
@@ -115,7 +95,6 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
     setAssetRating(newRating);
   };
 
-  useOutsideClick(actionRef, closeActions);
   const isFollowing = user?.followers?.some(
     (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
@@ -135,7 +114,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   }, [])
 
   return (
-    <div className="mt-10 w-full justify-around relative shadow-md rounded-md p-4 grid grid-cols-4 gap-6">
+    <div className="mt-10 w-full  relative justify-around shadow-md rounded-md p-4 grid grid-cols-2 lg:grid-cols-4 gap-6">
       <div className="relative flex items-center justify-center col-span-1">
         <UserAvatar
           user={{ image: user?.profile_image, name: user?.display_name || '' }}
@@ -143,15 +122,16 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
         />
         {type === 'userprofile' && (
           <button
-            className={`font-bold  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
+            className={`font-bold  bottom-0 lg:bottom-[5px] text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
               } `}
             disabled={loading}
             onClick={handleFollowUser}
             style={{
               position: 'absolute',
-              bottom: '-5px',
+        
               left: '50%',
               transform: 'translateX(-50%)',
+              
             }}
           >
             {isFollowing ? (
@@ -237,157 +217,15 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
               <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <ActionButtons />
+              <ActionButtons user={user}/>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
       )}
       <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
     </div>
   );
 };
 
-const actionButtonsData = [
-  {
-    text: 'New Post',
-    href: '/user/new-post',
-    imageSrc: '/svgs/blueB.svg',
-    alt: 'post',
-    bgColor: 'bg-blue-500',
-  },
-  {
-    text: 'New Video',
-    href: '/tutor/video-upload',
-    imageSrc: '/svgs/videogreen.svg',
-    alt: 'video',
-    bgColor: 'bg-subcolor',
-  },
-  {
-    text: 'Chat',
-    href: '/chat',
-    imageSrc: '/svgs/messageblack.svg',
-    alt: 'message',
-    bgColor: 'bg-gray-500',
-  },
-  {
-    text: 'New Quiz',
-    href: '/tutor/new-quiz',
-    imageSrc: '/svgs/editblue.svg',
-    alt: 'message',
-    bgColor: 'bg-gray-500',
-  },
-  {
-    text: 'Add Book',
-    href: '/tutor/add-book',
-    imageSrc: '/svgs/book.svg',
-    alt: 'message',
-    bgColor: 'bg-gray-500',
-  },
-  {
-    text: 'New Podcast',
-    href: '/tutor/new-podcast',
-    imageSrc: '/svgs/podcasts.svg',
-    alt: 'message',
-    bgColor: 'bg-gray-500',
-  },
-];
-
-const ActionButtons = () => {
-  return (
-    <div className="grid grid-cols-2 flex-row text-sm">
-      {actionButtonsData.map((button, index) => (
-        <DropdownMenuItem key={index}>        
-          <Link
-          className={`border-2 border-${button.bgColor} w-full px-3 py-1 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent rounded`}
-          href={button.href}
-          key={index}
-        >
-          <Image
-            src={button.imageSrc}
-            className="w-4 h-4"
-            width={25}
-            height={25}
-            alt={button.alt}
-          />
-          <span className="hidden md:block">{button.text}</span>
-        </Link>
-        </DropdownMenuItem>
-
-      ))}
-    </div>
-  );
-}
 
 
-
-function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
-  const [loading, setLoading] = useState(false)
-  const [image, setImage] = useState(null);
-  const privateAxios = useAxiosPrivate()
-  const { data, update } = useSession()
-  const closeDialog = () => {
-    setIsOpen(false);
-  };
-  async function handleImageSubmit() {
-
-    const formDataToSend = new FormData()
-    formDataToSend.append('profile_image', image)
-
-    try {
-      setLoading(true)
-      if (image) {
-        const userResponse = await privateAxios.patch('/users/profile', formDataToSend, {
-          headers: {
-            'Authorization': `Bearer ${session?.token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-
-
-        successToast("Updated Profile Pic!")
-        const newSession = {
-          user: {
-            user: userResponse?.data?.user,
-            tutor: data?.tutor
-          },
-        };
-        await update(newSession);
-        closeDialog()
-      }
-    } catch (err) {
-      console.log(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // console.log("session check",session)
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen} className="profile-modal">
-      <DialogContent className="sm:max-w-[425px] shadow-md bg-white">
-        <DialogHeader className="text-xl font-semibold py-4 border-b">Update Profile Picture</DialogHeader>
-        <DialogDescription className="py-4">
-          {!image && (
-            <div className="text-center mb-4">
-              <UserAvatar className="w-28 h-28 mb-2" user={{ image: session?.user?.profile_image, name: session?.user?.display_name }} />
-            </div>
-          )}
-          {image && (
-            <div className="text-center mb-4">
-              <UserAvatar className="w-28 h-28 mb-2" user={{ image: URL.createObjectURL(image) }} />
-            </div>
-          )}
-          <FileInput file={image} setFile={setImage} />
-        </DialogDescription>
-        <DialogFooter className="flex justify-end p-4">
-          <Button disabled={loading} variant="outline" onClick={closeDialog}>Cancel</Button>
-          <Button disabled={loading} className=" px-4 py-2 flex gap-2 rounded" onClick={handleImageSubmit}>
-            {loading && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="white" /></span>}
-            Update</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}

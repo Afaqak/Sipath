@@ -10,23 +10,28 @@ import Link from 'next/link';
 
 const WatchVideo = ({ session }) => {
   const [selectedVideo, setSelectedVideo] = useState({});
-  const dispatch = useDispatch();
+
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  
+  const getVideo = async function () {
+    try{
+    const response = await axios.get(`/assets/video/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.token}`,
+      },
+    });
+    console.log(response?.data, "video")
+    setSelectedVideo(response.data);
+  }catch(err){
+    console.log(err)
+  }
+  };
 
 
   useEffect(() => {
-    const getVideo = async function () {
-      const response = await axios.get(`/assets/video/${id}`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      });
-      console.log(response?.data, "video")
-      setSelectedVideo(response.data);
-
-    };
+   
     getVideo();
   }, [id]);
 

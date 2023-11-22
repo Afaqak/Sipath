@@ -1,10 +1,7 @@
 'use client';
-import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { FileInput, VideoUploadType, SubjectDropDown } from '@/components';
-import axios from '@/utils/index'
-import { motion } from 'framer-motion';
+import { FileInput, VideoUploadType, SubjectDropDown, UploadStatusDisplay } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -15,9 +12,9 @@ import { useFieldArray, useForm, Controller, useFormState } from 'react-hook-for
 
 const VideoUpload = () => {
   const [sectionIds, setSectionIds] = useState([])
-  const [courseId,setCourseId]=useState(null)
-  const privateAxios=useAxiosPrivate()
-  const {data:user}=useSession()
+  const [courseId, setCourseId] = useState(null)
+  const privateAxios = useAxiosPrivate()
+  const { data: user } = useSession()
   const defaultVideo = {
     title: '',
     description: '',
@@ -45,7 +42,7 @@ const VideoUpload = () => {
     setValue,
     register,
     watch,
-
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -62,6 +59,55 @@ const VideoUpload = () => {
     control,
     name: 'sections',
   });
+
+  const handleRemoveVideo = (sectionIndex, videoIndex) => {
+    const currentSections = watch('sections');
+    const updatedSections = currentSections.map((section, index) =>
+      index === sectionIndex
+        ? {
+          ...section,
+          videos:
+            section.videos.length > 1 || sectionIndex !== 0
+              ? section.videos.filter((video, idx) => idx !== videoIndex)
+              : section.videos,
+        }
+        : section
+    );
+    setValue('sections', updatedSections);
+  };
+
+
+  const handleReset = () => {
+    reset({
+      sections: [
+        {
+          id: 'section-1',
+          title: '',
+          videos: [
+            {
+              title: '',
+              description: '',
+              subject: '',
+              thumbnail: null,
+              video: null,
+              duration: 0,
+              loading: false,
+              uploadProgress: 0,
+              quiz: null,
+              quiz_solution: null,
+            },
+          ],
+        },
+      ],
+      courseTopics: '',
+      courseThumbnail: null,
+      price: 0,
+      type: 'free',
+    });
+    setCourseId(null);
+    setSectionIds([]);
+  };
+
 
 
 
@@ -82,8 +128,84 @@ const VideoUpload = () => {
   };
 
 
-  async function uploadVideo(video, index, sectionIndex) {
 
+
+
+  const onSubmit = async (formData, sectionIndex) => {
+    try {
+      let cId = courseId;
+      let sId = sectionIds.slice();
+      cId = await createOrUpdateCourse(cId, formData);
+
+      sId[sectionIndex] = await createOrUpdateSection(cId, sectionIndex, formData.sections[sectionIndex].title);
+
+      await Promise.all(formData.sections[sectionIndex].videos.map((video, index) =>
+        uploadVideo(cId, sId[sectionIndex], video, index, sectionIndex)
+      ));
+
+      successToast('Submission successful!', '#1850BC');
+    } catch (error) {
+      console.error('Error during form submission:', error);
+
+    }
+  };
+
+  const createOrUpdateCourse = async (cId, formData) => {
+    try {
+      if (!courseId) {
+        const courseForm = new FormData();
+        courseForm.append('name', formData.courseTopics);
+        courseForm.append('thumbnail', formData.courseThumbnail);
+        if (formData.price && formData.price > 0) {
+          courseForm.append('price', formData.price);
+        }
+
+        const response = await privateAxios.post('/courses', courseForm, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+
+        successToast('Course added!', '#1850BC');
+        return response?.data?.course?.id;
+      }
+
+      return cId;
+    } catch (error) {
+      console.error('Error creating/updating course:', error);
+      errorToast('Error adding course!')
+      throw error;
+    }
+  };
+
+  const createOrUpdateSection = async (cId, sectionIndex, sectionTitle) => {
+    try {
+      if (!sectionIds[sectionIndex]) {
+        const response = await privateAxios.post(
+          `/courses/${cId}/section`,
+          { name: sectionTitle },
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+
+        successToast('Section added!', '#1850BC');
+        return response?.data?.section?.id;
+      }
+
+      return sectionIds[sectionIndex];
+    } catch (error) {
+      console.error('Error adding section:', error);
+      errorToast('Error adding section!')
+      throw error;
+    }
+  };
+
+
+  const uploadVideo = async (cId, sectionId, video, index, sectionIndex) => {
     const formDataToSend = new FormData();
     formDataToSend.append('video', video.video);
     formDataToSend.append('thumbnail', video.thumbnail);
@@ -98,130 +220,46 @@ const VideoUpload = () => {
         'Content-Type': 'multipart/form-data',
       },
       onUploadProgress: (progressEvent) => {
-
         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         setValue(`sections[${sectionIndex}].videos[${index}].uploadProgress`, progress);
-
       },
     };
 
-    try {
-      const response = await privateAxios.post('/upload/video', formDataToSend, config);
+    const response = await privateAxios.post('/upload/video', formDataToSend, config);
 
-      if (response.status === 200) {
+    if (response.status === 200) {
+      const videoId = response.data?.video?.id;
 
-        const videoId = response.data?.video?.id;
-
-        const addVideoResponse = await privateAxios.post(
-          `/courses/${cId}/section/${sId[sectionIndex]}/videos`,
-          { video_id: videoId },
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-
-        if (addVideoResponse.status === 200) {
-
-          successToast('Video Added to Section!', '#1850BC');
-        } else {
-
-        }
-      } else {
-        console.error('Error uploading video:', response.statusText);
-
-      }
-    } catch (error) {
-      console.error('Error uploading video:', error);
-      ;
-    } finally {
-    }
-  }
-
-
-
-
-  const onSubmit = async (formData, sectionIndex) => {
-    console.log(formData, sectionIndex);
-  
-    let cId = courseId
-    let sId = sectionIds.slice();
-    const section = formData.sections[sectionIndex];
-    const sectionVideos = formData.sections[sectionIndex].videos;
-  
-    const courseForm = new FormData();
-    if (!courseId) {
-    courseForm.append('name', formData.courseTopics);
-      courseForm.append('thumbnail', formData.courseThumbnail);
-      if (formData.price && formData.price > 0) {
-        courseForm.append('price', formData.price);
-      }
-  
-      try {
-        const response = await privateAxios.post('/courses', courseForm, {
+      const addVideoResponse = await privateAxios.post(
+        `/courses/${cId}/section/${sectionId}/videos`,
+        { video_id: videoId },
+        {
           headers: {
-            'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${user?.token}`,
           },
-        });
-  
-        successToast('Course added!', '#1850BC');
-        setCourseId(response?.data?.course?.id);
-        cId = response?.data?.course?.id;
-      } catch (error) {
-        console.error('Error adding course:', error);
+        }
+      );
+
+      if (addVideoResponse.status === 200) {
+        successToast('Video Added to Section!', '#1850BC');
+      } else {
+        console.error('Error adding video to section:', addVideoResponse.statusText);
+        errorToast('Error adding video to section')
       }
-    }
-  
-    if (courseId && !sId[sectionIndex]) {
-      try {
-        const response = await privateAxios.post(
-          `/courses/${cId}/section`,
-          {
-            name: section.title,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        sId[sectionIndex] = response?.data?.section?.id;
-  
-        successToast(`Section Added!`, '#1850BC');
-  
-        setSectionIds(sId);
-      } catch (error) {
-        console.error('Error adding section:', error);
-      }
-    }
-  
-    try {
-      for (const [index, video] of sectionVideos.entries()) {
-        await uploadVideo(video, index, sectionIndex);
-      }
-    } catch (error) {
-      console.error('Error uploading videos:', error);
+    } else {
+      console.error('Error uploading video:', response.statusText);
+      errorToast('Error uploading video')
     }
   };
-  
-
-
-  // const onSubmit = async (data) => {
-  //   try {
-  //     console.log(data);
-
-  //   } catch (error) {
-  //     console.error('Error uploading courses:', error.message);
-  //   }
-  // };
 
 
   return (
 
     <div className=' w-full my-16'>
-      <div className='md:w-[60%]  flex flex-col gap-4 mx-auto overflow-hidden'>
+      <div className='md:w-[60%]  flex flex-col gap-4 px-4 mx-auto overflow-hidden'>
+        <div className='w-full flex justify-end'>
+          <Button className='bg-subcolor2 hover:bg-red-600' onClick={handleReset}>Reset</Button>
+        </div>
         <Controller
           name={`type`}
           control={control}
@@ -232,9 +270,9 @@ const VideoUpload = () => {
         />
         <CourseTopic register={register} control={control} />
         {fields?.map((section, sectionIndex) => (
-          <div key={section.id}>
+          <div key={sectionIndex}>
             <div className="relative mb-6">
-              <div className="p-4 flex flex-col relative bg-white mb-4 shadow-lg rounded-md">
+              <div className="p-4 flex justify-between items-center relative bg-white mb-4 shadow-lg rounded-md">
                 <div className="flex flex-row items-center gap-4 text-[#616161] font-light">
                   <label className="text-sm uppercase text-[#616161] font-light">SECTION TITLE</label>
                   <input
@@ -243,20 +281,24 @@ const VideoUpload = () => {
                     className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
                   />
                 </div>
+
+                <div onClick={()=>remove({})} className='h-5 w-fit rounded-full bg-slate-200 flex items-center justify-center '>
+                  <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" />
+                </div>
               </div>
             </div>
             <div className='flex gap-4 flex-col'>
               {section?.videos?.map((video, videoIndex) => (
-                <div key={video.id} className='flex flex-col gap-4'>
+                <div key={videoIndex} className='flex flex-col gap-4'>
                   <VideoBody
                     isSubmitting={isSubmitting}
                     register={register}
                     watch={watch}
-                    handleAddSection={handleAddSection}
+                    handleAddVideo={() => handleAddVideo(sectionIndex)}
                     errors={errors}
                     control={control}
                     fieldName={`sections[${sectionIndex}].videos`}
-                    removeVideo={() => remove(videoIndex, sectionIndex)}
+                    removeVideo={() => handleRemoveVideo(sectionIndex, videoIndex)}
                     setValue={setValue}
                     sectionIndex={sectionIndex}
                     videoIndex={videoIndex}
@@ -267,34 +309,31 @@ const VideoUpload = () => {
             </div>
 
             <div className='w-full flex justify-end mt-4'>
-              <Button className='' type="button" onClick={handleSubmit((data) => onSubmit(data, sectionIndex))} disabled={isSubmitting}>
+              <Button className='flex gap-2 items-center' type="button" onClick={handleSubmit((data) => onSubmit(data, sectionIndex))} disabled={isSubmitting}>
+                {isSubmitting && <span className='animate-spin'><Icons.Loader2 stroke="white" width='20' height='20' /></span>}
                 {isSubmitting ? 'Submitting...' : 'Submit Section'}
               </Button>
             </div>
 
-            <div className='w-full mt-6 flex justify-center'>
-              <button
-                onClick={() => {
-                  handleAddVideo(sectionIndex)
-                }}
-                className="text-white mt-5 w-full  self-center flex justify-center items-center"
-              >
-                <Image
-                  src={'/svgs/add_video.svg'}
-                  alt="add_video"
-                  width={35}
-                  height={35}
-                />
-              </button>
-            </div>
           </div>
         ))}
-
-        <div className='w-full flex justify-end'>
-          <Button className='' type="button" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit Videos'}
-          </Button>
+        <div className='w-full mt-6 flex justify-center'>
+          <button
+            onClick={() => {
+              handleAddSection()
+            }}
+            className="text-white mt-5 w-full  self-center flex justify-center items-center"
+          >
+            <Image
+              src={'/svgs/add_video.svg'}
+              alt="add_video"
+              width={35}
+              height={35}
+            />
+          </button>
         </div>
+
+
       </div>
     </div>
 
@@ -304,7 +343,12 @@ export default VideoUpload;
 
 
 
-const VideoBody = ({ control, index, handleAddSection, setValue, watch, fieldName, errors, removeVideo, videoIndex, sectionIndex, isSubmitting }) => {
+
+
+
+
+
+const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName, errors, removeVideo, videoIndex, sectionIndex, isSubmitting }) => {
 
   const inputRef = useRef(null)
   const videoRef = useRef(null);
@@ -315,46 +359,15 @@ const VideoBody = ({ control, index, handleAddSection, setValue, watch, fieldNam
       <div className=' '>
 
         {isSubmitting && (
-          <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
-            <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
+          <UploadStatusDisplay uploadProgress={watch(`${fieldName}[${videoIndex}].uploadProgress`)} />
 
-              <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
-                <motion.span
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {watch(`${fieldName}[${videoIndex}].uploadProgress`) === 100 ? (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      Uploaded
-                    </motion.div>
-                  ) : (
-                    <motion.div><span className={`
-                                          ${watch(`${fieldName}[${videoIndex}].uploadProgress`) === '0' ? 'animate-pulse' : ''}
-                                      `}>{watch(`${fieldName}[${videoIndex}].uploadProgress`)}</span></motion.div>
-                  )}
-                </motion.span>
-              </motion.div>
-              <button
-                type="button"
-
-                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition-colors duration-300"
-              >
-                Cancel Upload
-              </button>
-            </div>
-          </div>
         )}
 
         <div className='flex gap-2 justify-end items-center mb-4'>
           <div onClick={removeVideo} className='h-5 w-fit rounded-full bg-slate-200 flex items-center justify-center '>
             <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" />
           </div>
-          <Icons.addTitle onClick={handleAddSection} className="w-6 h-6 cursor-pointer" />
+          <Icons.addTitle onClick={handleAddVideo} className="w-6 h-6 cursor-pointer" />
           <Icons.info className="w-[1.45rem] cursor-pointer h-[1.42rem]" />
         </div>
         <div className="flex flex-col lg:flex-row justify-between gap-8">
