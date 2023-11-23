@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export default withAuth(
     function middleware(request) {
-        console.log(request.nextauth.token.user, ":token")
+
         if (request.nextUrl.pathname.startsWith('/tutor/new-course')  && !request.nextauth.token.user?.isTutor) {
             return NextResponse.rewrite(
                 new URL(
@@ -18,7 +18,9 @@ export default withAuth(
 
     }, {
     callbacks: {
-        authorized: ({ req, token }) => !!token
+        authorized: ({ req, token }) => {
+            console.log(token.token,"auth")
+            !!token.token}
     }
 }
 )
