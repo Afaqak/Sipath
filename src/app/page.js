@@ -84,7 +84,7 @@ const Home = () => {
 
   return (
     <div className="">
-<Icons.colorLoader/>
+
       <div className="w-[90%] mx-auto" >
         {
           videos?.length > 0 && <Video videos={videos} />
