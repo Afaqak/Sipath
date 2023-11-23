@@ -18,19 +18,13 @@ export default withAuth({
     }
 
 }, {
-    callbacks: {
-        authorized: ({ req, token }) => {
-            console.log(token.token, "auth")
-            return !!token.token
-        }
-    }
+  
 }
 )
 
 
 export const config = {
-    matcher: ['/chat',
-        '/tutor/new-course', '/tutor/new-quiz', '/user/new-post/:path*', '/user/new-video', '/my-profile']
+    matcher: []
 }
 
 
