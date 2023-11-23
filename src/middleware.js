@@ -26,7 +26,7 @@ export default withAuth(
 
 export const config = {
     matcher: ['/chat',
-    '/tutor/new-course','/tutor/new-quiz','/user/new-post','/user/new-video','/my-profile','/on-boarding/:path*']
+    '/tutor/new-course','/tutor/new-quiz','/user/new-post/:path*','/user/new-video','/my-profile']
 }
 
 
