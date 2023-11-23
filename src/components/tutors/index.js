@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { Icons, Quiz, formatTimeAgo } from "@/components";
+import { Icons, Quiz } from "@/components";
 import { setQuizes } from "@/features/quiz/quizSlice";
 import { useDispatch, useSelector } from "react-redux";
 import UserAvatar from "../common/userAvatar";
 import useFetch from "@/hooks/useFetch";
 import Image from "next/image";
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+
 
 export const MyCourses = ({ user, url, dataKey = 'courses' }) => {
     const { data } = useFetch(url, {
@@ -28,6 +30,7 @@ export const MyCourses = ({ user, url, dataKey = 'courses' }) => {
 
 
 export const CourseCard = ({ course, user, type = "course" }) => {
+    const formattedTimeAgo=useFormattedTimeAgo(course?.createdAt)
     const newHref = type === 'learning' ? `/courses/${course?.id}` : `/tutor/courses/${course?.id}`
     return (
         <Link
@@ -60,7 +63,7 @@ export const CourseCard = ({ course, user, type = "course" }) => {
                         <span>{user?.display_name}</span>
                     </div>
                     <div className="flex items-center text-sm gap-2 text-gray-700">
-                        <span>{formatTimeAgo(course.createdAt)}</span>
+                        <span>{course && formattedTimeAgo}</span>
                         <span>&bull;</span>
                     </div>
                 </div>

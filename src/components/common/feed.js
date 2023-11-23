@@ -1,7 +1,7 @@
-import React, { useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import UserAvatar from './userAvatar';
-import { Icons, formatTimeAgo, ProfileHoverCard } from '..';
+import { Icons, ProfileHoverCard, CreateComment } from '..';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,21 +9,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { usePathname } from 'next/navigation';
+import { usePathname} from 'next/navigation';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import 'react-quill/dist/quill.snow.css';
+import Link from 'next/link';
+import { CommentSectionFeed } from '../feed';
 
 
+export const Feed = ({ feed, openModal, user, style = 'md:w-[70%] w-[90%] lg:w-[50%]' }) => {
 
-export const Feed = ({ feed, openModal, user ,type,style='md:w-[70%] w-[90%] lg:w-[50%]'}) => {
-
-
+  const formattedTimeAgo = useFormattedTimeAgo(feed?.createdAt)
+  const [toggleComment, setCommentToggle] = useState(false)
   const [bigImage, setBigImage] = useState(feed?.attached_images?.[0] || null);
-  const path=usePathname()
-  const setPage=path.startsWith('/profile')
+  const path = usePathname()
+  const setPage = path.startsWith('/profile')
+
   const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
   };
 
-  console.log(user,feed?.user?.id)
+
+
+
 
 
   return (
@@ -35,27 +42,36 @@ export const Feed = ({ feed, openModal, user ,type,style='md:w-[70%] w-[90%] lg:
             <UserAvatar className="w-8 h-8" user={{ image: feed.user?.profile_image, name: feed.user?.display_name }} />
             <div className="flex uppercase text-subcolor3 font-medium text-[0.7rem] flex-col">
               <span className="">{feed?.user?.display_name}</span>
-              <span className="">{formatTimeAgo(feed.createdAt)}</span>
+              <span className="">{feed && formattedTimeAgo}</span>
             </div>
           </div>
         </ProfileHoverCard>
         {
           !setPage &&
-        
-        <DropdownMenu className="w-14 h-14">
-          <DropdownMenuTrigger className="focus:outline-none outline-none">
-            <Icons.elipsis stroke="black" width="20" className="rotate-90 transform" height="20" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {user && +user?.id === +feed?.user?.id &&
-            <>
-              <DropdownMenuItem onClick={openModal} className="flex gap-2"><Icons.trash /> Delete</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            </>
-            }
-            <DropdownMenuItem>Report</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+          <DropdownMenu className="w-14 h-14">
+            <DropdownMenuTrigger className="focus:outline-none outline-none">
+              <Icons.elipsis stroke="black" width="20" className="rotate-90 transform" height="20" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {user && +user?.id === +feed?.user?.id &&
+                <>
+                  <DropdownMenuItem onClick={openModal} className="flex gap-2"><Icons.trash /> Delete</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              }
+              {user && +user?.id === +feed?.user?.id &&
+                <>
+                  <DropdownMenuItem className="flex gap-2"><Icons.edit className='h-4 w-4 stroke-subcolor' stroke='black' />
+                    <Link href={`/user/post/edit/${feed?.id}`}>Edit</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              }
+
+              <DropdownMenuItem>Report</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         }
       </div>
       <div
@@ -91,15 +107,15 @@ export const Feed = ({ feed, openModal, user ,type,style='md:w-[70%] w-[90%] lg:
           </div>
         </div>
       )}
-      <div className="flex justify-end">
-        <Image src={'/svgs/Message square.svg'} width={10} height={10} className="w-5 cursor-pointer h-5" />
+      <div className={`flex justify-end pb-2`} onClick={() => setCommentToggle(!toggleComment)}>
+        <Icons.chat className='w-5 h-5 cursor-pointer' />
+
       </div>
+      {toggleComment && <CommentSectionFeed itemId={feed?.id} session={user} type={'post'} />
+      }
+
     </div>
 
   );
 };
-
-
-
-
 

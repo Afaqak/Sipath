@@ -1,13 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { ContentContainer, ArchivedPodcast, UpcomingPodcast ,formatTimeAgo} from '@/components';
+import { ContentContainer, ArchivedPodcast, UpcomingPodcast } from '@/components';
 import axios from '@/utils/index'
 import { useSession } from 'next-auth/react';
 import { Icons } from '@/components';
 import UserAvatar from '@/components/common/userAvatar';
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 
 const PodcastPage = () => {
@@ -93,6 +93,7 @@ const PodcastPage = () => {
 export default PodcastPage;
 
 const PodcastVideos = ({ podcasts }) => {
+
   return (
     <div className="grid grid-cols-1 py-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4">
       {podcasts.map((podcast) => (
@@ -102,7 +103,9 @@ const PodcastVideos = ({ podcasts }) => {
   );
 };
 
-const PodcastItem = ({ podcast }) => {
+const PodcastItem = ({ podcast }) => {  
+   const formattedTimeAgo=useFormattedTimeAgo(podcast?.createdAt)
+
   return (
     <Link
       href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
@@ -140,7 +143,7 @@ const PodcastItem = ({ podcast }) => {
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{podcast?.views} views</span>
             <span>&bull;</span>
-            <span>{formatTimeAgo(podcast.createdAt)}</span>
+            <span>{podcast && formattedTimeAgo}</span>
             <span>&bull;</span>
             <div className="flex items-center">
               {podcast?.rating}{' '}

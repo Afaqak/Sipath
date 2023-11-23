@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Stars } from '../common/5star';
-import { Icons, formatTimeAgo } from '..';
+import { Icons } from '..';
 import { errorToast, successToast, warningToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import UserAvatar from '../common/userAvatar';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 
 
@@ -41,10 +42,11 @@ const ActionButton = ({ icon, text }) => {
 };
 
 const TagsAndDescription = ({ description, createdAt }) => {
+  const formattedTimeAgo=useFormattedTimeAgo(createdAt)
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span>
+        <span>24k views</span> . <span>{formattedTimeAgo}</span>
       </div>
       <p>{description}</p>
     </div>

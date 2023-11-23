@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from '@/components';
+import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video, Icons } from '@/components';
 import axios from '@/utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
 import { useSession } from 'next-auth/react';
@@ -84,7 +84,7 @@ const Home = () => {
 
   return (
     <div className="">
-
+<Icons.colorLoader/>
       <div className="w-[90%] mx-auto" >
         {
           videos?.length > 0 && <Video videos={videos} />

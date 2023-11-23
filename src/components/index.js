@@ -58,7 +58,6 @@ export { TranslationToggleButton } from './common/translateRadioButton';
 export { CommentsSection } from './comment/commentsSection';
 export { VideoComment } from './comment/videoComment';
 export { RepliesList } from './comment/repliesList';
-export { formatTimeAgo } from '@/utils';
 export { LoadingSkeletons } from '@/utils/skeletons';
 export { VideoandThumbnail } from './video/videoAndThumbnail';
 export { QuizUploadColumn } from './video/quizUploadColumn';

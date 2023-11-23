@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '@/components/common/userAvatar';
-import { ProfileHoverCard, formatTimeAgo, DeleteModal, Icons } from '@/components';
+import { ProfileHoverCard,  DeleteModal, Icons } from '@/components';
 import { useState, useRef } from 'react';
 import { VideoEditModal } from './editVideoModal';
 
@@ -13,10 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo }) => {
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
+  const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt);
 
   return (
     <div
@@ -95,7 +97,7 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{video && video?.views} views</span>
             <span>&bull;</span>
-            <span>{formatTimeAgo(video && video.createdAt)}</span>
+            <span>{video && formattedTimeAgo}</span>
             <span>&bull;</span>
             <div className="flex items-center">
               {

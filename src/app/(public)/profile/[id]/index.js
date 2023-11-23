@@ -88,12 +88,12 @@ export const MyProfile = ({ user }) => {
         {
           user?.user?.isTutor ?
             <UniversalTab
-              tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-6'}
+              tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-5'}
               active={active}
               tabs={tutorTabs}
               setActive={setActive}
             /> : <UniversalTab
-              tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-4'}
+              tabStyle={'grid grid-cols-2 gap-4 md:grid-cols-3'}
               active={active}
               tabs={userTabs}
               setActive={setActive}

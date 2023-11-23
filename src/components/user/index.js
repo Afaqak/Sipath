@@ -9,6 +9,7 @@ import { errorToast,successToast } from "@/utils/toasts";
 import { useRouter } from "next/navigation";
 import { setBooks } from "@/features/book/bookSlice";
 import { DeleteFeedModal } from "@/components";
+import { VideoItemFeed } from "../feed";
 
 
 export const MyFeed = ({ session }) => {
@@ -59,15 +60,16 @@ export const MyFeed = ({ session }) => {
   
   
     return (
-        <div className="mx-auto grid grid-cols-3 place-content-center  my-6 flex-col gap-6">
+        <div className="mx-auto grid grid-cols-1 place-content-center  my-6 flex-col gap-6">
           {feeds.map((feedItem, index) => {
             return (
               <React.Fragment key={feedItem?.id || index}>
                 {feedItem.type === 'post' ? (
-                <div className="col-span-3">
+                <div className="">
                 <Feed
-                  style="md:w-[70%] w-[90%] lg:w-[60%]"
+                  style="md:w-[70%] w-[90%] lg:w-[50%]"
                   key={feedItem?.id}
+                  type={'post'}
                   feed={{
                     user: {
                       display_name: feedItem && feedItem['user.display_name'],
@@ -86,8 +88,8 @@ export const MyFeed = ({ session }) => {
                 />
                 </div>
                 ) : (
-                  <div className="">
-                  <VideoItem key={feeds[index]?.id} video={feeds[index]} />
+                  <div className="w-[70%] mx-auto">
+                  <VideoItemFeed key={feeds[index]?.id} video={feeds[index]} />
                    
                   </div>
                 )}
@@ -199,7 +201,6 @@ export const MyFeed = ({ session }) => {
             Authorization: `Bearer ${token}`,
           },
         }); 
-        console.log(response?.data)
 
 
         dispatch(setBooks([]))

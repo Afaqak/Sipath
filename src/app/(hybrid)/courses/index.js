@@ -1,12 +1,13 @@
 'use client'
 
-import { ContentContainer, ProfileHoverCard, formatTimeAgo } from "@/components"
+import { ContentContainer, ProfileHoverCard } from "@/components"
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import UserAvatar from "@/components/common/userAvatar"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
+import { useFormattedTimeAgo } from "@/hooks/useFormattedTimeAgo"
 const CoursePage = ({ session }) => {
 
     return (<ContentContainer>
@@ -78,7 +79,7 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session, enrollments }) => {
-
+   const formattedTimeAgo=useFormattedTimeAgo(course?.createdAt)
     const isEnrolled = enrollments.some(
         (enrollment) => enrollment?.course?.id === course.id
     );
@@ -121,7 +122,7 @@ const CourseCard = ({ course, session, enrollments }) => {
                         <span>{course?.tutor?.user?.display_name}</span>
                     </div>
                     <div className="flex items-center text-sm gap-2 text-gray-700">
-                        <span>{formatTimeAgo(course.createdAt)}</span>
+                        <span>{course && formattedTimeAgo}</span>
                     </div>
                 </div>
             </div>

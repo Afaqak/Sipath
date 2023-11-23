@@ -122,7 +122,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
         />
         {type === 'userprofile' && (
           <button
-            className={`font-bold  bottom-0 lg:bottom-[5px] text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
+            className={`font-bold  bottom-0  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
               } `}
             disabled={loading}
             onClick={handleFollowUser}

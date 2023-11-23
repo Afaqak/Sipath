@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { DeleteModal, LoadingSkeletons, Video, Icons, formatTimeAgo } from '@/components';
+import { DeleteModal, LoadingSkeletons, Icons } from '@/components';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import { VideoEditModal } from '@/components/video/editVideoModal';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useRouter, useParams } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 const EditPage = ({ session }) => {
   const axios = useAxiosPrivate();
@@ -657,7 +658,7 @@ export const VideoItem = ({
   const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const axios = useAxiosPrivate();
-
+  const formattedTimeAgo=useFormattedTimeAgo(video?.createdAt)
   const onDeleteSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -766,7 +767,7 @@ export const VideoItem = ({
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{video?.views} views</span>
             <span>&bull;</span>
-            <span>{formatTimeAgo(video.createdAt)}</span>
+            <span>{ video && formattedTimeAgo}</span>
             <span>&bull;</span>
             <div className="flex items-center">
               {video?.rating}{' '}

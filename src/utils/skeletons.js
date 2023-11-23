@@ -15,6 +15,40 @@ export const LoadingSkeletons = ({ times }) => (
     ))}
   </div>
 );
+export const LoadingCommentsSkeleton = ({ times = 3 }) => (
+  <div className="py-8 grid  gap-4">
+    {[...Array(times)].map((_, idx) => (
+      <div key={idx} className="bg-white rounded-md p-4 shadow-md">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+export const LoadingQuillSkeleton = () => (
+  < div className = 'flex absolute top-0 left-0 rounded-md gap-4 p-2 h-full z-[5000] bg-white w-full' >
+      <Skeleton className="w-14 h-12 rounded-full" />
+      <div className='flex flex-col gap-2 w-full'>
+        <div className='flex gap-6'>
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+        </div>
+        <div className='flex flex-col gap-4 w-full'>
+          <Skeleton className="h-4 w-[20rem] rounded-full" />
+          <Skeleton className="w-[24rem] h-4 rounded-full" />
+          <Skeleton className="w-full h-4 rounded-full" />
+        </div>
+      </div>
+    </div >
+)
 
 
 export const BookSkeleton = ({ times }) => (
@@ -71,7 +105,7 @@ export const FeedSkeleton = ({ time }) => {
             <div className='flex items-center gap-2'>
               <Skeleton className="h-10 w-10 rounded-full mb-2" />
               <Skeleton className="h-4 w-20 rounded-full mb-2" />
-              
+
             </div>
             <Skeleton className="rounded-full h-4 w-full" />
             <Skeleton width={60} className="mt-2 aspect-video w-full" />

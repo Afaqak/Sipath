@@ -52,7 +52,8 @@ export const Navbar = () => {
     setNav(false);
   }, [pathname]);
 
-  const links = [
+  const signedInlinks = [
+    { href: '/feed', label: 'Feed' },
     { href: '/videos', label: 'Videos' },
     { href: '/premium', label: 'Premium' },
     { href: '/podcast', label: 'Podcast' },
@@ -60,8 +61,18 @@ export const Navbar = () => {
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
     { href: '/courses', label: 'Courses' },
-    { href: '/feed', label: 'Feed' },
   ];
+  const signedOutLinks = [
+    { href: '/videos', label: 'Videos' },
+    { href: '/premium', label: 'Premium' },
+    { href: '/podcast', label: 'Podcast' },
+    { href: '/experts', label: 'Experts' },
+    { href: '/categories', label: 'Categories' },
+    { href: '/practice', label: 'Practice' },
+    { href: '/courses', label: 'Courses' },
+  ];
+
+  const linksToShow=user?.token?signedInlinks:signedOutLinks
 
   return (
     <>
@@ -74,7 +85,7 @@ export const Navbar = () => {
             <Image alt="logo" className="" src="/logo.png" width={80} height={45} />
           </div>
           <ul className="flex items-center gap-4 ml-4 font-semibold">
-            {links.map((link) => (
+            {linksToShow.map((link) => (
               <button
                 key={link.href}
                 onClick={() => router.push(link.href)}

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import { LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
+import { LoadingSkeletons, Icons } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
@@ -295,6 +296,9 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
   const axios = useAxiosPrivate();
   const { data: user } = useSession();
   const [toggleMenu, setToggleMenu] = useState(false);
+   
+  const formattedTimeAgo=useFormattedTimeAgo(video?.createdAt)
+
   const onDeleteSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -363,7 +367,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{video?.views} views</span>
             <span>&bull;</span>
-            <span>{formatTimeAgo(video.createdAt)}</span>
+            <span>{video && formattedTimeAgo}</span>
             <span>&bull;</span>
             <div className="flex items-center">
               {video?.rating}{' '}

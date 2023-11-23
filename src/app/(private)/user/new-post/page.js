@@ -87,15 +87,8 @@ const NewPost = () => {
   };
 
 
-
-
-  
-
-
-
   return (
-    <div className="lg:w-[45%] mx-auto md:w-[70%]">
-      <div className="mt-2 bg-white flex flex-col gap-4 p-4 rounded-md shadow-md">
+    <div className="lg:w-[45%] relative mx-auto md:w-[70%]">
         {loading && (
           <div className='w-full absolute bg-white bg-opacity-50 top-0 left-0 h-full flex items-center z-[2000] justify-center'>
             <span className='animate-spin'>
@@ -103,6 +96,7 @@ const NewPost = () => {
             </span>
           </div>
         )}
+      <div className="mt-2 bg-white flex flex-col gap-4 p-4 rounded-md shadow-md">
 
         <h1 className="text-2xl font-semibold mb-4 border-b pb-2">New Post</h1>
 
