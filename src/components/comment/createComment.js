@@ -22,13 +22,13 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const quillRef = useRef();
   const [showQuill, setShowQuill] = useState(false);
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      setShowQuill(true);
-    }, 2000); 
+  // useEffect(() => {
+  //   const delay = setTimeout(() => {
+  //     setShowQuill(true);
+  //   }, 2000); 
 
-    return () => clearTimeout(delay);
-  }, []);
+  //   return () => clearTimeout(delay);
+  // }, []);
 
   const handleChange = (editor) => {
     setText(editor);
@@ -78,7 +78,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
-      {!showQuill ? <LoadingQuillSkeleton /> : null}
+      {/* {!showQuill ? <LoadingQuillSkeleton /> : null} */}
       <UserAvatar
         user={{
           image: user?.user?.profile_image,
@@ -86,7 +86,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
         }}
         className="h-10 w-10 self-start"
       />
-      {showQuill && (
+      {/* {showQuill && ( */}
         <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
           <QuillNoSSRWrapper
             forwardedRef={quillRef}
@@ -95,7 +95,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
             className="w-full"
           />
         </div>
-      )}
+      {/* )} */}
       {!reply && (
         <button type="submit">
           <Icons.comment />
