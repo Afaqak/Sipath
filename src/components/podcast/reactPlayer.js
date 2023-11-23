@@ -19,13 +19,13 @@ class NextButton extends videojs.getComponent('Button') {
   }
 
   handleClick(event) {
-   
+
   }
 }
 
 videojs.registerComponent('NextButton', NextButton);
 
-const ContentPlayer = ({ noPremium, token }) => {
+const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
   const searchParams = useSearchParams();
   const axios = useAxiosPrivate();
   const videoId = searchParams.get('id')
@@ -43,57 +43,89 @@ const ContentPlayer = ({ noPremium, token }) => {
     sources: [],
   };
 
+  console.log(selectedVideo?.signed_url, "{}")
+
   useEffect(() => {
 
     setIsClient(true);
 
-    const fetchVideoData = async () => {
-    
-      try {
-        const response = await axios.get(`/assets/video/${videoId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-   
-        setVideo(response.data)
-        console.log(response?.data,"for video")
-        videoJsOptions.sources = [
-          {
-            src: response?.data?.signed_url,
-            type: 'video/mp4',
-          },
-        ];
+    // const fetchVideoData = async () => {
 
-        if (playerRef.current) {
-          const player = videojs(playerRef.current, videoJsOptions);
+    //   try {
+    //     const response = await axios.get(`/assets/video/${videoId}`, {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
 
-          const controlBar = player.getChild('controlBar');
+    //     setVideo(response.data)
+    //     console.log(response?.data,"for video")
+    //     videoJsOptions.sources = [
+    //       {
+    //         src: response?.data?.signed_url,
+    //         type: 'video/mp4',
+    //       },
+    //     ];
 
-          if (!player.getChild('controlBar').getChild('NextButton')) {
-          
-            const nextButton = controlBar.addChild('NextButton', {}, 1);
-            controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
-          }
-          player.src(videoJsOptions.sources);
-          player.poster(response?.data?.asset?.thumbnail)
+    //     if (playerRef.current) {
+    //       const player = videojs(playerRef.current, videoJsOptions);
 
+    //       const controlBar = player.getChild('controlBar');
+
+    //       if (!player.getChild('controlBar').getChild('NextButton')) {
+
+    //         const nextButton = controlBar.addChild('NextButton', {}, 1);
+    //         controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
+    //       }
+    //       player.src(videoJsOptions.sources);
+    //       player.poster(response?.data?.asset?.thumbnail)
+
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching video data:', error);
+    //   }
+
+    // };
+
+    // fetchVideoData();
+
+    function setPlayer() {
+      videoJsOptions.sources = [
+        {
+          src: selectedVideo?.signed_url ? selectedVideo?.signed_url : null,
+          type: 'video/mp4',
+        },
+      ];
+
+      if (playerRef.current) {
+        const player = videojs(playerRef.current, videoJsOptions);
+
+        const controlBar = player.getChild('controlBar');
+
+        if (!player.getChild('controlBar').getChild('NextButton')) {
+
+          const nextButton = controlBar.addChild('NextButton', {}, 1);
+          controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
         }
-      } catch (error) {
-        console.error('Error fetching video data:', error);
-      }
-     
-    };
+        player.src(videoJsOptions.sources);
+        player.poster(selectedVideo?.asset?.thumbnail)
 
-    fetchVideoData();
-  }, [videoId]);
+      }
+    }
+
+    setPlayer()
+
+  }, [selectedVideo]);
 
 
   return (
     <div className='aspect-video relative border bg-black'>
-    
+
       <div className="aspect-video">
-        <video poster={video?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
+        {
+          selectedVideo?.asset &&
+          <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
+        }
       </div>
 
     </div>

@@ -1,11 +1,8 @@
 'use client'
-import { Icons, LoadingSkeletons } from "@/components"
+import { Icons, Loader, LoadingSkeletons } from "@/components"
 
 export default function Loading() {
     return (
-       
-  
-        <Icons.Loader2/>
-       
+        <Loader />
     )
 }

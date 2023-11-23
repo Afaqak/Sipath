@@ -5,16 +5,19 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from '@/utils/index'
 import { redirect } from 'next/navigation';
 
+
 async function refreshAccessToken(token) {
   try {
     const refreshToken = token?.refresh_token;
     console.log(refreshToken, ":refresh")
 
     if (refreshToken) {
-      
+
       const response = await axios.post('/auth/refresh-token', {
         refreshToken: refreshToken,
       });
+   
+     
 
       const refreshedToken = response.data.token;
       const expiration_time = response.data.expiration_time;
@@ -30,14 +33,11 @@ async function refreshAccessToken(token) {
   } catch (error) {
     console.error('Error refreshing access token:', error);
 
-    if (error.response && error.response.status === 401) {
-
-      const responseAfterSignout=await axios.post('/api/auth/signout')
-      console.log(responseAfterSignout,":after signout")
-      console.log('User is not authorized. Signing out...');
-    }
-
-    return token;
+      console.log("logout")
+      const responseAfterSignout = await axios.post('/api/auth/signout')
+      console.log(responseAfterSignout, ":after signout")
+      redirect('/')
+ 
   }
 }
 
@@ -72,8 +72,8 @@ export const authOptions = {
             user: response.data.user,
             token: response.data.token,
             tutor: response.data.tutor,
-            refresh_token:response.data.refresh_token,
-            expiration_time:response?.data.expiration_time
+            refresh_token: response.data.refresh_token,
+            expiration_time: response?.data.expiration_time
           };
         } else {
           return null;
@@ -91,9 +91,9 @@ export const authOptions = {
         return { ...token, ...session.user };
       }
 
-    //  await axios.post('/api/auth/signout')
+      //  await axios.post('/api/auth/signout')
       if (Date.now() < new Date(token?.expiration_time).getTime()) {
-        console.log("i happen at signup",Date.now(),new Date(token?.expiration_time).getTime())
+        console.log("i happen at signup", Date.now(), new Date(token?.expiration_time).getTime())
         return token
       } else {
         const refreshedToken = await refreshAccessToken(token)

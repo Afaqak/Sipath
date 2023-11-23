@@ -12,6 +12,9 @@ const conversationSlice = createSlice({
   name: 'conversation',
   initialState,
   reducers:{
+    setConversations(state,action){
+      state.conversations.push(action.payload)
+    },
     insertConversation(state,action){
 
       state.conversations.push(action.payload)
@@ -35,5 +38,5 @@ const conversationSlice = createSlice({
   },
 });
 
-export const {insertConversation}=conversationSlice.actions
+export const {insertConversation,setConversations}=conversationSlice.actions
 export default conversationSlice.reducer;

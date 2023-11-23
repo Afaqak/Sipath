@@ -2,7 +2,7 @@
 import React, { useState, useRef, forwardRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Icons, Modal } from '@/components';
+import { Icons } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -10,13 +10,14 @@ import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '../ui/button';
 import axios from '@/utils/index'
+
 export const OnBoardingProcess = () => {
   const { data: user, update } = useSession();
   const privateAxios = useAxiosPrivate();
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
-  const [modelOpen, setModalOpen] = useState(false);
+  
   const [categories, setCategories] = useState([])
   const [selectedImage, setSelectedImage] = useState(null);
   const {
@@ -37,10 +38,7 @@ export const OnBoardingProcess = () => {
     setButtonType('asExpert');
   };
 
-  const handleModalSubmit = (val) => {
-    setInterests([...interests, val]);
-    setModalOpen(false);
-  };
+
 
   const onSubmit = async (data) => {
 
@@ -354,12 +352,7 @@ export const OnBoardingProcess = () => {
             </Button>
           </div>
         </form>
-        <Modal
-          isOpen={modelOpen}
-          onClose={() => setModalOpen(false)}
-          handleModalSubmit={handleModalSubmit}
-          modalType={'Interests'}
-        />
+     
       </div>
     </>
   );

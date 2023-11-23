@@ -1,5 +1,10 @@
 
+import { getServerSession } from "next-auth";
 import ClientLayout from "./clientLayout"
+import { authOptions } from "./api/auth/[...nextauth]/route";
+
+
+
 export const metadata = {
   title: 'Sipath',
   description: '...',
@@ -10,10 +15,13 @@ export const metadata = {
   }
 }
 
-export default function Layout({ children }) {
+export default async function Layout({ children }) {
+
+  const session = await getServerSession(authOptions);
+
   return (
     <>
-      <ClientLayout>
+      <ClientLayout session={session}>
         {children}
       </ClientLayout>
     </>

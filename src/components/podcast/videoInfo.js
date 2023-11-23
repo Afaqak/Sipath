@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Stars } from '../common/5star';
-import { Icons, formatTimeAgo } from '..';
-import { errorToast, successToast } from '@/utils/toasts';
+import { Icons } from '..';
+import { errorToast, successToast, warningToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import UserAvatar from '../common/userAvatar';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
-const ProfileInfo = ({ author, followers,profile_image }) => {
+
+
+const ProfileInfo = ({ author, followers, profile_image }) => {
   return (
     <div className="text-gray-600 flex  gap-2">
-      <UserAvatar user={{image:profile_image,name:author}}/>
+      <UserAvatar user={{ image: profile_image, name: author }} />
       <div className="flex flex-col">
         <span>{author}</span>
         <span className="text-[0.75rem]">{followers}</span>
@@ -39,10 +42,11 @@ const ActionButton = ({ icon, text }) => {
 };
 
 const TagsAndDescription = ({ description, createdAt }) => {
+  const formattedTimeAgo=useFormattedTimeAgo(createdAt)
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>{formatTimeAgo(createdAt)}</span> 
+        <span>24k views</span> . <span>{formattedTimeAgo}</span>
       </div>
       <p>{description}</p>
     </div>
@@ -52,13 +56,14 @@ const TagsAndDescription = ({ description, createdAt }) => {
 export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-
+  const router = useRouter()
   const searchParams = useSearchParams()
   const id = searchParams.get('id');
-
   useEffect(() => {
     setRating(0)
   }, [id])
+
+
 
   const setAssetRating = async (newRating) => {
     let assetId;
@@ -91,12 +96,18 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
     }
   };
   const handleRatingChange = (newRating) => {
+
+    if (!token) {
+      return warningToast("Login to Rate User", () => router.push('/sign-in'))
+    }
     setRating(newRating);
     setAssetRating(newRating);
   };
-  // console.log(video, '{video info}', token);
+
   return (
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
+
+    
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
           <h1 className="font-semibold text-lg mb-1">{selectedVideo?.asset?.title}</h1>
@@ -125,6 +136,9 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
         </div>
       </div>
       <TagsAndDescription description={selectedVideo?.asset?.description} createdAt={selectedVideo?.asset?.createdAt} />
+
     </div>
   );
 };
+
+

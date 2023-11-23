@@ -14,26 +14,52 @@ import {
 import { Button } from '../ui/button';
 import { useSession } from 'next-auth/react';
 import { Icons } from '../icons';
+import { errorToast, successToast } from '@/utils/toasts';
 
 
 
-export function RequestModal({ isOpen, setIsOpen, token }) {
+export function RequestModal({ isOpen, setIsOpen,setConversations}) {
   const dispatch = useDispatch();
   const [agreeLoading, setAgreeLoading] = useState(false)
   const [rejectLoading, setRejectLoading] = useState(false)
   const requests = useSelector((state) => state?.messageRequests?.messageRequests);
   const { data: user } = useSession()
+  console.log(requests)
   useEffect(() => {
-    dispatch(fetchMessageRequests({ token }));
+    dispatch(fetchMessageRequests({ token:user?.token }));
   }, []);
 
+  const onSuccess = async () =>{
+    successToast("Conversation Formed!") 
+    setAgreeLoading(false)
+    try {
+       
+      const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      })
+      const response = await request.json()
+      setConversations(response?.userChats)
+
+
+    } catch (err) {
+      console.log(err)
+    }
+    
+  }
+  const onError = () =>{
+
+    errorToast("Conversation Error!") 
+    setAgreeLoading(false)
+  }
   const approveMessageRequest = (id) => {
     setAgreeLoading(true)
-    const onSuccess = () => setAgreeLoading(false)
     try {
-      dispatch(approveRequest({ id, token, onSuccess }));
+      dispatch(approveRequest({ id, token:user?.token, onSuccess,onError }));
     } catch (err) {
-      throw err;
+      console.log(err)
     }
   };
 

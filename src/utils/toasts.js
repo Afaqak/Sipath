@@ -1,24 +1,35 @@
-import toast from 'react-hot-toast';
+import {toast} from 'sonner'
 export const errorToast = (text, color = '#fb3c22') =>
-  toast.error(text, {
-    style: {
-      backgroundColor: color,
-      borderRadius: '30px',
-      color: 'white',
-    },
-    icon: '⚪',
-  });
+  toast.error(text, {style:{
+    width:"100%",
+    backgroundColor:color,
+    color:"white"
+  }})
 
 export const successToast = (text, color = '#1850BC') =>
-  toast.success(text, {
-    style: {
-      color: 'white',
-      borderRadius: '30px',
-      background: color,
-      zIndex:100000,
-    },
-    iconTheme: {
-      color: 'white',
-    },
-    icon: '⚪',
-  });
+  toast.success(text,{
+    style:{
+      width:"100%",
+      backgroundColor:color,
+      color:"white"
+    }
+  })
+export const warningToast = (text,goTo) =>
+toast.warning(text, {
+  style:{
+    width:"100%",
+  
+  },
+  action: {
+    label: 'Log In',
+    onClick: () => goTo()
+  },
+})
+export const warningToastNoAction = (text) =>
+toast.warning(text, {
+  style:{
+    width:"100%",
+  
+  }
+})
+

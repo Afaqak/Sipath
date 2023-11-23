@@ -1,9 +1,10 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video } from '@/components';
+import { NewVideos, VideoFeed, PremiumVideos, Experts, Categories, Video, Icons } from '@/components';
 import axios from '@/utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
 import { useSession } from 'next-auth/react';
+import { errorToast, successToast } from '@/utils/toasts';
 
 
 const Home = () => {
@@ -15,7 +16,8 @@ const Home = () => {
   const [premiumVideos, setPremiumVideos] = useState([])
   const [experts, setExperts] = useState([])
   const [categories, setCategories] = useState([])
-  const { data: user } = useSession()
+
+
 
   const premiumVideosRef = useRef(null);
   const videosSetTwoRef = useRef(null);
@@ -23,9 +25,9 @@ const Home = () => {
   const fetchVideos = async (query, setData) => {
 
     try {
-      const response = await axios.get(`/assets/videos?${query}`);
-
-      setData(response?.data);
+      const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/videos?${query}`);
+      const response = await request.json()
+      setData(response);
 
     } catch (err) {
       console.log(err);
@@ -36,9 +38,9 @@ const Home = () => {
   const fetchExperts = async () => {
 
     try {
-      const response = await axios.get(`/users/experts?type=all`);
-
-      setExperts(response?.data);
+      const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/experts?type=all`);
+      const response = await request.json()
+      setExperts(response);
 
     } catch (err) {
       console.log(err);
@@ -78,10 +80,11 @@ const Home = () => {
     };
   }, []);
 
-
+ 
 
   return (
     <div className="">
+<Icons.colorLoader/>
       <div className="w-[90%] mx-auto" >
         {
           videos?.length > 0 && <Video videos={videos} />
@@ -99,7 +102,7 @@ const Home = () => {
       <div ref={premiumVideosRef}>
         {premiumVideos?.length > 0 && <PremiumVideos data={premiumVideos} />}
       </div>
-      <div ref={videosSetTwoRef} className="w-[90%] mx-auto ">
+      <div ref={videosSetTwoRef} className="w-[90%] mx-auto">
         {
           videos_set_two?.length > 0 && <Video videos={videos_set_two} />
         }

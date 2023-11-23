@@ -14,8 +14,10 @@ import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import { UpdateBook, deleteBook } from '@/features/book/bookThunk';
 import { Button } from '../ui/button';
+import { setBooks } from '@/features/book/bookSlice';
 
-export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
+
+export const EditBookModal = ({ isOpen, setIsOpen, book, handleDeleteSubmit }) => {
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const dispatch = useDispatch();
@@ -30,16 +32,25 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
   const [bookDescription, setBookDescription] = useState(book?.description);
   const [subject, setSubject] = useState(book?.subject);
   const [thumbnail, setThumbnail] = useState(null);
-
-
-
   
-  const onDeleteSuccess = () => {
-    successToast('Book deleted!');
+
+  const fetchBooks = async () => {
+    try {
+      const response = await axios.get(`/assets/books/user/${user?.user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      successToast('Book deleted!');
+
+      dispatch(setBooks(response.data));
+    } catch (err) {
+     
+      console.log(err);
+    }
   };
-  const onDeleteError = () => {
-    errorToast('Error deleting the Book!');
-  };
+
 
   const onUpdateSuccess = () => {
     closeModal();
@@ -49,28 +60,31 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
   const onUpdateError = () => {
     errorToast('Error uploading book!');
   };
-  const onDeleteSubmit = () => {
+  const onDeleteSubmit = async () => {
     try {
-      dispatch(
-        deleteBook({
-          token: user?.token,
-          bookId: book?.id,
-          tutorId: user?.tutor.tutor_id,
-          onSuccess: onDeleteSuccess,
-          onError: onDeleteError,
-        })
-      );
+      setLoading(true)
+      await axios.delete(`/assets/books/${book?.id}`,{
+      headers:{
+        Authorization:`Bearer ${user?.token}`
+      }
+      })
+      setOpenDeleteModal(false)
+      closeModal()
+      successToast('Book deleted!');
+      fetchBooks()
     } catch (err) {
       console.error(err);
+      errorToast('Error deleting the Book!');
+    }finally{
+      setLoading(false)
     }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-  
+
     try {
-      setLoading(true);
 
       const data = {
         title: bookTitle,
@@ -100,9 +114,7 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
     } catch (error) {
       setLoading(false);
       console.error('Error updating book:', error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
   function closeModal() {
     setIsOpen(false);
@@ -155,6 +167,7 @@ export const EditBookModal = ({ isOpen, setIsOpen, book }) => {
       </DialogContent>
       <DeleteModal
         isOpen={openDeleteModal}
+        loading={loading}
         setIsOpen={setOpenDeleteModal}
         text={book?.title}
         onDeleteSubmit={onDeleteSubmit}

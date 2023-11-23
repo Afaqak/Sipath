@@ -5,7 +5,7 @@ import { fetchConversations } from '../conversation/conversationThunk';
 
 export const fetchMessageRequests = createAsyncThunk(
   'messageRequests/fetchMessageRequests',
-  async ({ token }) => {
+  async ({ token,onSuccess,onError }) => {
     const privateAxios = useAxiosPrivate()
 
     try {
@@ -14,11 +14,19 @@ export const fetchMessageRequests = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       });
-
+      if(onSuccess && typeof onSuccess==='function'){
+        onSuccess()
+      }
+      console.log(response?.data)
 
       return response.data?.chatRequests;
     } catch (err) {
+      if(onError && typeof onError==='function'){
+        onSuccess()
+      }
       throw err;
+    }finally{
+      
     }
   }
 );
@@ -41,9 +49,7 @@ export const approveRequest = createAsyncThunk(
       }
 
 
-      // dispatch(insertConversation(response.data?.chat))
-      dispatch(fetchConversations({ token }))
-      dispatch(fetchMessageRequests({ token }));
+
       return response.data.updatedRequest;
     } catch (err) {
       throw err;

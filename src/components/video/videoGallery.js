@@ -1,48 +1,57 @@
 // VideoGallery.js
 'use client'
-import React, { useEffect, useState } from 'react';
-import { Video, LoadingSkeletons } from '@/components';
-import axios from '../../utils/index';
+import React, {  useState } from 'react';
+import { Icons, Video} from '@/components';
 import Image from 'next/image';
 
-export const VideoGallery = ({ title, customQuery }) => {
-  const [videos, setVideos] = useState([]);
-  const [limit, setLimit] = useState(6);
+export const VideoGallery = ({ title,videos, customQuery }) => {
 
-  const fetchVideos = async () => {
+  const [loadedVideos,setLoadedVideos]=useState(videos)
+  const [limit, setLimit] = useState(6);
+  const [load, setLoad] = useState()
+
+  const fetchVideos = async (limitSend,setLoad) => {
   
     try {
       const queryParams = customQuery || 'type=all';
 
-      const response = await axios.get(`/assets/videos?limit=${limit}&${queryParams}`);
-      console.log(response.data)
-      setVideos([...response.data]);
+      const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/videos?limit=${limitSend}&${queryParams}`);
+      const response=await request.json()
+      console.log(response,"{rd}")
+      setLoadedVideos([...response]);
+      if(setLoad){
+        setLoad()
+      }
     } catch (err) {
       console.log(err);
     } 
   };
 
   const loadMore = () => {
-    setLimit(limit + 6);
+    setLoad(true)
+    let limitSend=limit+6
+    fetchVideos(limitSend,()=>setLoad(false))
+    setLimit(limitSend);
   };
 
-  useEffect(() => {
-    fetchVideos();
-  }, [limit]);
+
 
   return (
-    <div className="pt-8 pb-8 overflow-visible relative w-[90%] mx-auto">
+    <div className="pt-8 pb-2 overflow-visible relative w-[90%] mx-auto">
       
-      <Video videos={videos} title={title} load={true} />
+      <Video videos={loadedVideos} title={title} load={true} />
       {
-        videos?.length > 0 &&
-        <div className="text-center">
-          <div className="flex justify-center flex-col items-center mt-8">
-            <button onClick={loadMore} className="bg-gray-100 px-4 py-2 rounded-md text-black font-semibold">
-              Load More
-            </button>
-            <Image src="/svgs/expand_more.svg" alt="expand_more" width={15} height={15} />
-          </div>
+        loadedVideos?.length > 0 &&
+        <div className="text-center flex items-center justify-center mt-8">
+           {load ? <span className='animate-spin'><Icons.Loader2 stroke='black' height='40' width='40' /></span> :
+              <div className="flex justify-center flex-col items-center">
+                <button onClick={loadMore} className="bg-gray-100 px-4 py-2 rounded-md text-black font-semibold">
+                  Load More
+                </button>
+                <Image src="/svgs/expand_more.svg" alt="expand_more" width={15} height={15} />
+
+              </div>
+            }
         </div>
       }
     </div>

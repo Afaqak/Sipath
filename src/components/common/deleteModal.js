@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 
 import {
   Dialog,
@@ -12,6 +12,7 @@ import { Button } from '../ui/button';
 import { Icons } from '../icons';
 
 export function DeleteModal({ isOpen, setIsOpen, onDeleteSubmit, text }) {
+  const [loading,setLoading]=useState(false)
   function closeModal() {
     setIsOpen(false);
   }
@@ -38,10 +39,15 @@ export function DeleteModal({ isOpen, setIsOpen, onDeleteSubmit, text }) {
                 Close
               </Button>
               <Button
-                onClick={onDeleteSubmit}
+                onClick={()=>onDeleteSubmit(setIsOpen(false))}
                 variant="outline"
                 className="flex gap-2 transform active:-translate-y-1  items-center"
               >
+                {
+                  loading && <span className='animate-spin'>
+                    <Icons.Loader2 width="20" height="20" stroke="#FB3C22"/>
+                  </span>
+                }
                 <Icons.trash className="w-4 h-4  stroke-subcolor2" />
                 Delete
               </Button>

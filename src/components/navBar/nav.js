@@ -9,7 +9,6 @@ import { buttonVariants } from '../ui/button';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../common/userAvatar';
 import { Icons } from '@/components';
-import toast from 'react-hot-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useOutsideClick } from '@/hooks/useOutsideClick';
+import { errorToast } from '@/utils/toasts';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -52,7 +52,8 @@ export const Navbar = () => {
     setNav(false);
   }, [pathname]);
 
-  const links = [
+  const signedInlinks = [
+    { href: '/feed', label: 'Feed' },
     { href: '/videos', label: 'Videos' },
     { href: '/premium', label: 'Premium' },
     { href: '/podcast', label: 'Podcast' },
@@ -60,8 +61,18 @@ export const Navbar = () => {
     { href: '/categories', label: 'Categories' },
     { href: '/practice', label: 'Practice' },
     { href: '/courses', label: 'Courses' },
-    { href: '/feed', label: 'Feed' },
   ];
+  const signedOutLinks = [
+    { href: '/videos', label: 'Videos' },
+    { href: '/premium', label: 'Premium' },
+    { href: '/podcast', label: 'Podcast' },
+    { href: '/experts', label: 'Experts' },
+    { href: '/categories', label: 'Categories' },
+    { href: '/practice', label: 'Practice' },
+    { href: '/courses', label: 'Courses' },
+  ];
+
+  const linksToShow=user?.token?signedInlinks:signedOutLinks
 
   return (
     <>
@@ -74,7 +85,7 @@ export const Navbar = () => {
             <Image alt="logo" className="" src="/logo.png" width={80} height={45} />
           </div>
           <ul className="flex items-center gap-4 ml-4 font-semibold">
-            {links.map((link) => (
+            {linksToShow.map((link) => (
               <button
                 key={link.href}
                 onClick={() => router.push(link.href)}
@@ -94,10 +105,11 @@ export const Navbar = () => {
           <div className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}>
             {user?.user ? (
               <>
-                <Icons.message
-                  className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
-                  onClick={() => router.push('/chat')}
-                />
+                <Link href={'/chat'}>
+                  <Icons.chatBlack
+                    className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
+                  />
+                </Link>
 
 
                 <div className="relative">
@@ -113,7 +125,7 @@ export const Navbar = () => {
                       />
 
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent align="end">
                       <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -124,29 +136,22 @@ export const Navbar = () => {
                       >
                         <Icons.profile className="h-4 w-4 stroke-subcolor3" />
                         My-profile</DropdownMenuItem>
-                      <DropdownMenuItem  onClick={async () => {
-                          setToggleMenu(false);
-                          toast.error('Logging out!', {
-                            style: {
-                              backgroundColor: '#fb3c22',
-                              color: 'white',
-                            },
-                            icon: '⚪',
-                          });
-                          await signOut({
-                            callbackUrl: '/',
-                          }).then((res) => { });
-                        }}
+                      <DropdownMenuItem onClick={async () => {
+                        errorToast("Logging Out")
+                        await signOut({
+                          callbackUrl: '/',
+                        }).then((res) => { });
+                      }}
                         className="flex gap-2"
                       >
                         <Icons.logout className="h-4 w-4 " />
                         logout
-                        </DropdownMenuItem>
+                      </DropdownMenuItem>
 
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                
+
                 </div>
               </>
             ) : (

@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useCallback, useRef } from 'react';
-import { Skeleton } from '../ui/skeleton';
-import { CreateComment, Icons, formatTimeAgo } from '@/components';
+import { CreateComment, Icons } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import UserAvatar from '../common/userAvatar';
@@ -10,22 +9,10 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { selectCommentReplies } from '@/utils/selectors';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import { LoadingCommentsSkeleton } from '@/utils/skeletons';
 
-const LoadingSkeletons = () => (
-  <div className="py-8 grid  gap-4">
-    {[...Array(4)].map((_, idx) => (
-      <div key={idx} className="bg-white rounded-md p-4 shadow-md">
-        <div className="flex items-center space-x-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
   const searchParams = useSearchParams();
@@ -33,11 +20,12 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const id = searchParams.get('id');
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
+  const formattedTimeAgo=useFormattedTimeAgo(comment?.createdAt)
   const [file, setFile] = useState(null);
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
-
+  const router = useRouter()
   const onReplySubmit = (e) => {
     e.preventDefault();
 
@@ -46,11 +34,12 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
 
+
     try {
       const formdata = new FormData();
       formdata.append(
         'comment',
-        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id===comment?.author_id?user?.user?.display_name:comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${textWithoutImages}</div}`
       );
       formdata.append('image', file);
 
@@ -88,14 +77,19 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
     }
   };
 
-  const handleIsReplying = () => setIsReplying(!isReplying);
+  const handleIsReplying = () => {
+    if (!user?.token) {
+      return router.push('/sign-in')
+    }
+    setIsReplying(!isReplying)
+  };
   return (
     <div className="flex flex-col mb-4">
       <div className="flex gap-4">
         <Link className="block" href={`/profile/${comment?.author_id}`}>
           <UserAvatar
             user={{
-              image:comment?.author_id===user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
+              image: comment?.author_id === user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
               name: comment?.user?.display_name || comment?.user?.first_name,
             }}
             className="h-8 w-8"
@@ -105,7 +99,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
         <div className="w-full">
           <div className="flex gap-4 items-center mb-1">
             <span className="font-medium text-sm ">{comment?.user?.display_name}</span>{' '}
-            <p className="text-[0.75rem] text-gray-500">{formatTimeAgo(comment?.createdAt)}</p>
+            <p className="text-[0.75rem] text-gray-500">{comment?.createdAt && formattedTimeAgo}</p>
           </div>
           <div className="flex gap-4 items-center">
             <div className="flex flex-col gap-1">
@@ -193,7 +187,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             </button>
           )}
 
-          {loadingReplies ? <LoadingSkeletons /> : null}
+          {loadingReplies ?<LoadingCommentsSkeleton/>: null}
         </div>
       </div>
     </div>

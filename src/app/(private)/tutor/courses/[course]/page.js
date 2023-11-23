@@ -4,11 +4,7 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import CoursePage from '.';
 const MyEdit = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect('/');
-  }
+const session = await getServerSession(authOptions);
 
   return <CoursePage session={session} />;
 };

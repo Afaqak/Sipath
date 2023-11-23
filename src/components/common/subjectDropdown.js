@@ -35,7 +35,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
             className="block leading-5 text-gray-700 px-3"
             onClick={toggleDropdown}
           >
-            {selectedValue ? categories?.find((option) => option?.id === selectedValue)?.category : placeholder}
+            {selectedValue ? categories?.find((option) => option?.id === selectedValue)?.category : <span className="capitalize text-gray-400">{placeholder}</span>}
           </span>
           {open && (
             <ul className="absolute  border rounded border-gray-300 z-[99999999] bg-white shadow-md w-64 py-1 mt-1">

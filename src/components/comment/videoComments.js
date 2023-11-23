@@ -3,7 +3,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCommentReplies, fetchPrimaryComments } from '@/features/comments/commentThunk';
-import { VideoComment, RepliesList } from '@/components';
+import { VideoComment, RepliesList, LoadingSkeletons } from '@/components';
 import { Skeleton } from '../ui/skeleton';
 
 import { useSearchParams } from 'next/navigation';
@@ -35,21 +35,7 @@ export const VideoComments = () => {
       })
     );
   }, [id]);
-  const LoadingSkeletons = () => (
-    <div className="py-8 grid  gap-4">
-      {[...Array(3)].map((_, idx) => (
-        <div key={idx} className="bg-white rounded-md p-4 shadow-md">
-          <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+
 
   const toggleReplyView = (commentId) => {
     setReplyView((prevState) => ({
@@ -114,7 +100,7 @@ export const VideoComments = () => {
             </div>
           </div>
         ))}
-      {loading && <LoadingSkeletons />}
+      {loading && <LoadingSkeletons times={3} />}
       <div className="w-full flex justify-center mt-16">
         <button className="" onClick={loadMore}>
           <Image src={'/svgs/add_circle.svg'} width={30} height={30} />

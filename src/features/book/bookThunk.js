@@ -3,16 +3,27 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 export const createBook = createAsyncThunk(
   'books/createBook',
-  async ({ formData, token, onSuccess, isDownloadable, onError }, { rejectWithValue }) => {
+  async ({ formData, token, onSuccess, isDownloadable, setValue, onError }, { rejectWithValue }) => {
     const axios = useAxiosPrivate();
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        if (setValue) {
+          setValue('progress', progress)
+        }
+      },
+    };
+
+
 
     try {
-      const response = await axios.post(`/upload/book?isDownloadable=${isDownloadable}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(`/upload/book?isDownloadable=${isDownloadable}`, formData, config);
+      console.log(response?.data)
 
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
 
@@ -31,20 +42,20 @@ export const fetchTutorBooks = createAsyncThunk(
   async ({ book, token }) => {
     const axios = useAxiosPrivate();
     try {
-    } catch {}
+    } catch { }
   }
 );
 
 export const fetchBooks = createAsyncThunk('books/fetchBooks', async ({ token, tutorId }) => {
   try {
     const axios = useAxiosPrivate();
-   
+
     const response = await axios.get(`/assets/books/tutor/${tutorId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-  
+
     return response.data;
   } catch {
     throw new Error();
@@ -61,7 +72,7 @@ export const UpdateBook = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-   
+
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
 
       return response.data.updatedBook;

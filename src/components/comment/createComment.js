@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import UserAvatar from '../common/userAvatar';
 import dynamic from 'next/dynamic';
 const QuillNoSSRWrapper = dynamic(
@@ -13,14 +13,18 @@ const QuillNoSSRWrapper = dynamic(
 import 'react-quill/dist/quill.snow.css';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
+import { LoadingSkeletons } from '..';
+import { Skeleton } from '../ui/skeleton';
+import { LoadingQuillSkeleton } from '@/utils/skeletons';
 
 export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const { data: user } = useSession();
-  const quillRef = useRef();
+  const quillRef = useRef();  
+
   const handleChange = (editor) => {
+
     setText(editor);
   };
-
 
   const modules = useMemo(
     () => ({
@@ -39,7 +43,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   );
 
   function selectLocalImage() {
-  
+
     const editor = quillRef.current.getEditor();
 
     const input = document.createElement('input');
@@ -49,7 +53,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
 
     input.onchange = async () => {
       const file = input.files[0];
-     
+
       if (file) {
         setFile(file);
 
@@ -64,29 +68,32 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
       }
     };
   }
+  
 
-  return (
-    <form onSubmit={handleSubmit} className="flex gap-3 items-center">
-      <UserAvatar
-        user={{
-          image: user?.user?.profile_image,
-          name: user?.user?.first_name || user?.user?.display_name || user?.email,
-        }}
-        className="h-8 w-8 self-start"
+return (
+  <form onSubmit={handleSubmit} className="flex gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
+    { !quillRef.current && <LoadingQuillSkeleton/>}
+    <UserAvatar
+      user={{
+        image: user?.user?.profile_image,
+        name: user?.user?.first_name || user?.user?.display_name || user?.email,
+      }}
+      className="h-10 w-10 self-start"
+    />
+    <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner  bg-gray-100">
+      <QuillNoSSRWrapper
+        forwardedRef={quillRef}
+
+        onChange={handleChange}
+        modules={modules}
+        className="w-full"
       />
-      <div className="flex-1 flex relative items-center w-full md:px-2 rounded-sm py-1 shadow-inner  bg-gray-100">
-        <QuillNoSSRWrapper
-          forwardedRef={quillRef}
-          onChange={handleChange}
-          modules={modules}
-          className="w-full"
-        />
-      </div>
-      {!reply && (
-        <button type="submit">
-          <Icons.comment />
-        </button>
-      )}
-    </form>
-  );
+    </div>
+    {!reply && (
+      <button type="submit">
+        <Icons.comment />
+      </button>
+    )}
+  </form>
+);
 };

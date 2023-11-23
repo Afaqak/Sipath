@@ -1,11 +1,13 @@
 'use client'
 
-import { ContentContainer,formatTimeAgo } from "@/components"
+import { ContentContainer, ProfileHoverCard } from "@/components"
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import UserAvatar from "@/components/common/userAvatar"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { useFormattedTimeAgo } from "@/hooks/useFormattedTimeAgo"
 const CoursePage = ({ session }) => {
 
     return (<ContentContainer>
@@ -24,21 +26,20 @@ const MyCourses = ({ session }) => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get(`/courses/all?limit=${limit}`, {
-                    headers: {
-                        Authorization: `Bearer ${session?.token}`,
-                    },
-                });
-                
-                const enrollmentsResponse = await axios.get('/courses/enrollments', {
-                    headers: {
-                        
-                        Authorization: `Bearer ${session?.token}`,
-                    },
-                });
+                const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/all?limit=${limit}`);
+                if (session?.token) {
+                    const enrollmentsRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/enrollments`, {
+                        headers: {
 
-                setCourses(response.data);
-                setEnrollments(enrollmentsResponse.data?.enrollments)
+                            Authorization: `Bearer ${session?.token}`,
+                        },
+                    });
+                    const enrollmentsResponse=await enrollmentsRequest.json()
+                    setEnrollments(enrollmentsResponse?.enrollments)
+                }
+                const response=await request.json()
+
+                setCourses(response);
             } catch (err) {
                 console.log(err);
             }
@@ -78,14 +79,14 @@ const MyCourses = ({ session }) => {
 };
 
 const CourseCard = ({ course, session, enrollments }) => {
-    
+   const formattedTimeAgo=useFormattedTimeAgo(course?.createdAt)
     const isEnrolled = enrollments.some(
         (enrollment) => enrollment?.course?.id === course.id
     );
     const href = isEnrolled ? `/courses/${course.id}` : `/tutor/courses/${course?.id}`;
     return (
-        <Link
-            href={href}
+        <div
+
             className=" h-[20rem] relative block mb-6 w-full p-4 bg-white shadow-md rounded-md"
         >
             {course?.price && course?.price > 0 && (
@@ -105,20 +106,27 @@ const CourseCard = ({ course, session, enrollments }) => {
                 ) : (
                     <div className="rounded-md object-cover w-full h-44"></div>
                 )}
+                {isEnrolled && <Badge className={'absolute top-3 right-3 bg-black'}>
+                    Enrolled
+                </Badge>}
             </div>
             <div className="mt-3 flex gap-2 items">
-                <UserAvatar user={{ image: course?.tutor?.user?.profile_image }} />
                 <div>
-                    <h1 className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</h1>
+                    <ProfileHoverCard user={course?.tutor?.user}>
+                        <UserAvatar user={{ image: course?.tutor?.user?.profile_image }} />
+                    </ProfileHoverCard>
+                </div>
+                <div>
+                    <Link href={href} className="text-[1.05rem] font-semibold mb-[0.20rem] line-clamp-2">{course?.name}</Link>
                     <div className="flex items-center text-sm gap-2 text-gray-700">
                         <span>{course?.tutor?.user?.display_name}</span>
                     </div>
                     <div className="flex items-center text-sm gap-2 text-gray-700">
-                        <span>{formatTimeAgo(course.createdAt)}</span>
+                        <span>{course && formattedTimeAgo}</span>
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

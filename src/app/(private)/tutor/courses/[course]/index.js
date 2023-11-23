@@ -2,8 +2,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import { LoadingSkeletons, Icons, formatTimeAgo } from '@/components';
-import { errorToast } from '@/utils/toasts';
+import { LoadingSkeletons, Icons } from '@/components';
+import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
+import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
@@ -37,15 +38,19 @@ const CoursePage = ({ session }) => {
 
   useEffect(() => {
     const fetchSections = async () => {
-      const response = await axios.get(`/courses/${params?.course}/sections`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      });
-      setSections(response.data.sections);
-      setCourse(response.data.course);
-      setLoadingStates(new Array(response.data.sections.length).fill(false));
-      setButtonStates(new Array(response.data.sections.length).fill(false));
+      try {
+        const response = await axios.get(`/courses/${params?.course}/sections`, {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        });
+        setSections(response.data.sections);
+        setCourse(response.data.course);
+        setLoadingStates(new Array(response.data.sections.length).fill(false));
+        setButtonStates(new Array(response.data.sections.length).fill(false));
+      } catch (err) {
+        console.log(err)
+      }
     };
     fetchSections();
   }, []);
@@ -127,27 +132,27 @@ const CoursePage = ({ session }) => {
 
   function formatDuration(total_time) {
     if (!total_time) return '';
-  
+
     const { hours, minutes, seconds } = total_time;
-  
+
     let formattedDuration = '';
-  
+
     if (hours > 0) {
       formattedDuration += `${hours}h `;
     }
-  
+
     if (minutes > 0 || formattedDuration !== '') {
       formattedDuration += `${minutes}m `;
     }
-  
+
     formattedDuration += `${seconds}s`;
-  
+
     return formattedDuration.trim();
   }
 
   return (
     <div className="py-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
-      {course.id ? ( 
+      {course.id ? (
         <>
           <div className="flex justify-between mb-8 items-center">
             <div className="flex gap-2">
@@ -291,6 +296,9 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
   const axios = useAxiosPrivate();
   const { data: user } = useSession();
   const [toggleMenu, setToggleMenu] = useState(false);
+   
+  const formattedTimeAgo=useFormattedTimeAgo(video?.createdAt)
+
   const onDeleteSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -359,7 +367,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{video?.views} views</span>
             <span>&bull;</span>
-            <span>{formatTimeAgo(video.createdAt)}</span>
+            <span>{video && formattedTimeAgo}</span>
             <span>&bull;</span>
             <div className="flex items-center">
               {video?.rating}{' '}
@@ -398,15 +406,16 @@ export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setI
           Authorization: `Bearer ${token}`,
         },
       });
-
+      
       setEnrollments(enrollmentsResponse.data?.enrollments)
       const isEnrolledInCourse = enrollmentsResponse.data?.enrollments.some((enrollment) => enrollment?.course?.id === courseId);
-
+      successToast("Enrolled Successfully!")
       closeModal()
       setIsEnrolled(isEnrolledInCourse)
 
     } catch (err) {
       console.log(err)
+      errorToast("Error Getting Enrolled!")
     } finally {
       setLoading(false)
     }
@@ -467,15 +476,18 @@ export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, se
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+    })
 
 
       const isEnrolledInCourse = enrollmentsResponse.data.enrollments.some((enrollment) => enrollment?.course?.id === courseId);
+      successToast("Un-Enrolled Successfully!")
       closeModal()
+
       setIsEnrolled(isEnrolledInCourse)
 
     } catch (err) {
       console.log(err)
+      errorToast("Error Getting Enrolled!")
     } finally {
       setLoading(false)
     }
