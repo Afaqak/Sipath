@@ -19,10 +19,18 @@ import { LoadingQuillSkeleton } from '@/utils/skeletons';
 
 export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   const { data: user } = useSession();
-  const quillRef = useRef();  
+  const quillRef = useRef();
+  const [showQuill, setShowQuill] = useState(false);
+
+  // useEffect(() => {
+  //   const delay = setTimeout(() => {
+  //     setShowQuill(true);
+  //   }, 2000); 
+
+  //   return () => clearTimeout(delay);
+  // }, []);
 
   const handleChange = (editor) => {
-
     setText(editor);
   };
 
@@ -43,7 +51,6 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   );
 
   function selectLocalImage() {
-
     const editor = quillRef.current.getEditor();
 
     const input = document.createElement('input');
@@ -68,32 +75,32 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
       }
     };
   }
-  
 
-return (
-  <form onSubmit={handleSubmit} className="flex gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
-    { !quillRef.current && <LoadingQuillSkeleton/>}
-    <UserAvatar
-      user={{
-        image: user?.user?.profile_image,
-        name: user?.user?.first_name || user?.user?.display_name || user?.email,
-      }}
-      className="h-10 w-10 self-start"
-    />
-    <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner  bg-gray-100">
-      <QuillNoSSRWrapper
-        forwardedRef={quillRef}
-
-        onChange={handleChange}
-        modules={modules}
-        className="w-full"
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
+      {/* {!showQuill ? <LoadingQuillSkeleton /> : null} */}
+      <UserAvatar
+        user={{
+          image: user?.user?.profile_image,
+          name: user?.user?.first_name || user?.user?.display_name || user?.email,
+        }}
+        className="h-10 w-10 self-start"
       />
-    </div>
-    {!reply && (
-      <button type="submit">
-        <Icons.comment />
-      </button>
-    )}
-  </form>
-);
+      {/* {showQuill && ( */}
+        <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
+          <QuillNoSSRWrapper
+            forwardedRef={quillRef}
+            onChange={handleChange}
+            modules={modules}
+            className="w-full"
+          />
+        </div>
+      {/* )} */}
+      {!reply && (
+        <button type="submit">
+          <Icons.comment />
+        </button>
+      )}
+    </form>
+  );
 };

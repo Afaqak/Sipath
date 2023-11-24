@@ -465,7 +465,7 @@ export const RepliesList = ({ comments, itemId, parentId, handleFetchReplies }) 
       {comments?.length > 0 ? (
         comments?.map((comment) => (
           <>
-            <div>{comment?.id}</div>
+      
             <FeedComment
 
               key={comment.id} itemId={itemId} noView={true} comment={comment} parentId={parentId} />
