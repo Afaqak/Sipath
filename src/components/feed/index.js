@@ -31,7 +31,7 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const [chatOpen, setChatOpen] = useState(false)
-  const {data:user}=useSession()
+
 
   return (
     <div className=' flex flex-col gap-2 '>
@@ -317,7 +317,9 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 
 
 const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => {
-  const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt);
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+  const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt,userTimeZone);
   const axios = useAxiosPrivate();
   const [isReplying, setIsReplying] = useState(false);
   const [file, setFile] = useState(null);
@@ -349,6 +351,7 @@ const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => 
       });
 
       dispatch(addReply({ postId: itemId, commentId: response?.data?.comment?.reply_to, reply: response?.data?.comment }));
+      setIsReplying(false)
     } catch (error) {
       console.error(error);
     }
