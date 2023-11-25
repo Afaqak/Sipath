@@ -32,7 +32,7 @@ const CategoriesPage = () => {
           <Link
             key={data.id}
             href={`/categories/${data.category?.toLowerCase()}?id=${data?.id}`}
-            className="flex flex-col items-center justify-center shadow-lg mb-2 p-4 rounded-md bg-white h-44"
+            className="flex flex-col items-center justify-center shadow-lg mb-2 p-4 box-shadow-main rounded-md bg-white h-44"
           >
             <Image
               className="w-24 h-20 object-contain"

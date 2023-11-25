@@ -164,11 +164,11 @@ input::-webkit-inner-spin-button {
 }
 
 .fc-event {
-  font-size: 8px;
+  font-size: 5px;
 
   color: white;
 
-  font-weight: 500;
+  font-weight: 400;
   font-style: normal;
   border: 2px solid;
   padding: 0 2px;
@@ -319,6 +319,9 @@ input::-webkit-inner-spin-button {
   }
 }
 
+.fc-datagrid-cell-frame {height: 35px !important}
+.fc-timeline-lane-frame {height: 35px !important}
+
 .custom-spinner {
   animation: custom-spin 1s linear infinite;
 }
@@ -428,6 +431,11 @@ video{
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+.box-shadow-main{
+  box-shadow: 2px 2px 8px 0px #00000040;
+
 }
 
 .google-loader {

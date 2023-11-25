@@ -65,7 +65,7 @@ export const AvailableDays = ({ setAvailability }) => {
   };
 
   return (
-    <div className="mt-1 min-h-fit">
+    <div className="mt-1 min-h-fit uppercase">
       <div className="flex flex-col text-[#616161]">
         {daysOfWeek.map((day) => (
           <div key={day} className="flex items-center mr-4">
@@ -80,10 +80,10 @@ export const AvailableDays = ({ setAvailability }) => {
             </div>
             <div className="mb-2 mr-3 text-sm w-[4%]">{day}</div>
             {schedule[day].map((slot, slotIndex) => (
-              <div key={slotIndex} className="flex text-sm mb-2 gap-3 mr-2">
+              <div key={slotIndex} className="flex text-[0.70rem] mb-2 gap-3 mr-2">
                 <div className="w-[5.4rem]">
                   <TimePicker
-                    className="w-full custom-time-picker text-sm"
+                    className="w-full custom-time-picker text-[0.70rem]"
                     format="hh:mm A"
                     use12Hours
                     placeholder="From"
@@ -96,7 +96,7 @@ export const AvailableDays = ({ setAvailability }) => {
                 </div>
                 <div className="w-[5.4rem]">
                   <TimePicker
-                    className="w-full custom-time-picker text-sm flex"
+                    className="w-full custom-time-picker text-[0.70rem] flex"
                     showSecond={false}
                     clearIcon={false}
                     format="hh:mm A"

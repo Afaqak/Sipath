@@ -77,7 +77,7 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
+    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
       {/* {!showQuill ? <LoadingQuillSkeleton /> : null} */}
       <UserAvatar
         user={{

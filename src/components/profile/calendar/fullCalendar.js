@@ -7,21 +7,181 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { AvailableDays, CalendarComponent } from '@/components';
 import Image from 'next/image';
+import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useSession } from 'next-auth/react';
+import { successToast } from '@/utils/toasts';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from 'react-day-picker';
+const eventBackgroundColors = [
+  '#4DA9FF99',
+  '#1850BC',
+  '#D6C8FF',
+  '#F54D4D',
+  '#FFDDDD',
+  '#684D08',
+  '#FFEBB7',
+];
+const eventBorderColors = [
+  '#FFFFFF',
+  '#4DA9FF99',
+  '#1850BC',
+  '#D6C8FF',
+  '#F54D4D',
+  '#FFDDDD',
+  '#684D08',
+  '#FFEBB7',
+];
+
+const textColors = [
+  '#FFFFFF',
+  '#000000',
+  '#A384FF',
+  '#1850BC',
+  '#666666',
+  '#721818',
+  '#684D08',
+  '#131C6D',
+];
+
+
 
 export const EventsCalendar = () => {
   const calendarRef = useRef(null);
-  const [selectedDate, setSelectedDate] = useState({});
+  const [selectedDate, setSelectedDate] = useState({ startTime: "", endTime: "" });
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [titleDate, setTitleDate] = useState(null);
   const [viewType, setViewType] = useState('timeGridWeek');
   const [organizedEventsByDay, setOrganizedEventsByDay] = useState({});
   const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
+  const [updatedEvent, setUpdatedEvent] = useState({})
+  const [isUpdating, setIsUpdating] = useState(false)
+  const axios = useAxiosPrivate()
+
+  const { data: user } = useSession()
+
+
+  const mapProperties = (data, propertyMap) => {
+    const mappedObject = {};
+    console.log("########mappppeeddd##########")
+    console.log(propertyMap)
+    Object.keys(propertyMap).forEach((key) => {
+      mappedObject[key] = data?.[propertyMap[key]];
+    });
+
+    return mappedObject;
+  };
+
+
+  const updateEventInArray = (events, updatedEvent, propertyMap) => {
+    return events.map((event) => {
+      if (parseInt(event.id) === parseInt(updatedEvent?.id)) {
+        const updatedProperties = mapProperties(updatedEvent, propertyMap);
+        return { ...event, ...updatedProperties };
+      }
+      return event;
+    });
+  };
+
+
+  const fetchUserCalendar = async () => {
+    try {
+      const { data } = await axios.get(`/users/calender`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      });
+
+      const newEvents = data?.events.map((event) => ({
+        id: event?.id,
+        title: event?.title,
+        start: event?.start_time,
+        end: event?.end_time,
+        backgroundColor: event?.color,
+        borderColor: event?.border,
+        textColor: event?.text_color,
+      }));
+
+      setCalendarEvents([...newEvents]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const addEventToCalendar = async (eventToSend) => {
+    try {
+      const { data } = await axios.post(`/users/calender`, eventToSend, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      });
+
+      successToast("Event Added!");
+
+      const eventToSet = {
+        id: data?.event?.id,
+        title: data?.event?.title,
+        start: data?.event?.start_time,
+        end: data?.event?.end_time,
+        backgroundColor: data?.event?.color,
+        borderColor: data?.event?.border,
+        textColor: data?.event?.text_color,
+      };
+
+      setCalendarEvents([...calendarEvents, eventToSet]);
+      setIsModalOpen(false);
+    } catch (err) {
+      // Handle errors
+      console.error(err);
+    }
+  };
+
+  const updateEventInCalendar = async (eventId, updatedEvent) => {
+    try {
+      const { data } = await axios.patch(`/users/calender/${eventId}`, updatedEvent, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      });
+
+      const eventPropertyMap = {
+        id: 'id',
+        start: 'start_time',
+        end: 'end_time',
+        borderColor: 'border_color',
+        backgroundColor: 'color',
+        textColor: 'text_color',
+        title: 'title',
+      };
+
+      successToast("Updated Event!");
+
+      setCalendarEvents(updateEventInArray(calendarEvents, data?.updatedEvent, eventPropertyMap))
+
+    } catch (err) {
+
+      console.error(err);
+    }
+  };
+
+
+
+
+
   const handleDateClick = (arg) => {
-    const selectedStartTime = arg.date;
-    setSelectedDate(selectedStartTime);
+    setIsUpdating(false)
+    setUpdatedEvent(null)
+    setSelectedDate({
+      startTime: arg.date,
+      endTime: moment(arg.date).add(30, "minutes").toDate()
+    });
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    fetchUserCalendar()
+  }, [])
+
 
   const handleOrganizeEventsByDay = (events) => {
     const organizedEvents = {};
@@ -55,21 +215,21 @@ export const EventsCalendar = () => {
     setOrganizedEventsByDay(handleOrganizeEventsByDay(calendarEvents));
   }, [calendarEvents]);
 
-  const handleConfirm = (eventText, eventBackgroundColor, eventBorderColor, textColor) => {
-    const newEvent = {
-      id: Math.floor(Math.random() * 100000000),
+  const handleConfirm = async (eventText, eventBackgroundColor, eventBorderColor, textColor) => {
+    const selectedStartTime = selectedDate.startTime;
+    const selectedEndTime = selectedDate.endTime;
+
+    const eventToSend = {
       title: eventText,
-      start: selectedDate,
-      end: selectedDate,
-      backgroundColor: eventBackgroundColor,
-      borderColor: eventBorderColor,
-      textColor: textColor,
+      start_time: selectedStartTime,
+      end_time: selectedEndTime,
+      color: eventBackgroundColor,
+      border: eventBorderColor,
+      text_color: textColor,
     };
 
-    setCalendarEvents([...calendarEvents, newEvent]);
-    setIsModalOpen(false);
+    await addEventToCalendar(eventToSend);
   };
-
   const handleChangeView = (event) => {
     setViewType(event);
     calendarRef.current.getApi().changeView(event);
@@ -77,12 +237,14 @@ export const EventsCalendar = () => {
 
   const renderEventContent = (eventInfo) => {
     return (
-      <>
+      <div className='text-[0.60rem] font-semibold flex justify-between w-full items-center'>
         {eventInfo.event.title}
         <span>
-          <div className="">{moment(eventInfo.event.start).format('hh:mm')}</div>
+          <div className="text-[0.5rem]">
+            {moment(eventInfo.event.start).format('hh:mm A')}
+          </div>
         </span>
-      </>
+      </div>
     );
   };
 
@@ -108,32 +270,78 @@ export const EventsCalendar = () => {
     calendarRef.current.getApi().gotoDate(moment(date).toDate());
   };
 
-  const handleEventDrop = (eventDrop) => {
+  const handleEventDrop = async (dropInfo) => {
     const updatedEvent = {
-      ...eventDrop.event.toPlainObject(),
-      start: eventDrop.event.start,
-      end: eventDrop.event.start,
+      start_time: dropInfo.event.start.toISOString(),
+      end_time: dropInfo.event.end ? dropInfo.event.end.toISOString() : null,
     };
 
-    const updatedEvents = calendarEvents.map((event) => {
-      if (parseInt(event.id) === parseInt(updatedEvent.id)) {
-        return updatedEvent;
-      }
-      return event;
-    });
+    try {
+      const eventId = parseInt(dropInfo.event.id);
 
-    setCalendarEvents(updatedEvents);
+      await updateEventInCalendar(eventId, updatedEvent);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+
+
+  const handleEventResize = async (resizeInfo) => {
+    const eventId = parseInt(resizeInfo.event.id);
+    const updatedEvent = {
+      start_time: resizeInfo.event.start.toISOString(),
+      end_time: resizeInfo.event.end ? resizeInfo.event.end.toISOString() : null,
+    };
+    await updateEventInCalendar(eventId, updatedEvent)
+  };
+
+  const handleConfirmUpdate = async (eventText, eventBackgroundColor, eventBorderColor, textColor) => {
+    const selectedStartTime = selectedDate.startTime;
+    const selectedEndTime = selectedDate.endTime;
+
+    const eventToSend = {
+      title: eventText,
+      start_time: selectedStartTime,
+      end_time: selectedEndTime,
+      color: eventBackgroundColor,
+      border: eventBorderColor,
+      text_color: textColor,
+    };
+
+    console.log(updatedEvent)
+    await updateEventInCalendar(updatedEvent?.id, eventToSend)
+  }
+
+
+  const handleDelete = async (id) => {
+    console.log(updatedEvent?.id)
+    try {
+      await axios.delete(`/users/calender/${updatedEvent?.id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      })
+      successToast('Event Deleted!')
+      fetchUserCalendar()
+      setIsModalOpen(false)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+
+
+
   return (
-    <div className="mt-8 flex shadow-md">
-      <div>
+    <div className="mt-8 flex bg-white shadow-md">
+      <div className='border  w-[22%]'>
         <CalendarComponent handleDateChange={handleDateChange} styleCal={`rounded-tl-md`} />
         <div className="bg-white px-4 py-4">
           <EventList organizedEvents={organizedEventsByDay} />
         </div>
       </div>
-      <div className="w-full border-l border">
+      <div className="w-[78%] border-l border">
         <div className="flex justify-between items-center bg-white pt-4 px-4">
           <div className="flex gap-4 items-center">
             <span className=" text-2xl font-semibold">{titleDate}</span>
@@ -160,15 +368,34 @@ export const EventsCalendar = () => {
         <FullCalendar
           headerToolbar={false}
           editable={true}
+          eventResize={handleEventResize}
+          eventClick={(info) => {
+            console.log(info?.event.end, info?.event.title)
+            setIsUpdating(true)
+            setUpdatedEvent({
+              id: info?.event?.id,
+              end: info?.event?.end,
+              title: info?.event?.title,
+              start: info?.event?.start,
+              borderColor: info?.event?.borderColor,
+              textColor: info?.event?.textColor,
+              backgroundColor: info?.event?.backgroundColor
+            })
+            setSelectedDate({
+              startTime: info?.event?.start,
+              endTime: info?.event?.end
+            })
+            setIsModalOpen(true)
+          }}
           ref={calendarRef}
           eventDrop={handleEventDrop}
           plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
           dayHeaderContent={(args) => {
-            const dayName = args.text.substr(0, 3);
-            const dayNumber = args.date.getDate();
+            const dayName = args?.text.substr(0, 3);
+            const dayNumber = args?.date.getDate();
 
             return (
-              <div className="flex flex-col">
+              <div className=" inline-flex flex-col">
                 <span>{dayName}</span>
                 <span className="text-sm font-medium">{dayNumber}</span>
               </div>
@@ -180,10 +407,21 @@ export const EventsCalendar = () => {
           eventContent={renderEventContent}
         />
 
+
+
+
+
         <CustomModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onConfirm={handleConfirm}
+          updatedEvent={updatedEvent}
+          setIsUpdating={setIsUpdating}
+          isUpdating={isUpdating}
+          setIsOpen={setIsModalOpen}
+          setSelectedDate={setSelectedDate}
+          setUpdatedEvent={setUpdatedEvent}
+          handleDelete={handleDelete}
+          onConfirm={isUpdating ? handleConfirmUpdate : handleConfirm}
           selectedDate={selectedDate}
         />
       </div>
@@ -213,12 +451,31 @@ export const EventsCalendar = () => {
   );
 };
 
-const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
-  const [eventText, setEventText] = useState('');
+const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, handleDelete, isUpdating, setIsUpdating, onConfirm, setSelectedDate }) => {
 
+
+
+
+  const [eventText, setEventText] = useState('');
   const [selectedBackground, setSelectedBackground] = useState('#4DA9FF99');
   const [selectedBorder, setSelectedBorder] = useState('#FFFFFF');
   const [selectedTextColor, setSelectedTextColor] = useState('#000000');
+  const [endTimeOption, setEndTimeOption] = useState(30);
+  const [endTime, setEndTime] = useState('');
+
+  useEffect(() => {
+    setEventText('')
+  }, [isOpen])
+
+
+  useEffect(() => {
+    if (updatedEvent) {
+      setEventText(updatedEvent.title || '');
+      setSelectedBackground(updatedEvent.backgroundColor || '#4DA9FF99');
+      setSelectedBorder(updatedEvent.borderColor || '#FFFFFF');
+      setSelectedTextColor(updatedEvent.textColor || '#000000');
+    }
+  }, [updatedEvent]);
 
   const handleConfirm = () => {
     if (eventText) {
@@ -227,68 +484,65 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
       onClose();
     }
   };
-  const eventBackgroundColors = [
-    '#4DA9FF99',
-    '#1850BC',
-    '#D6C8FF',
-    '#F54D4D',
-    '#FFDDDD',
-    '#684D08',
-    '#FFEBB7',
-  ];
-  const eventBorderColors = [
-    '#FFFFFF',
-    '#4DA9FF99',
-    '#1850BC',
-    '#D6C8FF',
-    '#F54D4D',
-    '#FFDDDD',
-    '#684D08',
-    '#FFEBB7',
-  ];
 
-  const textColors = [
-    '#FFFFFF',
-    '#000000',
-    '#A384FF',
-    '#1850BC',
-    '#666666',
-    '#721818',
-    '#684D08',
-    '#131C6D',
-  ];
+  const generateEndTimeOptions = () => {
+    const options = [];
+    let currentTime = moment(selectedDate?.startTime).add(30, 'minutes');
+
+    while (currentTime.isBefore(moment(selectedDate?.startTime).add(1, 'day'))) {
+      options.push(currentTime.format('YYYY-MM-DD hh:mm A'));
+      currentTime.add(30, 'minutes');
+    }
+
+    return options;
+  };
+
+  const handleEndTimeOptionChange = (e) => {
+    const selectedOption = e.target.value;
+    setEndTimeOption(selectedOption);
+
+    const formattedEndTime = moment(selectedOption).toDate();
+    setSelectedDate((prevSelectedDate) => ({
+      ...prevSelectedDate,
+      endTime: formattedEndTime,
+    }));
+
+    setEndTime(formattedEndTime);
+  };
+
 
   return (
-    <div
-      className={`fixed inset-0 ${
-        isOpen ? 'block z-50' : 'hidden'
-      } bg-gray-700 bg-opacity-75 flex items-center justify-center`}
+    <Dialog
+      open={isOpen} onOpenChange={setIsOpen}
     >
-      <div className="modal-content bg-white w-1/3 rounded-md shadow-md ">
-        <div className="bg-gray-200 py-1 w-full flex justify-end px-4">
-          <svg
-            onClick={onClose}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            className="w-7 p-1 h-7 cursor-pointer hover:bg-gray-300 hover:rounded-full"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </div>
+      <DialogContent className="modal-content bg-white w-1/3 rounded-md shadow-md ">
 
         <div className="p-4">
-          <h2 className="text-xl font-semibold mb-2">Add Event</h2>
+          <h2 className="text-xl font-semibold mb-2">{isUpdating ? "Update Event" : "Add Event"}</h2>
           <div className="flex flex-col w-3/4 gap-1">
             <label className="text-sm font-medium gap-2">Start Time</label>
             <input
               disabled
-              value={selectedDate ? moment(selectedDate).format('YYYY-MM-DD hh:mm A') : ''}
+              value={selectedDate?.startTime ? moment(selectedDate?.startTime).format('YYYY-MM-DD hh:mm A') : ''}
               className="focus:outline-none text-gray-500 py-1 px-2 bg-gray-300 rounded-md shadow"
             />
           </div>
+
+          <div className="flex flex-col w-3/4 gap-1">
+            <label className="text-sm font-medium gap-2">End Time</label>
+            <select
+              value={endTimeOption}
+              onChange={handleEndTimeOptionChange}
+              className="border rounded-md focus:outline-none px-1 py-1 mb-2"
+            >
+              {generateEndTimeOptions().map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="flex flex-col mt-2 w-3/4 gap-1">
             <label className="text-sm font-medium">Event Title</label>
             <input
@@ -299,6 +553,7 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
               onChange={(e) => setEventText(e.target.value)}
             />
           </div>
+
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">Event Color</label>
             <div className="flex gap-4 ">
@@ -307,9 +562,8 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
                   key={bg}
                   onClick={() => setSelectedBackground(bg)}
                   style={{ backgroundColor: bg }}
-                  className={`cursor-pointer ${
-                    selectedBackground === bg && 'ring-2 ring-offset-1'
-                  } h-6 w-6 rounded-full transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={`cursor-pointer ${selectedBackground === bg && 'ring-2 ring-offset-1'
+                    } h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
@@ -322,9 +576,8 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
                   onClick={() => setSelectedBorder(bg)}
                   key={bg}
                   style={{ backgroundColor: bg }}
-                  className={` ${
-                    selectedBorder === bg && 'ring-2 ring-offset-1'
-                  } cursor-pointer h-6 w-6 rounded-full transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={` ${selectedBorder === bg && 'ring-2 ring-offset-1'
+                    } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
@@ -337,22 +590,24 @@ const CustomModal = ({ isOpen, onClose, selectedDate, onConfirm }) => {
                   key={color}
                   onClick={() => setSelectedTextColor(color)}
                   style={{ backgroundColor: color }}
-                  className={` ${
-                    selectedTextColor === color && 'ring-2 ring-offset-1'
-                  } cursor-pointer h-6 w-6 rounded-full transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={` ${selectedTextColor === color && 'ring-2 ring-offset-1'
+                    } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
           </div>
-          <button
-            onClick={handleConfirm}
-            className="bg-main text-white px-4 rounded-md text-sm py-2 font-medium w-full  mt-4"
-          >
-            Save
-          </button>
+          <div className='flex gap-2'>
+            <button
+              onClick={handleConfirm}
+              className="bg-main text-white px-4 rounded-md text-sm py-2 font-medium w-full  mt-4"
+            >
+              Save
+            </button>
+            {isUpdating && <button onClick={handleDelete} className='bg-subcolor2 text-white px-4 rounded-md text-sm py-2 font-medium w-full box-shadow-main  mt-4'>Delete</button>}
+          </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -362,13 +617,13 @@ const EventList = ({ organizedEvents }) => {
   }
   return (
     <div>
-      {Object.keys(organizedEvents).map((dayLabel) => (
+      {Object.keys(organizedEvents).reverse().map((dayLabel) => (
         <div key={dayLabel} className="mb-4">
           <h2 className="text-lg font-semibold mb-2">{dayLabel}</h2>
           {organizedEvents[dayLabel].map((event) => (
             <div
               key={event.id}
-              className="flex text-[0.70rem] font-semibold justify-between items-center mb-2"
+              className="flex flex-col text-[0.70rem] font-semibold justify-between mb-2"
             >
               <div className="flex items-center capitalize">
                 <div
@@ -379,7 +634,9 @@ const EventList = ({ organizedEvents }) => {
                   {event.title}
                 </span>
               </div>
-              <div className="">{moment(event.start).format('hh:mm')}</div>
+              <div>
+                <div className=" w-full flex justify-end">{moment(event.start).format('hh:mm')}-{moment(event.end).format('hh:mm')}</div>
+              </div>
             </div>
           ))}
         </div>

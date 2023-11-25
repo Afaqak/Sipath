@@ -37,7 +37,7 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
     <div className=' flex flex-col gap-2 '>
       <div
 
-        className={`max-h-[13rem] min-h-[12rem] pb-4 flex gap-4  bg-white shadow-lg rounded-md border p-4 min-w-full md:w-[20rem] lg:w-[21.8rem] ${isEdit && 'border-2 border-subcolor'
+        className={`max-h-[13rem] min-h-[12rem] pb-4 flex gap-4  bg-white box-shadow-main rounded-md border p-4 min-w-full md:w-[20rem] lg:w-[21.8rem] ${isEdit && 'border-2 border-subcolor'
           } relative block w-full`}
       >
         {video?.live && (

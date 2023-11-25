@@ -160,7 +160,7 @@ export const OnBoardingProcess = () => {
           className="min-h-[70%] bg-white w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
         >
           <div className="">
-            <h1 className="text-xl mb-4 font-semibold">Create Your Profile</h1>
+            <h1 className="text-[1.15rem] mb-4 font-semibold">Create Your Profile!</h1>
             <div className="flex gap-4">
               <div className="flex flex-col w-1/3">
                 <label className="font-thin mb-1 uppercase text-sm">Personal Information</label>
@@ -298,13 +298,7 @@ export const OnBoardingProcess = () => {
                         className="h-20 w-20 rounded-full object-contain"
                       />
                     ) : (
-                      <img
-                        src={'/svgs/accountcircle.svg'}
-                        className="h-20 w-20"
-                        width={60}
-                        height={60}
-                        alt="account"
-                      />
+                      <Icons.account_circle className="fill-[#1C1B1F] w-20 h-20"/>
                     )}
 
                   </div>
@@ -313,8 +307,9 @@ export const OnBoardingProcess = () => {
                     onClick={() => {
                       fileRef.current.click();
                     }}
-                    className="bg-subcolor mt-4 text-white py-1 px-3"
+                    className="bg-subcolor mt-4 rounded-md flex items-center gap-2 text-white py-1 px-3"
                   >
+                    <Icons.upload className=" fill-white w-4 h-4 text-white"/>
                     Upload Image
                     <input
                       ref={fileRef}
@@ -345,10 +340,10 @@ export const OnBoardingProcess = () => {
               type="submit"
               disabled={loadingAsExpert || loadingAsUser}
               variant="outline"
-              className="text-black py-1 w-full flex gap-2 border-black"
+              className="text-black py-1 w-full flex items-center gap-2 border-black"
             >
               {loadingAsExpert && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="black" className="w-4 h-4" /></span>}
-              Continue as an Expert
+              Continue as an Expert <Icons.info_black className="h-4 w-4 fill-black"/>
             </Button>
           </div>
         </form>

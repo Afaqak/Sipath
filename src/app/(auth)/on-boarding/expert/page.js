@@ -88,12 +88,12 @@ const OnBoardingExpert = () => {
 
   return (
     <>
-      <div className="h-[90vh] my-2 items-center justify-center flex">
+      <div className="my-6 items-center justify-center flex uppercase">
         <form
           onSubmit={handleSubmit}
-          className="p-7 min-h-[70vh] rounded-lg shadow-lg bg-white w-[70%] flex flex-col gap-2"
+        className="p-7 min-h-[70vh]  rounded-lg box-shadow-main  bg-white w-[70%] flex flex-col gap-2"
         >
-          <h1 className="font-semibold text-lg">Complete Your Profile!</h1>
+          <h1 className="font-semibold text-lg mb-2">Complete Your Profile!</h1>
           <div>
             <div className="flex gap-2 ">
               <div className="flex flex-col w-fit">
@@ -131,16 +131,16 @@ const OnBoardingExpert = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button
+            <button
               type="submit"
               variant="outline"
               disabled={loading}
-              className={`flex items-center border-black rounded-md px-8 py-1 gap-2 
+              className={`flex items-center border-black border-2 py-1 w-44 justify-center font-medium rounded-md px-8 gap-2 
                 }`}
             >
               {loading && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="black" className="w-4 h-4" /></span>}
               Complete
-            </Button>
+            </button>
           </div>
         </form>
 
