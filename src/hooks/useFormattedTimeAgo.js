@@ -1,9 +1,6 @@
 import moment from 'moment-timezone';
 import { useMemo } from 'react';
 
-import moment from 'moment-timezone';
-import { useMemo } from 'react';
-
 export const useFormattedTimeAgo = (timestamp, userTimeZone = 'UTC') => {
   const formattedTimeAgo = useMemo(() => {
     const now = moment();
