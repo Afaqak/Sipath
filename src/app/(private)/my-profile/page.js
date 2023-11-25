@@ -33,7 +33,8 @@ const MyProfile = () => {
   return (
     <>
       <div className="mt-0.5"></div>
-      <div className="pb-8 overflow-visible relative w-[90%] md:w-[85%] mx-auto">
+      <div className="pb-8 overflow-visible relative">
+        <div className=' w-[90%] md:w-[85%] mx-auto'>
         <Profile type={'myprofile'} session={session} user={session?.user} />
         <UniversalTab
           tabStyle={session?.user?.isTutor ?'grid grid-cols-3 gap-4 md:grid-cols-4':'grid grid-cols-3 gap-4 md:grid-cols-6'}
@@ -45,7 +46,8 @@ const MyProfile = () => {
           
           }}
         />
-
+        </div>
+        <div className='w-[90%] md:w-[85%] mx-auto'>
         {active === 'courses' && (
           <div>
             <Video videos={courses} />
@@ -66,11 +68,14 @@ const MyProfile = () => {
         )} */}
         {active ==='mylearning' && <MyCourses dataKey="enrollments" user={session} url={`/courses/enrollments`}/>}
         {active === 'books' && <Mybooks isProfile={true} url={`/assets/books/user/${session?.user?.id}`} token={session?.token} user={session?.user} />}
-        {active === 'calendar' && <EventsCalendar />}
         {active === 'income' && <MyIncome />}
         {active === 'myvideos' && <MyVideos token={session?.token} url={`/assets/videos/user/${session?.user?.id}`} />}
         {active === 'myaccount' && <MyAccount session={session} />}
         {active === 'mycourses' && <MyCourses dataKey="courses" url={'/courses'} user={session} />}
+        </div>
+
+        
+        {active === 'calendar' && <EventsCalendar />}
       </div>
     </>
   );

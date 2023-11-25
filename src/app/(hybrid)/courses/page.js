@@ -89,7 +89,7 @@ const CourseCard = ({ course, session, enrollments }) => {
   return (
     <div
 
-      className=" h-[20rem] relative block mb-6 w-full p-4 bg-white shadow-md rounded-md"
+      className="max-h-[20rem] relative block mb-6 w-full p-4 bg-white box-shadow-main rounded-md"
     >
       {course?.price && course?.price > 0 && (
         <span className="absolute top-2 z-[1000] left-0 bg-subcolor text-[0.7rem] py-[0.15rem]  rounded-r-md text-white px-3 font-medium">

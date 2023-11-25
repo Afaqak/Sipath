@@ -35,7 +35,7 @@ export const Feed = ({ feed, openModal, user, style = 'md:w-[70%] w-[90%] lg:w-[
 
   return (
 
-    <div className={`flex flex-col ${style} mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md`}>
+    <div className={`flex flex-col ${style} mx-auto px-4 pt-4 pb-3 bg-white box-shadow-main rounded-md`}>
       <div className="flex justify-between items-center ">
         <ProfileHoverCard user={feed?.user} >
           <div className='flex gap-2 '>

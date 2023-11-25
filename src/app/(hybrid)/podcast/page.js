@@ -109,7 +109,7 @@ const PodcastItem = ({ podcast }) => {
   return (
     <Link
       href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
-      className=" h-[18.6rem] relative block mb-6 w-ful p-4 bg-white shadow-md rounded-md"
+      className=" h-[18.6rem] relative block mb-6 w-ful p-4 bg-white box-shadow-main rounded-md"
     >
       {podcast?.live && (
         <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">

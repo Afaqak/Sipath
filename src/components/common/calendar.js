@@ -84,11 +84,11 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
 
   return (
     <div
-      className={`container mx-auto w-full md:w-[15rem]
+      className={`w-full md:w-[15rem]
     ${styleCal} bg-white px-4 pt-2 pb-4`}
     >
       <div className="flex justify-between items-center bg-red mb-1">
-        <h3 className="text-base mb-4 font-semibold">{month}</h3>
+        <h3 className="text-base mb-2 text-[#3c4043] font-semibold">{month}</h3>
         <div className="gap-1 hidden">
           <button className="font-bold py-2 " onClick={getPreviousMonth}>
             <svg
@@ -120,7 +120,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((dayName,idx) => (
           <div
             key={idx}
-            className="font-semibold text-gray-400 text-[0.67rem] text-center py-2"
+            className="font-semibold text-[#70757a] text-[0.67rem] text-center py-2"
           >
             {dayName}
           </div>
@@ -128,15 +128,15 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
         {days.map((day, idx) => (
           <div
             key={idx}
-            className={`py-1 ease-in-out ${
+            className={`py-1 ease-in-out hover:bg-gray-100 ${
               day
                 ? isCurrentDate(day)
                   ? 'bg-main text-white'
                   : selectedDate === idx
-                  ? 'ring'
+                  ? 'bg-blue-200 text-main'
                   : ''
                 : ''
-            } text-[0.65rem] text-center font-medium border-gray-200 hover:ring rounded-full transition-all duration-300`}
+            } text-[0.65rem] text-center font-medium border-gray-200  rounded-full transition-all duration-300`}
             onClick={() => handleDateClick(day, idx)}
           >
             {padStartWithZero(day)}

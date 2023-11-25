@@ -114,7 +114,7 @@ const ExpertCard = ({ item, setData, session}) => {
 
 
   return (
-    <div className={`relative mb-6 cursor-pointer flex flex-col h-fit lg:h-40 py-6 px-4 min-w-[70%] bg-white shadow-md rounded-sm mt-6 md:mt-2`}>
+  <div className={`relative mb-6 cursor-pointer flex flex-col h-fit lg:h-40 py-6 px-4 min-w-[70%] bg-white box-shadow-main rounded-sm mt-6 md:mt-2`}>
       <div className="lg:absolute relative mb-6 lg:mb-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:-left-16 w-[8rem] lg:w-[7rem] rounded-full">
         <UserAvatar className="h-28 w-28" user={{ image: item['user.profile_image'] }} />
         <button
