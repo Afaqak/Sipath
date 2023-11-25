@@ -24,7 +24,7 @@ export const Feed = ({ feed, openModal, user, style = 'md:w-[70%] w-[90%] lg:w-[
   const path = usePathname()
   const setPage = path.startsWith('/profile')
 
-  const handleThumbnailClick = (thumbnail) => {
+const handleThumbnailClick = (thumbnail) => {
     setBigImage(thumbnail);
   };
 

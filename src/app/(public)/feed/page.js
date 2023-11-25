@@ -17,6 +17,8 @@ const FeedPage = () => {
 
   const axios = useAxiosPrivate();
 
+  console.log(feeds)
+
   const fetchUserFeed = async (limitSend = 6) => {
 
     try {
@@ -26,7 +28,7 @@ const FeedPage = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      const response = await request.json()
+    const response = await request.json()
       setFeeds(response.user_feed);
     } catch (err) {
       console.log(err);
