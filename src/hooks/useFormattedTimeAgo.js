@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 import { useMemo } from 'react';
 
+
 export const useFormattedTimeAgo = (timestamp, userTimeZone = 'UTC') => {
   const formattedTimeAgo = useMemo(() => {
     const now = moment();
@@ -22,8 +23,10 @@ export const useFormattedTimeAgo = (timestamp, userTimeZone = 'UTC') => {
       return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     } else if (minutes > 0) {
       return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (seconds > 0) {
+      return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
     } else {
-      return createdAt.fromNow();
+      return 'Just now';
     }
   }, [timestamp, userTimeZone]);
 
