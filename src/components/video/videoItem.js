@@ -19,7 +19,7 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  console.log(userTimeZone,"{]")
+
   const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt,userTimeZone);
 
 

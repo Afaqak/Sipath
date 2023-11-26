@@ -16,6 +16,7 @@ export const createComment = createAsyncThunk(
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
       }
+      console.log(response?.data)
 
    
       return response.data;
@@ -66,14 +67,17 @@ export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
   async ({ videoId, commentId, data, token }) => {
     const axios = useAxiosPrivate();
-
+    for (const form of data.entries()) {
+      console.log(form,commentId,videoId)
+   }
     try {
-      const response = await axios.post(`assets/video/${videoId}/comments/${commentId}`, data, {
+      const response = await axios.post(`/assets/video/${videoId}/comments/${commentId}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
-   
+      fetchCommentReplies({videoId,commentId})
       return response.data.comment;
     } catch (error) {
       throw new Error();

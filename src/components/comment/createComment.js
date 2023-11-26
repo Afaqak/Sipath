@@ -57,7 +57,6 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
     input.click();
-
     input.onchange = async () => {
       const file = input.files[0];
 
@@ -69,11 +68,14 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
           const imageUrl = event.target.result;
 
           const range = editor.getSelection();
+
+          // Insert the image with a style attribute for sizing
           editor.insertEmbed(range.index, 'image', imageUrl);
         };
         reader.readAsDataURL(file);
       }
     };
+
   }
 
   return (
@@ -87,14 +89,14 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
         className="h-10 w-10 self-start"
       />
       {/* {showQuill && ( */}
-        <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
-          <QuillNoSSRWrapper
-            forwardedRef={quillRef}
-            onChange={handleChange}
-            modules={modules}
-            className="w-full"
-          />
-        </div>
+      <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
+        <QuillNoSSRWrapper
+          forwardedRef={quillRef}
+          onChange={handleChange}
+          modules={modules}
+          className="w-full"
+        />
+      </div>
       {/* )} */}
       {!reply && (
         <button type="submit">

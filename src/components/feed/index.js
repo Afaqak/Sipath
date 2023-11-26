@@ -1,12 +1,13 @@
 'use client';
-import { useEffect,useState, useRef  } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '@/components/common/userAvatar';
-import { ProfileHoverCard,  DeleteModal, Icons,CreateComment } from '@/components';
+import { ProfileHoverCard, DeleteModal, Icons, CreateComment, CustomEditor } from '@/components';
 import { VideoEditModal } from '../video/editVideoModal';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
+import 'katex/dist/katex.min.css';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ import { useRouter } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { warningToast } from '@/utils/toasts';
 import { LoadingCommentsSkeleton } from '@/utils/skeletons';
-import { useDispatch ,useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addComment, addMoreComments, addMoreReplies, addReply, fetchCommentsAsync, fetchRepliesAsync, selectCommentsByPostId } from '@/features/feedComments/feedCommentSlice';
 
 
@@ -146,7 +147,7 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
           text={video?.title}
         />
       </div>
-     
+
     </div>
   );
 };
@@ -160,16 +161,14 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
 
 
 export const CommentSectionFeed = ({ itemId, type }) => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
   const { data: user } = useSession()
   const axios = useAxiosPrivate()
   const comments = useSelector((state) => selectCommentsByPostId(state, itemId));
   const [commentReplies, setCommentReplies] = useState({})
   const [replyView, setReplyView] = useState({});
-  const [file, setFile] = useState(null);
-  const [text, setText] = useState('');
   const router = useRouter()
-  const [limit,setLimit]=useState(0)
+  const [limit, setLimit] = useState(0)
   const [commentLimit, setCommentLimit] = useState(0);
 
 
@@ -185,8 +184,8 @@ export const CommentSectionFeed = ({ itemId, type }) => {
   useEffect(() => {
     const fetchPrimaryComments = async (limit) => {
       try {
-        dispatch(fetchCommentsAsync({postId:itemId,token:user?.token}))
-      
+        dispatch(fetchCommentsAsync({ postId: itemId, token: user?.token }))
+
       } catch (err) {
         console.log(err)
       }
@@ -200,7 +199,7 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 
 
   const loadMoreComments = async () => {
-     
+
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${itemId}/comments?limit=10&set=${commentLimit + 10}`,
@@ -222,15 +221,15 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 
   const loadMoreReplies = async (commentId) => {
     try {
-      
+
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${itemId}/comments/${commentId}?limit=10&set=${limit+10}&order=asc`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${itemId}/comments/${commentId}?limit=10&set=${limit + 10}&order=asc`
       );
 
-      setLimit(limit+10)
- 
-      dispatch(addMoreReplies({ postId:itemId,commentId, moreReplies: response.data?.comments }));
+      setLimit(limit + 10)
+
+      dispatch(addMoreReplies({ postId: itemId, commentId, moreReplies: response.data?.comments }));
     } catch (error) {
       console.error(error);
     }
@@ -238,26 +237,27 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 
 
 
-  const onCommentSubmit = async (e) => {
-    e.preventDefault();
-    const imgRegex = /<img[^>]*>/g;
-    const textWithoutImages = text.replace(imgRegex, '');
+  const onCommentSubmit = async ({ text, file }) => {
+
     try {
       if (!user?.token) {
         return warningToast("Login to Comment", () => router.push('/sign-in'))
       }
       if (!text) return;
       const formdata = new FormData();
-      formdata.append('comment', textWithoutImages);
+      formdata.append('comment', text);
       formdata.append('image', file);
+      console.log(file)
 
       const response = await axios.post(`/posts/${itemId}/comments`, formdata, {
         headers: {
-          Authorization: `Bearer ${user?.token}`
+          Authorization: `Bearer ${user?.token}`,
+          'Content-Type': 'multipart/form-data',
         }
       })
 
-      dispatch(addComment({postId:itemId,comment:response?.data?.comment}))
+      console.log(response?.data)
+      dispatch(addComment({ postId: itemId, comment: response?.data?.comment }))
 
     } catch (error) {
       console.error(error);
@@ -270,10 +270,11 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} />
+      <CustomEditor onCommentSubmit={onCommentSubmit} />
+      {/* <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} /> */}
       {comments?.length > 0 &&
         comments?.map((comment, index) => {
-     
+
           return (
             <div key={index}>
               <FeedComment
@@ -287,12 +288,12 @@ export const CommentSectionFeed = ({ itemId, type }) => {
                 setCommentReplies={setCommentReplies}
               />
               <div className="border-l ml-6 pl-4">
-                {comment  && replyView[comment?.id] && (
-                  
+                {comment && replyView[comment?.id] && (
+
                   <div>
                     <RepliesList
                       itemId={itemId}
-                      handleFetchReplies={() =>loadMoreReplies(comment?.id)}
+                      handleFetchReplies={() => loadMoreReplies(comment?.id)}
                       comments={comment?.replies}
                       parentId={comment?.id}
                     />
@@ -304,7 +305,7 @@ export const CommentSectionFeed = ({ itemId, type }) => {
         })}
       {/* {loading && <LoadingSkeletons />} */}
       <div className="w-full flex justify-center mt-16">
-       
+
         <button onClick={loadMoreComments} className="">
           <Image src={'/svgs/add_circle.svg'} width={30} height={30} />
         </button>
@@ -319,20 +320,17 @@ export const CommentSectionFeed = ({ itemId, type }) => {
 const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => {
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-  const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt,userTimeZone);
+  const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt, userTimeZone);
   const axios = useAxiosPrivate();
   const [isReplying, setIsReplying] = useState(false);
-  const [file, setFile] = useState(null);
-  const [text, setText] = useState('');
+
   const [loadingReplies, setLoadingReplies] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const comments = useSelector((state) => state.feedComments);
   const { data: user } = useSession();
 
-  const onReplySubmit = async (e) => {
-    e.preventDefault();
-
+  const onReplySubmit = async ({file,text}) => {
     const imgRegex = /<img[^>]*>/g;
     const textWithoutImages = text.replace(imgRegex, '');
 
@@ -347,6 +345,7 @@ const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${itemId}/comments/${parentId}`, formdata, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
 
@@ -388,7 +387,7 @@ const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => 
           <UserAvatar
             user={{
               image: +comment?.author_id === +user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
-              name: comment?.user?.display_name || comment?.user?.first_name,
+              name: +comment?.author_id === +user?.user?.id ? user?.user?.display_name.slice(0, 2) : comment?.user?.display_name.slice(0, 2),
             }}
             className="h-8 w-8"
           />
@@ -423,24 +422,12 @@ const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => 
           </div>
           {isReplying && (
             <div className="w-full mt-2">
-              <CreateComment
-                setFile={setFile}
-                setText={setText}
-                handleSubmit={onReplySubmit}
+              <CustomEditor
+                closeReplying={() => setIsReplying(false)}
+                onCommentSubmit={onReplySubmit}
                 reply={isReplying}
               />
-              <div className="flex w-full gap-8 mt-2 justify-end items-end">
-                <button
-                  type="button"
-                  onClick={handleIsReplying}
-                  className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
-                >
-                  cancel
-                </button>
-                <button onClick={onReplySubmit} className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl">
-                  reply
-                </button>
-              </div>
+             
             </div>
           )}
 
@@ -468,7 +455,7 @@ export const RepliesList = ({ comments, itemId, parentId, handleFetchReplies }) 
       {comments?.length > 0 ? (
         comments?.map((comment) => (
           <>
-      
+
             <FeedComment
 
               key={comment.id} itemId={itemId} noView={true} comment={comment} parentId={parentId} />
@@ -487,3 +474,11 @@ export const RepliesList = ({ comments, itemId, parentId, handleFetchReplies }) 
     </div>
   );
 };
+
+
+
+
+
+
+
+

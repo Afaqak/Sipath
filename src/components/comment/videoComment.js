@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useCallback, useRef } from 'react';
-import { CreateComment, Icons } from '@/components';
+import { CreateComment, CustomEditor, Icons } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import UserAvatar from '../common/userAvatar';
@@ -16,33 +16,29 @@ import { LoadingCommentsSkeleton } from '@/utils/skeletons';
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
   const searchParams = useSearchParams();
-  const [text, setText] = useState('');
+
   const id = searchParams.get('id');
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
-  const formattedTimeAgo=useFormattedTimeAgo(comment?.createdAt)
-  const [file, setFile] = useState(null);
+  const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt)
   const dispatch = useDispatch();
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
   const router = useRouter()
-  const onReplySubmit = (e) => {
-    e.preventDefault();
+  const onReplySubmit = ({ text, file }) => {
 
     setIsReplying(false);
 
-    const imgRegex = /<img[^>]*>/g;
-    const textWithoutImages = text.replace(imgRegex, '');
-
-
     try {
       const formdata = new FormData();
+      console.log(file)
+      formdata.append('image', file);
+      console.log(formdata.get('image'),'replying')
       formdata.append(
         'comment',
-        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${textWithoutImages}</div}`
+        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${text}</div}`
       );
-      formdata.append('image', file);
-
+      
       dispatch(
         createReplyToComment({
           videoId: id,
@@ -90,7 +86,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           <UserAvatar
             user={{
               image: comment?.author_id === user?.user?.id ? user?.user?.profile_image : comment.user?.profile_image,
-              name: comment?.user?.display_name || comment?.user?.first_name,
+              name: comment?.author_id === user?.user?.id ? user?.user?.display_name?.slice(0, 2) : comment?.user?.display_name?.slice(0, 2),
             }}
             className="h-8 w-8"
           />
@@ -115,35 +111,9 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
               ></div>
             </div>
             <div className="flex flex-col gap-2 self-start">
-              <svg
-                onClick={handleIsReplying}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-4 h-4 cursor-pointer"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
-                />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-4 h-4 cursor-pointer"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"
-                />
-              </svg>
+              <Icons.reply onClick={handleIsReplying} />
+              <Icons.report />
+
             </div>
           </div>
           <div className="flex justify-between text-gray-500 mt-2">
@@ -154,27 +124,12 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           </div>
           {isReplying && (
             <div className="w-full mt-2">
-              <CreateComment
-                setFile={setFile}
-                setText={setText}
-                handleSubmit={onReplySubmit}
+              <CustomEditor
                 reply={isReplying}
+                onCommentSubmit={onReplySubmit}
+                closeReplying={()=>setIsReplying(false)}
               />
-              <div className="flex w-full gap-8 mt-2 justify-end items-end">
-                <button
-                  type="button"
-                  onClick={handleIsReplying}
-                  className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
-                >
-                  cancel
-                </button>
-                <button
-                  onClick={onReplySubmit}
-                  className="py-1 px-2 hover:bg-gray-200 hover:rounded-2xl"
-                >
-                  reply
-                </button>
-              </div>
+
             </div>
           )}
           {!noView && (
@@ -187,7 +142,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
             </button>
           )}
 
-          {loadingReplies ?<LoadingCommentsSkeleton/>: null}
+          {loadingReplies ? <LoadingCommentsSkeleton /> : null}
         </div>
       </div>
     </div>
