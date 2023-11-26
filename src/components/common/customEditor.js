@@ -83,10 +83,11 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     const currentText = editorRef.current.innerText;
     const currentFileCount = editorRef.current.querySelectorAll('img').length;
   
-    if (currentText.trim() === '' && currentFileCount === 0) {
-      setFile(null); 
+    if (currentFileCount === 0) {
+      setFile(null);
     }
   
+    console.log(currentFileCount,currentText,file)
     setText(currentText);
   };
   
