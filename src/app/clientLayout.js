@@ -10,7 +10,7 @@ import { Toaster } from 'sonner';
 
 export default function ClientLayout({ children ,session}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <Provider store={store}>
           <main className={` app overflow-x-hidden bg-gray-100 min-h-screen`}>

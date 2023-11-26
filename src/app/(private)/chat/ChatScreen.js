@@ -11,7 +11,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import { debounce } from 'lodash';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
-import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
+import { AppointmentRequestModal} from '@/components';
 const ChatScreen = ({ conversation, session }) => {
 
   const dispatch = useDispatch();

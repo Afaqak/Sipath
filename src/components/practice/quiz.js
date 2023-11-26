@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import UserAvatar from '../common/userAvatar';
+import UserAvatar from '@/components/common/userAvatar';
 import { useSession } from 'next-auth/react';
 import { EditQuizModal } from '@/components';
 import { useRouter } from 'next/navigation';
+
 export const Quiz = ({ quiz, isEdit }) => {
   const { data: user } = useSession();
   const [open, setOpen] = useState(false);

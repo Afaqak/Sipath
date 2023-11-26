@@ -1,9 +1,10 @@
 'use client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { Video, ExpertsComponent, ContentContainer } from '@/components';
+import { ExpertsComponent } from '@/components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { VideoGallery } from '@/components/video/videoGallery';
 
 const colors = {
   physics: '#371FCA',
@@ -21,51 +22,51 @@ const colors = {
 
 
 const Page = ({ params }) => {
-  const categoryParam=useSearchParams()
-  const [videos,setVideos]=useState([])
-  const [premiumVideos,setPremiumVideos]=useState([])
-  const [experts,setExperts]=useState([])
-  const category=categoryParam?.get('id')
+  const categoryParam = useSearchParams()
+  const [videos, setVideos] = useState([])
+  const [premiumVideos, setPremiumVideos] = useState([])
+  const [experts, setExperts] = useState([])
+  const category = categoryParam?.get('id')
   const router = useRouter();
-  const axios =useAxiosPrivate()
-  const fetchVideosOfCategory=async ()=>{
-    try{
-      const response=await axios.get(`/categories/${category}/content?type=videos`)
-     
+  const axios = useAxiosPrivate()
+  const fetchVideosOfCategory = async () => {
+    try {
+      const response = await axios.get(`/categories/${category}/content?type=videos`)
+
       setVideos(response?.data)
-    }catch(err){
+    } catch (err) {
       console.log(err)
     }
   }
-  const fetchPremiumVideosOfCategory=async ()=>{
-    try{
-      const response=await axios.get(`/categories/${category}/content?type=premium`)
+  const fetchPremiumVideosOfCategory = async () => {
+    try {
+      const response = await axios.get(`/categories/${category}/content?type=premium`)
       setPremiumVideos(response?.data)
-     
-    }catch(err){
+
+    } catch (err) {
       console.log(err)
     }
   }
 
-  const fetchCategoryOfExperts=async ()=>{
-    try{
-      const response=await axios.get(`/categories/${category}/content?type=tutors`)
+  const fetchCategoryOfExperts = async () => {
+    try {
+      const response = await axios.get(`/categories/${category}/content?type=tutors`)
       setExperts(response?.data)
-    
-    }catch(err){
+
+    } catch (err) {
       console.log(err)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchVideosOfCategory()
     fetchCategoryOfExperts()
     fetchPremiumVideosOfCategory()
-  },[])
+  }, [])
 
   return (
-    <ContentContainer>
-      <div className="py-8">
+    <div className='my-8 overflow-visible relative w-[90%] mx-auto'>
+      <div className="">
         <div className="flex text-lg font-semibold gap-2">
           <span className="cursor-pointer" onClick={() => router.back()}>
             Categories
@@ -77,12 +78,12 @@ const Page = ({ params }) => {
           </span>
         </div>
       </div>
-      <Video title={'Videos'} videos={videos} />
-      <Video title={'Premium'} videos={premiumVideos} />
+      <VideoGallery title={'Videos'} videos={videos} />
+      <VideoGallery title={'Premium'} videos={premiumVideos} />
       <div className="mx-auto">
         <ExpertsComponent title={'Experts'} data={experts} />
       </div>
-    </ContentContainer>
+    </div >
   );
 };
 

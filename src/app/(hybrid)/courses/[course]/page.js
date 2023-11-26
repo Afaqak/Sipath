@@ -5,7 +5,7 @@ import {
   CommentsSection,
   Icons
 } from '@/components';
-import ContentPLayer from '@/components/podcast/reactPlayer';
+import ContentPLayer from '@/components/common/reactPlayer';
 import { useEffect, useState, useCallback } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';

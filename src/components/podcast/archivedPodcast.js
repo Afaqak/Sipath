@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Video } from '../video/video';
+
 
 const archivedData = [
   {
@@ -63,5 +63,5 @@ const archivedData = [
 ];
 
 export const ArchivedPodcast = () => {
-  return <Video videos={archivedData} />;
+  return <></>;
 };

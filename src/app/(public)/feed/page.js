@@ -1,10 +1,9 @@
 'use client'
 import React, { useState, useEffect } from "react";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { DeleteFeedModal, Feed, Icons, VideoItem } from "@/components";
+import { DeleteFeedModal, Feed, Icons, VideoItemFeed } from "@/components";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { VideoItemFeed } from "@/components/feed";
 
 const FeedPage = () => {
   const [feeds, setFeeds] = useState([]);

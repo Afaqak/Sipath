@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import UserAvatar from './userAvatar';
-import { Icons, ProfileHoverCard, CreateComment } from '..';
+import { Icons, ProfileHoverCard, CommentSectionFeed } from '..';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import { usePathname} from 'next/navigation';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 import 'react-quill/dist/quill.snow.css';
 import Link from 'next/link';
-import { CommentSectionFeed } from '../feed';
+// import { CommentSectionFeed } from '../feed';
 
 
 export const Feed = ({ feed, openModal, user, style = 'md:w-[70%] w-[90%] lg:w-[50%]' }) => {

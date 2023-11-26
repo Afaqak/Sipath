@@ -2,9 +2,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '@/components/common/userAvatar';
-import { ProfileHoverCard,  DeleteModal, Icons } from '@/components';
+import { ProfileHoverCard, DeleteModal, Icons } from '@/components';
 import { useState, useRef } from 'react';
-import { VideoEditModal } from './editVideoModal';
+import { VideoEditModal } from '../modals/editVideoModal';
 
 import {
   DropdownMenu,
@@ -15,12 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
-export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo }) => {
+export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }) => {
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-  const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt,userTimeZone);
+  const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt, userTimeZone);
 
 
   return (
@@ -43,23 +43,23 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
       )}
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
-       
-          <img
 
-            src={video?.thumbnail}
-            alt={'thumbnail'}
-            className="rounded-md object-cover w-full h-[11.2rem]"
-          />
-        
+        <img
+
+          src={video?.thumbnail}
+          alt={'thumbnail'}
+          className="rounded-md object-cover w-full h-[11.2rem]"
+        />
+
       </Link>
       <div className="mt-3 flex gap-2 w-full">
         <div>
           <ProfileHoverCard user={{
             display_name: video && video['user.display_name'],
             profile_image: video && video['user.profile_image'],
-            rating: video  && video['user.rating'],
+            rating: video && video['user.rating'],
             isTutor: video && video['user.isTutor'],
-            id: video&& video['user.id']
+            id: video && video['user.id']
           }}>
             <UserAvatar user={{ image: video && video['user.profile_image'] }} />
           </ProfileHoverCard>
@@ -71,7 +71,7 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
               className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
             >
               <span className="line-clamp-2 hover:underline">
-             
+
                 {video?.title}
               </span>
             </Link>
@@ -81,7 +81,7 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
                   <DropdownMenuTrigger>
                     <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent  align='end'>
+                  <DropdownMenuContent align='end'>
                     <DropdownMenuItem onClick={() => setOpen(true)} className="flex gap-2">
                       Edit <Icons.edit className="h-4 w-4 stroke-[#616161]" />
                     </DropdownMenuItem>
@@ -124,7 +124,7 @@ export const VideoItem = ({ video, isEdit, setVideos,loading, setDeletedVideo })
       <DeleteModal
         isOpen={videoDelete}
         loading={loading}
-        onDeleteSubmit={() => setDeletedVideo(video?.id,()=>setVideoDelete(false))}
+        onDeleteSubmit={() => setDeletedVideo(video?.id, () => setVideoDelete(false))}
         setIsOpen={setVideoDelete}
         text={video?.title}
       />

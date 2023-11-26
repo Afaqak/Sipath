@@ -2,9 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import videojs from 'video.js';
-import { Icons } from '../icons';
 
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { VideoEditModal } from '@/components/video/editVideoModal';
+import { VideoEditModal } from '@/components/modals/editVideoModal';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useRouter, useParams } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';

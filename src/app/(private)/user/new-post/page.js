@@ -103,7 +103,7 @@ const NewPost = () => {
         <div className="">
           <Image
             priority
-            src={bigImage && URL.createObjectURL(bigImage) || "https://bit.ly/placeholder-img"}
+            src={bigImage && URL.createObjectURL(bigImage) || "/place-holder-post.jpeg"}
             width={200}
             height={200}
             alt="Big"

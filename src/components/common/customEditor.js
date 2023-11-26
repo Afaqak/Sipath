@@ -72,9 +72,11 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     const rawHTML = editorRef.current.innerHTML;
     const filteredHTML = filterImages(rawHTML);
 
-    onCommentSubmit({ text: filteredHTML, file });
-    setText('');
-    setFile(null);
+    onCommentSubmit({ text: filteredHTML, file ,setData:()=>{
+      setText('');
+      setFile(null);
+
+    }});
     editorRef.current.innerHTML = '';
   };
 
@@ -83,10 +85,11 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     const currentText = editorRef.current.innerText;
     const currentFileCount = editorRef.current.querySelectorAll('img').length;
   
-    if (currentText.trim() === '' && currentFileCount === 0) {
-      setFile(null); 
+    if (currentFileCount === 0) {
+      setFile(null);
     }
   
+    console.log(currentFileCount,currentText,file)
     setText(currentText);
   };
   
@@ -175,4 +178,6 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     </div>
   );
 };
+
+
 
