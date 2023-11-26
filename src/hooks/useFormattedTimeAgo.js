@@ -20,7 +20,7 @@ export const useFormattedTimeAgo = (timestamp) => {
         [120, '1 minute ago', '1 minute from now'],
         [3600, 'minutes', 60],
         [7200, '1 hour ago', '1 hour from now'],
-        [86400, 'hours', 3600],P
+        [86400, 'hours', 3600],
         [172800, 'Yesterday', 'Tomorrow'],
         [604800, 'days', 86400],
         [1209600, 'Last week', 'Next week'],
