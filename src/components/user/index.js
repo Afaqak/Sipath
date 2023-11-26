@@ -1,15 +1,11 @@
 import React,{ useEffect, useState } from "react";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { Icons, Book,Feed} from "@/components";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { VideoItem } from "@/components";
-import { BookSkeleton } from "@/components";
 import { errorToast,successToast } from "@/utils/toasts";
 import { useRouter } from "next/navigation";
 import { setBooks } from "@/features/book/bookSlice";
-import { DeleteFeedModal } from "@/components";
-import { VideoItemFeed } from "../feed";
+import { VideoItemFeed,DeleteFeedModal,BookSkeleton,VideoItem, Icons, Book,Feed} from "@/components";
 
 
 export const MyFeed = ({ session }) => {

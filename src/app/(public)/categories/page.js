@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ContentContainer } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
 const CategoriesPage = () => {
@@ -25,9 +24,9 @@ const CategoriesPage = () => {
   }, []);
   
   return (
-    <ContentContainer>
+    <div className='my-8 overflow-visible relative w-[90%] mx-auto'>
 
-      <div className="py-8 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 cursor-pointer 2xl:grid-cols-5 gap-4">
+      <div className=" grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 cursor-pointer 2xl:grid-cols-5 gap-4">
         {categoriesData.map((data) => (
           <Link
             key={data.id}
@@ -45,7 +44,7 @@ const CategoriesPage = () => {
           </Link>
         ))}
       </div>
-    </ContentContainer>
+    </div>
   
   );
 };

@@ -5,6 +5,7 @@ import axios from '@/utils/index'
 import { ExpertSkeleton } from '@/utils/skeletons';
 import { useSession } from 'next-auth/react';
 import { errorToast, successToast } from '@/utils/toasts';
+import { VideoGallery } from '@/components/video/videoGallery';
 
 
 const Home = () => {
@@ -87,7 +88,7 @@ const Home = () => {
 
       <div className="w-[90%] mx-auto" >
         {
-          videos?.length > 0 && <Video videos={videos} />
+          videos?.length > 0 && <VideoGallery type='no-more' videos={videos} />
         }
       </div>
       {newVideos?.length > 0 &&
@@ -95,7 +96,7 @@ const Home = () => {
       }
       <div className="w-[90%] mx-auto ">
         {
-          videos_set_one?.length > 0 && <Video videos={videos_set_one} />
+          videos_set_one?.length > 0 && <VideoGallery type='no-more'  videos={videos_set_one} />
         }
 
       </div>
@@ -104,7 +105,7 @@ const Home = () => {
       </div>
       <div ref={videosSetTwoRef} className="w-[90%] mx-auto">
         {
-          videos_set_two?.length > 0 && <Video videos={videos_set_two} />
+          videos_set_two?.length > 0 && <VideoGallery type='no-more'  videos={videos_set_two} />
         }
 
       </div>

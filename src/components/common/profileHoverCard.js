@@ -17,8 +17,8 @@ import { useSession } from "next-auth/react";
 import { successToast, warningToast } from "@/utils/toasts";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { RequestModal } from "../chat/requestModal";
-import { ChatRequestModal } from "../chat/chatRequestModal";
+
+import { ChatRequestModal } from "../modals/chatRequestModal";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 

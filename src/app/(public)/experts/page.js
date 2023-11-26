@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
-import { ContentContainer, ExpertsComponent } from '@/components';
+import {  ExpertsComponent } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import React from 'react';
 

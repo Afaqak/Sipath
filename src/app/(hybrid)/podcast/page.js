@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { ContentContainer, ArchivedPodcast, UpcomingPodcast } from '@/components';
+import { ArchivedPodcast, UpcomingPodcast } from '@/components';
 import axios from '@/utils/index'
 import { useSession } from 'next-auth/react';
 import { Icons } from '@/components';
@@ -24,7 +24,7 @@ const PodcastPage = () => {
         const response = await axios.get('/podcasts?type=all');
 
         setPodcasts(response.data);
-  
+
       } catch (err) {
         console.error(err);
       }
@@ -33,14 +33,13 @@ const PodcastPage = () => {
   }, []);
 
   return (
-    <ContentContainer>
+    <>
       <div className="w-full md:w-[90%] lg:w-[75%] mx-auto">
         <div className="my-8 flex justify-center gap-4 md:gap-10 ">
           <div className="flex p-1 w-full bg-white shadow-md rounded-sm cursor-pointer">
             <div
-              className={`flex gap-2 w-full items-center justify-center ${
-                activeButton === 'live' ? 'bg-[#FB3C22] text-white' : ''
-              }`}
+              className={`flex gap-2 w-full items-center justify-center ${activeButton === 'live' ? 'bg-[#FB3C22] text-white' : ''
+                }`}
               onClick={() => handleButtonClick('live')}
             >
               <Icons.livePodcast fill={activeButton === 'live' ? 'white' : 'black'} />
@@ -49,9 +48,8 @@ const PodcastPage = () => {
           </div>
           <div className="flex p-1 bg-white shadow-md rounded-sm w-full  cursor-pointer">
             <div
-              className={`flex items-center gap-2 justify-center w-full py-2 ${
-                activeButton === 'upcoming' ? 'bg-[#FB3C22] text-white' : ''
-              }`}
+              className={`flex items-center gap-2 justify-center w-full py-2 ${activeButton === 'upcoming' ? 'bg-[#FB3C22] text-white' : ''
+                }`}
               onClick={() => handleButtonClick('upcoming')}
             >
               <Icons.upcomingPodcast />
@@ -60,9 +58,8 @@ const PodcastPage = () => {
           </div>
           <div className="flex gap-2 p-1 bg-white shadow-md rounded-sm w-full cursor-pointer">
             <div
-              className={`flex gap-2  rounded-sm w-full items-center justify-center cursor-pointer  ${
-                activeButton === 'archived' ? 'bg-[#FB3C22] text-white' : ''
-              }`}
+              className={`flex gap-2  rounded-sm w-full items-center justify-center cursor-pointer  ${activeButton === 'archived' ? 'bg-[#FB3C22] text-white' : ''
+                }`}
               onClick={() => handleButtonClick('archived')}
             >
               <Icons.archivedPodcast
@@ -86,16 +83,16 @@ const PodcastPage = () => {
       </div>
       {activeButton === 'live' && <PodcastVideos podcasts={podcasts} />}
       {activeButton === 'archived' && <ArchivedPodcast />}
-    </ContentContainer>
+    </>
   );
 };
 
 export default PodcastPage;
 
 const PodcastVideos = ({ podcasts }) => {
-
+  console.log(podcasts)
   return (
-    <div className="grid grid-cols-1 py-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4">
+    <div className="grid grid-cols-1 py-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4 w-[90%] mx-auto">
       {podcasts.map((podcast) => (
         <PodcastItem key={Math.random() * 1000000} podcast={podcast} />
       ))}
@@ -103,9 +100,9 @@ const PodcastVideos = ({ podcasts }) => {
   );
 };
 
-const PodcastItem = ({ podcast }) => {  
-   const formattedTimeAgo=useFormattedTimeAgo(podcast?.createdAt)
-
+const PodcastItem = ({ podcast }) => {
+  const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
+console.log(podcast)
   return (
     <Link
       href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
@@ -134,11 +131,15 @@ const PodcastItem = ({ podcast }) => {
         />
       </div>
       <div className="mt-3 flex gap-2 items">
-        <UserAvatar />
+        <UserAvatar user={{
+          image: podcast['tutor.user.profile_image'],
+          name: podcast['tutor.user.display_name']
+        }}
+        />
         <div>
           <h1 className="text-medium font-semibold mb-[0.20rem] line-clamp-2">{podcast?.title}</h1>
           <div className="flex items-center text-sm gap-2 text-gray-700">
-            <span>authors</span>
+            <span>{podcast && podcast['tutor.user.display_name']}</span>
           </div>
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{podcast?.views} views</span>

@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { selectCommentReplies } from '@/utils/selectors';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 import { LoadingCommentsSkeleton } from '@/utils/skeletons';
+import { warningToastNoAction } from '@/utils/toasts';
 
 
 
@@ -31,7 +32,9 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
 
     try {
       const formdata = new FormData();
-      console.log(file)
+      if (!file && !text) {
+        return warningToastNoAction("You must specify either text or image to comment!")
+      }
       formdata.append('image', file);
       console.log(formdata.get('image'),'replying')
       formdata.append(
@@ -94,7 +97,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
 
         <div className="w-full">
           <div className="flex gap-4 items-center mb-1">
-            <span className="font-medium text-sm ">{comment?.user?.display_name}</span>{' '}
+            <span className="font-medium text-sm ">{comment?.author_id === user?.user?.id ? user?.user?.display_name : comment?.user?.display_name}</span>{' '}
             <p className="text-[0.75rem] text-gray-500">{comment?.createdAt && formattedTimeAgo}</p>
           </div>
           <div className="flex gap-4 items-center">
@@ -114,7 +117,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
               <Icons.reply onClick={handleIsReplying} />
               <Icons.report />
 
-            </div>
+          </div>
           </div>
           <div className="flex justify-between text-gray-500 mt-2">
             <div className="flex gap-2 items-center cursor-pointer">

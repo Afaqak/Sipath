@@ -11,7 +11,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Button } from 'react-day-picker';
+
 const eventBackgroundColors = [
   '#4DA9FF99',
   '#1850BC',
@@ -56,6 +56,7 @@ export const EventsCalendar = () => {
   const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
   const [updatedEvent, setUpdatedEvent] = useState({})
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const axios = useAxiosPrivate()
 
   const { data: user } = useSession()
@@ -253,10 +254,11 @@ export const EventsCalendar = () => {
   };
 
   useEffect(() => {
-    const fullCalendarApi = calendarRef.current.getApi();
-
-    setTitleDate(moment(fullCalendarApi.getDate()).format('DD-MM MMMM YYYY'));
-  }, []);
+    const fullCalendarApi = calendarRef?.current?.getApi();
+    if (calendarRef.current) {
+      setTitleDate(moment(fullCalendarApi.getDate()).format('DD-MM MMMM YYYY'));
+    }
+  }, [calendarRef.current]);
 
   const viewOptions = {
     timeGridWeek: 'Week',
@@ -285,6 +287,10 @@ export const EventsCalendar = () => {
     }
   };
 
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
 
   const handleEventResize = async (resizeInfo) => {
@@ -332,6 +338,9 @@ export const EventsCalendar = () => {
 
 
 
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <div className="mt-8 flex bg-white shadow-md">

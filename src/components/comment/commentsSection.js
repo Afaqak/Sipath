@@ -14,7 +14,7 @@ import {
 
 import { useSession } from 'next-auth/react';
 import { selectPrimaryComments } from '@/utils/selectors';
-import { warningToast } from '@/utils/toasts';
+import { warningToast, warningToastNoAction } from '@/utils/toasts';
 
 export const CommentsSection = () => {
   const [file, setFile] = useState(null);
@@ -31,12 +31,15 @@ export const CommentsSection = () => {
     setFile(null);
   };
   const onCommentSubmit = ({ text, file }) => {
-  
+
     try {
       if (!user?.token) {
         return warningToast("Login to Comment", () => router.push('/sign-in'))
       }
-      if (!text) return;
+      
+      if (!file && !text) {
+        return warningToastNoAction("You must specify either text or image to comment!")
+      }
       const formdata = new FormData();
       formdata.append('comment', text);
       formdata.append('image', file);

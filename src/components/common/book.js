@@ -1,17 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Stars } from './5star';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import UserAvatar from './userAvatar';
-import { useSession } from 'next-auth/react';
-import { EditBookModal } from '../tutors/editBookModal';
-import { DeleteModal } from './deleteModal';
 import { successToast, errorToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { Icons } from '../icons';
 import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
+import { EditBookModal,Icons,Stars } from '@/components';
+
+
 export const Book = ({ book, token,isProfile ,user}) => {
   const axios = useAxiosPrivate();
   const dispatch=useDispatch()

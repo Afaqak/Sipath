@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { VideoandThumbnail, QuizUploadColumn } from '@/components';
+import { VideoandThumbnail, QuizUploadColumn, UploadStatusDisplay } from '@/components';
 import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
-import { motion } from 'framer-motion';
 
 export function VideoEditModal({
   isOpen,
@@ -24,7 +23,7 @@ export function VideoEditModal({
     description: video?.description,
   };
   const { data: user } = useSession();
-  
+
   const [quiz, setQuiz] = useState(null);
   const [quizSolution, setQuizSolution] = useState(null);
   const [thumbnail, setThumbnail] = useState(video?.thumbnail);
@@ -32,8 +31,8 @@ export function VideoEditModal({
   const [duration, setDuration] = useState(null);
   const [body, setBody] = useState(initialStates);
   const [videoFile, setVideoFile] = useState(null);
-  const [loading,setLoading]=useState(false)
-  const [progress,setProgress]=useState(0)
+  const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -58,7 +57,7 @@ export function VideoEditModal({
             Authorization: `Bearer ${user?.token}`,
           },
         });
-     
+
       } else {
         const updatedSections = { ...videosBySection };
         const response = await axios.delete(
@@ -77,7 +76,7 @@ export function VideoEditModal({
         }
         setVideosBySection(updatedSections);
 
-        
+
       }
     } catch (err) {
       console.log(err);
@@ -96,7 +95,7 @@ export function VideoEditModal({
       }
     }
     if (!isEdit) {
-     
+
       if (!thumbnail || !duration || !videoFile || !body.description || !body.title || !duration) {
         return errorToast('Some fields are Missing!');
       }
@@ -110,8 +109,8 @@ export function VideoEditModal({
               Authorization: `Bearer ${user?.token}`,
             },
           });
-          
-    
+
+
           setVideos(response.data.updatedVideo);
         } else {
           const response = await axios.patch(
@@ -126,7 +125,7 @@ export function VideoEditModal({
           updatedSections[sectionId] = updatedSections[sectionId].map((video) =>
             video.id === response.data.updatedVideo.id ? response.data.updatedVideo : video
           );
-          
+
           setVideosBySection(updatedSections);
 
           setVideosBySection(updatedSections);
@@ -143,27 +142,27 @@ export function VideoEditModal({
         formDataToSend.append('subject', subject);
         formDataToSend.append('duration', duration);
 
-           const config = {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${user?.token}`,
-            },
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user?.token}`,
+          },
 
-            onUploadProgress: (progressEvent) => {
-              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-              console.log(progress);
-              setProgress(progress)
-            },
-          };
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(progress);
+            setProgress(progress)
+          },
+        };
 
 
 
         const response = await axios.post('/upload/video', formDataToSend, config);
         if (response.status === 200) {
-     
+
           successToast('Video uploaded Sucessfully!', '#1850BC');
           const videoId = response.data?.video?.id;
-          
+
           const addVideoResponse = await axios.post(
             `/courses/${courseId}/section/${sectionId}/videos`,
             { video_id: videoId },
@@ -175,25 +174,25 @@ export function VideoEditModal({
           );
 
           if (addVideoResponse.status === 200) {
-           
+
             successToast('Video Added to Section!', '#1850BC');
             const response = await axios.get(`/courses/${courseId}/sections/${sectionId}`, {
               headers: {
                 Authorization: `Bearer ${user?.token}`,
               },
             });
-         
+
             const updatedVideosBySection = { ...videosBySection };
             updatedVideosBySection[sectionId] = response.data.videos;
             setVideosBySection(updatedVideosBySection);
-          
+
           } else {
             console.error('Error adding video to section:', addVideoResponse.statusText);
           }
         } else {
           console.error('Error uploading video:', response.statusText);
         }
-    
+
       }
     } catch (err) {
       console.log(err);
@@ -208,38 +207,12 @@ export function VideoEditModal({
   return (
     <>
       <Dialog className="bg-opacity-100" open={isOpen} onOpenChange={openModal}>
-        <DialogContent className="w-full bg-white shadow-lg">
-        {loading && (
-          <div className="absolute flex items-center justify-center bg-gray-100 bg-opacity-80 z-[1000] top-0 left-0 h-full w-full">
-            <div className="bg-white p-4 flex flex-col gap-4 items-center justify-center rounded-md shadow-md">
-              <motion.div className="rounded-md bg-gray-100 text-gray-600 font-semibold p-2">
-                <motion.span
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {progress === 100 ? (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      Uploaded
-                    </motion.div>
-                  ) : (
-                    <motion.div>{`${progress}%`}</motion.div>
-                  )}
-                </motion.span>
-              </motion.div>
-              <button
-                type="button"
-                className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition-colors duration-300"
-              >
-                Cancel Upload
-              </button>
-            </div>
-          </div>
-        )}
+        <DialogContent className="w-full  bg-white shadow-lg">
+          {loading && (
+
+            <UploadStatusDisplay uploadProgress={progress} />
+
+          )}
 
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             <div className="flex gap-8">

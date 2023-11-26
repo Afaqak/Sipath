@@ -3,12 +3,11 @@ import React, { useState, useEffect } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Image from 'next/image';
 import { Feed } from '@/components';
-import { ChatRequestModal } from '@/components/chat/chatRequestModal';
+import { ChatRequestModal } from '@/components/modals/chatRequestModal';
 import {
   Profile,
 } from '@/components';
-import { UniversalTab } from '@/components';
-import { AppointmentRequestModal } from '@/components/appointment/appointmentRequestModal';
+import { UniversalTab,AppointmentRequestModal } from '@/components';
 import { MyVideos, Mybooks } from '@/components/user';
 import { MyCourses } from '@/components/tutors';
 import { useSession } from 'next-auth/react';

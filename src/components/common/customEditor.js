@@ -72,9 +72,11 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     const rawHTML = editorRef.current.innerHTML;
     const filteredHTML = filterImages(rawHTML);
 
-    onCommentSubmit({ text: filteredHTML, file });
-    setText('');
-    setFile(null);
+    onCommentSubmit({ text: filteredHTML, file ,setData:()=>{
+      setText('');
+      setFile(null);
+
+    }});
     editorRef.current.innerHTML = '';
   };
 
@@ -176,4 +178,6 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     </div>
   );
 };
+
+
 

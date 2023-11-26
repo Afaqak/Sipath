@@ -5,7 +5,7 @@ import { FileInput, SubjectDropDown, Icons, VideoUploadType, UploadStatusDisplay
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { errorToast, successToast } from '@/utils/toasts'
 
