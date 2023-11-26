@@ -72,3 +72,4 @@ export { EditQuizModal } from './tutors/editQuizModal';
 export { ProfileHoverCard } from './common/profileHoverCard';
 export { DeleteFeedModal } from './feed/deleteFeedModal';
 export { UploadStatusDisplay } from './common/uploadDisplayStatus';
+export { CustomEditor } from './common/customEditor';

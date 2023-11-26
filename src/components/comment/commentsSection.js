@@ -1,6 +1,6 @@
 'use client';
 import React, { Suspense, useState, useRef } from 'react';
-import { VideoComments, CreateComment } from '@/components';
+import { VideoComments, CreateComment, CustomEditor } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -25,23 +25,22 @@ export const CommentsSection = () => {
   const id = searchParams.get('id');
   const primaryComments = useSelector(selectPrimaryComments);
   const dispatch = useDispatch();
-  const router=useRouter()
+  const router = useRouter()
 
   const onSuccess = () => {
     setFile(null);
   };
-  const onCommentSubmit = (e) => {
-    e.preventDefault();
-    const imgRegex = /<img[^>]*>/g;
-    const textWithoutImages = text.replace(imgRegex, '');
+  const onCommentSubmit = ({ text, file }) => {
+  
     try {
-      if (!user?.token){
-        return warningToast("Login to Comment",()=>router.push('/sign-in'))
+      if (!user?.token) {
+        return warningToast("Login to Comment", () => router.push('/sign-in'))
       }
       if (!text) return;
       const formdata = new FormData();
-      formdata.append('comment', textWithoutImages);
+      formdata.append('comment', text);
       formdata.append('image', file);
+      console.log(file)
 
       dispatch(
         createComment({
@@ -58,7 +57,7 @@ export const CommentsSection = () => {
   };
   return (
     <div className=" mt-8">
-      
+
       <div className="justify-between font-bold text-lg mb-2 flex">
         <h2>{primaryComments?.length} comments</h2>
         <DropdownMenu>
@@ -72,9 +71,10 @@ export const CommentsSection = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-  
+
       <div className="bg-white p-4 rounded-md shadow-md">
-        <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} />
+        {/* <CreateComment setText={setText} setFile={setFile} handleSubmit={onCommentSubmit} /> */}
+        <CustomEditor onCommentSubmit={onCommentSubmit} />
         <VideoComments />
       </div>
     </div>
