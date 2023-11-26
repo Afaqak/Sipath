@@ -80,9 +80,16 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
 
 
   const handleTextChange = () => {
-    setText(editorRef.current.innerText);
+    const currentText = editorRef.current.innerText;
+    const currentFileCount = editorRef.current.querySelectorAll('img').length;
+  
+    if (currentText.trim() === '' && currentFileCount === 0) {
+      setFile(null); 
+    }
+  
+    setText(currentText);
   };
-
+  
 
   return (
     <div className="bg-gray-100 text-subcolor3 rounded-md shadow-md">
