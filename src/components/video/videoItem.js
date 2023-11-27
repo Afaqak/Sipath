@@ -46,7 +46,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
 
         <img
 
-          src={video?.thumbnail}
+          src={video?.thumbnail || '/place-holder-post.jpeg'}
           alt={'thumbnail'}
           className="rounded-md object-cover w-full h-[11.2rem]"
         />
