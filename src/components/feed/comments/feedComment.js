@@ -9,10 +9,11 @@ import { useRouter } from "next/navigation";
 import { CustomEditor } from "@/components/common/customEditor";
 import { Icons } from "@/components/icons";
 import { LoadingCommentsSkeleton } from "@/utils/skeletons";
-import { fetchRepliesAsync,addReply } from "@/features/feedComments/feedCommentSlice";
+import { fetchRepliesAsync, addReply } from "@/features/feedComments/feedCommentSlice";
 import UserAvatar from "@/components/common/userAvatar";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { warningToastNoAction } from "@/utils/toasts";
+import { CreateComment } from "@/components/comment/createComment";
 
 export const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId }) => {
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -27,15 +28,13 @@ export const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId
     const comments = useSelector((state) => state.feedComments);
     const { data: user } = useSession();
 
-    const onReplySubmit = async ({ file, text, setData }) => {
+    const onReplySubmit = async (file, text, setData) => {
         const imgRegex = /<img[^>]*>/g;
         const textWithoutImages = text.replace(imgRegex, '');
 
         try {
 
-            if (!text && !file) {
-                return warningToastNoAction("You must specify either text or image to comment!");
-            }
+         
             const formdata = new FormData();
             formdata.append(
                 'comment',
@@ -49,10 +48,11 @@ export const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
             if (setData && typeof setData === 'function') {
                 setData()
             }
+
+     
             dispatch(addReply({ postId: itemId, commentId: response?.data?.comment?.reply_to, reply: response?.data?.comment }));
             setIsReplying(false)
         } catch (error) {
@@ -126,9 +126,9 @@ export const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId
                     </div>
                     {isReplying && (
                         <div className="w-full mt-2">
-                            <CustomEditor
+                            <CreateComment
                                 closeReplying={() => setIsReplying(false)}
-                                onCommentSubmit={onReplySubmit}
+                                handleSubmit={onReplySubmit}
                                 reply={isReplying}
                             />
 

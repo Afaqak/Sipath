@@ -54,15 +54,14 @@ const SignIn = () => {
 
   const handleSignUpWithProvider = async (provider) => {
     try {
-      setLoading(true);
+
       await signIn(provider, { redirect: false }, { prompt: 'login' }).then((data) => {
 
       });
     } catch (error) {
+      console.log(error)
       errorToast('An error occurred!', '#fb3c22');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
   return (
     <>

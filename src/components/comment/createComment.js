@@ -13,25 +13,24 @@ const QuillNoSSRWrapper = dynamic(
 import 'react-quill/dist/quill.snow.css';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
-import { LoadingSkeletons } from '..';
-import { Skeleton } from '../ui/skeleton';
-import { LoadingQuillSkeleton } from '@/utils/skeletons';
 
-export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
+export const CreateComment = ({ reply, handleSubmit }) => {
   const { data: user } = useSession();
   const quillRef = useRef();
+  const [text, setText] = useState('')
+  const [file, setFile] = useState(null)
   const [showQuill, setShowQuill] = useState(false);
 
-  // useEffect(() => {
-  //   const delay = setTimeout(() => {
-  //     setShowQuill(true);
-  //   }, 2000); 
 
-  //   return () => clearTimeout(delay);
-  // }, []);
 
   const handleChange = (editor) => {
+    const images = new DOMParser().parseFromString(editor, 'text/html').querySelectorAll('img');
+    console.log(images.length)
+    if (images.length === 0) {
+      setFile(0)
+    }
     setText(editor);
+
   };
 
   const modules = useMemo(
@@ -49,7 +48,6 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
     }),
     []
   );
-
   function selectLocalImage() {
     const editor = quillRef.current.getEditor();
 
@@ -66,21 +64,45 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
         const reader = new FileReader();
         reader.onload = (event) => {
           const imageUrl = event.target.result;
-
           const range = editor.getSelection();
 
-          // Insert the image with a style attribute for sizing
-          editor.insertEmbed(range.index, 'image', imageUrl);
+          editor.clipboard.dangerouslyPasteHTML(range.index, `<img src="${imageUrl}" alt="Inserted Image" />`);
+
+          const imageNode = editor?.getLeaf(range.index)[0].domNode;
+
+          const width = 100;
+          const height = 100;
+
+          // Apply the size using Quill's API
+          editor.formatText(range.index, 1, { width, height }, 'user');
         };
         reader.readAsDataURL(file);
       }
     };
+  }
 
+
+  const onConfirmSubmit = (e) => {
+    e.preventDefault()
+    if (text === '<p><br></p>') {
+      return
+    }
+
+    
+    if (!file && !text) {
+      return warningToastNoAction("You must specify either text or image to comment!");
+    }
+    handleSubmit(file, text, () => {
+      const editor = quillRef.current.getEditor();
+      editor.setText('');
+      setText('')
+      setFile(null)
+    })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
-      {/* {!showQuill ? <LoadingQuillSkeleton /> : null} */}
+    <form onSubmit={onConfirmSubmit} className="flex flex-col md:flex-row gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
+
       <UserAvatar
         user={{
           image: user?.user?.profile_image,
@@ -98,11 +120,11 @@ export const CreateComment = ({ reply, setText, setFile, handleSubmit }) => {
         />
       </div>
       {/* )} */}
-      {!reply && (
-        <button type="submit">
-          <Icons.comment />
-        </button>
-      )}
+
+      <button type="submit">
+        <Icons.comment />
+      </button>
+
     </form>
   );
 };

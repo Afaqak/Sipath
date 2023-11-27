@@ -119,7 +119,7 @@ export const Navbar = () => {
                         onClick={() => setToggleMenu(!toggleMenu)}
                         user={{
                           image: user?.user?.profile_image,
-                          name: user?.user?.display_name .slice(0,2) || user?.user?.first_name.slice(0,2) || user?.email,
+                          name: user?.user?.display_name?.slice(0,2) || user?.user?.first_name?.slice(0,2) || user?.email,
                         }}
                         className="h-7 w-7 focus:outline-none"
                       />

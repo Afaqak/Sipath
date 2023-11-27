@@ -10,6 +10,7 @@ export const createComment = createAsyncThunk(
       const response = await axios.post(`/assets/video/${videoId}/comments`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type":"multipart/form-data"
         },
       });
 

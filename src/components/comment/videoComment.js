@@ -26,22 +26,24 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
   const [loadingReplies, setLoadingReplies] = useState(false);
   const commentReplies = useSelector(selectCommentReplies);
   const router = useRouter()
-  const onReplySubmit = ({ text, file }) => {
+  const onReplySubmit = (file, text, setData) => {
 
     setIsReplying(false);
 
     try {
       const formdata = new FormData();
-      if (!file && !text) {
-        return warningToastNoAction("You must specify either text or image to comment!")
-      }
+    
       formdata.append('image', file);
-      console.log(formdata.get('image'),'replying')
+      console.log(formdata.get('image'), 'replying')
+      const filteredText = text.replace(/<img\b[^>]*>/gi, '');
+
       formdata.append(
         'comment',
-        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${text}</div}`
+        `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${filteredText}</div}`
       );
-      
+
+
+
       dispatch(
         createReplyToComment({
           videoId: id,
@@ -50,6 +52,10 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           token: user?.token,
         })
       );
+
+      if (setData && typeof setData === 'function') {
+        setData()
+      }
     } catch (error) {
       console.error(error);
     }
@@ -117,7 +123,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
               <Icons.reply onClick={handleIsReplying} />
               <Icons.report />
 
-          </div>
+            </div>
           </div>
           <div className="flex justify-between text-gray-500 mt-2">
             <div className="flex gap-2 items-center cursor-pointer">
@@ -127,10 +133,10 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
           </div>
           {isReplying && (
             <div className="w-full mt-2">
-              <CustomEditor
+              <CreateComment
                 reply={isReplying}
-                onCommentSubmit={onReplySubmit}
-                closeReplying={()=>setIsReplying(false)}
+                handleSubmit={onReplySubmit}
+                closeReplying={() => setIsReplying(false)}
               />
 
             </div>
