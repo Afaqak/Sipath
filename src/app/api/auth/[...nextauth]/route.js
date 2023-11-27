@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 
 async function refreshAccessToken(token) {
   try {
-    const refreshToken = token?.refresh_token;
+    const refreshToken = token?.refreshToken;
     console.log(refreshToken, ":refresh")
 
     if (refreshToken) {
@@ -16,8 +16,8 @@ async function refreshAccessToken(token) {
       const response = await axios.post('/auth/refresh-token', {
         refreshToken: refreshToken,
       });
-   
-     
+
+
 
       const refreshedToken = response.data.token;
       const expiration_time = response.data.expiration_time;
@@ -33,11 +33,11 @@ async function refreshAccessToken(token) {
   } catch (error) {
     console.error('Error refreshing access token:', error);
 
-      console.log("logout")
-      const responseAfterSignout = await axios.post('/api/auth/signout')
-      console.log(responseAfterSignout, ":after signout")
-      redirect('/')
- 
+    console.log("logout")
+    const responseAfterSignout = await axios.post('/api/auth/signout')
+    console.log(responseAfterSignout, ":after signout")
+    redirect('/')
+
   }
 }
 
@@ -72,7 +72,7 @@ export const authOptions = {
             user: response.data.user,
             token: response.data.token,
             tutor: response.data.tutor,
-            refresh_token: response.data.refresh_token,
+            refreshToken: response.data.refresh_token,
             expiration_time: response?.data.expiration_time
           };
         } else {
@@ -87,6 +87,7 @@ export const authOptions = {
   secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger, session, account }) {
+   
 
       if (trigger === 'update') {
         return { ...token, ...session.user };
@@ -111,6 +112,10 @@ export const authOptions = {
         token.token = data.token;
         token.tutor = data.tutor;
         token.user = data.user;
+        token.token = data?.token
+        token.refreshToken = data?.refresh_token
+        token.expiration_time = data?.expiration_time
+
       } else if (providerName === 'google') {
 
 
@@ -118,7 +123,10 @@ export const authOptions = {
         token.isUpdated = true;
 
         token.isNewUser = data?.isNewUser;
+        token.token = data?.token
+        token.expiration_time = data?.expiration_time
         token.token = data.token;
+        token.refreshToken = data?.refresh_token
         token.user = data.user;
         token.tutor = data.user;
       } else {
@@ -132,7 +140,9 @@ export const authOptions = {
       return token;
     },
     async session({ session, token, user }) {
-      return token;
+      let { refreshToken, ...newObj } = token;
+      console.log(refreshToken,newObj)
+      return newObj;
     },
   },
 };

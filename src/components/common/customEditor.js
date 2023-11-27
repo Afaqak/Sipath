@@ -1,47 +1,50 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Icons } from "../icons";
 
-export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
+export const CustomEditor = ({ onCommentSubmit, reply, closeReplying }) => {
   const editorRef = useRef(null);
-  const [activeFormat, setActiveFormat] = useState(null);
-  const fileInputRef = useRef(null)
+  const [isMounted,setIsMounted]=useState(false)
+  const [formatting, setFormatting] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    strikeThrough: false,
+    fontName: false,
+    insertImage: false,
+  });
+  const fileInputRef = useRef(null);
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
 
   const handleFormatText = (format, value = null) => {
     editorRef.current.focus();
-    if (format === activeFormat) {
-      document.execCommand(format, false, value);
-      setActiveFormat(null);
-    } else {
+    document.execCommand(format, false, value);
 
-      document.execCommand(format, false, value);
-
-      setActiveFormat(format);
-    }
+    setFormatting((prevFormatting) => ({
+      ...prevFormatting,
+      [format]: !prevFormatting[format],
+    }));
   };
 
   const handleInsertImage = () => {
-
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile)
+    setFile(selectedFile);
     editorRef.current.focus();
+
     if (selectedFile) {
       setFile(selectedFile);
 
       const imageUrl = URL.createObjectURL(selectedFile);
-      console.log(imageUrl)
       const img = document.createElement('img');
       img.src = imageUrl;
       img.style.maxWidth = '100%';
-      img.alt='test-images'
+      img.alt = 'test-images';
       img.style.width = '100px';
       img.style.maxWidth = '100%';
 
@@ -57,8 +60,9 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
       selection.addRange(newRange);
     }
   };
-  const handleSubmit = () => {
+  console.log(formatting)
 
+  const handleSubmit = () => {
     const filterImages = (html) => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
@@ -72,14 +76,16 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
     const rawHTML = editorRef.current.innerHTML;
     const filteredHTML = filterImages(rawHTML);
 
-    onCommentSubmit({ text: filteredHTML, file ,setData:()=>{
-      setText('');
-      setFile(null);
-
-    }});
+    onCommentSubmit({
+      text: filteredHTML,
+      file,
+      setData: () => {
+        setText('');
+        setFile(null);
+      },
+    });
     editorRef.current.innerHTML = '';
   };
-
 
   const handleTextChange = () => {
     const currentText = editorRef.current.innerText;
@@ -89,50 +95,43 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
       setFile(null);
     }
   
-    console.log(currentFileCount,currentText,file)
-    setText(currentText);
+    setText(editorRef.current.innerHTML);
+  
+    // Check if bold formatting is active
+    const isBoldActive = document.queryCommandState('bold');
+  
+    // If text is being cleared and bold was active, reapply bold formatting
+    if (!currentText && isBoldActive) {
+      handleFormatText('bold');
+    }
   };
   
+
+
+  useEffect(()=>{
+    setIsMounted(true)
+  },[])
+
+  if(!isMounted) return null
 
   return (
     <div className="bg-gray-100 text-subcolor3 rounded-md shadow-md">
       <div className="flex space-x-2 p-2">
         <button
-          className={`${activeFormat === 'bold' ? 'bg-gray-200' : ''
+          className={`${formatting.bold ? 'bg-gray-200' : ''
             } text-subcolor3 px-2 py-1 rounded focus:outline-none `}
           onClick={() => handleFormatText('bold')}
         >
           <b>B</b>
         </button>
+    
         <button
-          className={`${activeFormat === 'italic' ? 'bg-gray-200' : ''
-            } px-2 py-1 rounded focus:outline-none `}
-          onClick={() => handleFormatText('italic')}
-        >
-          <i>I</i>
-        </button>
-        <button
-          className={`${activeFormat === 'underline' ? 'bg-gray-200' : ''
-            } px-2 py-1 rounded focus:outline-none `}
-          onClick={() => handleFormatText('underline')}
-        >
-          <u>U</u>
-        </button>
-        <button
-          className={`${activeFormat === 'strikeThrough' ? 'bg-gray-200' : ''
-            } px-2 py-1 rounded focus:outline-none `}
-          onClick={() => handleFormatText('strikeThrough')}
-        >
-          <s>S</s>
-        </button>
-        <button
-          className={`${activeFormat === 'insertImage' ? 'bg-gray-200' : ''
+          className={`${formatting.insertImage ? 'bg-gray-200' : ''
             } px-2 py-1 rounded focus:outline-none `}
           onClick={handleInsertImage}
         >
           <Icons.image_icon width="2" height="20" className="w-4 text-sm h-4" />
         </button>
-
         <input
           type="file"
           accept="image/*"
@@ -140,17 +139,9 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
-        <button
-          className={`${activeFormat === 'fontName' ? 'bg-gray-200' : ''
-            } px-2 py-1 rounded focus:outline-none `}
-          onClick={() => handleFormatText('fontName', 'Courier New')}
-        >
-          <Icons.code_icon width="17" height="17" className="w-5 text-sm h-5" />
-        </button>
       </div>
       <div
         onInput={handleTextChange}
-
         ref={editorRef}
         contentEditable
         className="border focus:outline-none focus:ring ring-gray-200 rounded-b-md p-4 font-mono"
@@ -162,22 +153,16 @@ export const CustomEditor = ({ onCommentSubmit, reply,  closeReplying }) => {
           className="bg-main text-white px-4 text-sm font-semibold py-1 rounded mt-2"
         >
           {reply ? "Reply" : "Add Comment"}
-
         </button>
         {reply &&
           <button
-            onClick={ closeReplying}
+            onClick={closeReplying}
             className="bg-subcolor2 text-white px-4 text-sm font-semibold py-1 rounded mt-2"
           >
             Close
-
           </button>
         }
       </div>
-
     </div>
   );
 };
-
-
-
