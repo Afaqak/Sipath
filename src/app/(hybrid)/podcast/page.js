@@ -102,7 +102,7 @@ const PodcastVideos = ({ podcasts }) => {
 
 const PodcastItem = ({ podcast }) => {
   const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
-console.log(podcast)
+  console.log(podcast)
   return (
     <Link
       href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
@@ -122,13 +122,16 @@ console.log(podcast)
       )}
       <div className="relative">
         <Icons.play />
-        <Image
-          src={podcast?.thumbnail}
-          alt={podcast?.title}
-          width={300}
-          height={200}
-          className="rounded-md object-cover w-full h-44"
-        />
+        {
+          podcast?.thumbnail &&
+          <Image
+            src={podcast?.thumbnail}
+            alt={podcast?.title}
+            width={300}
+            height={200}
+            className="rounded-md object-cover w-full h-44"
+          />
+        }
       </div>
       <div className="mt-3 flex gap-2 items">
         <UserAvatar user={{
