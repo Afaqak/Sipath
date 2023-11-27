@@ -125,13 +125,13 @@ const PodcastItem = ({ podcast }) => {
         {
           podcast?.thumbnail &&
           <Image
-            src={podcast?.thumbnail}
+            src={podcast?.thumbnail || '/place-holder-post.jpeg'}
             alt={podcast?.title}
             width={300}
             height={200}
             className="rounded-md object-cover w-full h-44"
           />
-        }
+    }
       </div>
       <div className="mt-3 flex gap-2 items">
         <UserAvatar user={{
