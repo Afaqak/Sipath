@@ -101,11 +101,11 @@ const PodcastVideos = ({ podcasts }) => {
 };
 
 const PodcastItem = ({ podcast }) => {
-  const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
-  console.log(podcast)
+const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
+
   return (
     <Link
-      href={`/podcast/live?room=${podcast?.room_id}&id=${podcast?.id}`}
+      href={`/podcast/live/${podcast?.id}?room=${podcast?.room_id}`}
       className=" max-h-[18.6rem] relative block mb-6 w-ful p-4 bg-white box-shadow-main rounded-md"
     >
       {podcast?.live && (
