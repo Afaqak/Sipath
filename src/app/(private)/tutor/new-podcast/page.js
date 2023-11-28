@@ -87,7 +87,7 @@ const NewPodcast = () => {
 
       if (scheduleType === 'Go Live') {
         successToast('Joining Podcast!');
-        router.push(`/podcast/live?room=${response.data?.podcast?.room_id}&id=${response?.data?.podcast?.id}`);
+        router.push(`/podcast/live/${response?.data?.podcast?.id}?room=${response.data?.podcast?.room_id}&id=${response?.data?.podcast?.id}`);
       }
     } catch (err) {
       console.error(err);

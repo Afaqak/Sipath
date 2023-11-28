@@ -439,8 +439,8 @@ video{
 }
 
 .google-loader {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 4px solid transparent;
   border-top-color: #4285f4;

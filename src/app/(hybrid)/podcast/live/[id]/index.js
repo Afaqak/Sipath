@@ -7,13 +7,13 @@ import { socket } from '@/socket';
 import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
-
+import { Button } from '@/components/ui/button';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 
-const LivePremium = () => {
+const Live = ({ podcast: pod }) => {
   const params = useSearchParams()
   const room = params.get('room');
-  const id = params.get('id')
+  const id = pod?.id
   const { data: user } = useSession();
   const videoContainerRef = useRef(null);
   const axios = useAxiosPrivate()
@@ -25,10 +25,10 @@ const LivePremium = () => {
   const [newMessage, setNewMessage] = useState('');
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
-  const [podcast, setPodcast] = useState({})
+  const [podcast, setPodcast] = useState(pod)
   const [callEnded, setCallEnded] = useState(false)
-
-
+  const [showJoinScreen, setShowJoinScreen] = useState(true);
+  const [storedStream,setStoredStream]=useState(null)
   const cleanup = () => {
     if (peerState.peer) {
       peerState.peer.destroy();
@@ -101,20 +101,26 @@ const LivePremium = () => {
       if (user?.user?.isTutor && +user?.tutor?.tutor_id === +podcastData?.tutor_id) {
         const peer = new Peer(room);
         setPeerState({ peer, initialized: true });
-
+        console.log(videoMuted)
+        const videoConstraint = videoMuted ? false  : { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } };
+      
         const constraints = {
-          video: { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } },
-          audio: true,
+          video: videoConstraint,
+          audio: audioMuted ? false : true,
         };
+        console.log(constraints)
+        if(!constraints['video'] && !constraints["audio"]){
+          return 
+        }
+  
 
-
-
-        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        navigator?.mediaDevices?.getUserMedia(constraints).then((stream) => {
           setLocalStream(stream);
           createVideoElement(stream);
 
           peer.on('connection', (conn) => {
             console.log('peer connected')
+            console.log(conn.peer)
             conn.on('open', () => {
               peer.call(conn.peer, stream);
             });
@@ -128,6 +134,8 @@ const LivePremium = () => {
 
         peer.on('call', (call) => {
           call.on('stream', (remoteStream) => {
+            console.log(remoteStream)
+        
             setLocalStream(remoteStream);
             createVideoElement(remoteStream);
           });
@@ -145,41 +153,22 @@ const LivePremium = () => {
     }
   };
 
+  function onTutorJoinClick() {
+    
+    setShowJoinScreen(false)
+    initializePeer(podcast)
+  }
 
-
-
-
-  useEffect(() => {
-    const fetchPodcast = async () => {
-      try {
-        const response = await axios.get(`/podcasts/${id}`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`
-          }
-        });
-
-        cleanup();
-        setPodcast(response?.data);
-        initializePeer(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchPodcast();
-
-    return () => {
-      cleanup();
-    };
-  }, []);
-
-
-  console.log(peerState)
+  function onJoinClick() {
+    // if(!localStream) return
+    setShowJoinScreen(false)
+    initializePeer(podcast)
+  }
 
 
   const createVideoElement = (stream) => {
     const video = document.createElement('video');
-    video.muted = true;
+    video.muted = false;
     video.srcObject = stream;
     video.id = stream.id;
     video.style.width = '100%';
@@ -195,17 +184,48 @@ const LivePremium = () => {
     });
   };
 
+
+
+  
+
+
   const toggleVideoMute = () => {
+    const videoElem = videoContainerRef.current.querySelector('video');
+    console.log(localStream)
+    if (videoElem) {
+
+      const videoTrack = localStream?.getVideoTracks()[0];
+      videoTrack.enabled=videoMuted
+      console.log(videoTrack,videoElem.srcObject)
+      if (videoTrack) {
+        console.log("check",videoMuted)
+
+        if (!videoMuted) {
+        
+          const pastStream = localStream;
+          // videoElem.srcObject = null;
+          setStoredStream(pastStream); 
+        } else {
+           console.log("here",storedStream)
+          const streamToSet = storedStream || localStream;
+          videoElem.srcObject =localStream;
+        }
+      }
+    }
+  
     setVideoMuted(!videoMuted);
-    localStream.getVideoTracks()[0].enabled = videoMuted;
-
   };
-
+  
   const toggleAudioMute = () => {
-    setAudioMuted(!audioMuted);
-    localStream.getAudioTracks()[0].enabled = audioMuted;
-
+    setAudioMuted((prevAudioMuted) => {
+      if (localStream && localStream.getAudioTracks().length > 0) {
+        localStream.getAudioTracks()[0].enabled = !prevAudioMuted;
+      }
+      return !prevAudioMuted;
+    });
   };
+
+
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -229,9 +249,32 @@ const LivePremium = () => {
 
   return (
     <>
-      {callEnded && <div className=' bg-white absolute top-0 left-0 w-full h-full flex items-center justify-center z-[9000]'><p className=' text-xl font-semibold'>Stream Ending...</p></div>}
+            {callEnded && <div className=' bg-white absolute top-0 left-0 w-full h-full flex gap-4 items-center justify-center z-[9000]'>
+
+         <Icons.colorLoader />
+      <p className=' text-xl font-semibold'>Stream Ending...</p></div>}
       <div className="grid grid-cols-1 relative lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
+          {showJoinScreen && +user?.tutor?.tutor_id === +podcast?.tutor_id && (
+            <div className="join-screen fixed z-[8000] bg-white  h-full w-full top-0 left-0 flex flex-col items-center justify-center ">
+              <p className="text-2xl font-semibold mb-4">Welcome, Tutor!</p>
+              <p className="text-lg mb-4">Before you start, please enable your audio and video.</p>
+             
+              <Button onClick={onTutorJoinClick}  className="mt-4 bg-main rounded-full text-white text-lg hover:bg-main/90 cursor-pointer">
+                Continue
+              </Button>
+            </div>
+          )}
+          {showJoinScreen && +user?.tutor?.tutor_id !== +podcast?.tutor_id && (
+            <div className="join-screen fixed z-[8000] bg-white  h-full w-full top-0 left-0 flex flex-col items-center justify-center ">
+              <p className="text-2xl font-semibold mb-4">Welcome!</p>
+
+              <Button onClick={onJoinClick} className="mt-4 bg-main rounded-full text-white text-lg hover:bg-main/90 cursor-pointer">
+                Join Stream
+              </Button>
+            </div>
+          )}
+
           <div className={`group w-full lg:h-[75vh] group relative`}>
             <div ref={videoContainerRef} id="video-container" className={`lg:h-[75vh]`}></div>
             {!(+user?.tutor?.tutor_id === +podcast?.tutor_id) ? null : (
@@ -296,4 +339,10 @@ const LivePremium = () => {
   );
 };
 
-export default LivePremium;
+export default Live;
+
+
+
+
+
+

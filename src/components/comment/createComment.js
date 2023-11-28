@@ -2,6 +2,7 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import UserAvatar from '../common/userAvatar';
 import dynamic from 'next/dynamic';
+import { warningToastNoAction } from '@/utils/toasts';
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import('react-quill');
@@ -73,7 +74,6 @@ export const CreateComment = ({ reply, handleSubmit }) => {
           const width = 100;
           const height = 100;
 
-          // Apply the size using Quill's API
           editor.formatText(range.index, 1, { width, height }, 'user');
         };
         reader.readAsDataURL(file);
@@ -110,7 +110,7 @@ export const CreateComment = ({ reply, handleSubmit }) => {
         }}
         className="h-10 w-10 self-start"
       />
-      {/* {showQuill && ( */}
+
       <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
         <QuillNoSSRWrapper
           forwardedRef={quillRef}
@@ -119,7 +119,6 @@ export const CreateComment = ({ reply, handleSubmit }) => {
           className="w-full"
         />
       </div>
-      {/* )} */}
 
       <button type="submit">
         <Icons.comment />
