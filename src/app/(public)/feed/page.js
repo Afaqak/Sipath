@@ -107,7 +107,7 @@ const FeedPage = () => {
                   />
                 </div>
               ) : (
-                <div className="w-[60%] mx-auto">
+                <div key={index} className="w-[60%] mx-auto">
                   <VideoItemFeed key={feeds[index]?.id} video={feeds[index]} />
 
                 </div>
