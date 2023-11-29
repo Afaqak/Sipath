@@ -26,8 +26,8 @@ const ExpertsPage = () => {
         response = await axios.get(`/users/experts?type=all`)
       }
       setExperts(response?.data)
- 
-        setLoad()
+      if(setLoad && typeof setLoad==='function' )
+        {setLoad()}
       
 
     } catch (err) {

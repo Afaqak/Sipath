@@ -119,7 +119,7 @@ export const Navbar = () => {
                         onClick={() => setToggleMenu(!toggleMenu)}
                         user={{
                           image: user?.user?.profile_image,
-                          name: user?.user?.display_name?.slice(0,2) || user?.user?.first_name?.slice(0,2) || user?.email,
+                          name: user?.user?.display_name?.slice(0, 2) || user?.user?.first_name?.slice(0, 2) || user?.email,
                         }}
                         className="h-7 w-7 focus:outline-none"
                       />
@@ -182,44 +182,47 @@ export const Navbar = () => {
             <Image src="/logo.png" alt="logo" width={80} height={50} />
           </div>
           <div className='flex gap-6'>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <UserAvatar
-                  onClick={() => setToggleMenu(!toggleMenu)}
-                  user={{
-                    image: user?.user?.profile_image,
-                    name: user?.user?.first_name || user?.display_name || user?.email,
+            {
+              user?.token &&
+
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <UserAvatar
+                    onClick={() => setToggleMenu(!toggleMenu)}
+                    user={{
+                      image: user?.user?.profile_image,
+                      name: user?.user?.first_name || user?.display_name || user?.email,
+                    }}
+                    className="h-7 w-7 focus:outline-none"
+                  />
+
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push('/my-profile');
+                    }}
+                    className="flex gap-2"
+                  >
+                    <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                    My-profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={async () => {
+                    errorToast("Logging Out")
+                    await signOut({
+                      callbackUrl: '/',
+                    }).then((res) => { });
                   }}
-                  className="h-7 w-7 focus:outline-none"
-                />
+                    className="flex gap-2"
+                  >
+                    <Icons.logout className="h-4 w-4 " />
+                    logout
+                  </DropdownMenuItem>
 
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    router.push('/my-profile');
-                  }}
-                  className="flex gap-2"
-                >
-                  <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                  My-profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={async () => {
-                  errorToast("Logging Out")
-                  await signOut({
-                    callbackUrl: '/',
-                  }).then((res) => { });
-                }}
-                  className="flex gap-2"
-                >
-                  <Icons.logout className="h-4 w-4 " />
-                  logout
-                </DropdownMenuItem>
-
-              </DropdownMenuContent>
-            </DropdownMenu>
-
+                </DropdownMenuContent>
+              </DropdownMenu>
+            }
             <div onClick={toggleNav} className="z-[1100] self-center cursor-pointer mr-4">
               <div className="flex-col flex h-11 relative w-11 justify-center rounded-full bg-gradient-to-r">
                 <div className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform ${nav ? 'rotate-45 translate-y-0' : ''}`}></div>
@@ -248,7 +251,7 @@ export const Navbar = () => {
               <span className="relative z-10">{link.label}</span>
             </Link>
           ))}
-        {
+          {
             !user?.token &&
 
             <div className="flex items-center gap-4 mr-4 mt-4 text-sm">
