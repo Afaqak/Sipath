@@ -26,7 +26,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
   return (
     <div
 
-      className={`max-h-[20rem] min-w-full md:w-[20rem] lg:w-[21.8rem] ${isEdit && 'border-2 border-subcolor'
+      className={`max-h-[20rem] min-w-full md:w-[20rem] max-w-[20rem] ${isEdit && 'border-2 border-subcolor'
         } relative block w-full p-4 bg-white box-shadow-main  rounded-md border`}
     >
       {video?.live && (

@@ -10,7 +10,7 @@ import { Icons } from '@/components';
 import { useFieldArray, useForm, Controller, useFormState } from 'react-hook-form';
 
 
-const VideoUpload = () => {
+const CourseUpload = () => {
   const [sectionIds, setSectionIds] = useState([])
   const [courseId, setCourseId] = useState(null)
   const privateAxios = useAxiosPrivate()
@@ -138,7 +138,7 @@ const VideoUpload = () => {
       cId = await createOrUpdateCourse(cId, formData);
 
       sId[sectionIndex] = await createOrUpdateSection(cId, sectionIndex, formData.sections[sectionIndex].title);
-
+      
       await Promise.all(formData.sections[sectionIndex].videos.map((video, index) =>
         uploadVideo(cId, sId[sectionIndex], video, index, sectionIndex)
       ));
@@ -339,7 +339,7 @@ const VideoUpload = () => {
 
   );
 };
-export default VideoUpload;
+export default CourseUpload;
 
 
 

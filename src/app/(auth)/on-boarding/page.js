@@ -18,7 +18,7 @@ const OnBoardingPage = () => {
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
-  
+
   const [categories, setCategories] = useState([])
   const [selectedImage, setSelectedImage] = useState(null);
   const {
@@ -57,8 +57,8 @@ const OnBoardingPage = () => {
     formData.append('bio', data.bio);
     formData.append('display_name', data.displayName);
     formData.append('profile_image', selectedImage);
-    if(interests.length>0){
-      const updatedInterests=interests?.map(exp => exp?.id)
+    if (interests.length > 0) {
+      const updatedInterests = interests?.map(exp => exp?.id)
       for (var i = 0; i < interests.length; i++) {
         formData.append('interests[]', updatedInterests[i]);
       }
@@ -96,7 +96,7 @@ const OnBoardingPage = () => {
         await update(newSession);
         onSuccess();
       }
-  
+
     } catch (err) {
       console.log(err)
     }
@@ -117,11 +117,6 @@ const OnBoardingPage = () => {
       image.src = URL.createObjectURL(file);
       image.onload = () => {
         setSelectedImage(file);
-        // if (image.width <= 400 && image.height <= 400) {
-        //   console.log(image.width, image.height);
-        // } else {
-        //   errorToast('Image must be of size 140x140');
-        // }
       };
     } else {
       errorToast('Please upload an image file.');
@@ -155,15 +150,15 @@ const OnBoardingPage = () => {
 
   return (
     <>
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-full  flex items-center justify-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="min-h-[70%] bg-white w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
+          className="min-h-[70%] lg:mt-[5%] mt-0 bg-white w-[90%] lg:w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
         >
           <div className="">
             <h1 className="text-[1.15rem] mb-4 font-semibold">Create Your Profile!</h1>
-            <div className="flex gap-4">
-              <div className="flex flex-col w-1/3">
+            <div className="flex lg:flex-row flex-col gap-4">
+              <div className="flex flex-col lg:">
                 <label className="font-thin mb-1 uppercase text-sm">Personal Information</label>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
@@ -235,7 +230,7 @@ const OnBoardingPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-1/3 flex gap-2 flex-col">
+              <div className="flex gap-2 flex-col">
                 <div className="flex flex-col gap-1 ">
                   <label className="text-sm text-[#616161] font-thin">Bio</label>
                   <textarea
@@ -266,7 +261,7 @@ const OnBoardingPage = () => {
                         onClick={() => handleInterests(item, ind)}
                         className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${interests.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
                           }`}
-                      
+
                       >
                         {item.category}{' '}
                       </span>
@@ -274,7 +269,7 @@ const OnBoardingPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-1/3 flex flex-col gap-16">
+              <div className=" flex flex-col gap-16">
                 <div>
                   <label className=" font-thin mb-1 uppercase text-sm">Display Name</label>
                   <input
@@ -299,7 +294,7 @@ const OnBoardingPage = () => {
                         className="h-20 w-20 rounded-full object-contain"
                       />
                     ) : (
-                      <Icons.account_circle className="fill-[#1C1B1F] w-20 h-20"/>
+                      <Icons.account_circle className="fill-[#1C1B1F] w-20 h-20" />
                     )}
 
                   </div>
@@ -310,7 +305,7 @@ const OnBoardingPage = () => {
                     }}
                     className="bg-subcolor mt-4 rounded-md flex items-center gap-2 text-white py-1 px-3"
                   >
-                    <Icons.upload className=" fill-white w-4 h-4 text-white"/>
+                    <Icons.upload className=" fill-white w-4 h-4 text-white" />
                     Upload Image
                     <input
                       ref={fileRef}
@@ -325,7 +320,7 @@ const OnBoardingPage = () => {
               </div>
             </div>
           </div>
-          <div className="w-full flex gap-2 mt-4">
+          <div className="w-full flex flex-col lg:flex-row gap-2 mt-4">
             <Button
               onClick={handleContinueAsUser}
               type="submit"
@@ -344,11 +339,11 @@ const OnBoardingPage = () => {
               className="text-black py-1 w-full flex items-center gap-2 border-black"
             >
               {loadingAsExpert && <span className='w-4 h-4 animate-spin'><Icons.Loader2 stroke="black" className="w-4 h-4" /></span>}
-              Continue as an Expert <Icons.info_black className="h-4 w-4 fill-black"/>
+              Continue as an Expert <Icons.info_black className="h-4 w-4 fill-black" />
             </Button>
           </div>
         </form>
-     
+
       </div>
     </>
   );

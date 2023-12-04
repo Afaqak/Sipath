@@ -26,7 +26,7 @@ export const CommentsSection = () => {
   const router = useRouter()
 
 
-  const onCommentSubmit = (file, text, setData) => {
+  const onCommentSubmit = (file, text) => {
     try {
       if (!user?.token) {
         return warningToast("Login to Comment", () => router.push('/sign-in'));
@@ -44,9 +44,10 @@ export const CommentsSection = () => {
 
       const onSuccess = () => {
 
-        if (setData && typeof setData === 'function') {
-          setData()
-        }
+
+        var element = document.getElementsByClassName("ql-editor");
+        element[0].innerHTML = "";
+
       };
       dispatch(
         createComment({

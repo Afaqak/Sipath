@@ -119,9 +119,8 @@ export const CommentSectionFeed = ({ itemId, type }) => {
         }
       })
 
-      if (setData && typeof setData==='function') {
-        setData()
-      }
+      var element = document.getElementsByClassName("ql-editor");
+      element[0].innerHTML = "";
       dispatch(addComment({ postId: itemId, comment: response?.data?.comment }))
 
     } catch (error) {

@@ -19,7 +19,7 @@ const Premium = async () => {
 
   const newVideos = await fetchVideos('type=premium&subType=new')
   const popularVideos = await fetchVideos('type=premium&subType=popular')
-  return (<div className='w-[90%] mx-auto'>
+  return (<div className='w-[90%] mx-auto mt-8'>
     <VideoGallery videos={newVideos} customQuery={'type=premium&subType=new'} title={'New Uploads'} />;
     <VideoGallery videos={popularVideos} customQuery={'type=premium&subType=popular'} title={'Popular Videos'} />;
   </div>

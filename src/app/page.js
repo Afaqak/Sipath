@@ -84,7 +84,7 @@ const Home = () => {
  
 
   return (
-    <div className="">
+    <div className=" mt-8">
 
       <div className="w-[90%] mx-auto" >
         {

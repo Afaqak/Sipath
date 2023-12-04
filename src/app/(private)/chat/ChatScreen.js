@@ -11,7 +11,7 @@ import UserAvatar from '@/components/common/userAvatar';
 import { debounce } from 'lodash';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
-import { AppointmentRequestModal} from '@/components';
+import { AppointmentRequestModal } from '@/components';
 const ChatScreen = ({ conversation, session }) => {
 
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const ChatScreen = ({ conversation, session }) => {
   const { data: user } = useSession();
   const chatContainerRef = useRef(null);
   const [openAppointment, setOpenAppointment] = useState(false)
-  const axios=useAxiosPrivate()
+  const axios = useAxiosPrivate()
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [set, setSet] = useState(0)
@@ -28,21 +28,21 @@ const ChatScreen = ({ conversation, session }) => {
 
 
   useEffect(() => {
- 
+
     setSet(0);
     setHasMoreMessages(true)
   }, [conversation]);
-  
+
   const sendMessage = (e) => {
     e.preventDefault();
     if (!text) return;
-   
+
     socket.emit('send-message', {
       text,
       sender: user?.user?.id,
       chat_id: conversation?.id,
     });
-    console.log(text,":text")
+    console.log(text, ":text")
 
     setText('');
   };
@@ -65,28 +65,28 @@ const ChatScreen = ({ conversation, session }) => {
     scrollToBottom();
   }, [messages]);
   const handleScroll = debounce(() => {
-    if (messages.length>=10 && chatContainerRef.current.scrollTop === 0 && hasMoreMessages && !loading) {
+    if (messages.length >= 10 && chatContainerRef.current.scrollTop === 0 && hasMoreMessages && !loading) {
       loadMoreMessages();
-     
+
     }
   }, 200);
   const loadMoreMessages = async () => {
     const setToGet = set + 10;
     setLoading(true);
-    const {data} = await axios.get(`/chats/${conversation?.id}/messages?limit=10&set=${setToGet}`,{
+    const { data } = await axios.get(`/chats/${conversation?.id}/messages?limit=10&set=${setToGet}`, {
 
-      headers:{
-        Authorization:`Bearer ${session?.token}`
+      headers: {
+        Authorization: `Bearer ${session?.token}`
       }
-    }); 
+    });
 
-  
+
     dispatch(insertMessages(data?.messages))
     if (data.messages?.length > messages?.length) {
-          setHasMoreMessages(true)
-        } else {
-          setHasMoreMessages(false)
-        }
+      setHasMoreMessages(true)
+    } else {
+      setHasMoreMessages(false)
+    }
 
     setSet(setToGet);
     setLoading(false);
@@ -103,8 +103,8 @@ const ChatScreen = ({ conversation, session }) => {
 
 
   useEffect(() => {
-    socket.on('message-recieved', ({ text:message, sender, chat_id}) => {
-      console.log(message,":message")
+    socket.on('message-recieved', ({ text: message, sender, chat_id }) => {
+      console.log(message, ":message")
       const newMessage = {
         id: Date.now(),
         createdAt: new Date(),
@@ -112,8 +112,8 @@ const ChatScreen = ({ conversation, session }) => {
         sender,
         chat_id,
       };
-      
-  
+
+
       dispatch(insertMessage(newMessage));
     });
 
@@ -127,7 +127,7 @@ const ChatScreen = ({ conversation, session }) => {
     return message?.sender === user?.user?.id
   };
 
-  let otherUser=conversation.member_1===user?.user?.id?conversation?.chat_member_2:conversation?.chat_member_1
+  let otherUser = conversation.member_1 === user?.user?.id ? conversation?.chat_member_2 : conversation?.chat_member_1
 
   return (
     <div>
@@ -135,11 +135,11 @@ const ChatScreen = ({ conversation, session }) => {
         <div className="">
           <div className="flex justify-between px-6 py-4 shadow-md">
             <div className="flex items-center ">
-            <UserAvatar user={{image:otherUser?.profile_image}}/>
+              <UserAvatar user={{ image: otherUser?.profile_image, name: otherUser?.display_name.slice(0,2) }} />
               {/* <p className="ml-4">{user.accountName}</p> */}
             </div>
             <div className="flex items-center">
-              <Button onClick={()=>setOpenAppointment(true)} className="text-white bg-subcolor hover:bg-green-700 rounded-md">Propose Appointment</Button>
+              <Button onClick={() => setOpenAppointment(true)} className="text-white bg-subcolor hover:bg-green-700 rounded-md">Propose Appointment</Button>
               <Image
                 className="ml-4"
                 src={'/svgs/info-icon.svg'}

@@ -5,8 +5,8 @@ import UserAvatar from '../common/userAvatar';
 import { Icons, Stars } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import axios from '../../utils/index'
-import { errorToast} from '@/utils/toasts';
-import { ActionButtons,ProfilePictureUpdate } from '@/components/profile';
+import { errorToast } from '@/utils/toasts';
+import { ActionButtons, ProfilePictureUpdate } from '@/components/profile';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,7 +69,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
 
     try {
       await privateAxios.post(
-        `/rate/${user?.id}?type=user`,
+       `/rate/${user?.id}?type=user`,
         {
           rating: newRating,
         },
@@ -114,11 +114,11 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   }, [])
 
   return (
-    <div className="mt-10 w-full  relative justify-around shadow-md rounded-md p-4 grid grid-cols-2 lg:grid-cols-4 gap-6">
-      <div className="relative flex items-center justify-center col-span-1">
+    <div className="mt-10 w-full  relative shadow-md rounded-md p-4 flex lg:flex-row flex-col gap-[50px]">
+      <div className="relative w-36 rounded-full h-36 flex items-center justify-center bg-red-500">
         <UserAvatar
           user={{ image: user?.profile_image, name: user?.display_name || '' }}
-          className="w-36 h-36"
+          className="h-36 w-36"
         />
         {type === 'userprofile' && (
           <button
@@ -128,10 +128,10 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
             onClick={handleFollowUser}
             style={{
               position: 'absolute',
-        
+
               left: '50%',
               transform: 'translateX(-50%)',
-              
+
             }}
           >
             {isFollowing ? (
@@ -145,7 +145,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
           </button>
         )}
         {type === 'myprofile' &&
-          <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-3 right-14 flex items-center justify-center'>
+          <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-0 right-2 flex items-center justify-center'>
             <Icons.edit className=" stroke-subcolor h-4 w-4" />
           </div>
         }
@@ -217,7 +217,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
               <Icons.elipsis className="h-7 transform rotate-90  text-gray-500 w-7" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <ActionButtons user={user}/>
+              <ActionButtons user={user} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -226,6 +226,3 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
     </div>
   );
 };
-
-
-

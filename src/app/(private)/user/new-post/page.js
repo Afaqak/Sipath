@@ -76,7 +76,8 @@ const NewPost = () => {
       });
 
      successToast("Uploaded Post!")
-      quillRef.current.value=""
+     var element = document.getElementsByClassName("ql-editor");
+     element[0].innerHTML = "";
       setSelectedImages([])
       setBigImage(null)
     } catch (error) {

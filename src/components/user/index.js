@@ -216,7 +216,7 @@ export const MyFeed = ({ session }) => {
       <div>
         <div className="flex w-full justify-end">
           <Button
-            onClick={() => router.push('tutor/add-book')}
+            onClick={() => router.push('/user/new-book')}
             variant="outline"
             type="button"
             className={`rounded-2xl mt-4 text-white bg-subcolor flex gap-2 items-center justify-center shadow-[inset_1px_3px_7px_rgba(0,0,0,0.2)] `}
