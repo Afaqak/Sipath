@@ -36,7 +36,7 @@ export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => 
       formdata.append('image', file);
       console.log(formdata.get('image'), 'replying')
       const filteredText = text.replace(/<img\b[^>]*>/gi, '');
-      console.log(comment)
+      console.log(comment,user,"{checker-null}")
       formdata.append(
         'comment',
         `<div class="flex gap-1"><span class="font-bold">${user?.user?.id === comment?.author_id ? user?.user?.display_name : comment?.user?.display_name}</span> ${filteredText}</div}`
