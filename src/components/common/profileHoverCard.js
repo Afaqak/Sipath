@@ -26,14 +26,14 @@ export const ProfileHoverCard = ({ children, user }) => {
   const [loading, setLoading] = useState(false)
   const { data } = useSession()
   const router = useRouter()
-  const axios=useAxiosPrivate()
+  const axios = useAxiosPrivate()
   const [open, setOpen] = useState(false)
-  const [requestLoading,setRequestLoading]=useState(false)
+  const [requestLoading, setRequestLoading] = useState(false)
   async function getUserConversations() {
 
     if (!data?.token) return warningToast('Sign In in to Chat!')
     try {
-  setLoading(true)
+      setLoading(true)
       const request = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`, {
         method: 'GET',
         headers: {
@@ -41,11 +41,11 @@ export const ProfileHoverCard = ({ children, user }) => {
         }
       })
       const response = await request.json()
-      
+
       const userConversation = response?.userChats.find(convo =>
         (convo?.chat_member_1.id === user?.id && convo?.chat_member_2.id === data?.user?.id) || (convo.chat_member_1.id === data?.user?.id && convo?.chat_member_2.id === user?.id)
       );
-  
+
       if (userConversation) {
         router.push(`/chat?convo_id=${userConversation?.id}`)
       } else {
@@ -54,7 +54,7 @@ export const ProfileHoverCard = ({ children, user }) => {
 
     } catch (err) {
       console.log(err)
-    }finally{
+    } finally {
       setLoading(false)
     }
 
@@ -63,7 +63,7 @@ export const ProfileHoverCard = ({ children, user }) => {
   const handleMessageRequest = async (message, onClose) => {
     if (!message) return warningToast("No Message!")
     try {
-    setRequestLoading(true)
+      setRequestLoading(true)
       await axios.post(`chats/request/${user?.id}`, {
         message
       }, {
@@ -76,7 +76,7 @@ export const ProfileHoverCard = ({ children, user }) => {
 
     } catch (error) {
       console.log(error)
-    } finally{
+    } finally {
       setRequestLoading(false)
     }
   }
@@ -91,7 +91,11 @@ export const ProfileHoverCard = ({ children, user }) => {
       </HoverCardTrigger>
       <HoverCardContent className="z-[5000]" offset={-4} align="start">
         <div className="flex gap-3 ">
-          <UserAvatar className="w-8 h-8 z-[1000] cursor-pointer" user={{ image: user?.profile_image, name: user?.display_name.slice(0,2) }} />
+          <UserAvatar className="w-8 h-8 z-[1000] cursor-pointer" user={{
+            image: user?.profile_image,
+            name: (user?.display_name && user?.display_name.length > 0) ? user.display_name.slice(0, 2) : ""
+          }} />
+
           <div className="flex flex-col gap-1 items-start">
             <Badge className={"z-[1000] cursor-pointer"}>{user?.isTutor ? "Tutor" : "User"}</Badge>
             <h4 className="font-semibold text-sm">{user?.display_name}</h4>
