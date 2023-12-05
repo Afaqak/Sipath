@@ -9,11 +9,7 @@ import axios from '../../utils/index'
 import { errorToast } from '@/utils/toasts';
 import { actionTabsTutor, actionTabsUser } from '@/utils/tabs';
 import { ActionButtons, ProfilePictureUpdate } from '@/components/profile';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { motion } from 'framer-motion'
 
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -21,7 +17,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [rating, setRating] = useState(null);
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
-  const actionButtons=user?.isTutor?actionTabsTutor:actionTabsUser
+  const actionButtons = user?.isTutor ? actionTabsTutor : actionTabsUser
 
   const handleFollowUser = async () => {
 
@@ -229,23 +225,29 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
         <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
       </div>
       <div className='flex items-end justify-end'>
-        {
-          actionButtons.map((button,index) =>(
-            <Link
-              className={`w-full hover:bg-gray-200 transition-all duration-200 ease-in-out border px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] `}
-              href={button.href}
-              key={index}
-            >
-              <Image
+        {actionButtons.map((button, index) => (
+          <motion.div
+            className={`w-full border hover:bg-gray-200 cursor-pointer px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] `}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            key={index}
+          >
+            <Link href={button.href}>
+
+              <motion.img
                 src={button.imageSrc}
                 className="w-4 h-4"
                 width={25}
                 height={25}
                 alt={button.alt}
+  
               />
-              <span className="hidden md:block">{button.text}</span>
-            </Link>))
-        }
+
+            </Link>
+            <span className="hidden md:block">{button.text}</span>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
