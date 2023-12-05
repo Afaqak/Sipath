@@ -1,5 +1,5 @@
 'use client';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import UserAvatar from '@/components/common/userAvatar';
 import { ProfileHoverCard, DeleteModal, Icons } from '@/components';
@@ -43,25 +43,30 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
       )}
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
+        {
+          video?.thumbnail &&
 
-        <img
+          <img
 
-          src={video?.thumbnail || '/place-holder-post.jpeg'}
-          alt={'thumbnail'}
-          className="rounded-md object-cover w-full h-[11.2rem]"
-        />
-
+            src={video?.thumbnail || '/place-holder-post.jpeg'}
+            alt={'thumbnail'}
+            className="rounded-md object-cover w-full h-[11.2rem]"
+          />
+        }
       </Link>
       <div className="mt-3 flex gap-2 w-full">
         <div>
           <ProfileHoverCard user={{
-            display_name: video && video['user.display_name'],
-            profile_image: video && video['user.profile_image'],
-            rating: video && video['user.rating'],
-            isTutor: video && video['user.isTutor'],
-            id: video && video['user.id']
+                 display_name: video?.['user.display_name'],
+                 profile_image:  video?.['user.profile_image'],
+                 rating: video?.['user.rating'],
+                 isTutor: video?.['user.isTutor'],
+                 id: video?.['user.id']
           }}>
-            <UserAvatar user={{ image: video && video['user.profile_image'],name:video && video['user.display_name'].slice(0,2) }} />
+            <UserAvatar user={{
+              image: video?.['user.profile_image'],
+              name: video?.['user.display_name']?.slice(0, 2)
+            }} />
           </ProfileHoverCard>
         </div>
         <div className="w-full group">
@@ -159,25 +164,30 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
       )}
       <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
+        {
+          video?.thumbnail &&
 
-        <img
+          <img
 
-          src={video?.thumbnail || '/place-holder-post.jpeg'}
-          alt={'thumbnail'}
-          className="rounded-md object-cover w-full h-[11.2rem]"
-        />
-
+            src={video?.thumbnail || '/place-holder-post.jpeg'}
+            alt={'thumbnail'}
+            className="rounded-md object-cover w-full h-[11.2rem]"
+          />
+        }
       </Link>
       <div className="mt-3 flex gap-2 w-full">
         <div>
           <ProfileHoverCard user={{
-            display_name: video && video['user.display_name'],
-            profile_image: video && video['user.profile_image'],
-            rating: video && video['user.rating'],
-            isTutor: video && video['user.isTutor'],
-            id: video && video['user.id']
+            display_name: video?.['user.display_name'],
+            profile_image:  video?.['user.profile_image'],
+            rating: video?.['user.rating'],
+            isTutor: video?.['user.isTutor'],
+            id: video?.['user.id']
           }}>
-            <UserAvatar user={{ image: video && video['user.profile_image'],name:video && video['user.display_name'].slice(0,2) }} />
+            <UserAvatar user={{
+              image: video?.['user.profile_image'],
+              name: video?.['user.display_name']?.slice(0, 2)
+            }} />
           </ProfileHoverCard>
         </div>
         <div className="w-full group">
