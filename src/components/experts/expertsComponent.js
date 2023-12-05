@@ -23,7 +23,7 @@ export const ExpertsComponent = ({ title, fetchExperts, session, data, setData }
       {data?.length > 0 && (
         <div className="py-8 ">
           <h2 className="text-2xl font-extrabold mb-4">{title}</h2>
-          <div className="grid lg:ml-6 md:mt-16 lg:mt-8 grid-cols-1 md:grid-cols-2 gap-16 lg:gap-x-32 2xl:grid-cols-3 gap-y-4">
+          <div className="grid lg:ml-6 md:mt-16 lg:mt-8 grid-cols-1 md:grid-cols-2 gap-x-16 md:gap-x-24 lg:gap-x-32 2xl:grid-cols-3 gap-y-4">
             {data.map((item, index) => (
               <ExpertCard setData={setData} setWarning={setWarning} session={session} item={item} key={index} />
             ))}

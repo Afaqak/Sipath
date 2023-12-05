@@ -117,8 +117,8 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   }, [])
 
   return (
-    <div>
-      <div className="mt-10 w-full  relative shadow-md rounded-md p-4 flex lg:flex-row flex-col gap-[50px]">
+    <div className='shadow-md rounded-md'>
+      <div className="mt-10 w-full  relative  p-4 flex lg:flex-row flex-col gap-[50px]">
         <div className="relative w-36 rounded-full h-36 flex items-center justify-center bg-red-500">
           <UserAvatar
             user={{ image: user?.profile_image, name: user?.display_name || '' }}
@@ -196,7 +196,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
                   <label className="text-sm font-thin">Expertise</label>
                   <ul className=" list-disc">
                     {
-                      (tutor || session?.tutor) && (tutor?.expertise || session?.tutor?.expertise).map((exp) => (
+                      (tutor || session?.tutor) && (tutor?.expertise || session?.tutor?.expertise)?.map((exp) => (
                         <div key={exp}>
                           {categories[exp - 1]?.category}
                         </div>
@@ -214,7 +214,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
             </div>
           </div>
         </div>
-        {isActon && (
+        {/* {isActon && (
         <div className='absolute top-5 right-8'>
           <DropdownMenu className="cursor-pointer">
             <DropdownMenuTrigger>
@@ -225,14 +225,14 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      )}
+      )} */}
         <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
       </div>
       <div className='flex items-end justify-end'>
         {
           actionButtons.map((button,index) =>(
             <Link
-              className={`border-2 border-${button.bgColor} w-full px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent rounded`}
+              className={`w-full hover:bg-gray-200 transition-all duration-200 ease-in-out border px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] `}
               href={button.href}
               key={index}
             >

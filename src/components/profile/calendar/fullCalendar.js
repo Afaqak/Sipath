@@ -44,23 +44,21 @@ const textColors = [
   '#131C6D',
 ];
 
-
-
 export const EventsCalendar = () => {
   const calendarRef = useRef(null);
-  const [selectedDate, setSelectedDate] = useState({ startTime: "", endTime: "" });
+  const [selectedDate, setSelectedDate] = useState({ startTime: '', endTime: '' });
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [titleDate, setTitleDate] = useState(null);
   const [viewType, setViewType] = useState('timeGridWeek');
   const [organizedEventsByDay, setOrganizedEventsByDay] = useState({});
   const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
-  const [updatedEvent, setUpdatedEvent] = useState({})
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-  const axios = useAxiosPrivate()
+  const [updatedEvent, setUpdatedEvent] = useState({});
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const axios = useAxiosPrivate();
 
-  const { data: user } = useSession()
+  const { data: user } = useSession();
 
   const mapProperties = (data, propertyMap) => {
     const mappedObject = {};
@@ -71,30 +69,31 @@ export const EventsCalendar = () => {
     return mappedObject;
   };
 
-
-
-
   useEffect(() => {
-
-    const slotEvents = user?.slots.map((slot) => ({
+    const slotEvents = user?.slots?.map((slot) => ({
       id: slot.id,
       title: `Slot ${slot.id}`,
-      start: moment().isoWeekday(slot.day).set('hour', parseInt(slot.from.split(':')[0])).set('minute', parseInt(slot.from.split(':')[1])).toDate(),
-      end: moment().isoWeekday(slot.day).set('hour', parseInt(slot.to.split(':')[0])).set('minute', parseInt(slot.to.split(':')[1])).toDate(),
-      backgroundColor: '#1850BC', 
+      start: moment()
+        .isoWeekday(slot.day)
+        .set('hour', parseInt(slot.from.split(':')[0]))
+        .set('minute', parseInt(slot.from.split(':')[1]))
+        .toDate(),
+      end: moment()
+        .isoWeekday(slot.day)
+        .set('hour', parseInt(slot.to.split(':')[0]))
+        .set('minute', parseInt(slot.to.split(':')[1]))
+        .toDate(),
+      backgroundColor: '#1850BC',
       borderColor: '#1850BC',
       textColor: 'white',
     }));
-    console.log(slotEvents,"{slotevents}")
+    console.log(slotEvents, '{slotevents}');
 
     setCalendarEvents(slotEvents);
   }, []);
 
-
-   
-
   const updateEventInArray = (events, updatedEvent, propertyMap) => {
-    return events.map((event) => {
+    return events?.map((event) => {
       if (parseInt(event.id) === parseInt(updatedEvent?.id)) {
         const updatedProperties = mapProperties(updatedEvent, propertyMap);
         return { ...event, ...updatedProperties };
@@ -103,16 +102,15 @@ export const EventsCalendar = () => {
     });
   };
 
-
   const fetchUserCalendar = async () => {
     try {
       const { data } = await axios.get(`/users/calender`, {
         headers: {
-          Authorization: `Bearer ${user?.token}`
-        }
+          Authorization: `Bearer ${user?.token}`,
+        },
       });
 
-      const newEvents = data?.events.map((event) => ({
+      const newEvents = data?.events?.map((event) => ({
         id: event?.id,
         title: event?.title,
         start: event?.start_time,
@@ -121,8 +119,11 @@ export const EventsCalendar = () => {
         borderColor: event?.border,
         textColor: event?.text_color,
       }));
+      setCalendarEvents((prev) => {
+        const prevArray = Array.isArray(prev) ? prev : [];
 
-      setCalendarEvents(prev=>[...prev,...newEvents]);
+        return [...prevArray, ...newEvents];
+      });
     } catch (err) {
       console.error(err);
     }
@@ -132,11 +133,11 @@ export const EventsCalendar = () => {
     try {
       const { data } = await axios.post(`/users/calender`, eventToSend, {
         headers: {
-          Authorization: `Bearer ${user?.token}`
-        }
+          Authorization: `Bearer ${user?.token}`,
+        },
       });
 
-      successToast("Event Added!");
+      successToast('Event Added!');
 
       const eventToSet = {
         id: data?.event?.id,
@@ -160,8 +161,8 @@ export const EventsCalendar = () => {
     try {
       const { data } = await axios.patch(`/users/calender/${eventId}, updatedEvent`, {
         headers: {
-          Authorization: `Bearer ${user?.token}`
-        }
+          Authorization: `Bearer ${user?.token}`,
+        },
       });
 
       const eventPropertyMap = {
@@ -174,34 +175,27 @@ export const EventsCalendar = () => {
         title: 'title',
       };
 
-      successToast("Updated Event!");
+      successToast('Updated Event!');
 
-      setCalendarEvents(updateEventInArray(calendarEvents, data?.updatedEvent, eventPropertyMap))
-
+      setCalendarEvents(updateEventInArray(calendarEvents, data?.updatedEvent, eventPropertyMap));
     } catch (err) {
-
       console.error(err);
     }
   };
 
-
-
-
-
   const handleDateClick = (arg) => {
-    setIsUpdating(false)
-    setUpdatedEvent(null)
+    setIsUpdating(false);
+    setUpdatedEvent(null);
     setSelectedDate({
       startTime: arg.date,
-      endTime: moment(arg.date).add(30, "minutes").toDate()
+      endTime: moment(arg.date).add(30, 'minutes').toDate(),
     });
     setIsModalOpen(true);
   };
 
   useEffect(() => {
-    fetchUserCalendar()
-  }, [])
-
+    fetchUserCalendar();
+  }, []);
 
   const handleOrganizeEventsByDay = (events) => {
     const organizedEvents = {};
@@ -209,7 +203,7 @@ export const EventsCalendar = () => {
     const today = moment().startOf('day');
     const tomorrow = moment().startOf('day').add(1, 'days');
 
-    events.forEach((event) => {
+    events?.forEach((event) => {
       const startDay = moment(event.start).startOf('day');
 
       let dayLabel = '';
@@ -257,12 +251,10 @@ export const EventsCalendar = () => {
 
   const renderEventContent = (eventInfo) => {
     return (
-      <div className='text-[0.60rem] font-semibold flex justify-between w-full items-center'>
+      <div className="text-[0.60rem] font-semibold flex justify-between w-full items-center">
         {eventInfo.event.title}
         <span>
-          <div className="text-[0.5rem]">
-            {moment(eventInfo.event.start).format('hh:mm A')}
-          </div>
+          <div className="text-[0.5rem]">{moment(eventInfo.event.start).format('hh:mm A')}</div>
         </span>
       </div>
     );
@@ -306,11 +298,9 @@ export const EventsCalendar = () => {
     }
   };
 
-
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
+    setIsMounted(true);
+  }, []);
 
   const handleEventResize = async (resizeInfo) => {
     const eventId = parseInt(resizeInfo.event.id);
@@ -318,10 +308,15 @@ export const EventsCalendar = () => {
       start_time: resizeInfo.event.start.toISOString(),
       end_time: resizeInfo.event.end ? resizeInfo.event.end.toISOString() : null,
     };
-    await updateEventInCalendar(eventId, updatedEvent)
+    await updateEventInCalendar(eventId, updatedEvent);
   };
 
-  const handleConfirmUpdate = async (eventText, eventBackgroundColor, eventBorderColor, textColor) => {
+  const handleConfirmUpdate = async (
+    eventText,
+    eventBackgroundColor,
+    eventBorderColor,
+    textColor
+  ) => {
     const selectedStartTime = selectedDate.startTime;
     const selectedEndTime = selectedDate.endTime;
 
@@ -334,36 +329,33 @@ export const EventsCalendar = () => {
       text_color: textColor,
     };
 
-    console.log(updatedEvent)
-    await updateEventInCalendar(updatedEvent?.id, eventToSend)
-  }
-
+    console.log(updatedEvent);
+    await updateEventInCalendar(updatedEvent?.id, eventToSend);
+  };
 
   const handleDelete = async (id) => {
-    console.log(updatedEvent?.id)
+    console.log(updatedEvent?.id);
     try {
       await axios.delete(`/users/calender/${updatedEvent?.id}`, {
         headers: {
-          Authorization: `Bearer ${user?.token}`
-        }
-      })
-      successToast('Event Deleted!')
-      fetchUserCalendar()
-      setIsModalOpen(false)
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      successToast('Event Deleted!');
+      fetchUserCalendar();
+      setIsModalOpen(false);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
-
-
+  };
 
   if (!isMounted) {
-    return null
+    return null;
   }
 
   return (
     <div className="mt-8 flex flex-col lg:flex-row bg-white shadow-md">
-      <div className='border lg:w-[22%]'>
+      <div className="border lg:w-[22%]">
         <CalendarComponent handleDateChange={handleDateChange} styleCal={`rounded-tl-md`} />
         <div className="bg-white px-4 py-4">
           <EventList organizedEvents={organizedEventsByDay} />
@@ -398,8 +390,8 @@ export const EventsCalendar = () => {
           editable={true}
           eventResize={handleEventResize}
           eventClick={(info) => {
-            console.log(info?.event.end, info?.event.title)
-            setIsUpdating(true)
+            console.log(info?.event.end, info?.event.title);
+            setIsUpdating(true);
             setUpdatedEvent({
               id: info?.event?.id,
               end: info?.event?.end,
@@ -407,13 +399,13 @@ export const EventsCalendar = () => {
               start: info?.event?.start,
               borderColor: info?.event?.borderColor,
               textColor: info?.event?.textColor,
-              backgroundColor: info?.event?.backgroundColor
-            })
+              backgroundColor: info?.event?.backgroundColor,
+            });
             setSelectedDate({
               startTime: info?.event?.start,
-              endTime: info?.event?.end
-            })
-            setIsModalOpen(true)
+              endTime: info?.event?.end,
+            });
+            setIsModalOpen(true);
           }}
           ref={calendarRef}
           eventDrop={handleEventDrop}
@@ -455,7 +447,7 @@ export const EventsCalendar = () => {
           "
           >
             <h2 className="text-[#616161] font-thin uppercase">Availability</h2>
-            <AvailableDays initialSchedules={user?.slots}/>
+            <AvailableDays initialSchedules={user?.slots} />
             <div className="flex gap-2 justify-end mt-2">
               <button
                 onClick={() => setIsAvailabilityOpen(false)}
@@ -474,11 +466,18 @@ export const EventsCalendar = () => {
   );
 };
 
-const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, handleDelete, isUpdating, setIsUpdating, onConfirm, setSelectedDate }) => {
-
-
-
-
+const CustomModal = ({
+  isOpen,
+  setIsOpen,
+  updatedEvent,
+  onClose,
+  selectedDate,
+  handleDelete,
+  isUpdating,
+  setIsUpdating,
+  onConfirm,
+  setSelectedDate,
+}) => {
   const [eventText, setEventText] = useState('');
   const [selectedBackground, setSelectedBackground] = useState('#4DA9FF99');
   const [selectedBorder, setSelectedBorder] = useState('#FFFFFF');
@@ -487,9 +486,8 @@ const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, h
   const [endTime, setEndTime] = useState('');
 
   useEffect(() => {
-    setEventText('')
-  }, [isOpen])
-
+    setEventText('');
+  }, [isOpen]);
 
   useEffect(() => {
     if (updatedEvent) {
@@ -533,20 +531,22 @@ const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, h
     setEndTime(formattedEndTime);
   };
 
-
   return (
-    <Dialog
-      open={isOpen} onOpenChange={setIsOpen}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="modal-content bg-white w-1/3 rounded-md shadow-md ">
-
         <div className="p-4">
-          <h2 className="text-xl font-semibold mb-2">{isUpdating ? "Update Event" : "Add Event"}</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            {isUpdating ? 'Update Event' : 'Add Event'}
+          </h2>
           <div className="flex flex-col w-3/4 gap-1">
             <label className="text-sm font-medium gap-2">Start Time</label>
             <input
               disabled
-              value={selectedDate?.startTime ? moment(selectedDate?.startTime).format('YYYY-MM-DD hh:mm A') : ''}
+              value={
+                selectedDate?.startTime
+                  ? moment(selectedDate?.startTime).format('YYYY-MM-DD hh:mm A')
+                  : ''
+              }
               className="focus:outline-none text-gray-500 py-1 px-2 bg-gray-300 rounded-md shadow"
             />
           </div>
@@ -585,8 +585,9 @@ const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, h
                   key={bg}
                   onClick={() => setSelectedBackground(bg)}
                   style={{ backgroundColor: bg }}
-                  className={`cursor-pointer ${selectedBackground === bg && 'ring-2 ring-offset-1'
-                    } h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={`cursor-pointer ${
+                    selectedBackground === bg && 'ring-2 ring-offset-1'
+                  } h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
@@ -599,8 +600,9 @@ const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, h
                   onClick={() => setSelectedBorder(bg)}
                   key={bg}
                   style={{ backgroundColor: bg }}
-                  className={` ${selectedBorder === bg && 'ring-2 ring-offset-1'
-                    } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={` ${
+                    selectedBorder === bg && 'ring-2 ring-offset-1'
+                  } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
@@ -613,20 +615,28 @@ const CustomModal = ({ isOpen, setIsOpen, updatedEvent, onClose, selectedDate, h
                   key={color}
                   onClick={() => setSelectedTextColor(color)}
                   style={{ backgroundColor: color }}
-                  className={` ${selectedTextColor === color && 'ring-2 ring-offset-1'
-                    } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
+                  className={` ${
+                    selectedTextColor === color && 'ring-2 ring-offset-1'
+                  } cursor-pointer h-6 w-6 rounded-full shadow-md transition duration-300 transform hover:ring-2 ring-offset-2 ring-opacity-50 hover:scale-110`}
                 ></div>
               ))}
             </div>
           </div>
-          <div className='flex gap-2'>
+          <div className="flex gap-2">
             <button
               onClick={handleConfirm}
               className="bg-main text-white px-4 rounded-md text-sm py-2 font-medium w-full  mt-4"
             >
               Save
             </button>
-            {isUpdating && <button onClick={handleDelete} className='bg-subcolor2 text-white px-4 rounded-md text-sm py-2 font-medium w-full box-shadow-main  mt-4'>Delete</button>}
+            {isUpdating && (
+              <button
+                onClick={handleDelete}
+                className="bg-subcolor2 text-white px-4 rounded-md text-sm py-2 font-medium w-full box-shadow-main  mt-4"
+              >
+                Delete
+              </button>
+            )}
           </div>
         </div>
       </DialogContent>
@@ -640,30 +650,34 @@ const EventList = ({ organizedEvents }) => {
   }
   return (
     <div>
-      {Object.keys(organizedEvents).reverse().map((dayLabel) => (
-        <div key={dayLabel} className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">{dayLabel}</h2>
-          {organizedEvents[dayLabel].map((event) => (
-            <div
-              key={event.id}
-              className="flex flex-col text-[0.70rem] font-semibold justify-between mb-2"
-            >
-              <div className="flex items-center capitalize">
-                <div
-                  className="w-4 h-4 mr-2 rounded-full"
-                  style={{ backgroundColor: event.backgroundColor }}
-                ></div>
-                <span style={{ color: event.backgroundColor }} className="font-bold">
-                  {event.title}
-                </span>
+      {Object.keys(organizedEvents)
+        .reverse()
+        .map((dayLabel) => (
+          <div key={dayLabel} className="mb-4">
+            <h2 className="text-lg font-semibold mb-2">{dayLabel}</h2>
+            {organizedEvents[dayLabel].map((event) => (
+              <div
+                key={event.id}
+                className="flex flex-col text-[0.70rem] font-semibold justify-between mb-2"
+              >
+                <div className="flex items-center capitalize">
+                  <div
+                    className="w-4 h-4 mr-2 rounded-full"
+                    style={{ backgroundColor: event.backgroundColor }}
+                  ></div>
+                  <span style={{ color: event.backgroundColor }} className="font-bold">
+                    {event.title}
+                  </span>
+                </div>
+                <div>
+                  <div className=" w-full flex justify-end">
+                    {moment(event.start).format('hh:mm')}-{moment(event.end).format('hh:mm')}
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className=" w-full flex justify-end">{moment(event.start).format('hh:mm')}-{moment(event.end).format('hh:mm')}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ))}
+            ))}
+          </div>
+        ))}
     </div>
   );
 };

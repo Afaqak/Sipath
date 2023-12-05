@@ -16,10 +16,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { errorToast } from '@/utils/toasts';
-import { motion } from 'framer-motion';
+import {motion} from 'framer-motion'
 
 export const Navbar = () => {
   const router = useRouter();
@@ -73,7 +73,7 @@ export const Navbar = () => {
     { href: '/courses', label: 'Courses' },
   ];
 
-  const linksToShow = user?.token ? signedInlinks : signedOutLinks
+  const linksToShow = user?.token ? signedInlinks : signedOutLinks;
 
   return (
     <>
@@ -90,10 +90,11 @@ export const Navbar = () => {
               <Link
                 key={link.href}
                 onClick={() => router.push(link.href)}
-                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
-                  ? 'text-white'
-                  : 'text-black hover:opacity-60 transition-colors duration-300'
-                  }`}
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
+                  pathname.includes(link.href)
+                    ? 'text-white'
+                    : 'text-black hover:opacity-60 transition-colors duration-300'
+                }`}
                 href={link.href}
               >
                 {pathname.includes(link.href) && (
@@ -103,15 +104,14 @@ export const Navbar = () => {
               </Link>
             ))}
           </ul>
-          <div className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}>
+          <div
+            className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
+          >
             {user?.user ? (
               <>
                 <Link href={'/chat'}>
-                  <Icons.chatBlack
-                    className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out"
-                  />
+                  <Icons.chatBlack className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out" />
                 </Link>
-
 
                 <div className="relative">
                   <DropdownMenu>
@@ -120,11 +120,13 @@ export const Navbar = () => {
                         onClick={() => setToggleMenu(!toggleMenu)}
                         user={{
                           image: user?.user?.profile_image,
-                          name: user?.user?.display_name?.slice(0, 2) || user?.user?.first_name?.slice(0, 2) || user?.email,
+                          name:
+                            user?.user?.display_name?.slice(0, 2) ||
+                            user?.user?.first_name?.slice(0, 2) ||
+                            user?.email,
                         }}
                         className="h-7 w-7 focus:outline-none"
                       />
-
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
@@ -136,23 +138,22 @@ export const Navbar = () => {
                         className="flex gap-2"
                       >
                         <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                        My-profile</DropdownMenuItem>
-                      <DropdownMenuItem onClick={async () => {
-                        errorToast("Logging Out")
-                        await signOut({
-                          callbackUrl: '/',
-                        }).then((res) => { });
-                      }}
+                        My-profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          errorToast('Logging Out');
+                          await signOut({
+                            callbackUrl: '/',
+                          }).then((res) => {});
+                        }}
                         className="flex gap-2"
                       >
                         <Icons.logout className="h-4 w-4 " />
                         logout
                       </DropdownMenuItem>
-
                     </DropdownMenuContent>
                   </DropdownMenu>
-
-
                 </div>
               </>
             ) : (
@@ -177,66 +178,74 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
-      <nav className="mb-20 md:mb-28 lg:mb-0">
-        <div className={`justify-between fixed w-full z-[3000] bg-white shadow-md text-lg h-[7vh] flex lg:hidden `}>
-          <div onClick={() => router.push('/')} className="flex items-center gap-4 bg-black cursor-pointer rounded-r-full px-4">
+      <nav className="mb-12 md:mb-28 lg:mb-0">
+        <div
+          className={`justify-between fixed w-full z-[3000] bg-white shadow-md text-lg h-[7vh] flex lg:hidden `}
+        >
+          <div
+            onClick={() => router.push('/')}
+            className="flex items-center gap-4 bg-black cursor-pointer rounded-r-full px-4"
+          >
             <Image src="/logo.png" alt="logo" width={80} height={50} />
           </div>
-          <div className='flex gap-6'>
-            {
-              user?.token &&
-
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <UserAvatar
-                    onClick={() => setToggleMenu(!toggleMenu)}
-                    user={{
-                      image: user?.user?.profile_image,
-                      name: user?.display_name?.slice(0, 2) || user?.email?.slice(0, 2),
-                    }}
-                    className="h-7 w-7 focus:outline-none"
-                  />
-
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      router.push('/my-profile');
-                    }}
-                    className="flex gap-2"
-                  >
-                    <Icons.profile className="h-4 w-4 stroke-subcolor3" />
-                    My-profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={async () => {
-                    errorToast("Logging Out")
+          <div className="flex gap-6">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <UserAvatar
+                  onClick={() => setToggleMenu(!toggleMenu)}
+                  user={{
+                    image: user?.user?.profile_image,
+                    name: user?.user?.first_name || user?.display_name || user?.email,
+                  }}
+                  className="h-7 w-7 focus:outline-none"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{user?.user?.display_name}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    router.push('/my-profile');
+                  }}
+                  className="flex gap-2"
+                >
+                  <Icons.profile className="h-4 w-4 stroke-subcolor3" />
+                  My-profile
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    errorToast('Logging Out');
                     await signOut({
                       callbackUrl: '/',
-                    }).then((res) => { });
+                    }).then((res) => {});
                   }}
-                    className="flex gap-2"
-                  >
-                    <Icons.logout className="h-4 w-4 " />
-                    logout
-                  </DropdownMenuItem>
+                  className="flex gap-2"
+                >
+                  <Icons.logout className="h-4 w-4 " />
+                  logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-                </DropdownMenuContent>
-              </DropdownMenu>
-            }
-            <motion.div onClick={toggleNav} className="z-[4000] relative self-center cursor-pointer ">
+            <motion.div
+              onClick={toggleNav}
+              className="z-[4000] relative self-center cursor-pointer "
+            >
               <div className="flex-col flex h-11 relative w-11 justify-center rounded-full bg-gradient-to-r">
-                <motion.div animate={{
-                  rotate: nav ? 45 : 0,
-                  translateY: nav ? 3 : 0,
-
-                }} className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform `}></motion.div>
-                <motion.div animate={{
-                  rotate: nav ? -45 : 0,
-                  translateY: nav ? -4 : 0,
-
-
-                }} className={`flex flex-col justify-between h-1 w-6 cursor-pointer bg-black transform `}></motion.div>
+                <motion.div
+                  animate={{
+                    rotate: nav ? 45 : 0,
+                    translateY: nav ? 3 : 0,
+                  }}
+                  className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform `}
+                ></motion.div>
+                <motion.div
+                  animate={{
+                    rotate: nav ? -45 : 0,
+                    translateY: nav ? -4 : 0,
+                  }}
+                  className={`flex flex-col justify-between h-1 w-6 cursor-pointer bg-black transform `}
+                ></motion.div>
               </div>
             </motion.div>
           </div>
@@ -248,7 +257,7 @@ export const Navbar = () => {
         initial={{ translateX: '100%' }}
         animate={{ translateX: nav ? 0 : '100%' }}
         transition={{
-          type: "spring",
+          type: 'spring',
           duration: 0.1,
         }}
       >
@@ -262,10 +271,11 @@ export const Navbar = () => {
             >
               <Link
                 onClick={() => router.push(link.href)}
-                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
-                  ? 'text-white'
-                  : 'text-black hover:opacity-60 transition-colors duration-300'
-                  }`}
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
+                  pathname.includes(link.href)
+                    ? 'text-white'
+                    : 'text-black hover:opacity-60 transition-colors duration-300'
+                }`}
                 href={link.href}
               >
                 {pathname.includes(link.href) && (
@@ -274,23 +284,25 @@ export const Navbar = () => {
                 <span className="relative z-10">{link.label}</span>
               </Link>
             </motion.li>
-
           ))}
-          {
-            !user?.token &&
-
+          {!user?.token && (
             <div className="flex items-center gap-4 mr-4 mt-4 text-sm">
-              <Link className="py-1 px-8  border-blue-500 text-blue-500 border-[3px] rounded-md" href="/sign-in">
+              <Link
+                className="py-1 px-8  border-blue-500 text-blue-500 border-[3px] rounded-md"
+                href="/sign-in"
+              >
                 Sign in
               </Link>
-              <Link className="py-1 px-8 border-[3px] rounded-md border-black text-black" href="/sign-up">
+              <Link
+                className="py-1 px-8 border-[3px] rounded-md border-black text-black"
+                href="/sign-up"
+              >
                 Sign up
               </Link>
             </div>
-          }
+          )}
         </ul>
       </motion.div>
-
     </>
   );
 };

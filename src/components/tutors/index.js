@@ -20,17 +20,24 @@ export const MyCourses = ({ user, url, dataKey = 'courses' }) => {
 
     const courses = data?.[dataKey] || [];
     return (
-        <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
-            {courses.map((course) => (
-                <CourseCard user={course?.tutor?.user || user?.user} key={course?.id} course={dataKey === 'courses'?course:course?.course } />
-            ))}
-        </div>
+       <>
+  {courses && courses.length > 0 ? (
+    <div className="py-8 grid md:grid-cols-2 gap-4 lg:grid-cols-3">
+      {courses.map((course) => (
+        <CourseCard user={course?.tutor?.user || user?.user} key={course?.id} course={dataKey === 'courses' ? course : course?.course} />
+      ))}
+    </div>
+  ) : (
+    <p className="h-[40vh] flex items-center justify-center font-semibold">Currently no Courses are available</p>
+  )}
+</>
+
     );
 };
 
 
 export const CourseCard = ({ course, user, type = "course" }) => {
-    const formattedTimeAgo=useFormattedTimeAgo(course?.createdAt)
+    const formattedTimeAgo = useFormattedTimeAgo(course?.createdAt)
     const newHref = type === 'learning' ? `/courses/${course?.id}` : `/tutor/courses/${course?.id}`
     return (
         <Link
@@ -84,7 +91,7 @@ export const MyQuizzes = ({ token, url }) => {
             Authorization: `Bearer ${token}`,
         },
     }, (data) => {
-        dispatch(setQuizes(data)); 
+        dispatch(setQuizes(data));
     })
 
     return (
@@ -109,7 +116,11 @@ export const MyQuizzes = ({ token, url }) => {
                     </button>
                 )}
             </div>
-            {quizes && quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)}
+            {quizes && quizes.length > 0 ? (
+                quizes.map((quiz, index) => <Quiz isEdit={isEdit} key={index} quiz={quiz} />)
+            ) : (
+                <p className="h-[30vh] flex items-center font-semibold justify-center">Currently no Quizzes are available</p>
+            )}
         </div>
     );
 };

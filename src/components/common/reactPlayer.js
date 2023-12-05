@@ -25,12 +25,9 @@ class NextButton extends videojs.getComponent('Button') {
 videojs.registerComponent('NextButton', NextButton);
 
 const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
-  const searchParams = useSearchParams();
-  const axios = useAxiosPrivate();
-  const videoId = searchParams.get('id')
+
   const playerRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
-  const [video, setVideo] = useState({})
 
 
   const videoJsOptions = {
@@ -82,15 +79,15 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
     <div className='aspect-video relative border bg-black'>
 
       <div className="aspect-video">
+        <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
 
         {
-          selectedVideo?.asset && selectedVideo?.price === 0 ?
-            <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
-            :
-            <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
-              <p className='text-sm font-semibold'>This is a Premium Product</p>
-              <Button className='bg-subcolor '>Buy Video for 19.99$</Button>
-            </div>
+          // selectedVideo?.asset && selectedVideo?.price === 0 ?
+          //   :
+            // <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
+            //   <p className='text-sm font-semibold'>This is a Premium Product</p>
+            //   <Button className='bg-subcolor '>Buy Video for 19.99$</Button>
+            // </div>
 
         }
       </div>
