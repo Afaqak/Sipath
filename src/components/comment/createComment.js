@@ -88,7 +88,7 @@ export const CreateComment = ({ reply, handleSubmit }) => {
       return
     }
 
-    
+
     if (!file && !text) {
       return warningToastNoAction("You must specify either text or image to comment!");
     }
@@ -102,11 +102,14 @@ export const CreateComment = ({ reply, handleSubmit }) => {
 
   return (
     <form onSubmit={onConfirmSubmit} className="flex flex-col md:flex-row gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
-
       <UserAvatar
         user={{
           image: user?.user?.profile_image,
-          name: user?.user?.first_name || user?.user?.display_name || user?.email,
+          name: user?.user && (
+            user?.user?.first_name?.slice(0, 2) ||
+            user?.user?.display_name?.slice(0, 2) ||
+            user?.email?.slice(0,2)
+          ),
         }}
         className="h-10 w-10 self-start"
       />
