@@ -1,11 +1,13 @@
 'use client';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
 import { Icons, Stars } from '@/components';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import axios from '../../utils/index'
 import { errorToast } from '@/utils/toasts';
+import { actionTabsTutor, actionTabsUser } from '@/utils/tabs';
 import { ActionButtons, ProfilePictureUpdate } from '@/components/profile';
 import {
   DropdownMenu,
@@ -19,6 +21,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [rating, setRating] = useState(null);
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
+  const actionButtons=user?.isTutor?actionTabsTutor:actionTabsUser
 
   const handleFollowUser = async () => {
 
@@ -69,7 +72,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
 
     try {
       await privateAxios.post(
-       `/rate/${user?.id}?type=user`,
+        `/rate/${user?.id}?type=user`,
         {
           rating: newRating,
         },
@@ -114,103 +117,104 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   }, [])
 
   return (
-    <div className="mt-10 w-full  relative shadow-md rounded-md p-4 flex lg:flex-row flex-col gap-[50px]">
-      <div className="relative w-36 rounded-full h-36 flex items-center justify-center bg-red-500">
-        <UserAvatar
-          user={{ image: user?.profile_image, name: user?.display_name || '' }}
-          className="h-36 w-36"
-        />
-        {type === 'userprofile' && (
-          <button
-            className={`font-bold  bottom-0  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
-              } `}
-            disabled={loading}
-            onClick={handleFollowUser}
-            style={{
-              position: 'absolute',
+    <div>
+      <div className="mt-10 w-full  relative shadow-md rounded-md p-4 flex lg:flex-row flex-col gap-[50px]">
+        <div className="relative w-36 rounded-full h-36 flex items-center justify-center bg-red-500">
+          <UserAvatar
+            user={{ image: user?.profile_image, name: user?.display_name || '' }}
+            className="h-36 w-36"
+          />
+          {type === 'userprofile' && (
+            <button
+              className={`font-bold  bottom-0  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${isFollowing ? 'bg-main' : 'bg-[#FBA422]'
+                } `}
+              disabled={loading}
+              onClick={handleFollowUser}
+              style={{
+                position: 'absolute',
 
-              left: '50%',
-              transform: 'translateX(-50%)',
+                left: '50%',
+                transform: 'translateX(-50%)',
 
-            }}
-          >
-            {isFollowing ? (
-              <span className="flex gap-2 items-center">
-                <img className="h-6 w-6" src="/svgs/check_circle.svg" />
-                Followed
-              </span>
-            ) : (
-              'Follow'
-            )}
-          </button>
-        )}
-        {type === 'myprofile' &&
-          <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-0 right-2 flex items-center justify-center'>
-            <Icons.edit className=" stroke-subcolor h-4 w-4" />
-          </div>
-        }
-      </div>
-
-      <div className="col-span-3 w-full">
-        <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
-        <div className="flex md:flex-row flex-col gap-12">
-          <div className="flex gap-12">
-            <div className="">
-              <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
-                {type === 'userprofile' &&
-                  <li className="text-[0.75rem]">
-                    <Stars initialRating={user?.rating} setRating={handleRatingChange} rating={rating} />
-                  </li>
-                }
-                <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">{user?.follower_count}</span>{' '}
-                  Followers
-                </li>
-                <li className="text-[0.75rem]">
-                  <span className="font-semibold text-[0.85rem]">521</span> Following
-                </li>
-                {user?.isTutor &&
-                  <li className="text-[0.75rem]">
-                    <span className="font-semibold text-[0.85rem]">{(tutor?.hourly_rate || session?.tutor?.hourly_rate)}$/hr</span> Hourly rate
-                  </li>
-                }
-                {!type === 'myprofile' && (
-                  <Stars
-                    rating={rating}
-                    setRating={handleRatingChange}
-                    initialRating={user?.rating}
-                  />
-                )}
-                <div className="flex font-bold gap-2">
-                  {user?.rating} <Image src={'/svgs/star.svg'} alt="star" width={20} height={20} />
-                </div>
-              </ul>
+              }}
+            >
+              {isFollowing ? (
+                <span className="flex gap-2 items-center">
+                  <img className="h-6 w-6" src="/svgs/check_circle.svg" />
+                  Followed
+                </span>
+              ) : (
+                'Follow'
+              )}
+            </button>
+          )}
+          {type === 'myprofile' &&
+            <div onClick={() => setIsOpen(true)} className='bg-white h-6 cursor-pointer w-6 rounded-full absolute top-0 right-2 flex items-center justify-center'>
+              <Icons.edit className=" stroke-subcolor h-4 w-4" />
             </div>
-            {
-              user?.isTutor &&
-              <div>
-                <label className="text-sm font-thin">Expertise</label>
-                <ul className=" list-disc">
-                  {
-                    (tutor || session?.tutor) && (tutor?.expertise || session?.tutor?.expertise).map((exp) => (
-                      <div key={exp}>
-                        {categories[exp - 1]?.category}
-                      </div>
-                    ))
+          }
+        </div>
+
+        <div className="col-span-3 w-full">
+          <h1 className="mb-2 uppercase font-medium">{user?.display_name}</h1>
+          <div className="flex md:flex-row flex-col gap-12">
+            <div className="flex gap-12">
+              <div className="">
+                <ul className="text-sm flex flex-col gap-2 whitespace-nowrap text-[#616161]">
+                  {type === 'userprofile' &&
+                    <li className="text-[0.75rem]">
+                      <Stars initialRating={user?.rating} setRating={handleRatingChange} rating={rating} />
+                    </li>
                   }
+                  <li className="text-[0.75rem]">
+                    <span className="font-semibold text-[0.85rem]">{user?.follower_count}</span>{' '}
+                    Followers
+                  </li>
+                  <li className="text-[0.75rem]">
+                    <span className="font-semibold text-[0.85rem]">521</span> Following
+                  </li>
+                  {user?.isTutor &&
+                    <li className="text-[0.75rem]">
+                      <span className="font-semibold text-[0.85rem]">{(tutor?.hourly_rate || session?.tutor?.hourly_rate)}$/hr</span> Hourly rate
+                    </li>
+                  }
+                  {!type === 'myprofile' && (
+                    <Stars
+                      rating={rating}
+                      setRating={handleRatingChange}
+                      initialRating={user?.rating}
+                    />
+                  )}
+                  <div className="flex font-bold gap-2">
+                    {user?.rating} <Image src={'/svgs/star.svg'} alt="star" width={20} height={20} />
+                  </div>
                 </ul>
               </div>
-            }
-          </div>
-          <div className="text-[#616161] font-light col-span-2">
-            <div className="">
-              <h1>BIO</h1>
-              <p className={`text-sm w-full`}>{user?.bio}</p>
+              {
+                user?.isTutor &&
+                <div>
+                  <label className="text-sm font-thin">Expertise</label>
+                  <ul className=" list-disc">
+                    {
+                      (tutor || session?.tutor) && (tutor?.expertise || session?.tutor?.expertise).map((exp) => (
+                        <div key={exp}>
+                          {categories[exp - 1]?.category}
+                        </div>
+                      ))
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+            <div className="text-[#616161] font-light col-span-2">
+              <div className="">
+                <h1>BIO</h1>
+                <p className={`text-sm w-full`}>{user?.bio}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      {isActon && (
+        {isActon && (
         <div className='absolute top-5 right-8'>
           <DropdownMenu className="cursor-pointer">
             <DropdownMenuTrigger>
@@ -222,7 +226,27 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
           </DropdownMenu>
         </div>
       )}
-      <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
+        <ProfilePictureUpdate isOpen={isOpen} session={session} setIsOpen={setIsOpen} />
+      </div>
+      <div className='flex items-end justify-end'>
+        {
+          actionButtons.map((button,index) =>(
+            <Link
+              className={`border-2 border-${button.bgColor} w-full px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] text-${button.bgColor} bg-transparent rounded`}
+              href={button.href}
+              key={index}
+            >
+              <Image
+                src={button.imageSrc}
+                className="w-4 h-4"
+                width={25}
+                height={25}
+                alt={button.alt}
+              />
+              <span className="hidden md:block">{button.text}</span>
+            </Link>))
+        }
+      </div>
     </div>
   );
 };

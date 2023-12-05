@@ -177,9 +177,9 @@ console.log(watch(`${fieldName}[${index}].video`))
                 <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-8">
 
                     <div className="flex flex-col md:flex-row gap-3 md:gap-8">
-                        <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
+                        <div className="flex flex-col uppercase gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm">Video title</label>
+                                <label className="text-sm text-[#616161] font-light">Video title</label>
                                 <Controller
                                     name={`${fieldName}[${index}].title`}
                                     control={control}
@@ -201,7 +201,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Video Description</label>
+                                <label className="text-sm text-[#616161] font-light">Video Description</label>
                                 <Controller
                                     name={`videoBodies[${index}].description`}
                                     control={control}
@@ -225,9 +225,9 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                         </div>
-                        <div className="flex flex-col justify-between lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
+                        <div className="flex flex-col justify-between lg:mb-0 lg:items-center uppercase gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm">Subject</label>
+                                <label className="text-sm text-[#616161] font-light">Subject</label>
                                 <Controller
                                     name={`videoBodies[${index}].subject`}
                                     control={control}
@@ -250,7 +250,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Upload Quiz</label>
+                                <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
                                 <Controller
                                     name={`videoBodies[${index}].quiz`}
                                     control={control}
@@ -264,7 +264,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Upload Quiz Solution</label>
+                                <label className="text-sm text-[#616161] font-light">Upload Quiz Solution</label>
                                 <Controller
                                     name={`videoBodies[${index}].quizSolution`}
                                     control={control}

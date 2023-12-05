@@ -8,7 +8,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
 
   const ref = useRef(null)
   const toggleDropdown = () => {
-   
+  
     setOpen(!open);
   };
   useEffect(() => {
@@ -32,7 +32,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
           
         <li className="relative  group cursor-pointer text-sm">
           <span
-            className="block leading-5 text-gray-700 px-3"
+            className="block leading-5 px-3"
             onClick={toggleDropdown}
           >
             {selectedValue ? categories?.find((option) => option?.id === selectedValue)?.category : <span className="capitalize text-gray-400">{placeholder}</span>}
@@ -40,7 +40,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
           {open && (
             <ul className="absolute   border rounded border-gray-300 z-[99999999] bg-white box-shadow-main w-64 py-1 mt-1">
               <li
-                className="block py-2 px-2  leading-5 text-gray-700 hover:bg-stone-100 cursor-pointer"
+                className="block py-2 px-2  leading-5  hover:bg-stone-100 cursor-pointer"
                 onClick={() => {
                   toggleDropdown();
                   onValueChange('');
@@ -52,7 +52,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
                 {categories.map((option) => (
                   <li
                     key={option.id}
-                    className="block py-2 px-2 w-full leading-5 text-gray-700 hover:bg-gray-100 cursor-pointer"
+                    className="block py-2 px-2 w-full leading-5  hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
                       toggleDropdown();
                       onValueChange(option.id);

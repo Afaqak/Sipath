@@ -13,7 +13,7 @@ export { ExpertsSlider } from './experts/expertsSlider';
 export { Categories } from './main/categories';
 export { CategoriesSlider } from './main/categoriesSlider';
 export { Navbar } from './navBar/nav';
-export { VideoItem } from './video/videoItem';
+export { VideoItem ,VideoItemSlider} from './video/videoItem';
 
 export { Loader } from './common/loader';
 export { ExpertsComponent } from './experts/expertsComponent';

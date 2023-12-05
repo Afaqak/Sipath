@@ -6,6 +6,7 @@ import videojs from 'video.js';
 
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';
+import { Button } from '@/components/ui/button';
 
 class NextButton extends videojs.getComponent('Button') {
   constructor(player, options) {
@@ -47,45 +48,6 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
     setIsClient(true);
 
-    // const fetchVideoData = async () => {
-
-    //   try {
-    //     const response = await axios.get(`/assets/video/${videoId}`, {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     });
-
-    //     setVideo(response.data)
-    //     console.log(response?.data,"for video")
-    //     videoJsOptions.sources = [
-    //       {
-    //         src: response?.data?.signed_url,
-    //         type: 'video/mp4',
-    //       },
-    //     ];
-
-    //     if (playerRef.current) {
-    //       const player = videojs(playerRef.current, videoJsOptions);
-
-    //       const controlBar = player.getChild('controlBar');
-
-    //       if (!player.getChild('controlBar').getChild('NextButton')) {
-
-    //         const nextButton = controlBar.addChild('NextButton', {}, 1);
-    //         controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
-    //       }
-    //       player.src(videoJsOptions.sources);
-    //       player.poster(response?.data?.asset?.thumbnail)
-
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching video data:', error);
-    //   }
-
-    // };
-
-    // fetchVideoData();
 
     function setPlayer() {
       videoJsOptions.sources = [
@@ -120,9 +82,16 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
     <div className='aspect-video relative border bg-black'>
 
       <div className="aspect-video">
+
         {
-          selectedVideo?.asset &&
-          <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
+          selectedVideo?.asset && selectedVideo?.price === 0 ?
+            <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
+            :
+            <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
+              <p className='text-sm font-semibold'>This is a Premium Product</p>
+              <Button className='bg-subcolor '>Buy Video for 19.99$</Button>
+            </div>
+
         }
       </div>
 

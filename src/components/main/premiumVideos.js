@@ -1,53 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Carousel, VideoItem } from '@/components';
-const premiumVideos = [
-  {
-    id: 1,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-1.jpg',
-    account: 'Account 1',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 2,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-2.jpg',
-    account: 'Account 2',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 3,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-3.jpg',
-    account: 'Account 3',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 4,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-4.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
-  {
-    id: 5,
-    price: '19.99',
-    title: 'Video title goes here',
-    thumbnail: '/new videos/demo-4.jpg',
-    account: 'Account 4',
-    views: '1.5M',
-    rating: '4.5',
-  },
-];
+import { Carousel,  VideoItemSlider } from '@/components';
 
 export const PremiumVideos = ({data}) => {
   return (
@@ -64,7 +17,7 @@ export const PremiumVideos = ({data}) => {
           <h2 className="text-3xl">Premium </h2>
         </div>
         <div className="md:-ml-1">
-          <Carousel items={data} contentComponent={VideoItem} />
+          <Carousel items={data} contentComponent={VideoItemSlider} />
         </div>
       </div>
     </div>
