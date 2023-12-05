@@ -65,8 +65,9 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
           }}>
             <UserAvatar user={{
               image: video?.['user.profile_image'],
-              name: video?.['user.display_name']?.slice(0, 2)
+              name: (video?.['user.display_name'] && video['user.display_name'].length > 0) ? video['user.display_name'].slice(0, 2) : ""
             }} />
+
           </ProfileHoverCard>
         </div>
         <div className="w-full group">
@@ -186,8 +187,9 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
           }}>
             <UserAvatar user={{
               image: video?.['user.profile_image'],
-              name: video?.['user.display_name'].length > 0 ? video?.['user.display_name']?.slice(0, 2) : ""
+              name: (video?.['user.display_name'] && video['user.display_name'].length > 0) ? video['user.display_name'].slice(0, 2) : ""
             }} />
+
           </ProfileHoverCard>
         </div>
         <div className="w-full group">
