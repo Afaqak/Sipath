@@ -37,9 +37,9 @@ export const VideoGallery = ({ title, videos, customQuery ,type="gallery"}) => {
 
 
   return (
-    <div className="pt-8 pb-2 overflow-visible relative">
+    <div className="pb-2 overflow-visible relative">
 
-      <div className="pt-8 ">
+      <div className="">
         <h2 className="text-2xl  font-extrabold mb-4">{title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4">
           {loadedVideos?.length > 0 && loadedVideos?.map((video, index) => (

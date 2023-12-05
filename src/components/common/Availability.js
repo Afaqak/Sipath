@@ -1,14 +1,17 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
 import Image from 'next/image';
 
-export const AvailableDays = ({ setAvailability }) => {
+export const AvailableDays = ({ setAvailability, initialSchedules }) => {
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  const initialSchedule = {};
+ console.log(initialSchedules)
+  let initialSchedule = {};
+  if (initialSchedules) {
+    initialSchedule = { ...initialSchedules }
+  }
 
   daysOfWeek.forEach((day) => {
     initialSchedule[day] = [{ from: 0, until: 0 }];
@@ -91,7 +94,7 @@ export const AvailableDays = ({ setAvailability }) => {
                     clearIcon={false}
                     onChange={(time) => handleTimeChange(time, day, 'from', slotIndex)}
                     value={slot.from ? moment(slot.from, 'HH:mm') : null}
-                    disabled={!checkboxes[day]} // Disable TimePicker if checkbox is not checked
+                    disabled={!checkboxes[day]}
                   />
                 </div>
                 <div className="w-[5.4rem]">
@@ -104,7 +107,7 @@ export const AvailableDays = ({ setAvailability }) => {
                     placeholder="Until"
                     onChange={(time) => handleTimeChange(time, day, 'until', slotIndex)}
                     value={slot.until ? moment(slot.until, 'HH:mm') : null}
-                    disabled={!checkboxes[day]} // Disable TimePicker if checkbox is not checked
+                    disabled={!checkboxes[day]}
                   />
                 </div>
               </div>

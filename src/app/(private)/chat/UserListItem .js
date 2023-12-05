@@ -15,7 +15,7 @@ const UserListItem = ({ user, conversation, isSelected, onClick }) => {
     >
       <div className="flex items-center  justify-between">
         <div className="flex items-center">
-          <UserAvatar user={{ image: member_2?.profile_image }} width={40} className="z-[2000]" height={40} alt="user" />
+          <UserAvatar user={{ image: member_2?.profile_image,name:member_2?.display_name?.slice(0,2) }} width={40} className="z-[2000]" height={40} alt="user" />
           <p className="font-semibold ml-3 z-[2000]">{member_2?.display_name}</p>
         </div>
 

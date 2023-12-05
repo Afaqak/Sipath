@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { VideoItem, ExpertItem } from '@/components';
+import { VideoItemSlider, ExpertItem } from '@/components';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -51,7 +51,7 @@ export function Carousel({ items, contentComponent }) {
 }
 
 function getContentProps(contentComponent, item) {
-  if (contentComponent === VideoItem) {
+  if (contentComponent === VideoItemSlider) {
     return { video: item };
   } else if (contentComponent === ExpertItem) {
     return { item };

@@ -61,7 +61,7 @@ const Chat = ({ convos }) => {
                         onClick={openRequestModal}
                         className="bg-white w-full py-4 flex justify-between absolute top-0 z-[10000] left-0 px-4 text-left border-b-2 border-blue-600"
                     >
-                        <span className=''>View Requests</span> <span className='h-6 w-6 rounded-full bg-main text-white font-bold text-sm flex items-center justify-center'>{requests?.length}</span>
+                        <span className='font-semibold'>View Requests</span> <span className='h-6 w-6 rounded-full bg-main text-white font-bold text-sm flex items-center justify-center'>{requests?.length}</span>
                     </button>
                     <div className='mt-[3.64rem]'>
                         {conversations &&
@@ -78,7 +78,7 @@ const Chat = ({ convos }) => {
                 </div>
                 <div onClick={() => setAppointmentModalOpen(true)} className='bg-white cursor-pointer w-full py-4 flex absolute bottom-0 justify-between px-4 text-left border-t-2 border-blue-600'>
                     {/*button for appointments*/}
-                    <span className=''>Appointment Requests</span> <span className='h-6 w-6 rounded-full bg-main text-white font-bold text-sm flex items-center justify-center'>{appointmentRequests?.length}</span>
+                    <span className='font-semibold'>Appointment Requests</span> <span className='h-6 w-6 rounded-full bg-main text-white font-bold text-sm flex items-center justify-center'>{appointmentRequests?.length}</span>
                 </div>
             </div>
             <div

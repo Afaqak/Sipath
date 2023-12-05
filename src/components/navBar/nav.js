@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { errorToast } from '@/utils/toasts';
+import { motion } from 'framer-motion';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -191,7 +192,7 @@ export const Navbar = () => {
                     onClick={() => setToggleMenu(!toggleMenu)}
                     user={{
                       image: user?.user?.profile_image,
-                      name: user?.user?.first_name || user?.display_name || user?.email,
+                      name: user?.display_name?.slice(0, 2) || user?.email?.slice(0, 2),
                     }}
                     className="h-7 w-7 focus:outline-none"
                   />
@@ -223,33 +224,57 @@ export const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             }
-            <div onClick={toggleNav} className="z-[1100] self-center cursor-pointer mr-4">
+            <motion.div onClick={toggleNav} className="z-[4000] relative self-center cursor-pointer ">
               <div className="flex-col flex h-11 relative w-11 justify-center rounded-full bg-gradient-to-r">
-                <div className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform ${nav ? 'rotate-45 translate-y-0' : ''}`}></div>
-                <div className={`flex flex-col justify-between h-1 w-6 cursor-pointer bg-black transform ${nav ? '-rotate-45 -translate-y-2' : ''}`}></div>
+                <motion.div animate={{
+                  rotate: nav ? 45 : 0,
+                  translateY: nav ? 3 : 0,
+
+                }} className={`flex flex-col justify-between h-1 w-6 mb-1 cursor-pointer bg-black transform `}></motion.div>
+                <motion.div animate={{
+                  rotate: nav ? -45 : 0,
+                  translateY: nav ? -4 : 0,
+
+
+                }} className={`flex flex-col justify-between h-1 w-6 cursor-pointer bg-black transform `}></motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </nav>
 
-      <div className={`w-full lg:hidden flex-col items-center justify-center min-h-screen fixed z-[1500] bg-white right-0 top-0 transition-transform duration-300 ${nav ? 'transform translate-x-0 scale-100' : 'transform scale-90 translate-x-full'}`}>
+      <motion.div
+        className={`min-w-full max-w-screen lg:hidden flex-col items-center justify-center h-screen fixed z-[1500] bg-white right-0 left-0 top-0 transition-transform duration-300 `}
+        initial={{ translateX: '100%' }}
+        animate={{ translateX: nav ? 0 : '100%' }}
+        transition={{
+          type: "spring",
+          duration: 0.1,
+        }}
+      >
         <ul className="flex gap-6 flex-col text-2xl cursor-pointer items-center justify-center h-screen px-4 uppercase font-semibold text-bbPrimary">
           {linksToShow.map((link) => (
-            <Link
+            <motion.li
               key={link.href}
-              onClick={() => router.push(link.href)}
-              className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
-                ? 'text-white'
-                : 'text-black hover:opacity-60 transition-colors duration-300'
-                }`}
-              href={link.href}
+              initial={{ scale: 0.9 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              {pathname.includes(link.href) && (
-                <div className="absolute inset-0 bg-main rounded-full"></div>
-              )}
-              <span className="relative z-10">{link.label}</span>
-            </Link>
+              <Link
+                onClick={() => router.push(link.href)}
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
+                  ? 'text-white'
+                  : 'text-black hover:opacity-60 transition-colors duration-300'
+                  }`}
+                href={link.href}
+              >
+                {pathname.includes(link.href) && (
+                  <div className="absolute inset-0 bg-main rounded-full"></div>
+                )}
+                <span className="relative z-10">{link.label}</span>
+              </Link>
+            </motion.li>
+
           ))}
           {
             !user?.token &&
@@ -264,7 +289,7 @@ export const Navbar = () => {
             </div>
           }
         </ul>
-      </div>
+      </motion.div>
 
     </>
   );

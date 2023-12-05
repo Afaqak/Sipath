@@ -69,9 +69,10 @@ export const authOptions = {
         if (response.data.user) {
 
           return {
-            user: response.data.user,
-            token: response.data.token,
-            tutor: response.data.tutor,
+            user: response.data?.user,
+            token: response.data?.token,
+            tutor: response.data?.tutor,
+            slots:response.data?.slots,
             refreshToken: response.data.refresh_token,
             expiration_time: response?.data.expiration_time
           };
@@ -110,10 +111,12 @@ export const authOptions = {
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
+        token.slots=data.slots;
         token.tutor = data.tutor;
         token.user = data.user;
         token.token = data?.token
         token.refreshToken = data?.refresh_token
+        token.slots=data.slots;
         token.expiration_time = data?.expiration_time
 
       } else if (providerName === 'google') {
@@ -128,6 +131,7 @@ export const authOptions = {
         token.token = data.token;
         token.refreshToken = data?.refresh_token
         token.user = data.user;
+        token.slots=data.slots;
         token.tutor = data.user;
       } else {
         if (user) {

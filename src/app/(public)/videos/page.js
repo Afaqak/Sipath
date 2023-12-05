@@ -22,7 +22,7 @@ const Videos = async () => {
   const popularVideos = await fetchVideos('type=popular')
 
   return (
-    <div className='w-[90%] mx-auto'>
+    <div className='w-[90%] mx-auto mt-8'>
       <VideoGallery videos={newVideos} customQuery={'type=new'} title={'New Uploads'} />
       <VideoGallery videos={popularVideos} customQuery={'type=popular'} title={'Popular Videos'} />
     </div>

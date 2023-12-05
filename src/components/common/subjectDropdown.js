@@ -8,7 +8,7 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
 
   const ref = useRef(null)
   const toggleDropdown = () => {
-   
+  
     setOpen(!open);
   };
   useEffect(() => {
@@ -30,17 +30,17 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
     <div ref={ref}  className="relative subject-dropdown w-48">
       <ul className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)]  py-1 placeholder:text-sm border-none focus:outline-none resize-none rounded-md">
           
-        <li className="relative group cursor-pointer text-sm">
+        <li className="relative  group cursor-pointer text-sm">
           <span
-            className="block leading-5 text-gray-700 px-3"
+            className="block leading-5 px-3"
             onClick={toggleDropdown}
           >
             {selectedValue ? categories?.find((option) => option?.id === selectedValue)?.category : <span className="capitalize text-gray-400">{placeholder}</span>}
           </span>
           {open && (
-            <ul className="absolute  border rounded border-gray-300 z-[99999999] bg-white shadow-md w-64 py-1 mt-1">
+            <ul className="absolute   border rounded border-gray-300 z-[99999999] bg-white box-shadow-main w-64 py-1 mt-1">
               <li
-                className="block py-2 px-2 leading-5 text-gray-700 hover:bg-indigo-100 cursor-pointer"
+                className="block py-2 px-2  leading-5  hover:bg-stone-100 cursor-pointer"
                 onClick={() => {
                   toggleDropdown();
                   onValueChange('');
@@ -48,11 +48,11 @@ export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Se
               >
                 {placeholder}
               </li>
-              <div className='grid grid-cols-2 divide-x'>
+              <div className='grid grid-cols-2 divide-x '>
                 {categories.map((option) => (
                   <li
                     key={option.id}
-                    className="block py-2 px-2 w-full leading-5 text-gray-700 hover:bg-indigo-100 cursor-pointer"
+                    className="block py-2 px-2 w-full leading-5  hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
                       toggleDropdown();
                       onValueChange(option.id);

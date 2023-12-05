@@ -32,6 +32,10 @@ const NewVideo = () => {
     });
 
 
+    const isAtLeastOneVideoAdded = watch('videoBodies').some(video => video);
+
+
+
     async function uploadVideo(video, index) {
 
         const formDataToSend = new FormData();
@@ -78,6 +82,7 @@ const NewVideo = () => {
 
     const onSubmit = async (data) => {
         try {
+          
 
             for (const [index, video] of data.videoBodies.entries()) {
                 await uploadVideo(video, index);
@@ -93,8 +98,8 @@ const NewVideo = () => {
 
 
     return (
-        <div className=' w-full'>
-            <div className='md:w-[60%]  flex flex-col gap-4 mx-auto'>
+        <div className=' my-16 w-[90%] md:w-[80%] lg:w-[70%] mx-auto xl:w-[55%]  2xl:w-[50%]'>
+            <div>
                 {fields.map((field, index) => (
                     <div className='flex flex-col gap-4' key={field.id}>
 
@@ -116,7 +121,12 @@ const NewVideo = () => {
                     </button>
                 </div>
                 <div className='w-full flex justify-end'>
-                    <Button className='' type="button" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+                <Button
+                        className=''
+                        type="button"
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={isSubmitting || !isAtLeastOneVideoAdded}
+                    >
                         {isSubmitting ? 'Submitting...' : 'Submit Videos'}
                     </Button>
                 </div>
@@ -139,7 +149,10 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
     const inputRef = useRef(null)
     const videoRef = useRef(null);
     const [uploadType, setUploadType] = useState('free')
-    console.log(watch(`${fieldName}[${index}].progress`))
+console.log(watch(`${fieldName}[${index}].video`))
+    const isVideoAdded = watch(`${fieldName}[${index}].video`);
+
+
 
     return (
         <>
@@ -151,22 +164,22 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
                     <VideoUploadType setPrice={(price) => setValue(`${fieldName}[${index}].price`, price)} type={field.value} setType={(val) => field.onChange(val)} />
                 )}
             />
-            <div className="bg-white p-4 gap-4 relative w-full mx-auto rounded-md shadow-md">
+            <div className="p-4 mb-6 relative rounded-md shadow-md bg-white">
                 {isSubmitting && (
                   <UploadStatusDisplay uploadProgress={watch(`${fieldName}[${index}].progress`)}/>
                 )}
 
                 <div className='flex justify-end'>
-                    <div onClick={removeVideo} className='h-5 w-fit rounded-full bg-slate-200 flex items-center justify-center mb-4'>
+                    <div onClick={removeVideo} className='h-5 rounded-full bg-slate-200 flex items-center justify-center mb-4'>
                         <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" />
                     </div>
                 </div>
-                <div className="flex flex-col lg:flex-row justify-between gap-8">
+                <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-8">
 
-                    <div className="flex gap-8">
-                        <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
+                    <div className="flex flex-col md:flex-row gap-3 md:gap-8">
+                        <div className="flex flex-col uppercase gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm">Video title</label>
+                                <label className="text-sm text-[#616161] font-light">Video title</label>
                                 <Controller
                                     name={`${fieldName}[${index}].title`}
                                     control={control}
@@ -188,7 +201,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Video Description</label>
+                                <label className="text-sm text-[#616161] font-light">Video Description</label>
                                 <Controller
                                     name={`videoBodies[${index}].description`}
                                     control={control}
@@ -212,9 +225,9 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
 
                             </div>
                         </div>
-                        <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
+                        <div className="flex flex-col justify-between lg:mb-0 lg:items-center uppercase gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm">Subject</label>
+                                <label className="text-sm text-[#616161] font-light">Subject</label>
                                 <Controller
                                     name={`videoBodies[${index}].subject`}
                                     control={control}
@@ -237,7 +250,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Upload Quiz</label>
+                                <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
                                 <Controller
                                     name={`videoBodies[${index}].quiz`}
                                     control={control}
@@ -251,7 +264,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm">Upload Quiz Solution</label>
+                                <label className="text-sm text-[#616161] font-light">Upload Quiz Solution</label>
                                 <Controller
                                     name={`videoBodies[${index}].quizSolution`}
                                     control={control}
@@ -268,7 +281,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
 
                     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
                         <div className="">
-                            <div className='lg:h-28 h-36 flex  items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full bg-gray-100'>
+                            <div className={`h-[9rem] md:h-[7rem] ${isVideoAdded?"bg-none":"bg-slate-200"} overflow-hidden flex  items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full`}>
                                 <Controller
                                     name={`videoBodies[${index}].video`}
                                     control={control}
@@ -300,7 +313,7 @@ const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVi
                                             {field.value ? (
                                                 <div className='relative'>
                                                     <span onClick={() => setValue(`videoBodies[${index}].video`, null)} className='absolute z-[2000] top-3 right-4 h-4 w-4 rounded-full bg-slate-200 flex items-center justify-center'>  <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" /></span>
-                                                    <video ref={videoRef} controls className="w-full h-full rounded-md object-contain">
+                                                    <video ref={videoRef} controls className="w-full h-full rounded-md">
                                                         <source src={URL.createObjectURL(field.value)} type="video/mp4" />
                                                         Your browser does not support the video tag.
                                                     </video>

@@ -11,6 +11,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const eventBackgroundColors = [
   '#4DA9FF99',
@@ -61,11 +62,8 @@ export const EventsCalendar = () => {
 
   const { data: user } = useSession()
 
-
   const mapProperties = (data, propertyMap) => {
     const mappedObject = {};
-    console.log("########mappppeeddd##########")
-    console.log(propertyMap)
     Object.keys(propertyMap).forEach((key) => {
       mappedObject[key] = data?.[propertyMap[key]];
     });
@@ -73,6 +71,27 @@ export const EventsCalendar = () => {
     return mappedObject;
   };
 
+
+
+
+  useEffect(() => {
+
+    const slotEvents = user?.slots.map((slot) => ({
+      id: slot.id,
+      title: `Slot ${slot.id}`,
+      start: moment().isoWeekday(slot.day).set('hour', parseInt(slot.from.split(':')[0])).set('minute', parseInt(slot.from.split(':')[1])).toDate(),
+      end: moment().isoWeekday(slot.day).set('hour', parseInt(slot.to.split(':')[0])).set('minute', parseInt(slot.to.split(':')[1])).toDate(),
+      backgroundColor: '#1850BC', 
+      borderColor: '#1850BC',
+      textColor: 'white',
+    }));
+    console.log(slotEvents,"{slotevents}")
+
+    setCalendarEvents(slotEvents);
+  }, []);
+
+
+   
 
   const updateEventInArray = (events, updatedEvent, propertyMap) => {
     return events.map((event) => {
@@ -103,7 +122,7 @@ export const EventsCalendar = () => {
         textColor: event?.text_color,
       }));
 
-      setCalendarEvents([...newEvents]);
+      setCalendarEvents(prev=>[...prev,...newEvents]);
     } catch (err) {
       console.error(err);
     }
@@ -139,7 +158,7 @@ export const EventsCalendar = () => {
 
   const updateEventInCalendar = async (eventId, updatedEvent) => {
     try {
-      const { data } = await axios.patch(`/users/calender/${eventId}`, updatedEvent, {
+      const { data } = await axios.patch(`/users/calender/${eventId}, updatedEvent`, {
         headers: {
           Authorization: `Bearer ${user?.token}`
         }
@@ -343,17 +362,17 @@ export const EventsCalendar = () => {
   }
 
   return (
-    <div className="mt-8 flex bg-white shadow-md">
-      <div className='border  w-[22%]'>
+    <div className="mt-8 flex flex-col lg:flex-row bg-white shadow-md">
+      <div className='border lg:w-[22%]'>
         <CalendarComponent handleDateChange={handleDateChange} styleCal={`rounded-tl-md`} />
         <div className="bg-white px-4 py-4">
           <EventList organizedEvents={organizedEventsByDay} />
         </div>
       </div>
-      <div className="w-[78%] border-l border">
-        <div className="flex justify-between items-center bg-white pt-4 px-4">
+      <div className="lg:w-[78%] border-l border">
+        <div className="flex gap-2 justify-between items-center bg-white pt-4 px-4">
           <div className="flex gap-4 items-center">
-            <span className=" text-2xl font-semibold">{titleDate}</span>
+            <span className=" text-lg lg:text-2xl font-semibold">{titleDate}</span>
             <select
               value={viewType}
               className="border-main text-main focus:outline-none border-2 text-sm rounded-md py-1 px-2"
@@ -366,12 +385,12 @@ export const EventsCalendar = () => {
               ))}
             </select>
           </div>
-          <button
-            className="bg-main text-white px-4 rounded-md text-sm py-2"
+          <Button
+            className="bg-main text-white px-4 whitespace-nowrap hover:bg-main/90 rounded-md text-sm py-2"
             onClick={handleAvailabilityClick}
           >
             Edit Availability
-          </button>
+          </Button>
         </div>
 
         <FullCalendar
@@ -415,11 +434,6 @@ export const EventsCalendar = () => {
           events={calendarEvents}
           eventContent={renderEventContent}
         />
-
-
-
-
-
         <CustomModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -441,7 +455,7 @@ export const EventsCalendar = () => {
           "
           >
             <h2 className="text-[#616161] font-thin uppercase">Availability</h2>
-            <AvailableDays />
+            <AvailableDays initialSchedules={user?.slots}/>
             <div className="flex gap-2 justify-end mt-2">
               <button
                 onClick={() => setIsAvailabilityOpen(false)}

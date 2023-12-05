@@ -2,8 +2,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { VideoItem, Carousel } from '@/components';
-
+import {  Carousel ,VideoItemSlider} from '@/components';
 export const NewVideos = ({data}) => {
  
   return (
@@ -14,7 +13,7 @@ export const NewVideos = ({data}) => {
           <h2 className="text-3xl">New Videos</h2>
         </div>
         <div className="overflow-visible md:-ml-1">
-          <Carousel items={data} contentComponent={VideoItem} />
+          <Carousel items={data} contentComponent={VideoItemSlider} />
         </div>
       </div>
     </div>

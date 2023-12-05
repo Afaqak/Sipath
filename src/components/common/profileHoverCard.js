@@ -91,7 +91,7 @@ export const ProfileHoverCard = ({ children, user }) => {
       </HoverCardTrigger>
       <HoverCardContent className="z-[5000]" offset={-4} align="start">
         <div className="flex gap-3 ">
-          <UserAvatar className="w-8 h-8 z-[1000] cursor-pointer" user={{ image: user?.profile_image, name: user?.display_name }} />
+          <UserAvatar className="w-8 h-8 z-[1000] cursor-pointer" user={{ image: user?.profile_image, name: user?.display_name.slice(0,2) }} />
           <div className="flex flex-col gap-1 items-start">
             <Badge className={"z-[1000] cursor-pointer"}>{user?.isTutor ? "Tutor" : "User"}</Badge>
             <h4 className="font-semibold text-sm">{user?.display_name}</h4>
