@@ -57,11 +57,11 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
       <div className="mt-3 flex gap-2 w-full">
         <div>
           <ProfileHoverCard user={{
-                 display_name: video?.['user.display_name'],
-                 profile_image:  video?.['user.profile_image'],
-                 rating: video?.['user.rating'],
-                 isTutor: video?.['user.isTutor'],
-                 id: video?.['user.id']
+            display_name: video?.['user.display_name'],
+            profile_image: video?.['user.profile_image'],
+            rating: video?.['user.rating'],
+            isTutor: video?.['user.isTutor'],
+            id: video?.['user.id']
           }}>
             <UserAvatar user={{
               image: video?.['user.profile_image'],
@@ -179,14 +179,14 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
         <div>
           <ProfileHoverCard user={{
             display_name: video?.['user.display_name'],
-            profile_image:  video?.['user.profile_image'],
+            profile_image: video?.['user.profile_image'],
             rating: video?.['user.rating'],
             isTutor: video?.['user.isTutor'],
             id: video?.['user.id']
           }}>
             <UserAvatar user={{
               image: video?.['user.profile_image'],
-              name: video?.['user.display_name']?.slice(0, 2)
+              name: video?.['user.display_name'].length > 0 ? video?.['user.display_name']?.slice(0, 2) : ""
             }} />
           </ProfileHoverCard>
         </div>
