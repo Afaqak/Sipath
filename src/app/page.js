@@ -5,9 +5,11 @@ import axios from '@/utils/index';
 import { CategoriesSkeleton, ExpertSkeleton, LoadingSkeletons } from '@/utils/skeletons';
 
 import { VideoGallery } from '@/components/video/videoGallery';
+import { BuyNowModal } from '@/components/modals/paymentModal';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [isOpen,setIsOpen]=useState(false)
   const [data, setData] = useState({
     videos: [],
     newVideos: [],
@@ -102,6 +104,7 @@ const Home = () => {
 
   return (
     <div className=" mt-8">
+
       <div className="w-[90%] mx-auto">
         {data.videos.length > 0 && <VideoGallery type='no-more' videos={data.videos} />}
       </div>

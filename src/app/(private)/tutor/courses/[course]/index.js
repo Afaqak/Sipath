@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useRouter } from 'next/navigation';
-import { LoadingSkeletons, Icons ,CourseEnrollmentModal,CourseUnEnrollmentModal} from '@/components';
+import { LoadingSkeletons, Icons, CourseEnrollmentModal, CourseUnEnrollmentModal } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/common/userAvatar';
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import { BuyNowModal } from '@/components/modals/paymentModal';
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
@@ -27,6 +28,9 @@ const CoursePage = ({ session }) => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollments, setEnrollments] = useState([])
   const [enrollmentId, setEnrollmentId] = useState(0)
+  const [isPaymentModalOpen,setIsPaymentModalOpen]=useState(false)
+  console.log(course)
+
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -193,12 +197,16 @@ const CoursePage = ({ session }) => {
                   ) : (
                     <Button
                       onClick={() => {
+                        course?.price?
+                        setIsPaymentModalOpen(true):
                         setEnrollmentModal(true)
                       }}
                       variant="outline"
                       className="flex gap-2 transform active:-translate-y-1 bg-subcolor border-subcolor text-white items-center"
                     >
-                      Enroll in Course
+                      {
+                        course?.price ? `Enroll in course for ${course?.price}$` : "Enroll Now!"
+                      }
                     </Button>
                   )
                 ) : null}
@@ -271,6 +279,7 @@ const CoursePage = ({ session }) => {
             ))}
           <CourseUnEnrollmentModal enrollmentId={enrollmentId} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={unEnrollmentModal} setIsOpen={seUnEnrollmentModal} />
           <CourseEnrollmentModal setEnrollments={setEnrollments} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={enrollmentModal} setIsOpen={setEnrollmentModal} />
+          <BuyNowModal setIsOpen={setIsPaymentModalOpen} isOpen={isPaymentModalOpen}/>
         </>) : <div className='min-h-[60vh] flex items-center justify-center'>
         <div className='animate-spin'>
           <Icons.Loader2 width="36" height="36" className="stroke-black w-6 h-6" />
@@ -288,8 +297,8 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
   const axios = useAxiosPrivate();
   const { data: user } = useSession();
   const [toggleMenu, setToggleMenu] = useState(false);
-   
-  const formattedTimeAgo=useFormattedTimeAgo(video?.createdAt)
+
+  const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt)
 
   const onDeleteSubmit = async (e) => {
     e.preventDefault();

@@ -7,6 +7,7 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';
 import { Button } from '@/components/ui/button';
+import { BuyNowModal } from '../modals/paymentModal';
 
 class NextButton extends videojs.getComponent('Button') {
   constructor(player, options) {
@@ -28,7 +29,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
   const playerRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
-
+  const [isOpen,setIsOpen]=useState(false)
 
   const videoJsOptions = {
     controls: true,
@@ -39,7 +40,6 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
     sources: [],
   };
 
-  console.log(selectedVideo?.signed_url, "{}")
 
   useEffect(() => {
 
@@ -47,12 +47,12 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
 
     function setPlayer() {
-  
+
       if (selectedVideo && selectedVideo.signed_url) {
         videoJsOptions.sources = [
           {
             src: selectedVideo.signed_url,
-            type: 'video/mp4', 
+            type: 'video/mp4',
           },
         ];
 
@@ -76,24 +76,22 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
   }, [selectedVideo]);
 
-
   return (
     <div className='aspect-video relative border bg-black'>
 
-      <div className="aspect-video">
-        <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
 
-        {
-          // selectedVideo?.asset && selectedVideo?.price === 0 ?
-          //   :
-            // <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
-            //   <p className='text-sm font-semibold'>This is a Premium Product</p>
-            //   <Button className='bg-subcolor '>Buy Video for 19.99$</Button>
-            // </div>
-
-        }
-      </div>
-
+      {
+        selectedVideo?.asset?.price > 0 ?
+          <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
+            <p className='text-sm font-semibold'>This is a Premium Product</p>
+            <Button onClick={()=>setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
+          </div> :
+          <div className="aspect-video">
+            <video preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
+          </div>
+      }
+    
+      <BuyNowModal isOpen={isOpen} setIsOpen={setIsOpen}/>
     </div>
   );
 };

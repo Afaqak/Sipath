@@ -273,7 +273,7 @@ const CourseUpload = () => {
           <div key={sectionIndex}>
             <div className="relative mb-6">
               <div className="p-4 flex justify-between items-center relative bg-white mb-4 shadow-lg rounded-md">
-                <div className="flex flex-row items-center gap-4 text-[#616161] font-light">
+                <div className="flex flex-row items-center gap-4 ">
                   <label className="text-sm uppercase text-[#616161] font-light">SECTION TITLE</label>
                   <input
                     {...register(`sections[${sectionIndex}].title`)}
@@ -373,9 +373,9 @@ const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName,
         <div className="flex flex-col lg:flex-row justify-between gap-8">
 
           <div className="flex gap-8">
-            <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
+            <div className="flex flex-col uppercase gap-2 ">
               <div className="flex flex-col">
-                <label className="text-sm">Video title</label>
+                <label className="text-sm text-[#616161] font-light">Video title</label>
                 <Controller
                   name={`${fieldName}[${videoIndex}].title`}
                   control={control}
@@ -397,7 +397,7 @@ const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName,
 
               </div>
               <div className="flex flex-col">
-                <label className="text-sm">Video Description</label>
+                <label className="text-sm text-[#616161] font-light">Video Description</label>
                 <Controller
                   name={`${fieldName}[${videoIndex}].description`}
                   control={control}
@@ -421,9 +421,9 @@ const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName,
 
               </div>
             </div>
-            <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 text-[#616161] font-light">
+            <div className="flex flex-col justify-between mb-4 lg:mb-0 lg:items-center uppercase gap-2 ">
               <div className="flex flex-col">
-                <label className="text-sm">Subject</label>
+                <label className="text-sm text-[#616161] font-light">Subject</label>
                 <Controller
                   name={`${fieldName}[${videoIndex}].subject`}
                   control={control}
@@ -446,7 +446,7 @@ const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName,
 
               </div>
               <div className="flex flex-col">
-                <label className="text-sm">Upload Quiz</label>
+                <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
                 <Controller
                   name={`${fieldName}[${videoIndex}].quiz`}
                   control={control}
@@ -460,7 +460,7 @@ const VideoBody = ({ control, index, handleAddVideo, setValue, watch, fieldName,
 
               </div>
               <div className="flex flex-col">
-                <label className="text-sm">Upload Quiz Solution</label>
+                <label className="text-sm text-[#616161] font-light">Upload Quiz Solution</label>
                 <Controller
                   name={`${fieldName}[${videoIndex}].quizSolution`}
                   control={control}
@@ -571,7 +571,7 @@ const CourseTopic = ({ register, control }) => {
   const { errors } = useFormState({ control });
 
   return (
-    <div className="flex md:flex-row flex-col md:items-center gap-4 text-[#616161] font-light">
+    <div className="flex md:flex-row flex-col md:items-center gap-4 ">
       <div className='flex flex-col'>
         <label className="text-sm uppercase text-[#616161] font-light">COURSE TITLE</label>
         <input

@@ -116,7 +116,7 @@ const ExpertCard = ({ item, setData, session}) => {
   return (
   <div className={`relative mb-6 cursor-pointer flex flex-col h-fit lg:h-40 py-6 px-4 min-w-[70%] bg-white box-shadow-main rounded-sm mt-6 md:mt-2`}>
       <div className="lg:absolute relative mb-6 lg:mb-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:-left-16 w-[8rem] lg:w-[7rem] rounded-full">
-        <UserAvatar className="h-28 w-28 text-2xl" user={{ image: item && item['user.profile_image'] ,name:item && item['user.display_name'].slice(0,2) || item['user.first_name'].slice(0,2)}} />
+        <UserAvatar className="h-28 w-28 text-2xl" user={{ image: item && item?.['user.profile_image'] ,name:item && item?.['user.display_name']?.slice(0,2) || item?.['user.first_name']?.slice(0,2)}} />
         <button
           className={`font-bold   bottom-0  text-white rounded-full w-32 cursor-pointer capitalize py-1 flex justify-center items-center ${item?.is_following ? 'bg-main' : 'bg-[#FBA422]'}
          `}

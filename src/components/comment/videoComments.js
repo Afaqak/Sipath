@@ -6,7 +6,7 @@ import { fetchCommentReplies, fetchPrimaryComments } from '@/features/comments/c
 import { VideoComment, RepliesList, LoadingSkeletons } from '@/components';
 import { Skeleton } from '../ui/skeleton';
 
-import { useSearchParams } from 'next/navigation';
+import {useParams} from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { selectCommentReplies, selectPrimaryComments } from '@/utils/selectors';
 import { resetComments, setComments, setReplyComments } from '@/features/comments/commentSlice';
@@ -15,8 +15,8 @@ import Image from 'next/image';
 export const VideoComments = () => {
   const axios = useAxiosPrivate();
   const primaryComments = useSelector(selectPrimaryComments);
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const params=useParams()
+  const id=params?.id
   const dispatch = useDispatch();
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
