@@ -3,7 +3,7 @@ import React, { Suspense, useState, useRef } from 'react';
 import { VideoComments, CreateComment, CustomEditor } from '@/components';
 import { createComment } from '@/features/comments/commentThunk';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams,useParams } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +18,11 @@ import { warningToast, warningToastNoAction } from '@/utils/toasts';
 
 export const CommentsSection = () => {
   const { data: user } = useSession();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
+  const params=useParams()
+  const id=params?.id
 
-  const id = searchParams.get('id');
+  // const id = searchParams.get('id');
   const primaryComments = useSelector(selectPrimaryComments);
   const dispatch = useDispatch();
   const router = useRouter()

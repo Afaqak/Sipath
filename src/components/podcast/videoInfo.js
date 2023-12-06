@@ -59,9 +59,8 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo,followedUser,s
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const id = searchParams.get('id');
-
+  const params=useParams()
+  const id=params?.id
 
   useEffect(() => {
     setRating(0)

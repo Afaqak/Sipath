@@ -3,20 +3,22 @@ import { VideoInfo, CommentsSection, Icons } from '@/components';
 import ContentPlayer from '@/components/common/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
-const WatchVideo = () => {
-  const [selectedVideo, setSelectedVideo] = useState({});
+const WatchVideo = ({video}) => {
+  const [selectedVideo, setSelectedVideo] = useState(video);
   const [isClient,setIsClient]=useState(true)
   const axios = useAxiosPrivate();
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const params = useParams();
+  const id=params?.id
   const { data: session } = useSession()
   const [followedUser, setFollowedUser] = useState(false)
+
+
 
   const checkFollowUser = async (id) => {
     try {
@@ -31,7 +33,7 @@ const WatchVideo = () => {
           },
         }
       );
-
+        console.log(response?.data)
       if (response?.data?.is_following) {
         setFollowedUser(true)
       }
@@ -45,19 +47,19 @@ const WatchVideo = () => {
 
   }
 
-  const getVideo = async function () {
-    try {
-      const response = await axios.get(`/assets/video/${id}`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      });
-      setSelectedVideo(response.data);
-      checkFollowUser(response?.data?.author_id)
-    } catch (err) {
-      console.log(err)
-    }
-  };
+//   const getVideo = async function () {
+//     try {
+//       const response = await axios.get(`/assets/video/${id}`, {
+//         headers: {
+//           Authorization: `Bearer ${session?.token}`,
+//         },
+//       });
+//       setSelectedVideo(response.data);
+//       checkFollowUser(response?.data?.author_id)
+//     } catch (err) {
+//       console.log(err)
+//     }
+//   };
 
   useEffect(()=>{
     setIsClient(false)
@@ -65,9 +67,8 @@ const WatchVideo = () => {
 
 
   useEffect(() => {
-
-    getVideo();
-  }, [id]);
+   checkFollowUser(video?.author_id)
+  }, [video?.author_id]);
 
   if(isClient) return null
 
@@ -131,7 +132,7 @@ let NextVideo = ({ video }) => {
   const params = useSearchParams()
   const id = params.get('id');
   return (
-    <Link className='block' href={`/videos/watch?id=${video?.id}`}>
+    <Link className='block' href={`/videos/watch/${video?.id}`}>
       <div className={`p-3 flex gap-4 h-36 max-h-40 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
         <div>
           {video?.thumbnail &&

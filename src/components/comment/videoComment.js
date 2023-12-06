@@ -4,7 +4,7 @@ import { CreateComment, CustomEditor, Icons } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { createReplyToComment, fetchCommentReplies } from '@/features/comments/commentThunk';
 import UserAvatar from '../common/userAvatar';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,9 +16,8 @@ import { warningToastNoAction } from '@/utils/toasts';
 
 
 export const VideoComment = ({ comment, parentId, noView, toggleReplyView }) => {
-  const searchParams = useSearchParams();
-
-  const id = searchParams.get('id');
+  const params=useParams()
+  const id=params?.id
   const { data: user } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt)

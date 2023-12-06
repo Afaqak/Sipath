@@ -19,7 +19,6 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-
   const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt, userTimeZone);
 
 
@@ -41,7 +40,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
           {video?.price}$
         </span>
       )}
-      <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
+      <Link href={video?.price > 0 ? `/premium/watch/${video?.id}` : `/videos/watch/${video?.id}`} className="relative cursor-pointer block">
         <Icons.play />
         {
           video?.thumbnail &&
@@ -73,7 +72,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
-              href={`/videos/watch?id=${video?.id}`}
+              href={video?.price > 0 ? `/premium/watch/${video?.id}` : `/videos/watch/${video?.id}`}
               className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
             >
               <span className="line-clamp-2 hover:underline">
@@ -163,7 +162,7 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
           {video?.price}$
         </span>
       )}
-      <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
+      <Link href={video?.price > 0 ? `/premium/watch/${video?.id}` : `/videos/watch/${video?.id}`}  className="relative cursor-pointer block">
         <Icons.play />
         {
           video?.thumbnail &&
@@ -195,7 +194,7 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
         <div className="w-full group">
           <div className="w-full flex justify-between items-start">
             <Link
-              href={`/videos/watch?id=${video?.id}`}
+              href={`/videos/watch/${video?.id}`}
               className="text-[1.10rem] block font-[550] mb-[0.20rem]  "
             >
               <span className="line-clamp-2 hover:underline">

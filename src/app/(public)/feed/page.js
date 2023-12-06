@@ -16,8 +16,6 @@ const FeedPage = () => {
 
   const axios = useAxiosPrivate();
 
-  console.log(feeds)
-
   const fetchUserFeed = async (limitSend = 6) => {
 
     try {
