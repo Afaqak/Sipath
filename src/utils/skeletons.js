@@ -32,22 +32,22 @@ export const LoadingCommentsSkeleton = ({ times = 3 }) => (
 );
 
 export const LoadingQuillSkeleton = () => (
-  < div className = 'flex absolute top-0 left-0 rounded-md gap-4 p-2 h-full z-[5000] bg-white w-full' >
-      <Skeleton className="w-14 h-12 rounded-full" />
-      <div className='flex flex-col gap-2 w-full'>
-        <div className='flex gap-6'>
-          <Skeleton className="w-8 h-8 rounded-full" />
-          <Skeleton className="w-8 h-8 rounded-full" />
-          <Skeleton className="w-8 h-8 rounded-full" />
-          <Skeleton className="w-8 h-8 rounded-full" />
-        </div>
-        <div className='flex flex-col gap-4 w-full'>
-          <Skeleton className="h-4 w-[20rem] rounded-full" />
-          <Skeleton className="w-[24rem] h-4 rounded-full" />
-          <Skeleton className="w-full h-4 rounded-full" />
-        </div>
+  < div className='flex absolute top-0 left-0 rounded-md gap-4 p-2 h-full z-[5000] bg-white w-full' >
+    <Skeleton className="w-14 h-12 rounded-full" />
+    <div className='flex flex-col gap-2 w-full'>
+      <div className='flex gap-6'>
+        <Skeleton className="w-8 h-8 rounded-full" />
+        <Skeleton className="w-8 h-8 rounded-full" />
+        <Skeleton className="w-8 h-8 rounded-full" />
+        <Skeleton className="w-8 h-8 rounded-full" />
       </div>
-    </div >
+      <div className='flex flex-col gap-4 w-full'>
+        <Skeleton className="h-4 w-[20rem] rounded-full" />
+        <Skeleton className="w-[24rem] h-4 rounded-full" />
+        <Skeleton className="w-full h-4 rounded-full" />
+      </div>
+    </div>
+  </div >
 )
 
 
@@ -121,14 +121,75 @@ export const CategoriesSkeleton = ({ time }) => {
     <div className='flex gap-6 w-full mx-auto'>
       {
         [...Array(time)].map((t) => (
-        <div key={t} className="flex flex-col gap-4 h-[14rem] md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
-             
-              <Skeleton className="h-20 w-20 self-center rounded-full mb-2" />
-              <Skeleton className="h-4 w-24 rounded-full mb-2" />
-              <Skeleton className="h-4 w-34 rounded-full mb-2" />
+          <div key={t} className="flex flex-col gap-4 h-[14rem] md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+
+            <Skeleton className="h-20 w-20 self-center rounded-full mb-2" />
+            <Skeleton className="h-4 w-24 rounded-full mb-2" />
+            <Skeleton className="h-4 w-34 rounded-full mb-2" />
           </div>
         ))
       }
+    </div>
+  );
+};
+
+
+
+export const VideoWatchLoadingSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-8">
+
+      <div className="flex-1 mr-4 col-span-5 lg:my-8 px-4 lg:px-0 lg:pl-8">
+        <Skeleton className=" aspect-video" />
+      </div>
+      <div className="flex-1 col-span-3 mt-8 relative lg:px-8 px-4">
+        <div className="p-4 bg-white h-36 mb-2 flex gap-4 w-full"  >
+          <Skeleton className="h-28 w-44" />
+          <div className='self-end'>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-4 w-28 mb-2" />
+            <Skeleton className="h-4 w-40 mb-2" />
+            <Skeleton className="h-4 w-48 " />
+          </div>
+        </div>
+        <div className="p-4 bg-white h-36 mb-2 flex gap-4 w-full"  >
+          <Skeleton className="h-28 w-44" />
+          <div className='self-end'>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-4 w-28 mb-2" />
+            <Skeleton className="h-4 w-40 mb-2" />
+            <Skeleton className="h-4 w-48 " />
+          </div>
+        </div>
+        <div className="p-4 bg-white h-36 mb-2 flex gap-4 w-full"  >
+          <Skeleton className="h-28 w-44" />
+          <div className='self-end'>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-4 w-28 mb-2" />
+            <Skeleton className="h-4 w-40 mb-2" />
+            <Skeleton className="h-4 w-48 " />
+          </div>
+        </div>
+        <div className="p-4 bg-white h-36 mb-2 flex gap-4 w-full"  >
+          <Skeleton className="h-28 w-44" />
+          <div className='self-end'>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-4 w-28 mb-2" />
+            <Skeleton className="h-4 w-40 mb-2" />
+            <Skeleton className="h-4 w-48 " />
+          </div>
+        </div>
+        <div className="p-4 bg-white h-36 mb-2 flex gap-4 w-full"  >
+          <Skeleton className="h-28 w-44" />
+          <div className='self-end'>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-4 w-28 mb-2" />
+            <Skeleton className="h-4 w-40 mb-2" />
+            <Skeleton className="h-4 w-48 " />
+          </div>
+        </div>
+     
+      </div>
     </div>
   );
 };

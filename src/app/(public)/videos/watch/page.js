@@ -11,10 +11,40 @@ import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 const WatchVideo = () => {
   const [selectedVideo, setSelectedVideo] = useState({});
+  const [isClient,setIsClient]=useState(true)
   const axios = useAxiosPrivate();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const { data: session } = useSession()
+  const [followedUser, setFollowedUser] = useState(false)
+
+  const checkFollowUser = async (id) => {
+    try {
+      const response = await axios.post(
+        `/users/follow/status`,
+        {
+          user_id: id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      );
+
+      if (response?.data?.is_following) {
+        setFollowedUser(true)
+      }
+      else {
+        setFollowedUser(false)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
   const getVideo = async function () {
     try {
       const response = await axios.get(`/assets/video/${id}`, {
@@ -23,10 +53,15 @@ const WatchVideo = () => {
         },
       });
       setSelectedVideo(response.data);
+      checkFollowUser(response?.data?.author_id)
     } catch (err) {
       console.log(err)
     }
   };
+
+  useEffect(()=>{
+    setIsClient(false)
+  },[])
 
 
   useEffect(() => {
@@ -34,14 +69,14 @@ const WatchVideo = () => {
     getVideo();
   }, [id]);
 
-
+  if(isClient) return null
 
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
           <ContentPlayer noPremium={true} token={session?.token} selectedVideo={selectedVideo} />
-          <VideoInfo type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
+          <VideoInfo followedUser={followedUser} setFollowedUser={setFollowedUser} type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentsSection />
           </div>
@@ -79,7 +114,7 @@ const ListSection = () => {
   return (
     <>
       <div className="mt-8 relative lg:px-8 px-4 overflow-y-scroll col-span-3 overflow-hidden live-message">
-      
+
 
         {videos.map((video, index) => {
           return <NextVideo video={video} key={index} />;
@@ -97,14 +132,14 @@ let NextVideo = ({ video }) => {
   const id = params.get('id');
   return (
     <Link className='block' href={`/videos/watch?id=${video?.id}`}>
-      <div className={`p-3 flex gap-4 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
+      <div className={`p-3 flex gap-4 h-36 max-h-40 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
         <div>
           {video?.thumbnail &&
             <Image
               src={video?.thumbnail}
               width={200}
               height={200}
-              className="object-cover h-32 rounded-md"
+              className="object-cover h-full rounded-md"
               alt="demo-3"
             />
           }
