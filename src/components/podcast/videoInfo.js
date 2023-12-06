@@ -7,13 +7,14 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import UserAvatar from '../common/userAvatar';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import { useSession } from 'next-auth/react';
 
 
 
 const ProfileInfo = ({ author, followers, profile_image }) => {
   return (
     <div className="text-gray-600 flex  gap-2">
-      <UserAvatar user={{ image: profile_image, name: author }} />
+      <UserAvatar user={{ image: profile_image, name: author? author?.slice(0,2):"" }} />
       <div className="flex flex-col">
         <span>{author}</span>
         <span className="text-[0.75rem]">{followers}</span>
@@ -32,37 +33,39 @@ const Ratings = ({ rating }) => {
   );
 };
 
-const ActionButton = ({ icon, text }) => {
+const ActionButton = ({ icon, text, onClick }) => {
   return (
-    <button className="bg-gray-100 flex items-center gap-3 py-2 font-medium px-6 md:px-4 rounded-md">
+    <button onClick={onClick} className="bg-gray-100 flex items-center gap-3 py-2 font-medium px-6 md:px-4 rounded-md">
       {text}
       {icon}
     </button>
   );
 };
 
-const TagsAndDescription = ({ description, createdAt }) => {
-  const formattedTimeAgo=useFormattedTimeAgo(createdAt)
+const TagsAndDescription = ({ description, createdAt, views }) => {
+  const formattedTimeAgo = useFormattedTimeAgo(createdAt)
   return (
     <div className="text-sm mt-3">
       <div className="text-[#616161]">
-        <span>24k views</span> . <span>{formattedTimeAgo}</span>
+        <span>{views} Views</span> ' <span>{formattedTimeAgo}</span>
       </div>
-      <p>{description}</p>
+      <p className='line-clamp-3'>{description}</p>
     </div>
   );
 };
 
-export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
+export const VideoInfo = ({ type, selectedVideo, setSelectedVideo,followedUser,setFollowedUser }) => {
+  const { data: session } = useSession()
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
   const router = useRouter()
   const searchParams = useSearchParams()
   const id = searchParams.get('id');
+
+
   useEffect(() => {
     setRating(0)
   }, [id])
-
 
 
   const setAssetRating = async (newRating) => {
@@ -81,7 +84,7 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session?.token}`,
           },
         }
       );
@@ -97,24 +100,65 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
   };
   const handleRatingChange = (newRating) => {
 
-    if (!token) {
+    if (!session?.token) {
       return warningToast("Login to Rate User", () => router.push('/sign-in'))
     }
     setRating(newRating);
     setAssetRating(newRating);
   };
 
+  const handleFollowUser = async () => {
+    try {
+      if (!session?.token) {
+        return warningToast("Login to follow User", () => router.push('/sign-in'))
+      }
+      if (followedUser) {
+        await axios.delete('/users/unfollow', {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+          data: {
+            user_id: selectedVideo?.author_id,
+          },
+        })
+        setFollowedUser(false)
+      } else {
+        await axios.post(
+          '/users/follow',
+          {
+            user_id: selectedVideo?.author_id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        setFollowedUser(true)
+      }
+
+
+    } catch (err) {
+      console.log(err)
+      errorToast('Error Occurred!');
+    }
+  };
+
+
+
   return (
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
 
-    
+
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
           <h1 className="font-semibold text-lg mb-1">{selectedVideo?.asset?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
             <ProfileInfo profile_image={selectedVideo?.profile_image} author={selectedVideo?.display_name} followers={selectedVideo?.follower_count} />
-            <button className="py-1 border-black font-medium text-sm border-2 px-4 rounded-md">
-              Follow
+            <button onClick={handleFollowUser} className={`py-1 border-black font-medium text-sm border-2 px-4 rounded-md ${followedUser ? "bg-black text-white" : ""}`}>
+              {
+                followedUser ? "Followed" : "Follow"
+              }
             </button>
           </div>
         </div>
@@ -124,7 +168,10 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
             <Ratings rating={selectedVideo?.asset?.rating} />
           </div>
           <div className="flex gap-3 md:mt-2 mt-3 justify-end md:justify-start">
-            <ActionButton icon={<Icons.share />} text="Share" />
+            <ActionButton onClick={() => {
+              successToast("Link Copied");
+              navigator.clipboard.writeText(window.location.href);
+            }} icon={<Icons.share />} text="Share" />
             <ActionButton
               icon={
                 <Image alt="platlist_add" src={'/svgs/playlist_add.svg'} width={25} height={25} />
@@ -135,10 +182,8 @@ export const VideoInfo = ({ token, type, selectedVideo, setSelectedVideo }) => {
           </div>
         </div>
       </div>
-      <TagsAndDescription description={selectedVideo?.asset?.description} createdAt={selectedVideo?.asset?.createdAt} />
+      <TagsAndDescription views={selectedVideo?.asset?.views} description={selectedVideo?.asset?.description} createdAt={selectedVideo?.asset?.createdAt} />
 
     </div>
   );
 };
-
-

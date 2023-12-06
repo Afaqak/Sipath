@@ -12,8 +12,8 @@ export const ExpertItem = ({ item }) => {
           <UserAvatar
             className="h-28 w-28"
             user={{
-              image: item && item['user.profile_image'],
-              name: item && item['user.display_name'],
+              image: item && item?.['user.profile_image'],
+              name: item && item?.['user.display_name'],
             }}
           />
         </div>

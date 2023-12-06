@@ -311,9 +311,10 @@ console.log(watch(`${fieldName}[${index}].video`))
                                                 }}
                                             />
                                             {field.value ? (
-                                                <div className='relative'>
-                                                    <span onClick={() => setValue(`videoBodies[${index}].video`, null)} className='absolute z-[2000] top-3 right-4 h-4 w-4 rounded-full bg-slate-200 flex items-center justify-center'>  <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" /></span>
-                                                    <video ref={videoRef} controls className="w-full h-full rounded-md">
+                                                <div className='relative '>
+                                                    <span onClick={() => setValue(`videoBodies[${index}].video`, null)} className='absolute z-[2000] top-3 right-4 h-4 w-4 rounded-full bg-slate-200 flex items-center justify-center'> 
+                                                     <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" /></span>
+                                                    <video ref={videoRef} controls className="max-w-[14rem] h-full rounded-md object-contain">
                                                         <source src={URL.createObjectURL(field.value)} type="video/mp4" />
                                                         Your browser does not support the video tag.
                                                     </video>
@@ -338,7 +339,7 @@ console.log(watch(`${fieldName}[${index}].video`))
                         </div>
 
 
-                        <div className="flex flex-col overflow-hidden">
+                        <div className="flex flex-col overflow-hidden items-end">
                             <label className="text-sm">UPLOAD VIDEO THUMBNAIL</label>
                             <>
                                 <Controller

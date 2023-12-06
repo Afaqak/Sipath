@@ -47,26 +47,28 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
 
     function setPlayer() {
-      videoJsOptions.sources = [
-        {
-          src: selectedVideo?.signed_url ? selectedVideo?.signed_url : null,
-          type: 'video/mp4',
-        },
-      ];
+  
+      if (selectedVideo && selectedVideo.signed_url) {
+        videoJsOptions.sources = [
+          {
+            src: selectedVideo.signed_url,
+            type: 'video/mp4', 
+          },
+        ];
 
-      if (playerRef.current) {
-        const player = videojs(playerRef.current, videoJsOptions);
+        if (playerRef.current) {
+          const player = videojs(playerRef.current, videoJsOptions);
 
-        const controlBar = player.getChild('controlBar');
+          const controlBar = player.getChild('controlBar');
 
-        if (!player.getChild('controlBar').getChild('NextButton')) {
+          if (!player.getChild('controlBar').getChild('NextButton')) {
+            const nextButton = controlBar.addChild('NextButton', {}, 1);
+            controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
+          }
 
-          const nextButton = controlBar.addChild('NextButton', {}, 1);
-          controlBar.el().insertBefore(nextButton.el(), controlBar.el().firstChild);
+          player.src(videoJsOptions.sources);
+          player.poster(selectedVideo.asset?.thumbnail);
         }
-        player.src(videoJsOptions.sources);
-        player.poster(selectedVideo?.asset?.thumbnail)
-
       }
     }
 
@@ -79,7 +81,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
     <div className='aspect-video relative border bg-black'>
 
       <div className="aspect-video">
-        <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} preload='auto' ref={playerRef} className="video-js vjs-theme-fantasy " />
+        <video poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
 
         {
           // selectedVideo?.asset && selectedVideo?.price === 0 ?

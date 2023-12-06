@@ -226,14 +226,14 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
       </div>
       <div className='flex items-end justify-end'>
         {actionButtons.map((button, index) => (
-          <motion.div
-            className={`w-full border hover:bg-gray-200 cursor-pointer px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] `}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            key={index}
-          >
-            <Link href={button.href}>
+          <Link 
+          className={`w-full border hover:bg-gray-200 cursor-pointer px-3 py-2 whitespace-nowrap justify-center items-center font-bold flex gap-2 text-[0.7rem] `}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          key={index}
+          href={button.href}>
+        
 
               <motion.img
                 src={button.imageSrc}
@@ -241,12 +241,12 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
                 width={25}
                 height={25}
                 alt={button.alt}
-  
+
               />
 
-            </Link>
-            <span className="hidden md:block">{button.text}</span>
-          </motion.div>
+              <span className="hidden md:block">{button.text}</span>
+          
+          </Link>
         ))}
       </div>
     </div>
