@@ -138,7 +138,7 @@ const VideoInfoForm = ({ title, setTitle, description, setDescription, setFile, 
 
   return (
     <div className="bg-white text-sm p-4 flex md:flex-row flex-col gap-4 rounded-md shadow-md mt-4">
-      <div className="flex flex-col uppercase gap-2 text-[#616161] font-light">
+      <div className="flex flex-col uppercase gap-2 ">
         <div className="flex flex-col">
           <label className="text-[#616161] font-light">PODCAST TITLE</label>
 

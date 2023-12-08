@@ -58,8 +58,10 @@ export const EventsCalendar = () => {
   const [isMounted, setIsMounted] = useState(false);
   const axios = useAxiosPrivate();
 
-  const { data: user } = useSession();
 
+
+  const { data: user } = useSession();
+console.log(user)
   const mapProperties = (data, propertyMap) => {
     const mappedObject = {};
     Object.keys(propertyMap).forEach((key) => {

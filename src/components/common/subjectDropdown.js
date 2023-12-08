@@ -2,26 +2,15 @@
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { useState, useRef ,useEffect} from "react";
 import axios from '../../utils/index'
+import { useCategories } from "@/hooks/useCategories";
 export const SubjectDropDown = ({  selectedValue, onValueChange, placeholder="Select Subject"}) => {
   const [open, setOpen] = useState(false);
-  const [categories, setCategories] = useState([])
 
+  const categories=useCategories()
   const ref = useRef(null)
   const toggleDropdown = () => {
-  
     setOpen(!open);
   };
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
 
 
   useOutsideClick(ref, () => setOpen(false))

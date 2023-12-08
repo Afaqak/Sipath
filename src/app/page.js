@@ -6,10 +6,13 @@ import { CategoriesSkeleton, ExpertSkeleton, LoadingSkeletons } from '@/utils/sk
 
 import { VideoGallery } from '@/components/video/videoGallery';
 import { BuyNowModal } from '@/components/modals/paymentModal';
+import { useCategories } from '@/hooks/useCategories';
 
 const Home = () => {
+  
   const [loading, setLoading] = useState(true);
   const [isOpen,setIsOpen]=useState(false)
+
   const [data, setData] = useState({
     videos: [],
     newVideos: [],
@@ -43,8 +46,8 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('/categories');
-      return response.data;
+      const categories=useCategories()
+      return categories
     } catch (error) {
       console.error('Error fetching categories:', error);
     }

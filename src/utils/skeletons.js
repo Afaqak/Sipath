@@ -100,8 +100,8 @@ export const FeedSkeleton = ({ time }) => {
   return (
     <div className='flex gap-6 flex-col w-full mx-auto'>
       {
-        [...Array(time)].map((t) => (
-          <div key={t} className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+        [...Array(time)].map((t,ind) => (
+          <div key={ind} className="flex flex-col md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
             <div className='flex items-center gap-2'>
               <Skeleton className="h-10 w-10 rounded-full mb-2" />
               <Skeleton className="h-4 w-20 rounded-full mb-2" />
@@ -120,8 +120,8 @@ export const CategoriesSkeleton = ({ time }) => {
   return (
     <div className='flex gap-6 w-full mx-auto'>
       {
-        [...Array(time)].map((t) => (
-          <div key={t} className="flex flex-col gap-4 h-[14rem] md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
+        [...Array(time)].map((t,ind) => (
+          <div key={ind} className="flex flex-col gap-4 h-[14rem] md:w-[70%] w-[90%] lg:w-[50%] mx-auto px-4 pt-4 pb-3 bg-white shadow-md rounded-md">
 
             <Skeleton className="h-20 w-20 self-center rounded-full mb-2" />
             <Skeleton className="h-4 w-24 rounded-full mb-2" />

@@ -5,20 +5,10 @@ import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
 import Image from 'next/image';
 
-export const AvailableDays = ({ setAvailability, initialSchedules }) => {
+export const AvailableDays = ({ setSchedule, schedule}) => {
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
- console.log(initialSchedules)
-  let initialSchedule = {};
-  if (initialSchedules) {
-    initialSchedule = { ...initialSchedules }
-  }
-
-  daysOfWeek.forEach((day) => {
-    initialSchedule[day] = [{ from: 0, until: 0 }];
-  });
-
-  const [schedule, setSchedule] = useState(initialSchedule);
   const [checkboxes, setCheckboxes] = useState({});
+
 
   const handleAddTimeSlot = (day) => {
     if (checkboxes[day]) {
@@ -47,31 +37,16 @@ export const AvailableDays = ({ setAvailability, initialSchedules }) => {
         index === indexSlot ? { ...slot, [field]: time, day } : slot
       ),
     }));
-    formatScheduleData();
+
+    // formatScheduleData();
   };
 
-  const formatScheduleData = () => {
-    const availability = [];
-    daysOfWeek.forEach((day) => {
-      schedule[day].forEach((slot) => {
-        if (slot.from && slot.until) {
-          availability.push({
-            day: day?.toLowerCase(),
-            from: slot.from.format('HH:mm'),
-            to: slot.until.format('HH:mm'),
-          });
-        }
-      });
-    });
-
-    setAvailability(availability);
-  };
 
   return (
     <div className="mt-1 min-h-fit uppercase">
       <div className="flex flex-col text-[#616161]">
-        {daysOfWeek.map((day) => (
-          <div key={day} className="flex items-center mr-4">
+        {daysOfWeek.map((day,index) => (
+          <div key={index} className="flex items-center mr-4">
             <div className="flex items-center mr-2">
               <input
                 id={`checkbox-${day}`}

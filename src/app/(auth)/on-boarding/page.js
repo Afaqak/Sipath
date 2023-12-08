@@ -10,7 +10,7 @@ import { errorToast, successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { Button } from '@/components/ui/button';
 import axios from '@/utils/index'
-import { CustomRcInput } from '@/components';
+import { useCategories } from '@/hooks/useCategories';
 
 const OnBoardingPage = () => {
   const { data: user, update } = useSession();
@@ -18,9 +18,9 @@ const OnBoardingPage = () => {
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);
-
-  const [categories, setCategories] = useState([])
   const [selectedImage, setSelectedImage] = useState(null);
+  const categories = useCategories()
+  const [isMounted, setIsMounted] = useState(false)
   const {
     register,
     handleSubmit,
@@ -124,17 +124,7 @@ const OnBoardingPage = () => {
 
   };
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await axios.get('/categories')
-        setCategories(response?.data)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchCategories()
-  }, [])
+
   const handleInterests = (interest) => {
     const InterestIndex = interests.findIndex((int) => int.id === interest.id);
 
@@ -147,6 +137,9 @@ const OnBoardingPage = () => {
       setInterests(updatedInterest)
     }
   };
+
+  useEffect(() => setIsMounted(true), [])
+
 
   return (
     <>
@@ -205,23 +198,10 @@ const OnBoardingPage = () => {
                   </div>
                   <div className="mt-4 flex flex-col gap-2 ">
                     <label className="font-thin mb-1 uppercase text-sm">Date of Birth</label>
-                    <Controller
-                      name="birthday"
-                      control={control}
-                      rules={{ required: 'Birthday is required' }}
-                      render={({ field }) => (
-                        <DatePicker
-                          selected={field.value}
-                          onChange={(date) => field.onChange(date)}
-                          dateFormat="dd-MM-yyyy"
-                          customInput={<CustomRcInput ref={fileRef} />}
-                          popperPlacement="bottom"
-                          showYearDropdown
-                          scrollableYearDropdown
-                          yearDropdownItemNumber={100}
-                        />
-                      )}
-                    />
+
+
+                    <input  {...register('birthday', { required: 'birthday is required' })} type='date' placeholder='Date of birth' className='placeholder:text-sm py-2 resize-none cursor-pointer focus:outline-none shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] px-4 rounded' />
+
                     {errors.birthday && (
                       <span className="text-red-500 text-sm lowercase mb-1">
                         {errors.birthday.message}
@@ -231,7 +211,7 @@ const OnBoardingPage = () => {
                 </div>
               </div>
               <div className="flex gap-2 flex-col">
-                <div className="flex flex-col gap-1 ">
+                <div className="flex flex-col min-w-full gap-1 ">
                   <label className="text-sm text-[#616161] font-thin">Bio</label>
                   <textarea
                     {...register('bio', {
@@ -254,18 +234,23 @@ const OnBoardingPage = () => {
                   <div className="flex gap-1 mb-2">
                     <label className="text-sm text-[#616161] font-thin">INTERESTS</label>
                   </div>
-                  <div className="flex gap-1 flex-wrap">
-                    {categories.map((item, ind) => (
-                      <span
-                        key={ind}
-                        onClick={() => handleInterests(item, ind)}
-                        className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${interests.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
-                          }`}
+                  <div className={` flex w-full gap-1 flex-wrap mt-1  `}>
 
-                      >
-                        {item.category}{' '}
-                      </span>
-                    ))}
+                    {!isMounted ? <Icons.colorLoader className={'h-[20px] flex w-[20px] mt-2'} height='' /> :
+                    
+                        categories.map((item, ind) => (
+                    <span
+                      key={ind}
+                      onClick={() => handleInterests(item, ind)}
+                      className={`flex gap-1 rounded-lg px-2 py-[0.15rem] text-sm items-center cursor-pointer border ${interests.some((exp) => exp.id === item.id) ? 'bg-[#D9D9D9]  text-black' : ''
+                        }`}
+
+                    >
+                      {item.category}{' '}
+                    </span>
+                    ))
+                    }
+
                   </div>
                 </div>
               </div>

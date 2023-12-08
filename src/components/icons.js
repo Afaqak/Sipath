@@ -155,9 +155,9 @@ export const Icons = {
       />
     </svg>
   ),
-  colorLoader: (props) => (
-    <div className="google-loader-container">
-      <div className="google-loader"></div>
+  colorLoader: ({height='h-[100vh]',className}) => (
+    <div className={`google-loader-container ${height}`} >
+      <div className={`google-loader ${className}`}></div>
     </div>
   ),
   upload: (props) => (

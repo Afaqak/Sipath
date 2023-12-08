@@ -15,8 +15,7 @@ export const ExpertsComponent = ({ title, fetchExperts, session, data, setData }
     fetchExperts(limitSend, () => setLoad(false))
     setLimit(limitSend);
   };
-
-
+  
   const [warning, setWarning] = useState(false)
   return (
     <>

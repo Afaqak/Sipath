@@ -4,30 +4,37 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useCategories } from '@/hooks/useCategories';
 
 const CategoriesPage = () => {
-  const [categoriesData, setCategoriesData] = useState([]);
+  // const [categoriesData, setCategoriesData] = useState([]);
+  const [isMounted,setIsMounted]=useState(false)
   const axios=useAxiosPrivate()
-  useEffect(() => {
-    const fetchCategories = async () => {
-    
-      try {
-        const response = await axios.get('/categories');
-     
-        setCategoriesData(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+  const categories=useCategories()
 
-    fetchCategories();
-  }, []);
+  useEffect(()=>setIsMounted(true),[])
+
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+    
+  //     try {
+  //       const response = await axios.get('/categories');
+     
+  //       setCategoriesData(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   };
+
+  //   fetchCategories();
+  // }, []);
+  if(!isMounted) return null
   
   return (
     <div className='my-8 overflow-visible relative w-[90%] mx-auto'>
 
       <div className=" grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 cursor-pointer 2xl:grid-cols-5 gap-4">
-        {categoriesData.map((data) => (
+        {categories.map((data) => (
           <Link
             key={data.id}
             href={`/categories/${data.category?.toLowerCase()}?id=${data?.id}`}

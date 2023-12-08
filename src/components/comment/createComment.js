@@ -101,7 +101,7 @@ export const CreateComment = ({ reply, handleSubmit }) => {
   }
 
   return (
-    <form onSubmit={onConfirmSubmit} className="flex flex-col md:flex-row gap-4 relative pb-4 min-h-[10rem] max-h-[20rem]">
+    <form onSubmit={onConfirmSubmit} className="flex flex-col md:flex-row gap-4 relative">
       <UserAvatar
         user={{
           image: user?.user?.profile_image,
@@ -114,7 +114,7 @@ export const CreateComment = ({ reply, handleSubmit }) => {
         className="h-10 w-10 self-start"
       />
 
-      <div className="w-full md:px-2 flex items-center rounded-sm py-1 shadow-inner bg-gray-100">
+      <div className="w-full md:px-2 ">
         <QuillNoSSRWrapper
           forwardedRef={quillRef}
           onChange={handleChange}
