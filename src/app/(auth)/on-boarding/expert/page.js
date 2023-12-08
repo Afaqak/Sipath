@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { Button } from '@/components/ui/button';
 
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession();
@@ -16,6 +15,7 @@ const OnBoardingExpert = () => {
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])
   const [availability, setAvailability] = useState([]);
+  
 
   useEffect(() => {
     async function fetchCategories() {
@@ -58,7 +58,7 @@ const OnBoardingExpert = () => {
       const formData = {
         hourly_rate: hourlyRate,
         expertise: expertise?.map(exp => exp?.id),
-        availability,
+        avaliability:availability,
       };
 
 
@@ -67,6 +67,7 @@ const OnBoardingExpert = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
+      console.log(response.data)
 
       if (response.data) {
 

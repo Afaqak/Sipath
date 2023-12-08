@@ -18,6 +18,11 @@ export function BuyNowModal({ isOpen, setIsOpen, onBuyNowSubmit, productName='ne
     setIsOpen(false);
   }
 
+  function onDone(){
+    closeModal()
+    setLoading(false)
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="sm:max-w-[425px] bg-white shadow-lg">
@@ -38,10 +43,7 @@ export function BuyNowModal({ isOpen, setIsOpen, onBuyNowSubmit, productName='ne
             <Button
               onClick={() => {
                 setLoading(true);
-                onBuyNowSubmit().then(() => {
-                  setLoading(false);
-                  closeModal();
-                });
+                onBuyNowSubmit(onDone);
               }}
             
               className={`flex gap-2 bg-subcolor text-white hover:bg-subcolor/90 transform active:-translate-y-1 items-center ${

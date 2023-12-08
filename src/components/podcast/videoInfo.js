@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/react';
 const ProfileInfo = ({ author, followers, profile_image }) => {
   return (
     <div className="text-gray-600 flex  gap-2">
-      <UserAvatar user={{ image: profile_image, name: author? author?.slice(0,2):"" }} />
+      <UserAvatar user={{ image: profile_image, name: author ? author?.slice(0, 2) : "" }} />
       <div className="flex flex-col">
         <span>{author}</span>
         <span className="text-[0.75rem]">{followers}</span>
@@ -54,13 +54,13 @@ const TagsAndDescription = ({ description, createdAt, views }) => {
   );
 };
 
-export const VideoInfo = ({ type, selectedVideo, setSelectedVideo,followedUser,setFollowedUser }) => {
+export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser, setFollowedUser }) => {
   const { data: session } = useSession()
   const axios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
   const router = useRouter()
-  const params=useParams()
-  const id=params?.id
+  const params = useParams()
+  const id = params?.id
 
   useEffect(() => {
     setRating(0)
@@ -144,6 +144,26 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo,followedUser,s
   };
 
 
+  const saveVideo = async () => {
+    try {
+      const response = await axios.post(`/users/saved-videos`, {
+        video_id: selectedVideo?.asset?.id
+      }, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`
+        }
+      })
+
+      console.log(response)
+
+      successToast('Video Saved!')
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+
 
   return (
     <div className="bg-white mt-8 py-4 px-4 md:px-6 w-full rounded-md shadow-md">
@@ -172,6 +192,7 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo,followedUser,s
               navigator.clipboard.writeText(window.location.href);
             }} icon={<Icons.share />} text="Share" />
             <ActionButton
+              onClick={saveVideo}
               icon={
                 <Image alt="platlist_add" src={'/svgs/playlist_add.svg'} width={25} height={25} />
               }

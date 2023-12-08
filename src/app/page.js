@@ -106,20 +106,20 @@ const Home = () => {
     <div className=" mt-8">
 
       <div className="w-[90%] mx-auto">
-        {data.videos.length > 0 && <VideoGallery type='no-more' videos={data.videos} />}
+        {data?.videos?.length > 0 && <VideoGallery type='no-more' videos={data?.videos} />}
       </div>
-      {data.newVideos.length > 0 && <NewVideos data={data.newVideos} />}
+      {data?.newVideos?.length > 0 && <NewVideos data={data?.newVideos} />}
       <div className="w-[90%] mx-auto">
-        {data.videosSetOne.length > 0 && <VideoGallery type='no-more' videos={data.videosSetOne} />}
+        {data?.videosSetOne?.length > 0 && <VideoGallery type='no-more' videos={data?.videosSetOne} />}
       </div>
       <div ref={premiumVideosRef}>
-        {data.premiumVideos.length > 0 && <PremiumVideos data={data.premiumVideos} />}
+        {data?.premiumVideos?.length > 0 && <PremiumVideos data={data?.premiumVideos} />}
       </div>
       <div ref={videosSetTwoRef} className="w-[90%] mx-auto">
-        {data.videosSetTwo.length > 0 && <VideoGallery type='no-more' videos={data.videosSetTwo} />}
+        {data?.videosSetTwo?.length > 0 && <VideoGallery type='no-more' videos={data?.videosSetTwo} />}
       </div>
-      <div>{data.experts.length > 0 && <Experts data={data.experts} />}</div>
-      {data.categories.length > 0 && <Categories data={data.categories} />}
+      <div>{data?.experts?.length > 0 && <Experts data={data?.experts} />}</div>
+      {data?.categories?.length > 0 && <Categories data={data?.categories} />}
     </div>
   );
 };

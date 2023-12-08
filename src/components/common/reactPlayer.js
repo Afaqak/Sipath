@@ -1,13 +1,20 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useSearchParams } from 'next/navigation';
-import videojs from 'video.js';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
+// import { loadStripe } from '@stripe/stripe-js';
+import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';
 import { Button } from '@/components/ui/button';
 import { BuyNowModal } from '../modals/paymentModal';
+import { SuccessfullPurchaseModal } from '../modals/successfullPurchaseModal';
+import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
+
+// const stripePromise = loadStripe(
+//   process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+// );
 
 class NextButton extends videojs.getComponent('Button') {
   constructor(player, options) {
@@ -26,10 +33,61 @@ class NextButton extends videojs.getComponent('Button') {
 videojs.registerComponent('NextButton', NextButton);
 
 const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
-
+  const axios = useAxiosPrivate()
   const playerRef = useRef(null);
-  const [isClient, setIsClient] = useState(false);
-  const [isOpen,setIsOpen]=useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const session_id = searchParams.get('session_id')
+  const params = useParams()
+  const currentUrl = window.location.href;
+  const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [stripe, setStripe] = useState(null);
+
+  useEffect(() => {
+    initializeStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY).then((stripeInstance) => {
+      setStripe(stripeInstance);
+    });
+  }, []);
+
+
+
+  const setPurchase = async () => {
+
+    try {
+      const response = await axios.post(`/purchases?session_id=${session_id}`, {
+        asset_id: params.id,
+        asset_type: "video"
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log(response?.data);
+
+      router.replace(baseUrlWithoutQueryParams)
+      setIsSuccessModalOpen(true);
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+      }, 2500);
+
+    } catch (err) {
+      console.log('Error in setPurchase:', err);
+    }
+  };
+
+  useEffect(() => {
+
+    if (session_id) {
+      console.count('Session ID is not null:', session_id);
+      setPurchase();
+    }
+
+  }, [session_id]);
+
 
   const videoJsOptions = {
     controls: true,
@@ -40,10 +98,34 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
     sources: [],
   };
 
+  const onBuyNowSubmit = async (onDone) => {
+    try {
+
+      const response = await axios.post("/purchases/create-checkout-session?type=video", {
+        asset_id: selectedVideo?.asset?.id,
+        return_url: baseUrlWithoutQueryParams
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const {  sessionId } = response.data;
+
+      await redirectToCheckout(stripe, sessionId);
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      if (onDone && typeof onDone === 'function') {
+        onDone()
+      }
+    }
+  }
+
+
 
   useEffect(() => {
-
-    setIsClient(true);
 
 
     function setPlayer() {
@@ -84,14 +166,14 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
         selectedVideo?.asset?.price > 0 ?
           <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
             <p className='text-sm font-semibold'>This is a Premium Product</p>
-            <Button onClick={()=>setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
+            <Button onClick={() => setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
           </div> :
           <div className="aspect-video">
             <video preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
           </div>
       }
-    
-      <BuyNowModal isOpen={isOpen} setIsOpen={setIsOpen}/>
+      <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} />
+      <BuyNowModal onBuyNowSubmit={onBuyNowSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

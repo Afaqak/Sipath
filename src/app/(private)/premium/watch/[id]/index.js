@@ -13,17 +13,14 @@ const WatchVideo = ({ video }) => {
   const [selectedVideo, setSelectedVideo] = useState(video);
   const [isClient, setIsClient] = useState(true)
   const axios = useAxiosPrivate();
-  const params = useParams()
+
   const { data: session } = useSession()
   const [followedUser, setFollowedUser] = useState(false)
 
   const checkFollowUser = async (id) => {
     try {
-      const response = await axios.post(
-        `/users/follow/status`,
-        {
-          user_id: id
-        },
+      const response = await axios.get(
+        `/users/follow/status/${id}`,
         {
           headers: {
             Authorization: `Bearer ${session?.token}`,
@@ -52,9 +49,9 @@ const WatchVideo = ({ video }) => {
 
 
   useEffect(() => {
-    checkFollowUser(video?.id)
+    checkFollowUser(video?.author_id)
 
-  }, [params?.id]);
+  }, [video?.author_id]);
 
   if (isClient) return null
 
@@ -84,13 +81,13 @@ const ListSection = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      setLoading(true);
+
       try {
         const response = await axios.get('/assets/videos?type=premium&subType=popular');
         setVideos(response.data);
       } catch (err) {
         console.log(err);
-      } 
+      }
     };
     fetchVideos();
   }, []);

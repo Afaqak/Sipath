@@ -3,7 +3,7 @@ import WatchVideo from '.'
 import { getServerSession } from 'next-auth'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 const WatchVideoPage = async({params}) => {
-  console.log(params)
+
   const axios=useAxiosPrivate()
   const session = await getServerSession()
   const getVideo = async function () {

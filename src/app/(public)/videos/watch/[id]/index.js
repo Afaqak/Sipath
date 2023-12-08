@@ -14,26 +14,22 @@ const WatchVideo = ({video}) => {
   const [isClient,setIsClient]=useState(true)
   const axios = useAxiosPrivate();
   const params = useParams();
-  const id=params?.id
+
   const { data: session } = useSession()
   const [followedUser, setFollowedUser] = useState(false)
 
-
-
   const checkFollowUser = async (id) => {
     try {
-      const response = await axios.post(
-        `/users/follow/status`,
-        {
-          user_id: id
-        },
+      const response = await axios.get(
+        `/users/follow/status/${id}`,
+  
         {
           headers: {
             Authorization: `Bearer ${session?.token}`,
           },
         }
       );
-        console.log(response?.data)
+      console.log(response.data)
       if (response?.data?.is_following) {
         setFollowedUser(true)
       }
@@ -47,27 +43,13 @@ const WatchVideo = ({video}) => {
 
   }
 
-//   const getVideo = async function () {
-//     try {
-//       const response = await axios.get(`/assets/video/${id}`, {
-//         headers: {
-//           Authorization: `Bearer ${session?.token}`,
-//         },
-//       });
-//       setSelectedVideo(response.data);
-//       checkFollowUser(response?.data?.author_id)
-//     } catch (err) {
-//       console.log(err)
-//     }
-//   };
-
   useEffect(()=>{
     setIsClient(false)
   },[])
 
 
   useEffect(() => {
-   checkFollowUser(video?.author_id)
+    checkFollowUser(video?.author_id)
   }, [video?.author_id]);
 
   if(isClient) return null
