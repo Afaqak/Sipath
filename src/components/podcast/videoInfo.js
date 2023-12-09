@@ -13,11 +13,11 @@ import { useSession } from 'next-auth/react';
 
 const ProfileInfo = ({ author, followers, profile_image }) => {
   return (
-    <div className="text-gray-600 flex  gap-2">
-      <UserAvatar user={{ image: profile_image, name: author ? author?.slice(0, 2) : "" }} />
+    <div className=" flex  gap-2">
+      <UserAvatar className='w-12 h-12' user={{ image: profile_image, name: author ? author?.slice(0, 2) : "" }} />
       <div className="flex flex-col">
-        <span>{author}</span>
-        <span className="text-[0.75rem]">{followers}</span>
+        <span className=" font-medium">{author}</span>
+        <span className="text-[0.84rem]">{followers === 1 ? `${followers} follower` : `${followers} followers`} </span>
       </div>
     </div>
   );
@@ -45,9 +45,9 @@ const ActionButton = ({ icon, text, onClick }) => {
 const TagsAndDescription = ({ description, createdAt, views }) => {
   const formattedTimeAgo = useFormattedTimeAgo(createdAt)
   return (
-    <div className="text-sm mt-3">
-      <div className="text-[#616161]">
-        <span>{views} Views</span> ' <span>{formattedTimeAgo}</span>
+    <div className="text-[0.9rem] mt-3 bg-stone-100 hover:bg-stone-200/60 rounded-md p-4">
+      <div className="font-semibold">
+        <span className='font-semibold'>{views} Views</span>   <span>&bull;</span> <span>{formattedTimeAgo}</span>
       </div>
       <p className='line-clamp-3'>{description}</p>
     </div>
@@ -121,6 +121,10 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
           },
         })
         setFollowedUser(false)
+        setSelectedVideo(prevVideo => ({
+          ...prevVideo,
+          follower_count: prevVideo.follower_count - 1,
+        }));
       } else {
         await axios.post(
           '/users/follow',
@@ -133,6 +137,10 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
             },
           }
         );
+        setSelectedVideo(prevVideo => ({
+          ...prevVideo,
+          follower_count: prevVideo.follower_count + 1,
+        }));
         setFollowedUser(true)
       }
 
@@ -171,10 +179,10 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
 
       <div className="flex justify-between flex-col md:flex-row md:items-center">
         <div className="mb-2">
-          <h1 className="font-semibold text-lg mb-1">{selectedVideo?.asset?.title}</h1>
+          <h1 className="font-bold text-[1.32rem] capitalize mb-2">{selectedVideo?.asset?.title}</h1>
           <div className="flex gap-4 items-center justify-between">
             <ProfileInfo profile_image={selectedVideo?.profile_image} author={selectedVideo?.display_name} followers={selectedVideo?.follower_count} />
-            <button onClick={handleFollowUser} className={`py-1 border-black font-medium text-sm border-2 px-4 rounded-md ${followedUser ? "bg-black text-white" : ""}`}>
+            <button onClick={handleFollowUser} className={` border-black font-medium  border-2 px-4 py-1 rounded-full ${followedUser ? "bg-black text-white" : ""}`}>
               {
                 followedUser ? "Followed" : "Follow"
               }

@@ -7,8 +7,7 @@ export const useOutsideClick = (ref, callback) => {
         const isOutsideClick = !ref.current.contains(event.target);
         const isNotTimePicker =
           !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('rc-time-picker'));
-        const isNotDatePicker =
-          !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('react-datepicker'));
+  
         const isNotSelectedSubject =
           !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('selectedSubject'));
         
@@ -16,7 +15,7 @@ export const useOutsideClick = (ref, callback) => {
           !event.target.className || (typeof event.target.className === 'string' && !event.target.className.includes('subject-dropdown'));
         
 
-        if (isOutsideClick && isNotTimePicker && isNotDatePicker && isNotSelectedSubject && isNotSelectedSubjectDropdown) {
+        if (isOutsideClick && isNotTimePicker  && isNotSelectedSubject && isNotSelectedSubjectDropdown) {
           callback();
         }
       }

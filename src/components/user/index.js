@@ -112,6 +112,20 @@ export const MyFeed = ({ session }) => {
   );
 };
 
+
+
+const normalizeUserData = (video) => {
+  const user = video?.user || video?.['user'];
+
+  return {
+    display_name: user?.display_name || user?.['display_name'],
+    profile_image: user?.profile_image || user?.['profile_image'],
+    rating: user?.rating || user?.['rating'],
+    isTutor: user?.isTutor || user?.['isTutor'],
+    id: user?.id || user?.['id'],
+  };
+};
+
 export const MyVideos = ({ token = '', url }) => {
   const axios = useAxiosPrivate();
   const [videos, setVideos] = useState([]);

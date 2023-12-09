@@ -36,14 +36,8 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
   const axios = useAxiosPrivate()
   const playerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false)
-
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const session_id = searchParams.get('session_id')
-  const params = useParams()
   const currentUrl = window.location.href;
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [stripe, setStripe] = useState(null);
 
   useEffect(() => {
@@ -54,37 +48,13 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
 
 
-  const setPurchase = async () => {
-
-    try {
-      const response = await axios.post(`/purchases?session_id=${session_id}`, {
-        asset_id: params.id,
-        asset_type: "video"
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      console.log(response?.data);
-
-      router.replace(baseUrlWithoutQueryParams)
-      setIsSuccessModalOpen(true);
-      setTimeout(() => {
-        setIsSuccessModalOpen(false);
-      }, 2500);
-
-    } catch (err) {
-      console.log('Error in setPurchase:', err);
-    }
-  };
-
-  useEffect(() => {
-    if (session_id) {
-      console.count('Session ID is not null:', session_id);
-      setPurchase();
-    }
-  }, [session_id]);
+  
+  // useEffect(() => {
+  //   if (session_id) {
+  //     console.count('Session ID is not null:', session_id);
+  //     setPurchase();
+  //   }
+  // }, [session_id]);
 
 
   const videoJsOptions = {
@@ -101,7 +71,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
       const response = await axios.post("/purchases/create-checkout-session?type=video", {
         asset_id: selectedVideo?.asset?.id,
-        return_url: window.location.href
+        return_url: baseUrlWithoutQueryParams
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -170,7 +140,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
             <video preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
           </div>
       }
-      <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} />
+      {/* <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} /> */}
       <BuyNowModal onBuyNowSubmit={onBuyNowSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );

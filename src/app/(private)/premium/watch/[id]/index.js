@@ -3,16 +3,23 @@ import { VideoInfo, CommentsSection, Icons } from '@/components';
 import ContentPlayer from '@/components/common/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchaseModal';
 
-const WatchVideo = ({ video }) => {
+const WatchVideo = ({ video, purchaseSuccess }) => {
   const [selectedVideo, setSelectedVideo] = useState(video);
-  const [isClient, setIsClient] = useState(true)
+  const [isClient, setIsClient] = useState(false)
   const axios = useAxiosPrivate();
+  const [showModal, setShowModal] = useState(purchaseSuccess);
+  const currentUrl = window.location.href;
+  const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
+  const router = useRouter()
+
+
 
   const { data: session } = useSession()
   const [followedUser, setFollowedUser] = useState(false)
@@ -44,16 +51,32 @@ const WatchVideo = ({ video }) => {
 
 
   useEffect(() => {
-    setIsClient(false)
+    setIsClient(true)
   }, [])
+
+  const hideModalAfterDelay = () => {
+    setTimeout(() => {
+      router.replace(baseUrlWithoutQueryParams)
+      setShowModal(false);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    if (purchaseSuccess && showModal) {
+      hideModalAfterDelay();
+    }
+  }, [purchaseSuccess, showModal]);
+
+
+
 
 
   useEffect(() => {
     checkFollowUser(video?.author_id)
 
-  }, [video?.author_id]);
+  }, [isClient,video?.author_id]);
 
-  if (isClient) return null
+  if (!isClient) return null
 
   return (
     <div className="">
@@ -67,6 +90,7 @@ const WatchVideo = ({ video }) => {
         </div>
 
         <ListSection />
+        <SuccessfullPurchaseModal isOpen={showModal} setIsOpen={setShowModal} />
       </div>
     </div>
   );
@@ -102,6 +126,7 @@ const ListSection = () => {
         })}
 
         <div className="lg:hidden my-8"><CommentsSection /></div>
+
       </div>
     </>
   );

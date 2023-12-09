@@ -32,7 +32,7 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
               {video?.price}$
             </span>
           )}
-          <Link href={`/videos/watch?id=${video?.id}`} className="relative cursor-pointer block">
+          <Link href={`/videos/watch/${video?.id}`} className="relative cursor-pointer block">
             <Icons.play />
             {video?.thumbnail &&
               <Image

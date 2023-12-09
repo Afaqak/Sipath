@@ -7,7 +7,6 @@ import { CourseCard } from "@/components"
 import { useSession } from "next-auth/react"
 
 const CoursePage = () => {
-
   return (<>
     <MyCourses  />
   </>)
@@ -29,7 +28,6 @@ const MyCourses = () => {
         if (session?.token) {
           const enrollmentsRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/enrollments`, {
             headers: {
-
               Authorization: `Bearer ${session?.token}`,
             },
           });

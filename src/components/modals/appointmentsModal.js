@@ -1,7 +1,6 @@
 import React, { useRef, useState, forwardRef, useEffect } from 'react';
 import moment from 'moment';
 import { Button } from '../ui/button';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 

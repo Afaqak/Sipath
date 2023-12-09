@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useRef, forwardRef, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import { Icons } from '@/components';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
