@@ -3,36 +3,31 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Image from 'next/image';
-import { useCategories } from '@/hooks/useCategories';
 
 const Practice = () => {
-  // const [categoriesData, setCategoriesData] = useState([]);
-  const [isMounted,setIsMounted]=useState(false)
-  const categories=useCategories()
+  const [categoriesData, setCategoriesData] = useState([]);
+
   const axios = useAxiosPrivate()
   useEffect(() => {
-    // const fetchCategories = async () => {
+    const fetchCategories = async () => {
 
-    //   try {
-    //     const response = await axios.get('/categories');
+      try {
+        const response = await axios.get('/categories');
      
-    //     setCategoriesData(response.data);
-    //   } catch (error) {
-    //     console.error('Error fetching categories:', error);
-    //   }
-    // };
+        setCategoriesData(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-    // fetchCategories();
-    setIsMounted(true)
+    fetchCategories();
   }, []);
-
-  if(!isMounted) return null
 
   return (
     <div className="pb-8 overflow-visible w-[90%] mx-auto relative">
       <h2 className="text-center font-bold mt-16 text-lg">Quiz Categories</h2>
       <div className="py-8 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 cursor-pointer 2xl:grid-cols-5 gap-4">
-        {categories.map((data) => (
+        {categoriesData.map((data) => (
           <Link
             key={data.id}
             href={`/practice/${data.category?.toLowerCase()}?id=${data?.id}`}

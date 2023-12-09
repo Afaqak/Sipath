@@ -30,7 +30,7 @@ export function DeleteModal({ isOpen, setIsOpen, onDeleteSubmit, text }) {
           </DialogHeader>
 
           <DialogDescription>
-            This action cannot be undone. Are you sure you want to delete{' '}
+            This action cannot be undone. Are you sure you want to Remove{' '}
             <span className="font-bold">{text}</span> ?
           </DialogDescription>
           <DialogFooter>

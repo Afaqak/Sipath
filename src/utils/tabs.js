@@ -7,10 +7,11 @@ export const tutorTabs = [
     { key: 'calendar', label: 'My Calendar', icon: '/svgs/Calendar.svg' },
     { key: 'income', label: 'My Income', icon: '/svgs/coins_gray.svg' },
     { key: 'myaccount', label: 'My Account', icon: '/svgs/accountcircle_gray.svg' },
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
   ];
 
   export const userTabs = [
-    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },,
+    { key: 'mylearning', label: 'My Learning', icon: '/svgs/book.svg' },
     { key: 'myfeed', label: 'My Feed', icon: '/svgs/Browser.svg' },
     { key: 'myvideos', label: 'My Videos', icon: '/svgs/Play.svg' },
     { key: 'books', label: 'My Books', icon: '/svgs/book.svg' },

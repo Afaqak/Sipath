@@ -6,7 +6,6 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import Link from 'next/link';
 import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
-import { useCategories } from '@/hooks/useCategories';
 
 
 
@@ -142,10 +141,10 @@ export const MyAccountInfo = ({ setEdit, categories }) => {
                 <label className="text-sm font-thin">Expertise</label>
                 <ul className=" list-disc">
                   {
-                    expertise?.map((exp) => (
-                      <div key={exp}>
+                    expertise?.map((exp,ind) => (
+                      <li key={ind}>
                         {exp?.category}
-                      </div>
+                      </li>
                     ))
                   }
 
@@ -156,10 +155,10 @@ export const MyAccountInfo = ({ setEdit, categories }) => {
               <label className="text-sm font-thin">Interests</label>
               <ul className=" list-disc">
                 {
-                  interests?.map((int) => (
-                    <div key={int}>
+                  interests?.map((int,ind) => (
+                    <li key={ind}>
                       {int?.category}
-                    </div>
+                    </li>
                   ))
                 }
               </ul>
@@ -238,10 +237,9 @@ export const MyAccount = ({ session }) => {
   const [expertise, setExpertise] = useState([]);
   const { data: user, update } = useSession();
   const [edit, setEdit] = useState(false);
-  // const [categories, setCategories] = useState([])
-  // console.log(user)
+  const [categories, setCategories] = useState([])
+  console.log(user)
 
-  const categories=useCategories()
 
 
 
@@ -385,21 +383,18 @@ export const MyAccount = ({ session }) => {
   };
 
 
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await axios.get('/categories')
-  //       setCategories(response?.data)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
 
-  //     } catch (err) {
-  //       console.log(err)
-  //     }
-  //   }
-  //   fetchCategories()
-  // }, [])
-
-
-
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCategories()
+  }, [])
 
 
   return (

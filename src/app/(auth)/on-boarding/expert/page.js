@@ -5,15 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useCategories } from '@/hooks/useCategories';
 
 const OnBoardingExpert = () => {
-  const { data: user, update } = useSession();
+  const { data: user, update } = useSession()
   const axios = useAxiosPrivate();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  // const [categories, setCategories] = useState([]);
-  const categories = useCategories()
+  const [categories, setCategories] = useState([]);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [expertise, setExpertise] = useState([])
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -26,18 +24,18 @@ const OnBoardingExpert = () => {
   const [schedule, setSchedule] = useState(initialSchedule);
 
 
-  // useEffect(() => {
-  //   async function fetchCategories() {
-  //     try {
-  //       const response = await axios.get('/categories');
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await axios.get('/categories');
 
-  //       setCategories(response.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-  //   fetchCategories();
-  // }, []);
+        setCategories(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
 
 
@@ -48,6 +46,7 @@ const OnBoardingExpert = () => {
   };
 
   const handleExpertise = (experty, index) => {
+    console.log(experty)
     const expertiseIndex = expertise.findIndex((exp) => exp.id === experty.id);
 
     if (expertiseIndex === -1) {
@@ -76,19 +75,24 @@ const OnBoardingExpert = () => {
     return availability
   };
 
+  console.log(expertise)
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!hourlyRate) return;
     const availability = formatScheduleData()
-    console.log(availability)
+
     try {
       setLoading(true);
+      console.log(expertise)
       const formData = {
         hourly_rate: hourlyRate,
         expertise: expertise?.map(exp => exp?.id),
         avaliability: availability,
       };
+
+
       console.log(formData)
 
       const response = await axios.post('/onboard/tutor', formData, {
@@ -96,16 +100,17 @@ const OnBoardingExpert = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log(response.data)
 
       if (response.data) {
 
-        const newSession = {
-          user: response?.data?.user,
+        await update({
+          ...user,
+          user:{
+          user: response?.data.user,
           tutor: response?.data?.tutor,
           slots: response?.data?.slots
-        };
-        await update(newSession);
+          }
+        });
         onSuccess();
       }
     } catch (err) {
@@ -143,7 +148,7 @@ const OnBoardingExpert = () => {
 
 
                 </div>
-                <div className={`${!isMounted ? 'justify-center items-center w-full':'w-[65%]'} flex gap-1 flex-wrap mt-1  `}>
+                <div className={`${!isMounted ? 'justify-center items-center w-full' : 'w-[65%]'} flex gap-1 flex-wrap mt-1  `}>
 
                   {!isMounted ? <Icons.colorLoader className={'h-[20px] flex w-[20px] mt-2'} height='' /> :
                     categories.map((item, ind) => (

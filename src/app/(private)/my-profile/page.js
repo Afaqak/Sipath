@@ -10,9 +10,15 @@ import { UniversalTab } from '@/components';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MyCourses, MyQuizzes } from '@/components/tutors';
-import { MyFeed, MyVideos, Mybooks } from '@/components/user';
+import { MyFeed, MyVideos, Mybooks, MySavedVideos } from '@/components/user';
 import { tutorTabs, userTabs } from '@/utils/tabs';
 import { MyAccount } from '@/components/profile/myAccount';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 
 
 const MyProfile = () => {
@@ -24,8 +30,8 @@ const MyProfile = () => {
   const tabsToShow = session?.user?.isTutor ? tutorTabs : userTabs
   const [active, setActive] = useState(tabParams.get('tab') || tabsToShow[0].key);
   const updateURL = (tabKey) => {
-    router.replace(`?tab = ${ tabKey }`, undefined, {
-      scroll: false
+    router.replace(`?tab = ${tabKey}`, undefined, {
+      scroll: true
     });
   };
 
@@ -61,8 +67,22 @@ const MyProfile = () => {
             <Video videos={courses} title={'Past Podcasts'} />
           </div>
         )} */}
-          {active === 'mylearning' && <MyCourses dataKey="enrollments" user={session} url={`/courses/enrollments`} />
-          }
+          {active === 'mylearning' && (
+            <Tabs defaultValue="videos" className="w-full mt-8">
+              <TabsList className="grid w-[300px] grid-cols-2">
+                <TabsTrigger value="videos">Videos</TabsTrigger>
+                <TabsTrigger value="courses">Courses</TabsTrigger>
+              </TabsList>
+              <TabsContent className='w-full' value="videos">
+                <MySavedVideos session={session} />
+              </TabsContent>
+              <TabsContent className='w-full' value="courses">
+                <MyCourses dataKey="enrollments" user={session} url={`/courses/enrollments`} />
+              </TabsContent>
+            </Tabs>
+
+
+          )}
           {active === 'books' && <Mybooks isProfile={true} url={`/assets/books/user/${session?.user?.id}`} token={session?.token} user={session?.user} />}
           {active === 'income' && <MyIncome />}
           {active === 'myvideos' && <MyVideos token={session?.token} url={`/assets/videos/user/${session?.user?.id}`} />}

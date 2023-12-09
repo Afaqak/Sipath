@@ -16,11 +16,12 @@ import {
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }) => {
+  
   const [open, setOpen] = useState(false);
   const [videoDelete, setVideoDelete] = useState(false);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt, userTimeZone);
-
+  console.log(video)
 
   return (
     <div
@@ -109,7 +110,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
             <span>&bull;</span>
             <div className="flex items-center">
               {
-                video?.rating < 1 ? '0' : video?.rating.slice(0, -1)
+                video?.rating < 1 ? '0' : video?.rating?.slice(0, -1)
               }
 
               <span>
@@ -231,7 +232,7 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
             <span>&bull;</span>
             <div className="flex items-center">
               {
-                video?.rating < 1 ? '0' : video?.rating.slice(0, -1)
+                video?.rating < 1 ? '0' : video?.rating?.slice(0, -1)
               }
 
               <span>

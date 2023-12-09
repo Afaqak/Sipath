@@ -61,7 +61,8 @@ export const EventsCalendar = () => {
 
 
   const { data: user } = useSession();
-console.log(user)
+  console.log(user.slots)
+
   const mapProperties = (data, propertyMap) => {
     const mappedObject = {};
     Object.keys(propertyMap).forEach((key) => {

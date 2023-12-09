@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LoadingSkeletons, Icons, CourseEnrollmentModal, CourseUnEnrollmentModal } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,11 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 import { BuyNowModal } from '@/components/modals/paymentModal';
+import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
+import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchaseModal';
+
+
+
 const CoursePage = ({ session }) => {
   const axios = useAxiosPrivate();
   const params = useParams();
@@ -28,8 +33,83 @@ const CoursePage = ({ session }) => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollments, setEnrollments] = useState([])
   const [enrollmentId, setEnrollmentId] = useState(0)
-  const [isPaymentModalOpen,setIsPaymentModalOpen]=useState(false)
-  console.log(course)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const searchParams=useSearchParams()
+  const session_id = searchParams.get('session_id')
+  const currentUrl = window.location.href;
+  const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
+  const [stripe, setStripe] = useState(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+
+  useEffect(() => {
+    initializeStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY).then((stripeInstance) => {
+      setStripe(stripeInstance);
+    });
+  }, []);
+
+
+
+  const setPurchase = async () => {
+
+    try {
+      const response = await axios.post(`/purchases?session_id=${session_id}`, {
+        asset_id: params.course,
+        asset_type: "video"
+      }, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`
+        }
+      });
+
+      router.replace(baseUrlWithoutQueryParams)
+      setIsSuccessModalOpen(true);
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+      }, 2500);
+
+    } catch (err) {
+      console.log('Error in setPurchase:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (session_id) {
+      console.count('Session ID is not null:', session_id);
+      setPurchase();
+    }
+  }, [session_id]);
+
+
+
+  const onBuyNowSubmit = async (onDone) => {
+    try {
+
+      const response = await axios.post("/purchases/create-checkout-session?type=course", {
+        asset_id: course?.id,
+        return_url: window.location.href
+      }, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`
+        }
+      })
+
+      const { sessionId } = response.data;
+
+      await redirectToCheckout(stripe, sessionId);
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      if (onDone && typeof onDone === 'function') {
+        onDone()
+      }
+    }
+  }
+
+
+
+
 
 
   useEffect(() => {
@@ -197,9 +277,9 @@ const CoursePage = ({ session }) => {
                   ) : (
                     <Button
                       onClick={() => {
-                        course?.price?
-                        setIsPaymentModalOpen(true):
-                        setEnrollmentModal(true)
+                        course?.price ?
+                          setIsPaymentModalOpen(true) :
+                          setEnrollmentModal(true)
                       }}
                       variant="outline"
                       className="flex gap-2 transform active:-translate-y-1 bg-subcolor border-subcolor text-white items-center"
@@ -279,7 +359,8 @@ const CoursePage = ({ session }) => {
             ))}
           <CourseUnEnrollmentModal enrollmentId={enrollmentId} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={unEnrollmentModal} setIsOpen={seUnEnrollmentModal} />
           <CourseEnrollmentModal setEnrollments={setEnrollments} setIsEnrolled={setIsEnrolled} token={session?.token} courseId={course?.id} isOpen={enrollmentModal} setIsOpen={setEnrollmentModal} />
-          <BuyNowModal setIsOpen={setIsPaymentModalOpen} isOpen={isPaymentModalOpen}/>
+          <BuyNowModal setIsOpen={setIsPaymentModalOpen} onBuyNowSubmit={onBuyNowSubmit} isOpen={isPaymentModalOpen} />
+          <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} />
         </>) : <div className='min-h-[60vh] flex items-center justify-center'>
         <div className='animate-spin'>
           <Icons.Loader2 width="36" height="36" className="stroke-black w-6 h-6" />

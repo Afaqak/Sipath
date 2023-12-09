@@ -10,20 +10,20 @@ import { errorToast } from '@/utils/toasts';
 import { actionTabsTutor, actionTabsUser } from '@/utils/tabs';
 import { ActionButtons, ProfilePictureUpdate } from '@/components/profile';
 import { motion } from 'framer-motion'
-import { useCategories } from '@/hooks/useCategories';
 
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
   const privateAxios = useAxiosPrivate();
   const [rating, setRating] = useState(null);
-  const [isMounted, setIsMounted] = useState(false)
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
   const actionButtons = user?.isTutor ? actionTabsTutor : actionTabsUser
-  const categories = useCategories()
 
   const expertise = (tutor?.expertise || session?.tutor?.expertise)?.map((exp) => {
     return categories.find(cat => cat?.id === exp)
   })
+
+
 
   const handleFollowUser = async () => {
 
@@ -103,8 +103,21 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const isFollowing = user?.followers?.some(
     (follower) => follower?.follower === session?.user?.id && follower.following === user?.id
   );
-  useEffect(() => setIsMounted(true), [])
-  // if(!isMounted) return null
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/categories')
+        setCategories(response?.data)
+
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchCategories()
+
+  }, [])
+
   return (
     <div className='shadow-md rounded-md'>
       <div className="mt-10 w-full  relative  p-4 flex lg:flex-row flex-col gap-[50px]">
@@ -128,10 +141,10 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
               }}
             >
               {isFollowing ? (
-                <div className="flex gap-2 items-center">
+                <span className="flex gap-2 items-center">
                   <img className="h-6 w-6" src="/svgs/check_circle.svg" />
                   Followed
-                </div>
+                </span>
               ) : (
                 'Follow'
               )}
@@ -185,13 +198,11 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
                   <label className="text-sm font-thin">Expertise</label>
                   <ul className=" list-disc">
                     {
-                      !isMounted ? <Icons.colorLoader className={'h-[30px] w-[30px]'} height='h-[60px]'/>
-                        :
-                        expertise?.map((exp) => (
-                          <li key={exp}>
-                            {exp?.category}
-                          </li>
-                        ))
+                      expertise?.map((exp,ind) => (
+                        <li key={ind}>
+                          {exp?.category}
+                        </li>
+                      ))
                     }
                   </ul>
                 </div>

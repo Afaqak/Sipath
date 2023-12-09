@@ -80,12 +80,10 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
   };
 
   useEffect(() => {
-
     if (session_id) {
       console.count('Session ID is not null:', session_id);
       setPurchase();
     }
-
   }, [session_id]);
 
 
@@ -103,7 +101,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
       const response = await axios.post("/purchases/create-checkout-session?type=video", {
         asset_id: selectedVideo?.asset?.id,
-        return_url: baseUrlWithoutQueryParams
+        return_url: window.location.href
       }, {
         headers: {
           Authorization: `Bearer ${token}`

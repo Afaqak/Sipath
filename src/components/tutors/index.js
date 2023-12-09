@@ -28,7 +28,7 @@ export const MyCourses = ({ user, url, dataKey = 'courses' }) => {
       ))}
     </div>
   ) : (
-    <p className="h-[40vh] flex items-center justify-center font-semibold">Currently no Courses are available</p>
+    <div className='py-16 text-center font-semibold'>No Courses right now!</div>
   )}
 </>
 
