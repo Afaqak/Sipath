@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation';
 async function refreshAccessToken(token) {
   try {
     const refreshToken = token?.refreshToken;
-    console.log(refreshToken, ":refresh")
+ 
 
     if (refreshToken) {
 
@@ -31,11 +31,9 @@ async function refreshAccessToken(token) {
 
 
   } catch (error) {
-    console.error('Error refreshing access token:', error);
 
-    console.log("logout")
     const responseAfterSignout = await axios.post('/api/auth/signout')
-    console.log(responseAfterSignout, ":after signout")
+
     redirect('/')
 
   }
@@ -96,7 +94,7 @@ export const authOptions = {
 
       //  await axios.post('/api/auth/signout')
       if (Date.now() < new Date(token?.expiration_time).getTime()) {
-        console.log("i happen at signup", Date.now(), new Date(token?.expiration_time).getTime())
+       
         return token
       } else {
         const refreshedToken = await refreshAccessToken(token)
@@ -145,7 +143,7 @@ export const authOptions = {
     },
     async session({ session, token, user }) {
       let { refreshToken, ...newObj } = token;
-      console.log(refreshToken,newObj)
+     
       return newObj;
     },
   },
