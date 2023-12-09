@@ -45,7 +45,7 @@ const ActionButton = ({ icon, text, onClick }) => {
 const TagsAndDescription = ({ description, createdAt, views }) => {
   const formattedTimeAgo = useFormattedTimeAgo(createdAt)
   return (
-    <div className="text-[0.9rem] mt-3 bg-stone-100 hover:bg-stone-200/60 rounded-md p-4">
+    <div className="text-[0.86rem] mt-3 bg-stone-100 hover:bg-stone-200/60 rounded-md p-4">
       <div className="font-semibold">
         <span className='font-semibold'>{views} Views</span>   <span>&bull;</span> <span>{formattedTimeAgo}</span>
       </div>

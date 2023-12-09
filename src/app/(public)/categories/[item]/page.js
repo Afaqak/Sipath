@@ -66,7 +66,7 @@ const Page = ({ params }) => {
 
   return (
     <div className='my-8 overflow-visible relative w-[90%] mx-auto'>
-      <div className="">
+      <div className=" mb-4">
         <div className="flex text-lg font-semibold gap-2">
           <span className="cursor-pointer" onClick={() => router.back()}>
             Categories
