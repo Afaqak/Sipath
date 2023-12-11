@@ -18,12 +18,13 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
   const actionButtons = user?.isTutor ? actionTabsTutor : actionTabsUser
-
+  console.log(categories)
+  console.log(tutor?.expertise)
   const expertise = (tutor?.expertise || session?.tutor?.expertise)?.map((exp) => {
     return categories.find(cat => cat?.id === exp)
   })
 
-
+console.log(expertise)
 
   const handleFollowUser = async () => {
 

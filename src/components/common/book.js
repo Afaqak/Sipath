@@ -9,16 +9,16 @@ import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { EditBookModal, Icons, Stars } from '@/components';
 import { useParams, useSearchParams } from 'next/navigation';
-import { initializeStripe ,redirectToCheckout} from '@/utils/stripeUtils';
+import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
 import { SuccessfullPurchaseModal } from '../modals/successfullPurchaseModal';
 import { BuyNowModal } from '../modals/paymentModal';
 import { useSession } from 'next-auth/react';
 
 
-export const Book = ({ book,  isProfile, user }) => {
+export const Book = ({ book, isProfile, user }) => {
   const axios = useAxios();
   const dispatch = useDispatch()
-  const {data:session}=useSession()
+  const { data: session } = useSession()
 
   const fetchBooks = async () => {
     try {
@@ -152,6 +152,8 @@ export const Book = ({ book,  isProfile, user }) => {
     }
   }
 
+  console.log(book)
+
 
   return (
     <div className="bg-white p-6 md:h-[243.198px] relative flex-col md:flex-row shadow-xl rounded-md flex gap-4 md:w-full">
@@ -183,7 +185,7 @@ export const Book = ({ book,  isProfile, user }) => {
               <Image src={'/svgs/star.svg'} width={20} height={20} alt="star" />
             </div>
           </div>
-       
+
           <div className="flex justify-between">
             <div className="flex gap-1 items-center text-sm">
               <UserAvatar className="h-8 w-8" user={{ image: user?.profile_image }} />
@@ -207,7 +209,6 @@ export const Book = ({ book,  isProfile, user }) => {
               className="font-semibold bg-white text-subcolor3 justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor3"
             >
               <Image width={20} height={20} alt="bag" className='mt-1' src={'/svgs/visibility.svg'} />
-
               <span>View Book</span>
             </Button>
             <Button
@@ -216,21 +217,32 @@ export const Book = ({ book,  isProfile, user }) => {
               className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
             >
               <Icons.edit2 className="stroke-subcolor h-5 w-5" />
-
               <span>Edit Book</span>
             </Button>
           </div>
         ) : (
-          <Button
-            onClick={() => setIsOpen(true)}
-            variant="outline"
-            className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
-          >
-            <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
+          book?.price > 0 ? (
+            <Button
+              onClick={() => setIsOpen(true)}
+              variant="outline"
+              className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
+            >
+              <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
+              <span>Buy Book</span>
+            </Button>
+          ) : (
+            <Button
+              onClick={() => getBook(book?.id)}
 
-            <span>Buy Book</span>
-          </Button>
+              variant="outline"
+              className="font-semibold bg-white text-subcolor justify-center flex items-center gap-1 w-full  rounded-md border-[3px] border-subcolor"
+            >
+              <Image width={20} height={20} alt="bag" src={'/svgs/bag.svg'} />
+              <span>View Book</span>
+            </Button>
+          )
         )}
+
       </div>
       <EditBookModal book={book} isOpen={open} setIsOpen={setOpen} />
 

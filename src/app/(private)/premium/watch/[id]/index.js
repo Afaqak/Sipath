@@ -3,7 +3,7 @@ import { VideoInfo, CommentsSection, Icons } from '@/components';
 import ContentPlayer from '@/components/common/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -18,10 +18,15 @@ const WatchVideo = ({ video, purchaseSuccess }) => {
   const [isClient, setIsClient] = useState(false)
   const axios = useAxios();
   const [showModal, setShowModal] = useState(purchaseSuccess);
-  const currentUrl = window.location.href;
+  const currentUrl =
+  typeof window !== 'undefined' && window.location.href
+      ? window.location.href
+      : '';
+      console.log(currentUrl)
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
   const router = useRouter()
-
+  const pathname=usePathname()
+  console.log(currentUrl)
 
 
   const { data: session } = useSession()
