@@ -9,7 +9,7 @@ import { insertMessage, insertMessages } from '@/features/chat/message/messageSl
 import { Icons } from '@/components';
 import UserAvatar from '@/components/common/userAvatar';
 import { debounce } from 'lodash';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Button } from '@/components/ui/button';
 import { AppointmentRequestModal } from '@/components';
 const ChatScreen = ({ conversation, session }) => {
@@ -20,7 +20,7 @@ const ChatScreen = ({ conversation, session }) => {
   const { data: user } = useSession();
   const chatContainerRef = useRef(null);
   const [openAppointment, setOpenAppointment] = useState(false)
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [set, setSet] = useState(0)

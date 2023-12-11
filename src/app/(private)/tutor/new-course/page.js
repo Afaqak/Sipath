@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { FileInput, VideoUploadType, SubjectDropDown, UploadStatusDisplay } from '@/components';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Button } from '@/components/ui/button';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
@@ -13,8 +13,19 @@ import { useFieldArray, useForm, Controller, useFormState } from 'react-hook-for
 const CourseUpload = () => {
   const [sectionIds, setSectionIds] = useState([])
   const [courseId, setCourseId] = useState(null)
-  const privateAxios = useAxiosPrivate()
-  const { data: user } = useSession()
+  const privateAxios = useAxios()
+
+  const { data: user ,status} = useSession();
+
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.replace('/')
+      errorToast('Session Expired.... Logging you out!')
+    }
+  }, [user, status])
+
+
   const defaultVideo = {
     title: '',
     description: '',

@@ -1,7 +1,7 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import { NewQuizBodyRow, UploadQuizRow } from '@/components';
-import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createQuiz } from '@/features/quiz/quizThunk';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -18,6 +18,15 @@ const NewQuiz = () => {
   const [loading, setLoading] = useState(false);
 
   const { data: user ,status} = useSession();
+
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.replace('/')
+      errorToast('Session Expired.... Logging you out!')
+    }
+  }, [user, status])
+
 
   const onSuccess = () => {
     successToast('Quiz Added Successfully!');

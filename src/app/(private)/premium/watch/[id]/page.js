@@ -1,14 +1,13 @@
 import React from 'react'
 import WatchVideo from '.'
 import { getServerSession } from 'next-auth'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useAxios from '@/hooks/useAxios'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 const WatchVideoPage = async ({ params, searchParams }) => {
-  console.log(params, searchParams)
-  const axios = useAxiosPrivate()
+
+  const axios = useAxios()
   const session = await getServerSession(authOptions)
-  console.log("dddd", session)
 
 
   const setPurchase = async () => {
@@ -45,17 +44,26 @@ const WatchVideoPage = async ({ params, searchParams }) => {
           Authorization: `Bearer ${session?.token}`,
         },
       });
+  
       return response?.data
 
     } catch (err) {
-      console.log(err)
+      const toSend = err.response.data?.asset
+      let clone = Object.assign({}, toSend)
+      delete clone.user
+
+
+      return {
+        asset: clone,
+        ...toSend?.user
+      }
+     
     }
   };
 
   const video = await getVideo()
   const purchaseSuccess = await setPurchase()
 
-  console.log(purchaseSuccess, "{successfull chase}")
 
   return (
     <WatchVideo video={video} purchaseSuccess={purchaseSuccess?.message === 'purchase successful' ? true : false} />

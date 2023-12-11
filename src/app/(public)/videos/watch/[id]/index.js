@@ -4,7 +4,7 @@ import ContentPlayer from '@/components/common/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
@@ -12,9 +12,8 @@ import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 const WatchVideo = ({video}) => {
   const [selectedVideo, setSelectedVideo] = useState(video);
   const [isClient,setIsClient]=useState(true)
-  const axios = useAxiosPrivate();
-  const params = useParams();
-
+  const axios = useAxios();
+  
   const { data: session } = useSession()
   const [followedUser, setFollowedUser] = useState(false)
 
@@ -58,7 +57,7 @@ const WatchVideo = ({video}) => {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} token={session?.token} selectedVideo={selectedVideo} />
+          <ContentPlayer noPremium={true} token={session?.token} selectedVideo={video} />
           <VideoInfo followedUser={followedUser} setFollowedUser={setFollowedUser} type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentsSection />
@@ -77,7 +76,7 @@ const ListSection = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
   const params = useSearchParams();
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -118,7 +117,7 @@ let NextVideo = ({ video }) => {
       <div className={`p-3 flex gap-4 h-36 max-h-40 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
         <div>
           {video?.thumbnail &&
-            <Image
+            <img
               src={video?.thumbnail}
               width={200}
               height={200}

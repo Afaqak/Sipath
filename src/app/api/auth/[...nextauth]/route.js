@@ -6,38 +6,6 @@ import axios from '@/utils/index'
 import { redirect } from 'next/navigation';
 
 
-async function refreshAccessToken(token) {
-  try {
-    const refreshToken = token?.refreshToken;
- 
-
-    if (refreshToken) {
-
-      const response = await axios.post('/auth/refresh-token', {
-        refreshToken: refreshToken,
-      });
-
-
-
-      const refreshedToken = response.data.token;
-      const expiration_time = response.data.expiration_time;
-
-      return {
-        ...token,
-        token: refreshedToken,
-        expiration_time: expiration_time,
-      };
-    }
-
-
-  } catch (error) {
-
-    const responseAfterSignout = await axios.post('/api/auth/signout')
-
-    redirect('/')
-
-  }
-}
 
 export const authOptions = {
   providers: [
@@ -64,14 +32,16 @@ export const authOptions = {
           password: credentials.password,
         });
 
+        console.log(response.data)
+
         if (response.data.user) {
 
           return {
             user: response.data?.user,
             token: response.data?.token,
             tutor: response.data?.tutor,
-            slots:response.data?.slots,
-            refreshToken: response.data.refresh_token,
+            slots: response.data?.slots,
+
             expiration_time: response?.data.expiration_time
           };
         } else {
@@ -86,21 +56,20 @@ export const authOptions = {
   secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger, session, account }) {
-   
+
 
       if (trigger === 'update') {
         return { ...token, ...session.user };
       }
+      const isExpired = Date.now() > new Date(token?.expiration_time).getTime();
+    if (isExpired) {
 
-      //  await axios.post('/api/auth/signout')
-      if (Date.now() < new Date(token?.expiration_time).getTime()) {
-       
-        return token
-      } else {
-        const refreshedToken = await refreshAccessToken(token)
-        token.token = refreshedToken?.token
-        token.expiration_time = refreshedToken?.expiration_time
-      }
+      console.log('User session expired, logging out');
+      await axios.post('/auth/logout'); 
+      return null;
+    }
+
+    console.log(Date.now() > new Date(token?.expiration_time).getTime(),token?.expiration_time)
       const providerName = account?.provider;
 
       if (providerName === 'facebook') {
@@ -109,12 +78,11 @@ export const authOptions = {
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
-        token.slots=data.slots;
+        token.slots = data.slots;
         token.tutor = data.tutor;
         token.user = data.user;
         token.token = data?.token
-        token.refreshToken = data?.refresh_token
-        token.slots=data.slots;
+        token.slots = data.slots;
         token.expiration_time = data?.expiration_time
 
       } else if (providerName === 'google') {
@@ -127,9 +95,8 @@ export const authOptions = {
         token.token = data?.token
         token.expiration_time = data?.expiration_time
         token.token = data.token;
-        token.refreshToken = data?.refresh_token
         token.user = data.user;
-        token.slots=data.slots;
+        token.slots = data.slots;
         token.tutor = data.user;
       } else {
         if (user) {
@@ -142,8 +109,8 @@ export const authOptions = {
       return token;
     },
     async session({ session, token, user }) {
-      let { refreshToken, ...newObj } = token;
-     
+      let { ...newObj } = token;
+
       return newObj;
     },
   },

@@ -1,25 +1,30 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams,usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { socket } from '@/socket';
 import { motion } from 'framer-motion';
 import { LiveMessages, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
-
+import useAxios from '@/hooks/useAxios';
+import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
+import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchaseModal';
+import { BuyNowModal } from '@/components/modals/paymentModal';
 const Live = ({ podcast: pod }) => {
   const params = useSearchParams()
   const room = params.get('room');
-  const id = pod?.id
+  const pathname=usePathname()
   const { data: user } = useSession();
   const videoContainerRef = useRef(null);
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const router = useRouter();
   const [peerState, setPeerState] = useState({ peer: null, initialized: false });
-
+  const session_id = room?.split('?')[1]
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [stripe, setStripe] = useState(null);
+  const [isOpen, setIsOpen] = useState(false)
   const [localStream, setLocalStream] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -28,7 +33,9 @@ const Live = ({ podcast: pod }) => {
   const [podcast, setPodcast] = useState(pod)
   const [callEnded, setCallEnded] = useState(false)
   const [showJoinScreen, setShowJoinScreen] = useState(true);
-  const [storedStream,setStoredStream]=useState(null)
+  const [storedStream, setStoredStream] = useState(null)
+  const [isClient,setIsClient]=useState(false)
+
   const cleanup = () => {
     if (peerState.peer) {
       peerState.peer.destroy();
@@ -79,6 +86,9 @@ const Live = ({ podcast: pod }) => {
 
   };
 
+  useEffect(()=>{
+    setIsClient(true)
+  },[])
 
 
 
@@ -102,17 +112,17 @@ const Live = ({ podcast: pod }) => {
         const peer = new Peer(room);
         setPeerState({ peer, initialized: true });
         console.log(videoMuted)
-        const videoConstraint = videoMuted ? false  : { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } };
-      
+        const videoConstraint = videoMuted ? false : { width: { min: 640, ideal: 1280 }, height: { min: 640, ideal: 720 } };
+
         const constraints = {
           video: videoConstraint,
           audio: audioMuted ? false : true,
         };
         console.log(constraints)
-        if(!constraints['video'] && !constraints["audio"]){
-          return 
+        if (!constraints['video'] && !constraints["audio"]) {
+          return
         }
-  
+
 
         navigator?.mediaDevices?.getUserMedia(constraints).then((stream) => {
           setLocalStream(stream);
@@ -135,7 +145,7 @@ const Live = ({ podcast: pod }) => {
         peer.on('call', (call) => {
           call.on('stream', (remoteStream) => {
             console.log(remoteStream)
-        
+
             setLocalStream(remoteStream);
             createVideoElement(remoteStream);
           });
@@ -154,7 +164,7 @@ const Live = ({ podcast: pod }) => {
   };
 
   function onTutorJoinClick() {
-    
+
     setShowJoinScreen(false)
     initializePeer(podcast)
   }
@@ -186,7 +196,7 @@ const Live = ({ podcast: pod }) => {
 
 
 
-  
+
 
 
   const toggleVideoMute = () => {
@@ -195,27 +205,27 @@ const Live = ({ podcast: pod }) => {
     if (videoElem) {
 
       const videoTrack = localStream?.getVideoTracks()[0];
-      videoTrack.enabled=videoMuted
-      console.log(videoTrack,videoElem.srcObject)
+      videoTrack.enabled = videoMuted
+      console.log(videoTrack, videoElem.srcObject)
       if (videoTrack) {
-        console.log("check",videoMuted)
+        console.log("check", videoMuted)
 
         if (!videoMuted) {
-        
+
           const pastStream = localStream;
           // videoElem.srcObject = null;
-          setStoredStream(pastStream); 
+          setStoredStream(pastStream);
         } else {
-           console.log("here",storedStream)
+          console.log("here", storedStream)
           const streamToSet = storedStream || localStream;
-          videoElem.srcObject =localStream;
+          videoElem.srcObject = localStream;
         }
       }
     }
-  
+
     setVideoMuted(!videoMuted);
   };
-  
+
   const toggleAudioMute = () => {
     setAudioMuted((prevAudioMuted) => {
       if (localStream && localStream.getAudioTracks().length > 0) {
@@ -247,20 +257,86 @@ const Live = ({ podcast: pod }) => {
     zIndex: '5000',
   };
 
+  const setPurchase = async () => {
+    try {
+      const response = await axios.post(`/purchases?${session_id}`, {
+        asset_id: podcast.id,
+        asset_type: "podcast"
+      }, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      });
+      router.replace(pathname)
+      setIsSuccessModalOpen(true);
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+        router.replace(`/podcast/live/${podcast?.id}?room=${podcast?.room_id}`);
+      }, 2500);
+
+    } catch (err) {
+      console.log('Error in setPurchase:', err);
+    }
+  };
+
+
+
+  useEffect(() => {
+    initializeStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY).then((stripeInstance) => {
+      setStripe(stripeInstance);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log('checking---checking')
+    console.log(session_id)
+    if (session_id) {
+      setShowJoinScreen(false)
+      console.count('Session ID is not null:', session_id);
+      setPurchase();
+    }
+  }, [session_id,isClient]);
+
+  const onBuyNowSubmit = async (onDone) => {
+    try {
+      const response = await axios.post("/purchases/create-checkout-session?type=podcast", {
+        asset_id: podcast?.id,
+        return_url: window.location.href
+      }, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      })
+
+      const { sessionId } = response.data;
+
+      await redirectToCheckout(stripe, sessionId);
+
+    } catch (err) {
+      console.log(err)
+    } finally {
+      if (onDone && typeof onDone === 'function') {
+        onDone()
+      }
+    }
+  }
+
+  if(!isClient) return null
+
   return (
     <>
-            {callEnded && <div className=' bg-white absolute top-0 left-0 w-full h-full flex gap-4 items-center justify-center z-[9000]'>
+      {callEnded && <div className=' bg-white absolute top-0 left-0 w-full h-full flex gap-4 items-center justify-center z-[9000]'>
 
-         <Icons.colorLoader />
-      <p className=' text-xl font-semibold'>Stream Ending...</p></div>}
+        <Icons.colorLoader />
+        <p className=' text-xl font-semibold'>Stream Ending...</p></div>}
       <div className="grid grid-cols-1 relative lg:grid-cols-8">
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
           {showJoinScreen && +user?.tutor?.tutor_id === +podcast?.tutor_id && (
             <div className="join-screen fixed z-[8000] bg-white  h-full w-full top-0 left-0 flex flex-col items-center justify-center ">
               <p className="text-2xl font-semibold mb-4">Welcome, Tutor!</p>
               <p className="text-lg mb-4">Before you start, please enable your audio and video.</p>
-             
-              <Button onClick={onTutorJoinClick}  className="mt-4 bg-main rounded-full text-white text-lg hover:bg-main/90 cursor-pointer">
+
+              <Button onClick={onTutorJoinClick} className="mt-4 bg-main rounded-full text-white text-lg hover:bg-main/90 cursor-pointer">
                 Continue
               </Button>
             </div>
@@ -276,7 +352,14 @@ const Live = ({ podcast: pod }) => {
           )}
 
           <div className={`group w-full lg:h-[75vh] group relative`}>
-            <div ref={videoContainerRef} id="video-container" className={`lg:h-[75vh]`}></div>
+            {
+              !(+user?.tutor?.tutor_id === +podcast?.tutor_id) && podcast?.price > 0 ? <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
+                <p className='text-sm font-semibold'>This is a Premium Product</p>
+              
+                <Button onClick={() => setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {podcast?.price}$</Button>
+              </div> :
+                <div ref={videoContainerRef} id="video-container" className={`lg:h-[75vh]`}></div>
+            }
             {!(+user?.tutor?.tutor_id === +podcast?.tutor_id) ? null : (
               <div
                 style={controlsStyles}
@@ -334,6 +417,8 @@ const Live = ({ podcast: pod }) => {
             </form>
           </div>
         </div>
+        <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} />
+        <BuyNowModal onBuyNowSubmit={onBuyNowSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>
     </>
   );

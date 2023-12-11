@@ -1,7 +1,6 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { VideoUploadType, NewBookBodyColumn, UploadBookColumn, CoverPreview, Icons, SubjectDropDown, FileInput, UploadStatusDisplay } from '@/components';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
 import { useSession } from 'next-auth/react';
 import { successToast, errorToast } from '@/utils/toasts';
 import { useDispatch } from 'react-redux';
@@ -11,9 +10,21 @@ import { Button } from '@/components/ui/button';
 
 const AddBook = () => {
   const dispatch = useDispatch();
-  const { data: user } = useSession();
+  const { data: user, status } = useSession();
   const [loading, setLoading] = useState(false);
   const ref = useRef(null)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.replace('/')
+      errorToast('Session Expired.... Logging you out!')
+    }
+  }, [user, status])
+
+  console.log(status)
+
+
+
 
   const [coverImage, setCoverImage] = useState(null);
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm()
@@ -135,7 +146,7 @@ const AddBook = () => {
               </div>
               <div className="flex flex-col text-sm text-[#616161] font-light">
                 <label className="">UPLOAD BOOK FILE</label>
-                <Controller defaultValue={''} rules={{required:"Book is required"}} control={control} name='book' render={({ field }) => (
+                <Controller defaultValue={''} rules={{ required: "Book is required" }} control={control} name='book' render={({ field }) => (
                   <>
                     <FileInput file={field.value} setFile={(file) => field.onChange(file)} />
                     {errors && errors?.book && (
@@ -161,56 +172,56 @@ const AddBook = () => {
               </div>
             </div>
             <div className='flex flex-col h-48'>
-            <div
-              onClick={() => ref.current.click()}
-              className="bg-[#D9D9D9] text-sm font-bold text-center flex-col flex items-center min-h-full  md:h-auto md:w-[10.5rem] rounded-md justify-center"
-            >
-              {coverImage ? (
-                <img
-                  src={coverImage}
-                  alt="Cover Preview"
-                  className="w-full h-full rounded-md object-contain"
-                />
-              ) : (
-                <>
-                  Cover <br /> Preview
-                </>
-              )}
-
-
-              <Controller rules={{required:"Thumbnail is required"}} defaultValue={undefined} control={control} name='thumbnail' render={({ field }) => (
+              <div
+                onClick={() => ref.current.click()}
+                className="bg-[#D9D9D9] text-sm font-bold text-center flex-col flex items-center min-h-full  md:h-auto md:w-[10.5rem] rounded-md justify-center"
+              >
+                {coverImage ? (
+                  <img
+                    src={coverImage}
+                    alt="Cover Preview"
+                    className="w-full h-full rounded-md object-contain"
+                  />
+                ) : (
                   <>
-                <input
-
-                  ref={ref}
-                  value={undefined}
-                  type="file"
-                  accept="image/*"
-                  className='hidden'
-                  onChange={(e) => {
-                    const thumbnailFile = e.target.files[0]
-                    field.onChange(thumbnailFile)
-                    if (thumbnailFile) {
-                      const reader = new FileReader();
-
-                      reader.onloadend = () => {
-                        setCoverImage(reader.result);
-                      };
-
-                      reader.readAsDataURL(thumbnailFile);
-                    }
-                  }}
-            
+                    Cover <br /> Preview
+                  </>
+                )}
 
 
-                />
-                 
-                </>
-              )} />
+                <Controller rules={{ required: "Thumbnail is required" }} defaultValue={undefined} control={control} name='thumbnail' render={({ field }) => (
+                  <>
+                    <input
+
+                      ref={ref}
+                      value={undefined}
+                      type="file"
+                      accept="image/*"
+                      className='hidden'
+                      onChange={(e) => {
+                        const thumbnailFile = e.target.files[0]
+                        field.onChange(thumbnailFile)
+                        if (thumbnailFile) {
+                          const reader = new FileReader();
+
+                          reader.onloadend = () => {
+                            setCoverImage(reader.result);
+                          };
+
+                          reader.readAsDataURL(thumbnailFile);
+                        }
+                      }}
+
+
+
+                    />
+
+                  </>
+                )} />
               </div>
-            {errors && errors?.thumbnail && (
-                      <span className="text-red-500 text-sm">{errors?.thumbnail?.message}</span>
-                    )}
+              {errors && errors?.thumbnail && (
+                <span className="text-red-500 text-sm">{errors?.thumbnail?.message}</span>
+              )}
             </div>
           </div>
         </div>

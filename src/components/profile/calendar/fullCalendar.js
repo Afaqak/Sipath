@@ -7,7 +7,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { AvailableDays, CalendarComponent } from '@/components';
 import Image from 'next/image';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -56,7 +56,7 @@ export const EventsCalendar = () => {
   const [updatedEvent, setUpdatedEvent] = useState({});
   const [isUpdating, setIsUpdating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
 
 

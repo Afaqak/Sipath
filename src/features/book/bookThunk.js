@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 export const createBook = createAsyncThunk(
   'books/createBook',
   async ({ formData, token, onSuccess, isDownloadable, setValue, onError }, { rejectWithValue }) => {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export const createBook = createAsyncThunk(
 export const fetchTutorBooks = createAsyncThunk(
   'books/fetchTutorBooks',
   async ({ book, token }) => {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     try {
     } catch { }
   }
@@ -48,7 +48,7 @@ export const fetchTutorBooks = createAsyncThunk(
 
 export const fetchBooks = createAsyncThunk('books/fetchBooks', async ({ token, tutorId }) => {
   try {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
 
     const response = await axios.get(`/assets/books/tutor/${tutorId}`, {
       headers: {
@@ -66,7 +66,7 @@ export const UpdateBook = createAsyncThunk(
   'books/updateBook',
   async ({ bookId, data, token, onError, onSuccess }, { rejectWithValue }) => {
     try {
-      const axios = useAxiosPrivate();
+      const axios = useAxios();
       const response = await axios.patch(`/assets/books/${bookId}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ export const deleteBook = createAsyncThunk(
   'books/deleteBook',
   async ({ bookId, token, tutorId, onSuccess, onError }) => {
     try {
-      const axios = useAxiosPrivate();
+      const axios = useAxios();
       const response = await axios.delete(`/assets/books/${bookId}`, {
         headers: {
           Authorization: `Bearer ${token}`,

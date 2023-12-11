@@ -5,7 +5,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Icons } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
 import { FeedSkeleton } from '@/utils/skeletons';
@@ -22,7 +22,7 @@ const QuillNoSSRWrapper = dynamic(
 const PostEditPage = ({ params }) => {
 
     const { data: user } = useSession();
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     const router = useRouter()
     const postId = params?.postId
     const [loading, setLoading] = useState(false);

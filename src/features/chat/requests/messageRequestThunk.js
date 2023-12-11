@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 export const fetchMessageRequests = createAsyncThunk(
   'messageRequests/fetchMessageRequests',
   async ({ token,onSuccess,onError }) => {
-    const privateAxios = useAxiosPrivate()
+    const privateAxios = useAxios()
 
     try {
       const response = await privateAxios.get(`/chats/requests`, {
@@ -32,7 +32,7 @@ export const fetchMessageRequests = createAsyncThunk(
 export const approveRequest = createAsyncThunk(
   'messageRequests/approveMessageRequests',
   async ({ id, token, onSuccess }, { dispatch }) => {
-    const privateAxios = useAxiosPrivate()
+    const privateAxios = useAxios()
 
     try {
       const response = await privateAxios.patch(`/chats/requests/${id}`, {
@@ -61,7 +61,7 @@ export const approveRequest = createAsyncThunk(
 export const rejectRequest = createAsyncThunk(
   'messageRequests/rejectMessageRequests',
   async ({ id, token, onReject: reject }, { dispatch, onReject }) => {
-    const privateAxios = useAxiosPrivate()
+    const privateAxios = useAxios()
 
     try {
       const response = await privateAxios.patch(`/chats/requests/${id}`, {

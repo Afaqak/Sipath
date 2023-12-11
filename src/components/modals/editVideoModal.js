@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { VideoandThumbnail, QuizUploadColumn, UploadStatusDisplay } from '@/components';
 import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { errorToast, successToast } from '@/utils/toasts';
 import { useSession } from 'next-auth/react';
 
@@ -47,7 +47,7 @@ export function VideoEditModal({
     setIsOpen(!isOpen);
   }
 
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
   const deleteVideo = async () => {
     try {

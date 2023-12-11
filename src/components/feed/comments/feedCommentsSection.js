@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useDispatch, useSelector } from "react-redux"
 import { FeedRepliesList } from "@/components/feed/comments/feedRepliesList"
-import useAxiosPrivate from "@/hooks/useAxiosPrivate"
+import useAxios from "@/hooks/useAxios"
 import { fetchCommentsAsync, addComment, addMoreComments, selectCommentsByPostId, addMoreReplies } from "@/features/feedComments/feedCommentSlice"
 import { warningToastNoAction, warningToast } from "@/utils/toasts"
 import { FeedComment } from "@/components/feed/comments/feedComment"
@@ -17,7 +17,7 @@ import { CreateComment } from "@/components/comment/createComment"
 export const CommentSectionFeed = ({ itemId, type }) => {
   const dispatch = useDispatch()
   const { data: user } = useSession()
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const comments = useSelector((state) => selectCommentsByPostId(state, itemId));
   const [commentReplies, setCommentReplies] = useState({})
   const [replyView, setReplyView] = useState({});

@@ -3,26 +3,25 @@ import {
   CalendarComponent,
   FileInput,
   SubjectDropDown,
-  TranslationToggleButton,
   VideoUploadType,
 } from '@/components';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import React, { useEffect, useState } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import moment from 'moment';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { successToast } from '@/utils/toasts';
+import { errorToast, successToast } from '@/utils/toasts';
 
 import { validateInput } from '@/utils';
 
 const NewPodcast = () => {
-  const { data: user } = useSession();
+  const { data: user,status } = useSession();
   const [scheduleType, setScheduleType] = useState('Go Live');
   const [client, setClient] = useState(false)
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [podcastType, setPodcastType] = useState('free');
   const [description, setDescription] = useState('')
   const [title, setTitle] = useState('')
@@ -33,6 +32,13 @@ const NewPodcast = () => {
   const [date, setDate] = useState(null)
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.replace('/')
+      errorToast('Session Expired.... Logging you out!')
+    }
+  }, [user, status])
 
 
   useEffect(() => {
@@ -68,10 +74,10 @@ const NewPodcast = () => {
         formData.append('price', price);
       }
       if (scheduleType === 'Schedule' && date && time) {
-        let formattedTime = moment(time).format('hh:mm:ss A')
+        let formattedTime = moment(time).format('hh:mm:ss')
         let formattedDate = moment(date).format('YYYY-MM-DD')
         let formattedAiringTime = `${formattedDate}T${formattedTime}`
-      
+        console.log(formattedAiringTime,"{{airing}}")
         formData.append('airing_time', formattedAiringTime);
       }
 
@@ -270,11 +276,12 @@ const ScheduleType = ({ setScheduleType }) => {
 };
 
 const TimeSlot = ({ setTime, setDate, time }) => {
-
+  console.log(time)
   const handleTimeChange = (newTime) => {
     setTime(newTime);
   };
   const handleDateChange = (newDate) => {
+    console.log(newDate,"{date}/")
     setDate(newDate);
   };
 

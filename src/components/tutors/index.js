@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+
 import { Icons, Quiz } from "@/components";
 import { setQuizes } from "@/features/quiz/quizSlice";
 import { useDispatch, useSelector } from "react-redux";

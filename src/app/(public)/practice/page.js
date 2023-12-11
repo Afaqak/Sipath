@@ -1,13 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import Image from 'next/image';
 
 const Practice = () => {
   const [categoriesData, setCategoriesData] = useState([]);
 
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   useEffect(() => {
     const fetchCategories = async () => {
 

@@ -14,7 +14,7 @@ import {
   import { FileInput } from "../tutors/fileInput";
   import { actionTabsTutor, actionTabsUser } from '@/utils/tabs';
   import { successToast } from "@/utils/toasts";
-  import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+  import useAxios from "@/hooks/useAxios";
   import UserAvatar from "../common/userAvatar";
 import { Icons } from "../icons";
 
@@ -51,7 +51,7 @@ export const ActionButtons = ({user}) => {
   export function ProfilePictureUpdate({ isOpen, setIsOpen, session }) {
     const [loading, setLoading] = useState(false)
     const [image, setImage] = useState(null);
-    const privateAxios = useAxiosPrivate()
+    const privateAxios = useAxios()
     const { data, update } = useSession()
     const closeDialog = () => {
       setIsOpen(false);

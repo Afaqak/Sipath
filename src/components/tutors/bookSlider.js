@@ -5,11 +5,11 @@ import { Autoplay } from 'swiper/modules';
 import { Book } from '@/components';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useSession } from 'next-auth/react';
 
 export function BookSlider() {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [books, setBooks] = useState([]);
   const { data: user } = useSession();
 

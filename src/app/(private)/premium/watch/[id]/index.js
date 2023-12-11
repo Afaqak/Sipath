@@ -3,17 +3,20 @@ import { VideoInfo, CommentsSection, Icons } from '@/components';
 import ContentPlayer from '@/components/common/reactPlayer';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import { useRouter, useSearchParams } from 'next/navigation';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchaseModal';
+import { useDispatch } from 'react-redux';
+import { setCurrentAsset } from '@/features/currentAsset/currentAsset';
 
 const WatchVideo = ({ video, purchaseSuccess }) => {
-  const [selectedVideo, setSelectedVideo] = useState(video);
+  const dispatch = useDispatch()
+  const [selectedVideo, setSelectedVideo] = useState({ ...video });
   const [isClient, setIsClient] = useState(false)
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [showModal, setShowModal] = useState(purchaseSuccess);
   const currentUrl = window.location.href;
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
@@ -49,9 +52,13 @@ const WatchVideo = ({ video, purchaseSuccess }) => {
   }
 
 
+  useEffect(() => setSelectedVideo(video), [video?.signed_url])
 
   useEffect(() => {
     setIsClient(true)
+    return () => {
+      dispatch(setCurrentAsset(null))
+    }
   }, [])
 
   const hideModalAfterDelay = () => {
@@ -74,15 +81,16 @@ const WatchVideo = ({ video, purchaseSuccess }) => {
   useEffect(() => {
     checkFollowUser(video?.author_id)
 
-  }, [isClient,video?.author_id]);
+  }, [isClient, video?.author_id]);
 
   if (!isClient) return null
 
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-8">
+
         <div className="live-message col-span-5 relative lg:my-8 px-4 lg:px-0 lg:pl-8">
-          <ContentPlayer noPremium={true} token={session?.token} selectedVideo={selectedVideo} />
+          <ContentPlayer noPremium={true} token={session?.token} selectedVideo={video} />
           <VideoInfo followedUser={followedUser} setFollowedUser={setFollowedUser} type={'solovideo'} selectedVideo={selectedVideo} setSelectedVideo={setSelectedVideo} token={session?.token} />
           <div className="bg-white p-4 hidden lg:block mb-4 mt-4 rounded-md shadow-md">
             <CommentsSection />
@@ -101,7 +109,7 @@ export default WatchVideo;
 const ListSection = () => {
   const [videos, setVideos] = useState([]);
 
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -136,12 +144,13 @@ let NextVideo = ({ video }) => {
   const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt)
   const params = useSearchParams()
   const id = params.get('id');
+  
   return (
     <Link className='block' href={`/premium/watch/${video?.id}`}>
       <div className={`p-3 flex gap-4 h-36 max-h-40 bg-white rounded-md shadow-md mb-4 ${+video?.id === +id && "bg-stone-100"}`}>
         <div>
           {video?.thumbnail &&
-            <Image
+            <img
               src={video?.thumbnail}
               width={200}
               height={200}

@@ -2,7 +2,7 @@ import { axiosPrivate } from '@/utils';
 import { errorToast } from '@/utils/toasts';
 import { signOut } from 'next-auth/react';
 
-const useAxiosPrivate = () => {
+const useAxios = () => {
   axiosPrivate.interceptors.response.use(
     (response) => {
       return response;
@@ -19,4 +19,4 @@ const useAxiosPrivate = () => {
   return axiosPrivate;
 };
 
-export default useAxiosPrivate;
+export default useAxios;

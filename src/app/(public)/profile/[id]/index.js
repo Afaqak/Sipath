@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxiosPrivate from '@/hooks/useAxios';
 import Image from 'next/image';
 import { Feed } from '@/components';
 import { ChatRequestModal } from '@/components/modals/chatRequestModal';

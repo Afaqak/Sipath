@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useEffect } from 'react';
 
 export function withPrivateRoute(Component, allowedRoles = []) {

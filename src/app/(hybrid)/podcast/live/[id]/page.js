@@ -1,5 +1,5 @@
 import Live from '.';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import React from 'react'
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
@@ -7,7 +7,7 @@ const Page = async ({ params }) => {
     
     console.log(params,"params")
     const session = await getServerSession()
-    const axios=useAxiosPrivate()
+    const axios=useAxios()
     if (!session) {
         redirect('/podcast')
     }

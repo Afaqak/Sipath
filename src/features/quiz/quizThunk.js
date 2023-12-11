@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 export const createQuiz = createAsyncThunk(
   'quizzes/createQuiz',
   async ({ data, token, onSuccess, onError }, { rejectWithValue }) => {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
  
     try {
       const response = await axios.post(`/upload/quiz`, data, {
@@ -33,7 +33,7 @@ export const fetchTutorQuizzes = createAsyncThunk(
 );
 
 export const fetchQuizzes = createAsyncThunk('quizzes/fetchQuizzes', async ({ tutorId, token }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const response = await axios.get(`/assets/quizzes/tutor${tutorId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ export const UpdateQuiz = createAsyncThunk(
   'quizzes/updateQuiz',
   async ({ quizId, data, token, onError, onSuccess }) => {
     try {
-      const axios = useAxiosPrivate();
+      const axios = useAxios();
       const response = await axios.patch(`/assets/quizzes/${quizId}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,7 +69,7 @@ export const deleteQuiz = createAsyncThunk(
   'quizzes/deleteQuiz',
   async ({ quizId, token, tutorId, onSuccess, onError }) => {
     try {
-      const axios = useAxiosPrivate();
+      const axios = useAxios();
       const response = await axios.delete(`/assets/quizzes/${quizId}`, {
         headers: {
           Authorization: `Bearer ${token}`,

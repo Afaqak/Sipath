@@ -1,14 +1,14 @@
 import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Icons } from '../icons';
 
 export const PlaylistItem = ({ title, duration, setVideoId, id, token, enrollments, setEnrollments }) => {
   const searchParams = useSearchParams();
   const videoid = searchParams.get('id');
   const [loading, setLoading] = useState(false);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const courseParams = useParams();
   const courseId = courseParams?.course;
   const [isChecked, setIsChecked] = useState(false);

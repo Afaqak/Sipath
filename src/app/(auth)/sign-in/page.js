@@ -9,11 +9,11 @@ import { useSession } from 'next-auth/react';
 import { useForm, Controller } from 'react-hook-form';
 import { Icons } from '@/components';
 import { Button } from '@/components/ui/button';
-import { errorToast, successToast } from '@/utils/toasts';
+import { errorToast, successToast, warningToastNoAction } from '@/utils/toasts';
 
 const SignIn = () => {
   const { data: user } = useSession();
-
+  console.log(user)
   const { handleSubmit, control, setValue, formState: {
     errors, isSubmitting
   } } = useForm();
@@ -25,7 +25,7 @@ const SignIn = () => {
       if (user && user?.isNewUser) {
         successToast('Signing You Up!', '#1C8827');
         router.push('/on-boarding');
-      } else if (user?.user && !user?.isNewUser) {
+      } else if (user?.token && !user?.isNewUser) {
         successToast('Signing You In!', '#1850BC');
         router.push('/');
       }

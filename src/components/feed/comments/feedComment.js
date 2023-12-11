@@ -11,7 +11,7 @@ import { Icons } from "@/components/icons";
 import { LoadingCommentsSkeleton } from "@/utils/skeletons";
 import { fetchRepliesAsync, addReply } from "@/features/feedComments/feedCommentSlice";
 import UserAvatar from "@/components/common/userAvatar";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useAxios from "@/hooks/useAxios";
 import { warningToastNoAction } from "@/utils/toasts";
 import { CreateComment } from "@/components/comment/createComment";
 
@@ -19,7 +19,7 @@ export const FeedComment = ({ comment, itemId, noView, toggleReplyView, parentId
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
     const formattedTimeAgo = useFormattedTimeAgo(comment?.createdAt, userTimeZone);
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     const [isReplying, setIsReplying] = useState(false);
 
     const [loadingReplies, setLoadingReplies] = useState(false);

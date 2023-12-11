@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 const CategoriesPage = () => {
   const [categoriesData, setCategoriesData] = useState([]);
-  const axios=useAxiosPrivate()
+  const axios=useAxios()
   useEffect(() => {
     const fetchCategories = async () => {
     

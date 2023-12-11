@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 // import { loadStripe } from '@stripe/stripe-js';
@@ -33,7 +33,7 @@ class NextButton extends videojs.getComponent('Button') {
 videojs.registerComponent('NextButton', NextButton);
 
 const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const playerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false)
   const currentUrl = window.location.href;
@@ -131,13 +131,13 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
 
 
       {
-        selectedVideo?.asset?.price > 0 ?
+        (selectedVideo?.asset?.price > 0 && !selectedVideo?.signed_url) ?
           <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
             <p className='text-sm font-semibold'>This is a Premium Product</p>
             <Button onClick={() => setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
           </div> :
           <div className="aspect-video">
-            <video preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
+            <video autoPlay preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
           </div>
       }
       {/* <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} /> */}

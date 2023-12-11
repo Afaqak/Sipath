@@ -7,7 +7,7 @@ import {
 } from '@/components';
 import ContentPLayer from '@/components/common/reactPlayer';
 import { useEffect, useState, useCallback } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
@@ -24,7 +24,7 @@ const router = useRouter();
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [videosBySection, setVideosBySection] = useState({});
   const {data:session}=useSession()
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
   const createQueryString = useCallback(
     (name, value) => {

@@ -1,11 +1,11 @@
 'use client'
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Icons } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
 const QuillNoSSRWrapper = dynamic(
@@ -17,8 +17,16 @@ const QuillNoSSRWrapper = dynamic(
   { ssr: false }
 );
 const NewPost = () => {
-  const { data: user } = useSession();
-  const axios = useAxiosPrivate();
+  const { data: user ,status} = useSession();
+  const axios = useAxios();
+
+  useEffect(()=>{
+    if(status==='unauthenticated'){
+      window.location.replace('/')
+    }
+  },[user,status])
+
+
 
   const [loading, setLoading] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -89,7 +97,7 @@ const NewPost = () => {
 
 
   return (
-    <div className="lg:w-[45%] relative mx-auto md:w-[70%]">
+    <div className="lg:w-[40%] py-4 relative mx-auto md:w-[70%]">
         {loading && (
           <div className='w-full absolute bg-white bg-opacity-50 top-0 left-0 h-full flex items-center z-[2000] justify-center'>
             <span className='animate-spin'>

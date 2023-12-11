@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import UserAvatar from '../common/userAvatar';
 import { useRouter } from 'next/navigation';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { errorToast, warningToast } from '@/utils/toasts';
 import { Icons } from '../icons';
 
@@ -52,7 +52,7 @@ const ExpertCard = ({ item, setData, session }) => {
 
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const privateAxios = useAxiosPrivate()
+  const privateAxios = useAxios()
 
   const handleFollowUser = async (item) => {
     try {

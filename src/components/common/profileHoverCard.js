@@ -19,14 +19,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ChatRequestModal } from "../modals/chatRequestModal";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useAxios from "@/hooks/useAxios";
 
 
 export const ProfileHoverCard = ({ children, user }) => {
   const [loading, setLoading] = useState(false)
   const { data } = useSession()
   const router = useRouter()
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const [open, setOpen] = useState(false)
   const [requestLoading, setRequestLoading] = useState(false)
   async function getUserConversations() {

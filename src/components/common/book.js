@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import UserAvatar from './userAvatar';
 import { successToast, errorToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { setBooks } from '@/features/book/bookSlice';
 import { useDispatch } from 'react-redux';
 import { EditBookModal, Icons, Stars } from '@/components';
@@ -16,7 +16,7 @@ import { useSession } from 'next-auth/react';
 
 
 export const Book = ({ book,  isProfile, user }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const dispatch = useDispatch()
   const {data:session}=useSession()
 

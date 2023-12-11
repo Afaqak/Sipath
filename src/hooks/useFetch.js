@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import useAxiosPrivate from './useAxiosPrivate';
+import useAxios from './useAxios';
 
 const useFetch = (url, config = {}, dispatchAction = null) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
 
   useEffect(() => {

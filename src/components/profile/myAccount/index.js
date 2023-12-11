@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import Link from 'next/link';
 import { errorToast, successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
@@ -232,7 +232,7 @@ export const MyAccountInfo = ({ setEdit, categories }) => {
 
 
 export const MyAccount = ({ session }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [interests, setInterests] = useState([]);
   const [expertise, setExpertise] = useState([]);
   const { data: user, update } = useSession();

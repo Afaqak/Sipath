@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import UserAvatar from '../common/userAvatar';
 import { Icons, Stars } from '@/components';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import axios from '../../utils/index'
 import { errorToast } from '@/utils/toasts';
 import { actionTabsTutor, actionTabsUser } from '@/utils/tabs';
@@ -13,7 +13,7 @@ import { motion } from 'framer-motion'
 
 export const Profile = ({ type, user, tutor, isActon = true, session }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const privateAxios = useAxiosPrivate();
+  const privateAxios = useAxios();
   const [rating, setRating] = useState(null);
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false);
@@ -123,7 +123,7 @@ export const Profile = ({ type, user, tutor, isActon = true, session }) => {
       <div className="mt-10 w-full  relative  p-4 flex lg:flex-row flex-col gap-[50px]">
         <div className="relative w-36 rounded-full h-36 flex items-center justify-center bg-red-500">
           <UserAvatar
-            user={{ image: user?.profile_image, name: user?.display_name || '' }}
+            user={{ image: user?.profile_image, name: user?.display_name?.slice(0,2) || '' }}
             className="h-36 w-36"
           />
           {type === 'userprofile' && (

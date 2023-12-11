@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { errorToast } from '@/utils/toasts';
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 
 export const Navbar = () => {
   const router = useRouter();
@@ -28,7 +28,7 @@ export const Navbar = () => {
   const toggleRef = useRef();
   const [nav, setNav] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
-
+  
   const toggleNav = () => {
     setNav(!nav);
   };
@@ -90,11 +90,10 @@ export const Navbar = () => {
               <Link
                 key={link.href}
                 onClick={() => router.push(link.href)}
-                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
-                  pathname.includes(link.href)
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
                     ? 'text-white'
                     : 'text-black hover:opacity-60 transition-colors duration-300'
-                }`}
+                  }`}
                 href={link.href}
               >
                 {pathname.includes(link.href) && (
@@ -107,7 +106,7 @@ export const Navbar = () => {
           <div
             className={`flex items-center cursor-pointer ${user ? 'gap-6' : 'gap-4'} mr-6 text-sm`}
           >
-            {user?.user ? (
+            {user?.token ? (
               <>
                 <Link href={'/chat'}>
                   <Icons.chatBlack className="w-6 h-6 focus:scale-90 transition-all duration-300 ease-in-out" />
@@ -121,11 +120,11 @@ export const Navbar = () => {
                         user={{
                           image: user?.user?.profile_image,
                           name:
-                            user?.user?.display_name?.slice(0, 2) ||
-                            user?.user?.first_name?.slice(0, 2) ||
-                            user?.email,
+                            user?.user?.display_name?.slice(0, 1) ||
+                            user?.user?.first_name?.slice(0, 1) ||
+                            user?.email?.slice(0,1),
                         }}
-                        className="h-7 w-7 focus:outline-none"
+                        className="h-7 w-7 focus:outline-none text-sm "
                       />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -145,7 +144,7 @@ export const Navbar = () => {
                           errorToast('Logging Out');
                           await signOut({
                             callbackUrl: '/',
-                          }).then((res) => {});
+                          }).then((res) => { });
                         }}
                         className="flex gap-2"
                       >
@@ -195,7 +194,7 @@ export const Navbar = () => {
                   onClick={() => setToggleMenu(!toggleMenu)}
                   user={{
                     image: user?.user?.profile_image,
-                    name: user?.user?.first_name || user?.display_name || user?.email,
+                    name: user?.user?.display_name?.slice(0, 1) || user?.user?.first_name?.slice(0, 1) || user?.user?.email?.slice(0, 1),
                   }}
                   className="h-7 w-7 focus:outline-none"
                 />
@@ -217,7 +216,7 @@ export const Navbar = () => {
                     errorToast('Logging Out');
                     await signOut({
                       callbackUrl: '/',
-                    }).then((res) => {});
+                    }).then((res) => { });
                   }}
                   className="flex gap-2"
                 >
@@ -271,11 +270,10 @@ export const Navbar = () => {
             >
               <Link
                 onClick={() => router.push(link.href)}
-                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${
-                  pathname.includes(link.href)
+                className={`relative px-3 py-1 outline-2 focus-visible:outline-2 ${pathname.includes(link.href)
                     ? 'text-white'
                     : 'text-black hover:opacity-60 transition-colors duration-300'
-                }`}
+                  }`}
                 href={link.href}
               >
                 {pathname.includes(link.href) && (

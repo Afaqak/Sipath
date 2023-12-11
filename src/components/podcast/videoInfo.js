@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Stars } from '../common/5star';
 import { Icons } from '..';
 import { errorToast, successToast, warningToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import UserAvatar from '../common/userAvatar';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
@@ -56,7 +56,7 @@ const TagsAndDescription = ({ description, createdAt, views }) => {
 
 export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser, setFollowedUser }) => {
   const { data: session } = useSession()
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [rating, setRating] = useState(null);
   const router = useRouter()
   const params = useParams()
@@ -65,7 +65,6 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
   useEffect(() => {
     setRating(0)
   }, [id])
-
 
   const setAssetRating = async (newRating) => {
     let assetId;

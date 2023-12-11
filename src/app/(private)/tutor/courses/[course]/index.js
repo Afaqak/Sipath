@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoadingSkeletons, Icons, CourseEnrollmentModal, CourseUnEnrollmentModal } from '@/components';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -20,7 +20,7 @@ import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchas
 
 
 const CoursePage = ({ session }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const params = useParams();
   const router = useRouter();
   const [enrollmentModal, setEnrollmentModal] = useState(false)
@@ -375,7 +375,7 @@ export default CoursePage;
 export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, videosBySection }) => {
   const [open, setOpen] = useState(false);
   const [deletOpen, setDeleteOpen] = useState(false);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const { data: user } = useSession();
   const [toggleMenu, setToggleMenu] = useState(false);
 

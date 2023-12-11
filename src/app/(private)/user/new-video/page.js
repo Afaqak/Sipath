@@ -1,18 +1,17 @@
 'use client'
-import { useSession } from 'next-auth/react'
-import React, { useRef, useState } from 'react'
-import { FileInput, SubjectDropDown, Icons, VideoUploadType, UploadStatusDisplay } from '@/components'
-import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
+import React, { useRef, useState,useEffect} from 'react'
 import Image from 'next/image'
-
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useSession } from 'next-auth/react'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import useAxios from '@/hooks/useAxios'
 import { errorToast, successToast } from '@/utils/toasts'
+import { Button } from '@/components/ui/button'
+import { FileInput, SubjectDropDown, Icons, VideoUploadType, UploadStatusDisplay } from '@/components'
 
 
 const NewVideo = () => {
-    const axios = useAxiosPrivate()
-    const { data: user } = useSession()
+    const axios = useAxios()
+    const { data: user ,status} = useSession()
     const {
         control,
         handleSubmit,
@@ -30,6 +29,14 @@ const NewVideo = () => {
         control,
         name: 'videoBodies',
     });
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+          window.location.replace('/')
+          errorToast('Session Expired.... Logging you out!')
+        }
+      }, [user, status])
+    
 
 
     const isAtLeastOneVideoAdded = watch('videoBodies').some(video => video);

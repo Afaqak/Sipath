@@ -8,12 +8,16 @@ import UserAvatar from '@/components/common/userAvatar';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
+import { Button } from '@/components/ui/button';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
+import { SuccessfullPurchaseModal } from '@/components/modals/successfullPurchaseModal';
+import { BuyNowModal } from '@/components/modals/paymentModal';
 
 
 const PodcastPage = () => {
   const [activeButton, setActiveButton] = useState('live');
   const [podcasts, setPodcasts] = useState([]);
-  const { data: user } = useSession();
   const handleButtonClick = (button) => {
     setActiveButton(button);
   };
@@ -24,7 +28,6 @@ const PodcastPage = () => {
         const response = await axios.get('/podcasts?type=all');
 
         setPodcasts(response.data);
-
       } catch (err) {
         console.error(err);
       }
@@ -90,7 +93,7 @@ const PodcastPage = () => {
 export default PodcastPage;
 
 const PodcastVideos = ({ podcasts }) => {
-  console.log(podcasts)
+  console.log(podcasts);
   return (
     <div className="grid grid-cols-1 py-8 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  gap-4 w-[90%] mx-auto">
       {podcasts.map((podcast) => (
@@ -101,12 +104,13 @@ const PodcastVideos = ({ podcasts }) => {
 };
 
 const PodcastItem = ({ podcast }) => {
-const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
+  const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
+  const [isOpen, setIsOpen] = useState(false)
+
 
   return (
-    <Link
-      href={`/podcast/live/${podcast?.id}?room=${podcast?.room_id}`}
-      className=" max-h-[18.6rem] relative block mb-6 w-ful p-4 bg-white box-shadow-main rounded-md"
+    <div
+      className="max-h-[18.6rem] relative block mb-6 w-ful p-4 bg-white box-shadow-main rounded-md"
     >
       {podcast?.live && (
         <span className="absolute top-6 z-[1000] right-6 bg-[#FB3C22] flex gap-1 items-center py-[0.20rem] rounded-xl text-sm text-white px-2 font-medium">
@@ -120,7 +124,8 @@ const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
           {podcast?.price}$
         </span>
       )}
-      <div className="relative">
+      <Link href={
+        `/podcast/live/${podcast?.id}?room=${podcast?.room_id}`} className="relative">
         <Icons.play />
         {
           podcast?.thumbnail &&
@@ -129,21 +134,23 @@ const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
             alt={podcast?.title}
             width={300}
             height={200}
-            className="rounded-md object-cover w-full h-44"
+            className="rounded-md object-cover w-full h-44 cursor-pointer"
           />
-    }
-      </div>
+        }
+      </Link>
       <div className="mt-3 flex gap-2 items">
         <UserAvatar user={{
-          image: podcast['tutor.user.profile_image'],
-          name: podcast['tutor.user.display_name']
+          image: podcast['tutor.user.profile_image']?.slice(0,1),
+          name: podcast['tutor.user.display_name']?.slice(0,1)
         }}
         />
         <div>
           <h1 className="text-medium font-semibold mb-[0.20rem] line-clamp-2">{podcast?.title}</h1>
-          <div className="flex items-center text-sm gap-2 text-gray-700">
+          <div className="flex items-center text-sm gap-2 text-gray-700 justify-between">
             <span>{podcast && podcast['tutor.user.display_name']}</span>
+          
           </div>
+
           <div className="flex items-center text-sm gap-2 text-gray-700">
             <span>{podcast?.views} views</span>
             <span>&bull;</span>
@@ -158,6 +165,7 @@ const formattedTimeAgo = useFormattedTimeAgo(podcast?.createdAt)
           </div>
         </div>
       </div>
-    </Link>
+  
+    </div>
   );
 };

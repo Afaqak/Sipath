@@ -1,14 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react';
 import {  ExpertsComponent } from '@/components';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import React from 'react';
 
 import { useSession } from 'next-auth/react';
 
 
 const ExpertsPage = () => {
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const { data: user, status } = useSession()
   const [experts, setExperts] = useState([])
   const [topRated, setTopRated] = useState([])

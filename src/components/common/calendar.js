@@ -73,7 +73,7 @@ export const CalendarComponent = ({ styleCal, handleDateChange }) => {
 
   const handleDateClick = (day, idx) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-
+  
     setSelectedDate(idx);
     handleDateChange(date);
   };

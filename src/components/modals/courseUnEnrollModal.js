@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/dialog';
 import { successToast } from '@/utils/toasts';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 export function CourseUnEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled, enrollmentId }) {
     const [loading, setLoading] = useState(false)
   
-    const axios = useAxiosPrivate()
+    const axios = useAxios()
     function closeModal() {
       setIsOpen(false);
     }

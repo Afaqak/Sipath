@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { ExpertsComponent } from '@/components';
 import { useRouter, useSearchParams } from 'next/navigation';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { VideoGallery } from '@/components/video/videoGallery';
 
 const colors = {
@@ -28,7 +28,7 @@ const Page = ({ params }) => {
   const [experts, setExperts] = useState([])
   const category = categoryParam?.get('id')
   const router = useRouter();
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const fetchVideosOfCategory = async () => {
     try {
       const response = await axios.get(`/categories/${category}/content?type=videos`)

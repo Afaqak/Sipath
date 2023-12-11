@@ -5,7 +5,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Icons } from '@/components';
 import { errorToast, successToast, warningToast } from '@/utils/toasts';
 import { FeedSkeleton } from '@/utils/skeletons';
@@ -20,8 +20,8 @@ const QuillNoSSRWrapper = dynamic(
 
 const PostEditPage = ({params}) => {
 
-  const { data: user } = useSession();
-  const axios = useAxiosPrivate();
+  const { data: user,status } = useSession();
+  const axios = useAxios();
 
   const postId=params?.postId
   const [loading, setLoading] = useState(false);
@@ -33,6 +33,14 @@ const PostEditPage = ({params}) => {
   const [attachedImages,setAttachedImages]=useState([])
   const [loadingSkeleton,setLoadingSkeleton]=useState(false)
   const [prevText, setPrevText] = useState('');
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.replace('/')
+      errorToast('Session Expired.... Logging you out!')
+    }
+  }, [user, status])
+
 
   const handleIconClick = (thumbnail) => {
     const updatedImages = selectedImages.filter((image) => image !== thumbnail);

@@ -4,11 +4,11 @@ import { AvailableDays, Icons } from '@/components';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { successToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 const OnBoardingExpert = () => {
   const { data: user, update } = useSession()
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);

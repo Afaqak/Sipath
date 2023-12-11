@@ -1,5 +1,4 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-
 import authReducer from '../features/auth/authSlice';
 import tutorReducer from '../features/onBoard/onBoardSlice';
 import messageReducer from '../features/chat/message/messageSlice';
@@ -11,6 +10,7 @@ import quizesReducer from '../features/quiz/quizSlice';
 import appointmentSlice from '@/features/appointments/appointmentSlice';
 import courseSlice from '@/features/course/courseSlice';
 import feedCommentSlice from '@/features/feedComments/feedCommentSlice';
+import assetSlice from '@/features/currentAsset/currentAsset'
 
 const rootReducer = combineReducers({
   userAuth: authReducer,
@@ -21,9 +21,10 @@ const rootReducer = combineReducers({
   comments,
   books: booksReducer,
   quizzes: quizesReducer,
-  appointments:appointmentSlice,
-  course:courseSlice,
-  feedComments:feedCommentSlice
+  appointments: appointmentSlice,
+  course: courseSlice,
+  feedComments: feedCommentSlice,
+  asset: assetSlice
 });
 
 export const store = configureStore({

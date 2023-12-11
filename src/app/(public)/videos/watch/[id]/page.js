@@ -1,18 +1,14 @@
 import React from 'react'
 import WatchVideo from '.'
 import { getServerSession } from 'next-auth'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useAxios from '@/hooks/useAxios'
 const WatchVideoPage = async({params,searchParams}) => {
 
-  const axios=useAxiosPrivate()
+  const axios=useAxios()
   const session = await getServerSession()
   const getVideo = async function () {
     try {
-      const response = await axios.get(`/assets/video/${params?.id}`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      });
+      const response = await axios.get(`/assets/video/${params?.id}`);
       return response?.data
    
     } catch (err) {
@@ -21,7 +17,7 @@ const WatchVideoPage = async({params,searchParams}) => {
   };
 
   const video= await getVideo()
-
+  console.log(video)
   return (
     <WatchVideo video={video}/>
   )

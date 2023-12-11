@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Button } from '@/components/ui/button';
 import { useDispatch, useSelector } from 'react-redux';
 import { errorToast, successToast } from '@/utils/toasts';
@@ -29,7 +29,7 @@ import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 export const MyFeed = ({ session }) => {
   const [feeds, setFeeds] = useState([]);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [open, setOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
 
@@ -127,7 +127,7 @@ const normalizeUserData = (video) => {
 };
 
 export const MyVideos = ({ token = '', url }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [videos, setVideos] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
@@ -213,7 +213,7 @@ export const MyVideos = ({ token = '', url }) => {
 };
 
 export const Mybooks = ({ url, user, token, isProfile }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -274,7 +274,7 @@ export const Mybooks = ({ url, user, token, isProfile }) => {
 
 export const MySavedVideos = ({ session }) => {
   const [savedVideos, setSavedVideos] = useState([])
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const fetchSavedVideos = async () => {
     try {
       const response = await axios.get('/users/saved-videos', {

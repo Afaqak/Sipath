@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useAxios from "@/hooks/useAxios";
 import { DeleteFeedModal, Feed, Icons, VideoItemFeed } from "@/components";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -14,7 +14,7 @@ const FeedPage = () => {
   const [loadingDelete, setLoadingDelete] = useState(false)
   const [limit, setLimit] = useState(6)
 
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
   const fetchUserFeed = async (limitSend = 6) => {
 

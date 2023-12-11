@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import {
   NewBookBodyColumn,
   CoverPreview,
@@ -23,7 +23,7 @@ export const EditBookModal = ({ isOpen, setIsOpen, book, handleDeleteSubmit }) =
   const dispatch = useDispatch();
   const { data: user } = useSession();
   const [loading, setLoading] = useState(false);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [type, setType] = useState('free');
   const [cbook, csetBook] = useState(null);
   const [price, setPrice] = useState(book?.price);

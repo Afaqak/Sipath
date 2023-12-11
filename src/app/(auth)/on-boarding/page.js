@@ -6,13 +6,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { errorToast, successToast } from '@/utils/toasts';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { Button } from '@/components/ui/button';
 import axios from '@/utils/index'
 
 const OnBoardingPage = () => {
   const { data: user, update } = useSession();
-  const privateAxios = useAxiosPrivate();
+  const privateAxios = useAxios();
   const router = useRouter();
   const fileRef = useRef();
   const [interests, setInterests] = useState([]);

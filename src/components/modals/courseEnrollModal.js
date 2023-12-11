@@ -1,5 +1,5 @@
 import { useState,useRef } from "react";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useAxios from "@/hooks/useAxios";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setIsEnrolled, setEnrollments }) {
     const [loading, setLoading] = useState(false)
 
-    const axios = useAxiosPrivate()
+    const axios = useAxios()
   
     function closeModal() {
       setIsOpen(false);

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { DeleteModal, LoadingSkeletons, Icons } from '@/components';
 import {
   Dialog,
@@ -22,7 +22,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useFormattedTimeAgo } from '@/hooks/useFormattedTimeAgo';
 
 const EditPage = ({ session }) => {
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
 
   const [course, setCourse] = useState({});
   const [editMode, setEditMode] = useState(false);
@@ -506,7 +506,7 @@ function EditPageHeader({
 }) {
   const [editMode, setEditMode] = useState(false);
 
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const [sectionName, setSectionName] = useState('');
 
   const onDeleteSection = async () => {
@@ -657,7 +657,7 @@ export const VideoItem = ({
   const [open, setOpen] = useState(false);
   const [openVideoDelete, setVideoDelete] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
-  const axios = useAxiosPrivate();
+  const axios = useAxios();
   const formattedTimeAgo=useFormattedTimeAgo(video?.createdAt)
   const onDeleteSubmit = async (e) => {
     e.preventDefault();

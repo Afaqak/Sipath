@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/index';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 
 export const createComment = createAsyncThunk(
   'comments/createComment',
@@ -47,7 +47,7 @@ export const fetchPrimaryComments = createAsyncThunk(
 export const fetchCommentReplies = createAsyncThunk(
   'comments/fetchCommentReplies',
   async ({ videoId, commentId, onSuccess, limit = 10 }) => {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     try {
       const response = await axios.get(
         `/assets/video/${videoId}/comments/${commentId}?limit=${limit}`
@@ -67,7 +67,7 @@ export const fetchCommentReplies = createAsyncThunk(
 export const createReplyToComment = createAsyncThunk(
   'comments/createReplyToComments',
   async ({ videoId, commentId, data, token }) => {
-    const axios = useAxiosPrivate();
+    const axios = useAxios();
     for (const form of data.entries()) {
       console.log(form,commentId,videoId)
    }

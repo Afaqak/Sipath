@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { filterReceivedRequest } from './appointmentSlice';
 
 
@@ -7,7 +7,7 @@ export const fetchAppointments = createAsyncThunk(
   'appointments/fetchAppointments',
   async ({token}) => {
  
-    const privateAxios=useAxiosPrivate()
+    const privateAxios=useAxios()
 
     try {
       const response = await privateAxios.get(`/chats/appointments`,{
@@ -28,7 +28,7 @@ export const fetchReceivedAppointmentRequests = createAsyncThunk(
   'appointments/fetchReceivedAppointmentRequests',
   async ({token}) => {
  
-    const privateAxios=useAxiosPrivate()
+    const privateAxios=useAxios()
     
     try {
       const response = await privateAxios.get(`/chats/appointments/requests`,{
@@ -47,7 +47,7 @@ export const fetchReceivedAppointmentRequests = createAsyncThunk(
 export const fetchSentAppointmentsRequests = createAsyncThunk(
   'appointments/fetchSentAppointmentRequests',
   async ({token}) => {
-    const privateAxios=useAxiosPrivate()
+    const privateAxios=useAxios()
 
     try {
       const response = await privateAxios.get(`/chats/appointments/sent`,{
@@ -69,7 +69,7 @@ export const fetchSentAppointmentsRequests = createAsyncThunk(
 export const approveAppointmentRequest= createAsyncThunk(
   'appointments/approveAppointmentRequest',
   async ({id,token }, { dispatch }) => {
-    const privateAxios=useAxiosPrivate()
+    const privateAxios=useAxios()
 
     try {
       const response = await privateAxios.patch(`/chats/appointments/${id}`,{
@@ -95,7 +95,7 @@ export const approveAppointmentRequest= createAsyncThunk(
 export const rejectAppointmentRequest = createAsyncThunk(
   'appointments/rejectAppointmentRequest',
   async ({id,token },{dispatch}) => {
-    const privateAxios=useAxiosPrivate()
+    const privateAxios=useAxios()
   
     try {
       const response = await privateAxios.patch(`/chats/appointments/${id}`,{

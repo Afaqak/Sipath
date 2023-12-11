@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { Icons } from '../icons';
 import { useSession } from 'next-auth/react';
-import useAxiosPrivate from '@/hooks/useAxiosPrivate';
+import useAxios from '@/hooks/useAxios';
 import { successToast, errorToast } from '@/utils/toasts';
 import { validateInput } from '@/utils';
 
@@ -16,7 +16,7 @@ export function AppointmentRequestModal({ isOpen, setIsOpen, chatId }) {
   const [untilTime, setUntilTime] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const ref = useRef(null);
-  const axios = useAxiosPrivate()
+  const axios = useAxios()
   const dateRef = useRef(null);
 
   function closeModal() {
