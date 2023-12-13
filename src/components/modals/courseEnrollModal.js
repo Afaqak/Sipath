@@ -24,7 +24,7 @@ export function CourseEnrollmentModal({ isOpen, setIsOpen, token, courseId, setI
     const handleCourseEnrollment = async () => {
       try {
         setLoading(true)
-        const response = await axios.post(`/courses/${courseId}/enroll`, {}, {
+        await axios.post(`/courses/${courseId}/enroll`, {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }

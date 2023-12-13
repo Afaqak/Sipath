@@ -12,7 +12,6 @@ import { FeedSkeleton } from '@/utils/skeletons';
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import('react-quill');
-    // eslint-disable-next-line react/display-name
     return ({ forwardedRef, ...props }) => <RQ ref={forwardedRef} {...props} />;
   },
   { ssr: false }
@@ -46,7 +45,7 @@ const PostEditPage = ({params}) => {
     const updatedImages = selectedImages.filter((image) => image !== thumbnail);
     setSelectedImages(updatedImages);
     setBigImage(updatedImages[updatedImages.length - 1]);
-    console.log(thumbnail,removedImages)
+  
     if (attachedImages?.includes(thumbnail)) {
       setRemovedImages((prevRemovedImages) => [...(prevRemovedImages || []), thumbnail]);
     }
@@ -209,7 +208,7 @@ function setData(response){
         <div className="">
           <Image
             priority
-            src={bigImage ? (bigImage instanceof File ? URL.createObjectURL(bigImage) : bigImage) : "https://bit.ly/placeholder-img"}
+            src={bigImage ? (bigImage instanceof File ? URL.createObjectURL(bigImage) : bigImage) : "/place-holder-post.jpeg"}
             width={200}
             height={200}
             alt="Big"

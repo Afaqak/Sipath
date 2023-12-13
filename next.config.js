@@ -7,7 +7,8 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'sipath-afaq.s3.amazonaws.com',
-      }
+      },
+  
     ],
   },
 };

@@ -3,20 +3,31 @@ import useAxios from '@/hooks/useAxios';
 
 export const createQuiz = createAsyncThunk(
   'quizzes/createQuiz',
-  async ({ data, token, onSuccess, onError }, { rejectWithValue }) => {
+  async ({ data, token, onSuccess, onError, setValue }, { rejectWithValue }) => {
     const axios = useAxios();
- 
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        if (setValue) {
+          setValue('progress', progress)
+        }
+      },
+    };
+
+
+
     try {
-      const response = await axios.post(`/upload/quiz`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(`/upload/quiz`, data, config);
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
       return response.data;
     } catch (error) {
-      if (onSuccess && typeof onSuccess === 'function') {
+      if (onError && typeof onError === 'function') {
+        console.log(error)
         onError();
       }
       return rejectWithValue(error.message || 'Error updating the book');
@@ -28,7 +39,7 @@ export const fetchTutorQuizzes = createAsyncThunk(
   'quizzes/fetchTutorQuizzes',
   async ({ book, token }) => {
     try {
-    } catch {}
+    } catch { }
   }
 );
 
@@ -54,7 +65,7 @@ export const UpdateQuiz = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
- 
+
       if (onSuccess && typeof onSuccess === 'function') onSuccess();
 
       return response.data.updatedQuiz;

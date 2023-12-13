@@ -23,7 +23,7 @@ export const VideoItem = ({ video, isEdit, setVideos, loading, setDeletedVideo }
   const [videoDelete, setVideoDelete] = useState(false);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const formattedTimeAgo = useFormattedTimeAgo(video?.createdAt, userTimeZone);
-  console.log(video)
+
 
   return (
     <div
@@ -150,7 +150,7 @@ export const VideoItemSlider = ({ video, isEdit, setVideos, loading, setDeletedV
   return (
     <div
 
-      className={`max-h-[20rem] w-[350px] md:w-[400px]  ${isEdit && 'border-2 border-subcolor'
+      className={`max-h-[20rem] w-[350px] md:w-[370px]  ${isEdit && 'border-2 border-subcolor'
         } relative block w-full p-4 bg-white box-shadow-main  rounded-md border`}
     >
       {video?.live && (

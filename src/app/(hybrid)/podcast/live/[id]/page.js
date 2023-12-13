@@ -2,11 +2,12 @@ import Live from '.';
 import useAxios from '@/hooks/useAxios';
 import React from 'react'
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 const Page = async ({ params }) => {
     
     console.log(params,"params")
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     const axios=useAxios()
     if (!session) {
         redirect('/podcast')
@@ -21,7 +22,8 @@ const Page = async ({ params }) => {
 
             return response?.data
         } catch (err) {
-            console.log(err);
+            return err.response.data?.asset
+            console.log(err.response.data);
         }
     };
     const podcast = await fetchPodcast()

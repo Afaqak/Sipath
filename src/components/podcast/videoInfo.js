@@ -104,6 +104,7 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
     setRating(newRating);
     setAssetRating(newRating);
   };
+  console.log(selectedVideo)
 
   const handleFollowUser = async () => {
     try {
@@ -125,7 +126,7 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
           follower_count: prevVideo.follower_count - 1,
         }));
       } else {
-        await axios.post(
+        const response = await axios.post(
           '/users/follow',
           {
             user_id: selectedVideo?.author_id,
@@ -136,6 +137,7 @@ export const VideoInfo = ({ type, selectedVideo, setSelectedVideo, followedUser,
             },
           }
         );
+        console.log(response)
         setSelectedVideo(prevVideo => ({
           ...prevVideo,
           follower_count: prevVideo.follower_count + 1,

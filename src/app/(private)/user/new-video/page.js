@@ -1,17 +1,19 @@
 'use client'
-import React, { useRef, useState,useEffect} from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import useAxios from '@/hooks/useAxios'
+import { words } from 'lodash'
 import { errorToast, successToast } from '@/utils/toasts'
 import { Button } from '@/components/ui/button'
 import { FileInput, SubjectDropDown, Icons, VideoUploadType, UploadStatusDisplay } from '@/components'
 
 
+
 const NewVideo = () => {
     const axios = useAxios()
-    const { data: user ,status} = useSession()
+    const { data: user, status } = useSession()
     const {
         control,
         handleSubmit,
@@ -32,11 +34,11 @@ const NewVideo = () => {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-          window.location.replace('/')
-          errorToast('Session Expired.... Logging you out!')
+            window.location.replace('/')
+            errorToast('Session Expired.... Logging you out!')
         }
-      }, [user, status])
-    
+    }, [user, status])
+
 
 
     const isAtLeastOneVideoAdded = watch('videoBodies').some(video => video);
@@ -66,10 +68,10 @@ const NewVideo = () => {
             },
 
             onUploadProgress: (progressEvent) => {
-                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    
-                    setValue(`videoBodies[${index}].progress`, progress);
-                
+                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+                setValue(`videoBodies[${index}].progress`, progress);
+
             },
         };
 
@@ -79,7 +81,7 @@ const NewVideo = () => {
             successToast('video uploaded!')
 
         } catch (error) {
-           
+
             errorToast('Error uploading video!');
 
         } finally {
@@ -89,7 +91,7 @@ const NewVideo = () => {
 
     const onSubmit = async (data) => {
         try {
-          
+
 
             for (const [index, video] of data.videoBodies.entries()) {
                 await uploadVideo(video, index);
@@ -128,7 +130,7 @@ const NewVideo = () => {
                     </button>
                 </div>
                 <div className='w-full flex justify-end'>
-                <Button
+                    <Button
                         className=''
                         type="button"
                         onClick={handleSubmit(onSubmit)}
@@ -151,15 +153,18 @@ export default NewVideo
 
 
 
-const VideoBody = ({ control, index, setValue,watch, fieldName, errors, removeVideo, isSubmitting }) => {
+const VideoBody = ({ control, index, setValue, watch, fieldName, errors, removeVideo, isSubmitting }) => {
 
     const inputRef = useRef(null)
     const videoRef = useRef(null);
-    const [uploadType, setUploadType] = useState('free')
-console.log(watch(`${fieldName}[${index}].video`))
+ 
     const isVideoAdded = watch(`${fieldName}[${index}].video`);
 
-
+    const validateDescription = (value) => {
+        const wordCount = words(value).length
+        const minWordCount = 10;
+        return wordCount >= minWordCount || 'Description should have at least 10 words.';
+    };
 
     return (
         <>
@@ -173,7 +178,7 @@ console.log(watch(`${fieldName}[${index}].video`))
             />
             <div className="p-4 mb-6 relative rounded-md shadow-md bg-white">
                 {isSubmitting && (
-                  <UploadStatusDisplay uploadProgress={watch(`${fieldName}[${index}].progress`)}/>
+                    <UploadStatusDisplay uploadProgress={watch(`${fieldName}[${index}].progress`)} />
                 )}
 
                 <div className='flex justify-end'>
@@ -184,9 +189,9 @@ console.log(watch(`${fieldName}[${index}].video`))
                 <div className="flex flex-col lg:flex-row justify-between gap-5 md:gap-8">
 
                     <div className="flex flex-col md:flex-row gap-3 md:gap-8">
-                        <div className="flex flex-col uppercase gap-2 ">
+                        <div className="flex flex-col  gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm text-[#616161] font-light">Video title</label>
+                                <label className="text-sm text-[#616161] uppercase font-light">Video title</label>
                                 <Controller
                                     name={`${fieldName}[${index}].title`}
                                     control={control}
@@ -200,7 +205,7 @@ console.log(watch(`${fieldName}[${index}].video`))
                                                 className="shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] rounded-md px-3 py-1 placeholder:text-sm border-none focus:outline-none"
                                             />
                                             {errors[fieldName] && errors?.[fieldName][index]?.title && (
-                                                <span className="text-red-500 text-sm">{errors?.[fieldName] && errors?.[fieldName][index]?.title?.message}</span>
+                                                <span className="text-red-500 text-sm capitalize">{errors?.[fieldName] && errors?.[fieldName][index]?.title?.message}</span>
                                             )}
                                         </>
                                     )}
@@ -208,12 +213,15 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm text-[#616161] font-light">Video Description</label>
+                                <label className="text-sm text-[#616161] font-light uppercase">Video Description</label>
                                 <Controller
                                     name={`videoBodies[${index}].description`}
                                     control={control}
                                     defaultValue=""
-                                    rules={{ required: "Description is Required" }}
+                                    rules={{
+                                        required: "Description is Required",
+                                        validate: validateDescription,
+                                    }}
                                     render={({ field }) => (
                                         <>
                                             <textarea
@@ -232,9 +240,9 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                         </div>
-                        <div className="flex flex-col justify-between lg:mb-0 lg:items-center uppercase gap-2 ">
+                        <div className="flex flex-col justify-between lg:mb-0 lg:items-center  gap-2 ">
                             <div className="flex flex-col">
-                                <label className="text-sm text-[#616161] font-light">Subject</label>
+                                <label className="text-sm text-[#616161] font-light uppercase">Subject</label>
                                 <Controller
                                     name={`videoBodies[${index}].subject`}
                                     control={control}
@@ -257,7 +265,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm text-[#616161] font-light">Upload Quiz</label>
+                                <label className="text-sm text-[#616161] font-light uppercase">Upload Quiz</label>
                                 <Controller
                                     name={`videoBodies[${index}].quiz`}
                                     control={control}
@@ -271,7 +279,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                             </div>
                             <div className="flex flex-col">
-                                <label className="text-sm text-[#616161] font-light">Upload Quiz Solution</label>
+                                <label className="text-sm text-[#616161] font-light uppercase">Upload Quiz Solution</label>
                                 <Controller
                                     name={`videoBodies[${index}].quizSolution`}
                                     control={control}
@@ -288,7 +296,7 @@ console.log(watch(`${fieldName}[${index}].video`))
 
                     <div className="flex flex-col gap-5 justify-between text-[#616161] font-light">
                         <div className="">
-                            <div className={`h-[9rem] md:h-[7rem] ${isVideoAdded?"bg-none":"bg-slate-200"} overflow-hidden flex  items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full`}>
+                            <div className={`h-[9rem] md:h-[7rem] ${isVideoAdded ? "bg-none" : "bg-slate-200"} overflow-hidden flex  items-center justify-center cursor-pointer text-black font-semibold rounded-md w-full`}>
                                 <Controller
                                     name={`videoBodies[${index}].video`}
                                     control={control}
@@ -319,8 +327,8 @@ console.log(watch(`${fieldName}[${index}].video`))
                                             />
                                             {field.value ? (
                                                 <div className='relative '>
-                                                    <span onClick={() => setValue(`videoBodies[${index}].video`, null)} className='absolute z-[2000] top-3 right-4 h-4 w-4 rounded-full bg-slate-200 flex items-center justify-center'> 
-                                                     <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" /></span>
+                                                    <span onClick={() => setValue(`videoBodies[${index}].video`, null)} className='absolute z-[2000] top-3 right-4 h-4 w-4 rounded-full bg-slate-200 flex items-center justify-center'>
+                                                        <Icons.minus stroke="black" className="w-5 cursor-pointer h-5" /></span>
                                                     <video ref={videoRef} controls className="max-w-[14rem] h-full rounded-md object-contain">
                                                         <source src={URL.createObjectURL(field.value)} type="video/mp4" />
                                                         Your browser does not support the video tag.
@@ -340,14 +348,14 @@ console.log(watch(`${fieldName}[${index}].video`))
                                 />
                             </div>
                             {errors[fieldName] && errors?.[fieldName][index]?.video && (
-                                <span className="text-red-500 text-sm">Video is required</span>
+                                <span className="text-red-500 text-sm font-normal">Video is required</span>
                             )}
 
                         </div>
 
 
                         <div className="flex flex-col overflow-hidden items-end">
-                            <label className="text-sm">UPLOAD VIDEO THUMBNAIL</label>
+                            <label className="text-sm uppercase">UPLOAD VIDEO THUMBNAIL</label>
                             <>
                                 <Controller
                                     name={`videoBodies[${index}].thumbnail`}
@@ -361,7 +369,7 @@ console.log(watch(`${fieldName}[${index}].video`))
                                     )}
                                 />
                                 {errors[fieldName] && errors?.[fieldName][index]?.thumbnail && (
-                                    <span className="text-red-500 text-sm">Thumbnail is required</span>
+                                    <span className="text-red-500 text-sm font-normal">Thumbnail is required</span>
                                 )}
                             </>
                         </div>

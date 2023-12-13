@@ -34,12 +34,14 @@ const CoursePage = ({ session }) => {
   const [enrollments, setEnrollments] = useState([])
   const [enrollmentId, setEnrollmentId] = useState(0)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
-  const searchParams=useSearchParams()
+  const searchParams = useSearchParams()
   const session_id = searchParams.get('session_id')
-  const currentUrl = window.location.href;
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : "";
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
   const [stripe, setStripe] = useState(null);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+
 
 
   useEffect(() => {
@@ -63,6 +65,14 @@ const CoursePage = ({ session }) => {
       });
 
       router.replace(baseUrlWithoutQueryParams)
+
+      const response2 = await axios.post(`/courses/${params?.course}/enroll`, {}, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`
+        }
+      })
+      console.log(response2)
+      setIsEnrolled(!!response2.enrollment)
       setIsSuccessModalOpen(true);
       setTimeout(() => {
         setIsSuccessModalOpen(false);
@@ -134,6 +144,7 @@ const CoursePage = ({ session }) => {
   useEffect(() => {
     if (course?.id) {
       fetchUserEnrollments();
+      checkCourseEnrollment()
     }
   }, [course?.id]);
 
@@ -146,15 +157,35 @@ const CoursePage = ({ session }) => {
         },
       });
       const enrollments = response.data.enrollments;
+      console.log(enrollments)
       setEnrollments(enrollments)
-      const isEnrolledInCourse = enrollments.some((enrollment) => enrollment?.course?.id === course.id);
-      setIsEnrolled(isEnrolledInCourse);
+      // const isEnrolledInCourse = enrollments.some((enrollment) => enrollment?.course?.id === course.id);
+      // setIsEnrolled(isEnrolledInCourse);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async function checkCourseEnrollment() {
+    try {
+      const response = await axios.get(`/courses/${course?.id}/check-enrollment`, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      });
+      console.log(response?.data)
+      const enrollment = response.data.is_enrolled;
+      console.log(enrollment)
+      setIsEnrolled(enrollment)
+      // const isEnrolledInCourse = enrollments.some((enrollment) => enrollment?.course?.id === course.id);
+      // setIsEnrolled(isEnrolledInCourse);
     } catch (err) {
       console.log(err);
     }
   };
 
 
+
+  console.log(isEnrolled)
 
   const toggleButton = (sectionId) => {
     setButtonStates((prevState) => ({
@@ -266,6 +297,7 @@ const CoursePage = ({ session }) => {
                         if (enrollment) {
 
                           setEnrollmentId(enrollment.id);
+                  
                         }
                         seUnEnrollmentModal(true)
                       }}
@@ -421,6 +453,7 @@ export const VideoItem = ({ video, sectionId, courseId, setVideosBySection, vide
           <Image
             src={video?.thumbnail}
             alt={'thumbnail'}
+            priority
             width={300}
             height={200}
             className="rounded-md object-cover w-full h-[11.2rem]"

@@ -9,6 +9,7 @@ import { errorToast, successToast } from '@/utils/toasts';
 import useAxios from '@/hooks/useAxios';
 import { Button } from '@/components/ui/button';
 import axios from '@/utils/index'
+import { words } from 'lodash';
 
 const OnBoardingPage = () => {
   const { data: user, update } = useSession();
@@ -28,6 +29,14 @@ const OnBoardingPage = () => {
   const [buttonType, setButtonType] = useState('');
   const [loadingAsUser, setLoadingAsUser] = useState(false);
   const [loadingAsExpert, setLoadingAsExpert] = useState(false);
+
+
+  const validateDescription = (value) => {
+    const wordCount = words(value).length
+    const minWordCount = 10;
+    return wordCount >= minWordCount || 'Description should have at least 10 words.';
+};
+
 
   const handleContinueAsUser = () => {
     setButtonType('asUser');
@@ -148,10 +157,10 @@ const OnBoardingPage = () => {
 
   return (
     <>
-      <div className="h-full  flex items-center justify-center">
+      <div className="h-full py-16 flex items-center justify-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="min-h-[70%] lg:mt-[5%] mt-0 bg-white w-[90%] lg:w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
+          className="min-h-[70%] mt-0 bg-white w-[90%] lg:w-[70%] flex flex-col justify-between mx-auto relative rounded-md shadow-md p-5"
         >
           <div className="">
             <h1 className="text-[1.15rem] mb-4 font-semibold">Create Your Profile!</h1>
@@ -221,8 +230,10 @@ const OnBoardingPage = () => {
                   <textarea
                     {...register('bio', {
                       required: 'bio is required',
+                      validate:validateDescription
                     })}
                     name={'bio'}
+                    
                     rows={4}
                     cols={4}
                     className="placeholder:text-sm py-2 resize-none focus:outline-none shadow-[inset_2px_1px_6px_rgba(0,0,0,0.2)] px-4 rounded"

@@ -22,11 +22,9 @@ const WatchVideo = ({ video, purchaseSuccess }) => {
   typeof window !== 'undefined' && window.location.href
       ? window.location.href
       : '';
-      console.log(currentUrl)
+
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
   const router = useRouter()
-  const pathname=usePathname()
-  console.log(currentUrl)
 
 
   const { data: session } = useSession()

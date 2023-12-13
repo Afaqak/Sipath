@@ -100,7 +100,7 @@ export const MyFeed = ({ session }) => {
                 />
               </div>
             ) : (
-              <div className="w-[70%] mx-auto">
+              <div className="md:w-[70%] mx-auto">
                 <VideoItemFeed key={feeds[index]?.id} video={feeds[index]} />
               </div>
             )}

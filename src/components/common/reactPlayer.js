@@ -3,18 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import useAxios from '@/hooks/useAxios';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-// import { loadStripe } from '@stripe/stripe-js';
+
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import '@videojs/themes/dist/fantasy/index.css';
 import { Button } from '@/components/ui/button';
 import { BuyNowModal } from '../modals/paymentModal';
-import { SuccessfullPurchaseModal } from '../modals/successfullPurchaseModal';
+
 import { initializeStripe, redirectToCheckout } from '@/utils/stripeUtils';
 
-// const stripePromise = loadStripe(
-//   process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY
-// );
+
 
 class NextButton extends videojs.getComponent('Button') {
   constructor(player, options) {
@@ -36,7 +34,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
   const axios = useAxios()
   const playerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false)
-  const currentUrl = window.location.href;
+  const currentUrl =  typeof window!=='undefined'? window.location.href:"";
   const baseUrlWithoutQueryParams = currentUrl.split('?')[0];
   const [stripe, setStripe] = useState(null);
 
@@ -47,14 +45,6 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
   }, []);
 
 
-
-  
-  // useEffect(() => {
-  //   if (session_id) {
-  //     console.count('Session ID is not null:', session_id);
-  //     setPurchase();
-  //   }
-  // }, [session_id]);
 
 
   const videoJsOptions = {
@@ -137,11 +127,11 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
             <Button onClick={() => setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
           </div> :
           <div className="aspect-video">
-            <video autoPlay preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy " />
+            <video autoPlay preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy" />
           </div>
       }
       {/* <SuccessfullPurchaseModal isOpen={isSuccessModalOpen} setIsOpen={setIsSuccessModalOpen} /> */}
-      <BuyNowModal onBuyNowSubmit={onBuyNowSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
+      <BuyNowModal productName={selectedVideo?.asset?.title} productPrice={selectedVideo?.asset?.price} onBuyNowSubmit={onBuyNowSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

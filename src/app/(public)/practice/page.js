@@ -30,7 +30,7 @@ const Practice = () => {
         {categoriesData.map((data) => (
           <Link
             key={data.id}
-            href={`/practice/${data.category?.toLowerCase()}?id=${data?.id}`}
+            href={`/practice/${data.id}/${data.category?.toLowerCase()}`}
             className="flex flex-col items-center justify-center box-shadow-main mb-2 p-4 rounded-md bg-white h-44"
           >
             <Image

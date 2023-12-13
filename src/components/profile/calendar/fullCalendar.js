@@ -90,7 +90,6 @@ export const EventsCalendar = () => {
       borderColor: '#1850BC',
       textColor: 'white',
     }));
-    console.log(slotEvents, '{slotevents}');
 
     setCalendarEvents(slotEvents);
   }, []);

@@ -51,11 +51,14 @@ const WatchVideoPage = async ({ params, searchParams }) => {
       const toSend = err.response.data?.asset
       let clone = Object.assign({}, toSend)
       delete clone.user
-
+      const toSendUser={
+        author_id:clone.author_id,
+      ...toSend?.user
+      }
 
       return {
         asset: clone,
-        ...toSend?.user
+        ...toSendUser
       }
      
     }

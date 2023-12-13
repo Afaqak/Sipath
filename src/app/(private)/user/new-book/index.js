@@ -21,9 +21,6 @@ const AddBook = () => {
     }
   }, [user, status])
 
-  console.log(status)
-
-
 
 
   const [coverImage, setCoverImage] = useState(null);

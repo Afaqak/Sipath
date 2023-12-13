@@ -3,7 +3,6 @@ import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from '@/utils/index'
-import { redirect } from 'next/navigation';
 
 
 
@@ -32,8 +31,6 @@ export const authOptions = {
           password: credentials.password,
         });
 
-        console.log(response.data)
-
         if (response.data.user) {
 
           return {
@@ -41,8 +38,6 @@ export const authOptions = {
             token: response.data?.token,
             tutor: response.data?.tutor,
             slots: response.data?.slots,
-
-            expiration_time: response?.data.expiration_time
           };
         } else {
           return null;
@@ -56,25 +51,14 @@ export const authOptions = {
   secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger, session, account }) {
-
-
       if (trigger === 'update') {
         return { ...token, ...session.user };
       }
-      const isExpired = Date.now() > new Date(token?.expiration_time).getTime();
-    if (isExpired) {
-
-      console.log('User session expired, logging out');
-      await axios.post('/auth/logout'); 
-      return null;
-    }
-
-    console.log(Date.now() > new Date(token?.expiration_time).getTime(),token?.expiration_time)
+    
       const providerName = account?.provider;
 
       if (providerName === 'facebook') {
         const { data } = await axios.post('/auth/oauth', { id: token?.sub });
-
 
         token.isNewUser = data?.isNewUser;
         token.token = data.token;
@@ -83,7 +67,6 @@ export const authOptions = {
         token.user = data.user;
         token.token = data?.token
         token.slots = data.slots;
-        token.expiration_time = data?.expiration_time
 
       } else if (providerName === 'google') {
 
@@ -93,7 +76,6 @@ export const authOptions = {
 
         token.isNewUser = data?.isNewUser;
         token.token = data?.token
-        token.expiration_time = data?.expiration_time
         token.token = data.token;
         token.user = data.user;
         token.slots = data.slots;
