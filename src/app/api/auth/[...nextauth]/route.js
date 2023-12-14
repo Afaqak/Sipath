@@ -25,7 +25,6 @@ export const authOptions = {
       async authorize(credentials, req) {
 
         if (!credentials.email || !credentials.password) return;
-
         const response = await axios.post('/auth/login', {
           email: credentials.email,
           password: credentials.password,
@@ -48,7 +47,7 @@ export const authOptions = {
   pages: {
     signIn: '/sign-in',
   },
-  secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger, session, account }) {
       if (trigger === 'update') {

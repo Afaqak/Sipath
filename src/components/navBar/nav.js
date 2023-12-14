@@ -77,8 +77,8 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="fullShadow">
-        <div className="justify-between bg-white fullShadow h-[8vh] hidden lg:flex sticky">
+      <nav className="fullShadow ">
+        <div className="justify-between bg-white fullShadow h-[8vh] hidden lg:flex ">
           <div
             onClick={() => router.push('/')}
             className="flex items-center gap-4 bg-black rounded-r-full cursor-pointer px-4"

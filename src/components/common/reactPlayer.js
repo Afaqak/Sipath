@@ -125,7 +125,7 @@ const ContentPlayer = ({ noPremium, token, selectedVideo }) => {
           <div className='bg-gray-200 aspect-video  flex items-center flex-col justify-center'>
             <p className='text-sm font-semibold'>This is a Premium Product</p>
             <Button onClick={() => setIsOpen(true)} className='bg-subcolor hover:bg-subcolor/90'>Buy Video for {selectedVideo?.asset?.price}$</Button>
-          </div> :
+        </div> :
           <div className="aspect-video">
             <video autoPlay preload='auto' poster={selectedVideo?.asset?.thumbnail && selectedVideo?.asset?.thumbnail} ref={playerRef} className="video-js vjs-theme-fantasy" />
           </div>

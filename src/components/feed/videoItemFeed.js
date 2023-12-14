@@ -49,7 +49,7 @@ export const VideoItemFeed = ({ video, isEdit, setVideos, loading, setDeletedVid
           <div className="w-full flex flex-col gap-4 justify-between group">
             <div className="w-full flex flex-col">
               <Link
-                href={`/videos/watch?id=${video?.id}`}
+                href={`/videos/watch/${video?.id}`}
                 className="text-[1.10rem] block font-[550] mb-[0.20rem] capitalize"
               >
                 <span className="line-clamp-2 hover:underline">
